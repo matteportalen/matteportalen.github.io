@@ -39,7 +39,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .cats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .cat{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;flex-direction:column;gap:2px}
 .cat:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.cat .t{width:52px;height:52px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.5rem;margin-bottom:4px}
+.cat .t{width:52px;height:52px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.5rem;margin-bottom:4px;letter-spacing:-1px}
 .cat b{font-size:1.15rem;line-height:1.15}
 .cat small{color:var(--muted);font-size:.85rem;line-height:1.2}
 .cat[aria-pressed="true"]{outline:4px solid var(--ink)}
@@ -241,6 +241,7 @@ const CATS=[
   {id:"plus10",name:"Plus upp till 10",t:"+",c:"#2BB673",desc:"Till exempel 3 + 5"},
   {id:"minus10",name:"Minus upp till 10",t:"−",c:"#FF6B6B",desc:"Till exempel 9 − 4"},
   {id:"tiotal",name:"Plus och minus till 20",t:"20",c:"#3D8BFD",desc:"Över tiotalet, t.ex. 8 + 5"},
+  {id:"hundra",name:"Plus och minus till 100",t:"100",c:"#17AFC4",desc:"Till exempel 36 + 27, 84 − 9"},
   {id:"multi",name:"Multiplikation",t:"×",c:"#7B61FF",desc:"Välj vilka tabeller",tables:true},
   {id:"div",name:"Division",t:"÷",c:"#FF5FA2",desc:"Välj vilka tal att dela med",tables:true},
   {id:"klocka",name:"Klockan",t:"🕒",c:"#F7C531",desc:"Klocka och klockslag",memOnly:true}
@@ -260,6 +261,10 @@ function gen(){
   if(cat==="tiotal"){
     if(Math.random()<.5){const a=rnd(2,9),b=rnd(11-a,9),s=a+b;return mk(`${a} + ${b}`,s,[s-1,s+1,s-10,s+2]);}
     const a=rnd(11,18),b=rnd(a-9,9),r=a-b;return mk(`${a} − ${b}`,r,[r-1,r+1,r+10,r+2]);}
+  if(cat==="hundra"){
+    // Blandar med och utan tiotalsövergång. Felsvaren är de vanliga misstagen: ett fel på ett eller tio.
+    if(Math.random()<.5){const a=rnd(11,88),b=rnd(2,Math.min(89,100-a)),s=a+b;return mk(`${a} + ${b}`,s,[s-10,s+10,s-1,s+1,s-2,s+2].filter(x=>x<=100));}
+    const a=rnd(21,100),b=Math.random()<.4?rnd(2,9):rnd(11,a-5),r=a-b;return mk(`${a} − ${b}`,r,[r+10,r-10,r+1,r-1,r+2,r-2].filter(x=>x<=100));}
   if(cat==="multi"){const T=pickOne(tabList()),b=rnd(1,10),p=T*b,[x,y]=Math.random()<.5?[b,T]:[T,b];
     return mk(`${x} · ${y}`,p,[p+T,p-T,p+1,p-1,(T+1)*b,(T-1)*b]);}
   const d=pickOne(tabList()),q=rnd(1,10);return mk(frac(d*q,d),q,[q+1,q-1,q+2,q-2]);
