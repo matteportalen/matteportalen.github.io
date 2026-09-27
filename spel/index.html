@@ -149,10 +149,10 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Kör i filen med rätt svar och ta dig i mål!</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
-  <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Varje rätt svar bygger tornet högre. Kommer ugglan ända upp till månen?</small></span></button>
+  <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Varje rätt svar bygger tornet högre. Kommer du ända upp till månen?</small></span></button>
   <button class="gamecard kang" id="btnKang"><span class="pic cards3">🦘</span><span><b>Känguruhoppet</b><small>Hoppa på tallinjen med tiotal och ental tills du landar på svaret.</small></span></button>
   <button class="gamecard skatt" id="btnSkatt"><span class="pic cards3">🏴‍☠️</span><span><b>Skattkartan</b><small>Segla från ö till ö och hitta skatten!</small></span></button>
-  <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Ugglans kiosk</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
+  <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Kiosken</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
   <div class="soon">Fler spel kommer!</div>
 </div>
 
@@ -204,7 +204,12 @@ const frac=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
 
 /* ---------- Elevens egen uggla från garderoben ---------- */
 const WARD={
+  animal:{name:"Djur",items:[
+    {id:"uggla",name:"Uggla",need:0},{id:"katt",name:"Katt",need:0},{id:"kanin",name:"Kanin",need:0},
+    {id:"rav",name:"Räv",need:5},{id:"panda",name:"Panda",need:10},{id:"pingvin",name:"Pingvin",need:15},
+    {id:"robot",name:"Robot",need:25},{id:"drake",name:"Drake",need:40},{id:"enhorning",name:"Enhörning",need:55}]},
   color:{name:"Färg",items:[
+    {id:"natur",name:"Naturlig",need:0},
     {id:"lila",name:"Lila",need:0,c:["#8A6BC6","#6B4E9B"]},{id:"bla",name:"Blå",need:2,c:["#4F8DF5","#2F63C9"]},
     {id:"gron",name:"Grön",need:6,c:["#3FBF7F","#258A58"]},{id:"rosa",name:"Rosa",need:12,c:["#FF7EB6","#D94F8E"]},
     {id:"orange",name:"Orange",need:20,c:["#FFA24C","#D9772A"]},{id:"rymd",name:"Rymd",need:35,c:["#2B3A67","#141D3D"]},
@@ -218,44 +223,94 @@ const WARD={
   neck:{name:"Halsband",items:[
     {id:"ingen",name:"Inget",need:0},{id:"rosett",name:"Rosett",need:4},{id:"halsduk",name:"Halsduk",need:14},{id:"medalj",name:"Medalj",need:24}]}
 };
+/* Djurens egna färger när man väljer "Naturlig" */
+const NATUR={uggla:["#8A6BC6","#6B4E9B"],katt:["#F4A259","#C9772E"],kanin:["#D9D2E9","#A99CC9"],rav:["#FF7A3D","#C4531F"],panda:["#FFFFFF","#2B2B3A"],
+  pingvin:["#2B3A67","#141D3D"],robot:["#AEB9CC","#6B7894"],drake:["#3FBF7F","#258A58"],enhorning:["#FFFFFF","#E0D8F5"]};
 const itemOf=(slot,id)=>WARD[slot].items.find(x=>x.id===id)||WARD[slot].items[0];
-function owlSVG(cfg,cls){
-  const[c1,c2]=itemOf("color",cfg.color).c,dark=cfg.color==="rymd";
-  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -20 120 140" width="240" height="280">`;
+function owlSVG(cfg,cls,standalone){
+  const an=cfg.animal||"uggla",ci=itemOf("color",cfg.color),[c1,c2]=ci.c||NATUR[an]||NATUR.uggla,dark=["rymd"].includes(cfg.color)||(ci.id==="natur"&&an==="pingvin");
+  const L=`stroke="#1D2B53" stroke-width="2" stroke-linejoin="round"`;
+  let s=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -20 120 140"${standalone?' width="240" height="280"':` class="owl ${cls||""}" role="img" aria-label="Avatar"`}>`;
   s+=`<ellipse cx="60" cy="112" rx="34" ry="5" fill="rgba(0,0,0,.18)"/>`;
-  s+=`<path d="M24 44 L30 16 L46 34 Z" fill="${c2}"/><path d="M96 44 L90 16 L74 34 Z" fill="${c2}"/>`;
-  s+=`<ellipse cx="60" cy="68" rx="40" ry="42" fill="${c1}"/><ellipse cx="60" cy="80" rx="26" ry="28" fill="${dark?"#DDE3F5":"#F3E8FF"}"/>`;
-  s+=`<path d="M44 74q4 4 8 0M56 82q4 4 8 0M68 74q4 4 8 0M50 92q4 4 8 0M62 92q4 4 8 0" stroke="rgba(0,0,0,.14)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
-  s+=`<path d="M22 72q-10 10 -2 24q8-6 10-16z" fill="${c2}"/><path d="M98 72q10 10 2 24q-8-6-10-16z" fill="${c2}"/>`;
-  s+=`<path d="M46 108h8M66 108h8" stroke="#FF9F43" stroke-width="5" stroke-linecap="round"/>`;
-  // ögon
+  // bakom kroppen: svansar och vingar
+  if(an==="katt")s+=`<path d="M92 92 Q116 88 108 58 Q104 50 100 58 Q106 80 88 84Z" fill="${c1}"/><path d="M106 60 L102 68 M104 70 L98 74" stroke="${c2}" stroke-width="3"/>`;
+  if(an==="rav")s+=`<path d="M90 96 Q122 96 114 60 Q98 70 88 86Z" fill="${c1}"/><path d="M114 60 Q116 70 108 76 Q104 68 114 60Z" fill="#fff"/>`;
+  if(an==="drake")s+=`<path d="M26 64 L4 44 L12 70 L0 72 L22 82Z" fill="${c2}"/><path d="M94 64 L116 44 L108 70 L120 72 L98 82Z" fill="${c2}"/><path d="M90 98 Q116 104 112 84 L118 80 L108 78 Q106 94 88 90Z" fill="${c1}"/>`;
+  if(an==="enhorning")s+=`<path d="M86 94 Q118 104 110 78 Q100 90 88 86Z" fill="#FF7EB6"/><path d="M88 90 Q112 96 108 84" stroke="#7B61FF" stroke-width="4" fill="none"/>`;
+  // öron
+  if(an==="uggla")s+=`<path d="M24 44 L30 16 L46 34 Z" fill="${c2}"/><path d="M96 44 L90 16 L74 34 Z" fill="${c2}"/>`;
+  if(an==="katt")s+=`<path d="M24 46 L28 12 L52 32Z" fill="${c1}"/><path d="M30 38 L31 20 L44 32Z" fill="#FFB3C7"/><path d="M96 46 L92 12 L68 32Z" fill="${c1}"/><path d="M90 38 L89 20 L76 32Z" fill="#FFB3C7"/>`;
+  if(an==="rav")s+=`<path d="M22 50 L26 6 L54 30Z" fill="${c1}"/><path d="M26 10 L25 22 L34 16Z" fill="#1D2B53"/><path d="M98 50 L94 6 L66 30Z" fill="${c1}"/><path d="M94 10 L95 22 L86 16Z" fill="#1D2B53"/>`;
+  if(an==="kanin")s+=`<ellipse cx="44" cy="4" rx="10" ry="28" fill="${c1}" transform="rotate(-10 44 30)"/><ellipse cx="44" cy="6" rx="5" ry="20" fill="#FFB3C7" transform="rotate(-10 44 30)"/><ellipse cx="76" cy="4" rx="10" ry="28" fill="${c1}" transform="rotate(10 76 30)"/><ellipse cx="76" cy="6" rx="5" ry="20" fill="#FFB3C7" transform="rotate(10 76 30)"/>`;
+  if(an==="panda")s+=`<circle cx="30" cy="32" r="12" fill="${c2}"/><circle cx="90" cy="32" r="12" fill="${c2}"/>`;
+  if(an==="robot")s+=`<line x1="60" y1="26" x2="60" y2="6" stroke="#56668F" stroke-width="3"/><circle cx="60" cy="5" r="5" fill="#FF6B6B"/><rect x="14" y="50" width="10" height="22" rx="3" fill="${c2}"/><rect x="96" y="50" width="10" height="22" rx="3" fill="${c2}"/>`;
+  if(an==="drake")s+=`<path d="M40 30 L34 8 L48 26Z" fill="#FFC93C"/><path d="M80 30 L86 8 L72 26Z" fill="#FFC93C"/>`;
+  if(an==="enhorning")s+=`<path d="M30 40 L32 18 L46 32Z" fill="${c1}" ${L}/><path d="M90 40 L88 18 L74 32Z" fill="${c1}" ${L}/>`;
+  if(an==="pingvin")s+=``;
+  // kroppen
+  const bodyStroke=an==="panda"||an==="enhorning"?` stroke="#D5DDEC" stroke-width="2"`:"";
+  if(an==="robot")s+=`<rect x="22" y="28" width="76" height="80" rx="18" fill="${c1}"${bodyStroke}/>`;
+  else s+=`<ellipse cx="60" cy="68" rx="40" ry="42" fill="${c1}"${bodyStroke}/>`;
+  // mage
+  if(an==="uggla")s+=`<ellipse cx="60" cy="80" rx="26" ry="28" fill="${dark?"#DDE3F5":"#F3E8FF"}"/><path d="M44 74q4 4 8 0M56 82q4 4 8 0M68 74q4 4 8 0M50 92q4 4 8 0M62 92q4 4 8 0" stroke="rgba(0,0,0,.14)" stroke-width="2.5" fill="none" stroke-linecap="round"/>`;
+  else if(an==="pingvin")s+=`<ellipse cx="60" cy="78" rx="28" ry="32" fill="#fff"/>`;
+  else if(an==="robot")s+=`<rect x="38" y="78" width="44" height="22" rx="5" fill="#E8EDF7"/><circle cx="48" cy="89" r="3.5" fill="#FF6B6B"/><circle cx="60" cy="89" r="3.5" fill="#FFC93C"/><circle cx="72" cy="89" r="3.5" fill="#2BB673"/>`;
+  else if(an==="drake")s+=`<ellipse cx="60" cy="82" rx="24" ry="26" fill="#FFE58A"/><path d="M40 76H80M38 86H82M42 96H78" stroke="rgba(0,0,0,.14)" stroke-width="2.5"/>`;
+  else if(an==="panda")s+=`<ellipse cx="60" cy="84" rx="24" ry="24" fill="#F3F5FA"/>`;
+  else s+=`<ellipse cx="60" cy="84" rx="24" ry="24" fill="rgba(255,255,255,.75)"/>`;
+  if(an==="katt")s+=`<path d="M52 30 L54 40 M60 28 L60 40 M68 30 L66 40" stroke="${c2}" stroke-width="3" stroke-linecap="round"/>`;
+  if(an==="drake")s+=`<path d="M46 28 L50 18 L54 28 M56 26 L60 14 L64 26 M66 28 L70 18 L74 28" fill="${c2}"/>`;
+  if(an==="enhorning")s+=`<path d="M78 30 Q98 36 98 60 Q92 48 84 46 Q96 66 90 82 Q86 64 78 58Z" fill="#FF7EB6"/><path d="M80 34 Q94 40 94 56" stroke="#FFC93C" stroke-width="4" fill="none"/><path d="M82 44 Q90 52 88 70" stroke="#7B61FF" stroke-width="4" fill="none"/>`;
+  // armar, vingar, fötter
+  if(an==="uggla")s+=`<path d="M22 72q-10 10 -2 24q8-6 10-16z" fill="${c2}"/><path d="M98 72q10 10 2 24q-8-6-10-16z" fill="${c2}"/>`;
+  if(an==="pingvin")s+=`<path d="M22 66 Q8 84 20 98 Q24 84 30 76Z" fill="${c2}"/><path d="M98 66 Q112 84 100 98 Q96 84 90 76Z" fill="${c2}"/>`;
+  if(an==="panda")s+=`<ellipse cx="24" cy="80" rx="9" ry="16" fill="${c2}" transform="rotate(20 24 80)"/><ellipse cx="96" cy="80" rx="9" ry="16" fill="${c2}" transform="rotate(-20 96 80)"/>`;
+  const foot=an==="uggla"||an==="pingvin"?"#FF9F43":an==="panda"?c2:an==="robot"?"#56668F":c2;
+  if(an==="uggla"||an==="pingvin")s+=`<path d="M46 108h8M66 108h8" stroke="${foot}" stroke-width="5" stroke-linecap="round"/>`;
+  else s+=`<ellipse cx="46" cy="107" rx="10" ry="6" fill="${foot}"/><ellipse cx="74" cy="107" rx="10" ry="6" fill="${foot}"/>`;
+  // ögonplättar
+  if(an==="panda")s+=`<ellipse cx="42" cy="52" rx="14" ry="17" fill="${c2}" transform="rotate(-20 42 52)"/><ellipse cx="78" cy="52" rx="14" ry="17" fill="${c2}" transform="rotate(20 78 52)"/>`;
+  if(an==="rav")s+=`<path d="M22 60 Q40 74 56 62 Q48 82 26 70Z" fill="#fff"/><path d="M98 60 Q80 74 64 62 Q72 82 94 70Z" fill="#fff"/>`;
+  // ögon (samma plats för alla, så att glasögonen passar)
   if(cfg.glasses==="sol"){
     s+=`<rect x="24" y="38" width="34" height="24" rx="10" fill="#1D2B53"/><rect x="62" y="38" width="34" height="24" rx="10" fill="#1D2B53"/><path d="M56 46h8" stroke="#1D2B53" stroke-width="4"/><path d="M30 44l8-4M68 44l8-4" stroke="rgba(255,255,255,.6)" stroke-width="3" stroke-linecap="round"/>`;
   }else{
-    s+=`<circle cx="42" cy="50" r="16" fill="#fff"/><circle cx="78" cy="50" r="16" fill="#fff"/><circle cx="45" cy="52" r="7" fill="#1D2B53"/><circle cx="75" cy="52" r="7" fill="#1D2B53"/><circle cx="47.5" cy="49.5" r="2.4" fill="#fff"/><circle cx="77.5" cy="49.5" r="2.4" fill="#fff"/>`;
+    const r=an==="uggla"?16:an==="robot"?13:12;
+    if(an==="robot")s+=`<rect x="${42-r}" y="${50-r}" width="${2*r}" height="${2*r}" rx="5" fill="#1D2B53"/><rect x="${78-r}" y="${50-r}" width="${2*r}" height="${2*r}" rx="5" fill="#1D2B53"/><circle cx="42" cy="50" r="6" fill="#7CF0B1"/><circle cx="78" cy="50" r="6" fill="#7CF0B1"/>`;
+    else s+=`<circle cx="42" cy="50" r="${r}" fill="#fff"/><circle cx="78" cy="50" r="${r}" fill="#fff"/><circle cx="45" cy="52" r="7" fill="#1D2B53"/><circle cx="75" cy="52" r="7" fill="#1D2B53"/><circle cx="47.5" cy="49.5" r="2.4" fill="#fff"/><circle cx="77.5" cy="49.5" r="2.4" fill="#fff"/>`;
     if(cfg.glasses==="runda")s+=`<circle cx="42" cy="50" r="17" fill="none" stroke="#FFC93C" stroke-width="4"/><circle cx="78" cy="50" r="17" fill="none" stroke="#FFC93C" stroke-width="4"/><line x1="59" y1="50" x2="61" y2="50" stroke="#FFC93C" stroke-width="4"/>`;
-    if(cfg.glasses==="stjarn"){const star=(cx,cy)=>{let p=[];for(let i=0;i<10;i++){const r=i%2?11:22,a=-Math.PI/2+i*Math.PI/5;p.push((cx+r*Math.cos(a)).toFixed(1)+","+(cy+r*Math.sin(a)).toFixed(1))}return`<polygon points="${p.join(" ")}" fill="none" stroke="#FF5FA2" stroke-width="3.5" stroke-linejoin="round"/>`};s+=star(42,51)+star(78,51)}
+    if(cfg.glasses==="stjarn"){const star=(cx,cy)=>{let p=[];for(let i=0;i<10;i++){const rr=i%2?11:22,a=-Math.PI/2+i*Math.PI/5;p.push((cx+rr*Math.cos(a)).toFixed(1)+","+(cy+rr*Math.sin(a)).toFixed(1))}return`<polygon points="${p.join(" ")}" fill="none" stroke="#FF5FA2" stroke-width="3.5" stroke-linejoin="round"/>`};s+=star(42,51)+star(78,51)}
     if(cfg.glasses==="hjarta"){const heart=cx=>`<path d="M${cx} 66 C${cx-26} 50 ${cx-18} 30 ${cx} 42 C${cx+18} 30 ${cx+26} 50 ${cx} 66Z" fill="none" stroke="#E5484D" stroke-width="3.5"/>`;s+=heart(42)+heart(78)}
   }
-  s+=`<path d="M55 62 L65 62 L60 71 Z" fill="#FF9F43"/>`;
+  // näbb, nos och mun
+  if(an==="uggla"||an==="pingvin")s+=`<path d="M55 62 L65 62 L60 71 Z" fill="#FF9F43"/>`;
+  else if(an==="katt"||an==="kanin")s+=`<path d="M56 63 L64 63 L60 68Z" fill="#FF7EB6"/><path d="M60 68 Q56 73 52 70 M60 68 Q64 73 68 70" stroke="#1D2B53" stroke-width="2" fill="none" stroke-linecap="round"/>`+(an==="katt"?`<path d="M30 64 L48 66 M30 70 L48 69 M90 64 L72 66 M90 70 L72 69" stroke="#1D2B53" stroke-width="1.5"/>`:`<rect x="56.5" y="70" width="3" height="5" fill="#fff" stroke="#1D2B53" stroke-width="1"/><rect x="60.5" y="70" width="3" height="5" fill="#fff" stroke="#1D2B53" stroke-width="1"/>`);
+  else if(an==="rav")s+=`<ellipse cx="60" cy="66" rx="5" ry="4" fill="#1D2B53"/><path d="M60 70 Q56 75 52 72 M60 70 Q64 75 68 72" stroke="#1D2B53" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  else if(an==="panda")s+=`<ellipse cx="60" cy="65" rx="5" ry="3.5" fill="#1D2B53"/><path d="M60 68 Q56 73 52 70 M60 68 Q64 73 68 70" stroke="#1D2B53" stroke-width="2" fill="none" stroke-linecap="round"/>`;
+  else if(an==="robot")s+=`<rect x="48" y="66" width="24" height="7" rx="2" fill="#1D2B53"/><path d="M54 66V73M60 66V73M66 66V73" stroke="#7CF0B1" stroke-width="1.5"/>`;
+  else if(an==="drake")s+=`<ellipse cx="60" cy="67" rx="12" ry="7" fill="${c2}"/><circle cx="56" cy="66" r="1.8" fill="#1D2B53"/><circle cx="64" cy="66" r="1.8" fill="#1D2B53"/>`;
+  else if(an==="enhorning")s+=`<ellipse cx="60" cy="68" rx="13" ry="8" fill="#FFD6E7"/><circle cx="56" cy="67" r="1.8" fill="#1D2B53"/><circle cx="64" cy="67" r="1.8" fill="#1D2B53"/><path d="M60 26 L54 6 L66 6Z" fill="#FFC93C" ${L}/><path d="M55 12H65M56 18H64" stroke="#C99A0A" stroke-width="1.5"/>`;
   // halsband
   if(cfg.neck==="rosett")s+=`<path d="M60 80 L46 72 L46 88 Z M60 80 L74 72 L74 88 Z" fill="#E5484D"/><circle cx="60" cy="80" r="4.5" fill="#B8323A"/>`;
   if(cfg.neck==="halsduk")s+=`<path d="M26 74 Q60 90 94 74 L94 83 Q60 99 26 83 Z" fill="#3D8BFD"/><path d="M70 86 L78 110 L88 106 L80 84 Z" fill="#3D8BFD"/><path d="M36 80 Q60 93 84 80" stroke="#fff" stroke-width="2.5" fill="none" stroke-dasharray="4 5"/>`;
   if(cfg.neck==="medalj")s+=`<path d="M46 72 L60 92 L74 72" stroke="#3D5AFE" stroke-width="6" fill="none"/><circle cx="60" cy="96" r="9" fill="#F2C230" stroke="#C99A0A" stroke-width="2"/><path d="M60 90l2 4 4 .5-3 3 .8 4-3.8-2-3.8 2 .8-4-3-3 4-.5z" fill="#fff"/>`;
   // hatt
   if(cfg.hat==="keps")s+=`<path d="M34 32 Q60 0 86 32 Z" fill="#E5484D"/><path d="M58 30 Q86 25 104 32 Q88 38 58 34 Z" fill="#B8323A"/><circle cx="60" cy="13" r="3" fill="#B8323A"/>`;
-  if(cfg.hat==="mossa")s+=`<path d="M33 34 Q60 -6 87 34 Z" fill="#2BB673"/><rect x="31" y="27" width="58" height="10" rx="5" fill="#1E9E5E"/><circle cx="60" cy="-3" r="8" fill="#fff"/>`;
+  if(cfg.hat==="mossa")s+=`<path d="M33 34 Q60 -6 87 34 Z" fill="#2BB673"/><rect x="31" y="27" width="58" height="10" rx="5" fill="#1E9E5E"/><circle cx="60" cy="12" r="8" fill="#fff"/>`;
   if(cfg.hat==="party")s+=`<path d="M44 32 L60 -14 L76 32 Z" fill="#FFC93C"/><path d="M50 16 L70 16 M47 25 L73 25 M54 5 L66 5" stroke="#FF5FA2" stroke-width="3.5"/><circle cx="60" cy="-16" r="5" fill="#FF5FA2"/>`;
   if(cfg.hat==="troll")s+=`<path d="M40 30 L66 -18 L80 30 Z" fill="#3D5AFE"/><ellipse cx="60" cy="31" rx="32" ry="6" fill="#2A44C9"/><path d="M58 6l1.5 3 3.3.4-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3-2.4-2.3 3.3-.4z M68 18l1.2 2.4 2.6.3-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.3z" fill="#FFC93C"/>`;
   if(cfg.hat==="krona")s+=`<path d="M38 33 L38 12 L49 22 L60 4 L71 22 L82 12 L82 33 Z" fill="#F2C230" stroke="#C99A0A" stroke-width="2.5" stroke-linejoin="round"/><circle cx="60" cy="26" r="4" fill="#E5484D"/><circle cx="47" cy="27" r="3" fill="#3D8BFD"/><circle cx="73" cy="27" r="3" fill="#2BB673"/>`;
   return s+"</svg>";
 }
-
-const owlCfg=Object.assign({color:"lila",glasses:"runda",hat:"ingen",neck:"ingen"},get("matteportalen-uggla")||{});
-const owlSrc="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(owlCfg));
+const owlCfg=Object.assign({animal:"uggla",color:"lila",glasses:"runda",hat:"ingen",neck:"ingen"},get("matteportalen-uggla")||{});
+// Ugglan (flygturen) bär elevens kläder. Avataren är elevens valda djur och används i de andra spelen.
+const flyCfg=Object.assign({},owlCfg,{animal:"uggla",color:owlCfg.animal==="uggla"?owlCfg.color:"lila"});
+const owlSrc="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(flyCfg,"",true));
 const owlImg=new Image();owlImg.src=owlSrc;
+const avSrc="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(owlCfg,"",true));
+const avImg=new Image();avImg.src=avSrc;
 $("flyPic").innerHTML=`<img src="${owlSrc}" alt="" style="width:100%;display:block">`;
-$("rOwl").innerHTML=`<img src="${owlSrc}" alt="" style="width:100%;display:block">`;
+$("rOwl").innerHTML=`<img src="${avSrc}" alt="" style="width:100%;display:block">`;
 
 /* ---------- Lagring ---------- */
 const KEY="mattespel-spel-v1";
@@ -569,7 +624,7 @@ function drawCar(){
   ctx.fillStyle="#E5484D";rr(-cw/2,-ch/2,cw,ch,cw*.3);ctx.fill();
   ctx.fillStyle="#B8323A";rr(-cw*.36,-ch*.46,cw*.72,ch*.16,6);ctx.fill();
   ctx.fillStyle="#fff";rr(-cw*.1,-ch/2,cw*.2,ch,3);ctx.fill();
-  if(owlImg.complete){const ow=cw*1.05;ctx.drawImage(owlImg,-ow/2,-ch*.18,ow,ow*1.167);}
+  if(avImg.complete){const ow=cw*1.05;ctx.drawImage(avImg,-ow/2,-ch*.18,ow,ow*1.167);}
   if(C.boost){ctx.fillStyle="rgba(255,201,60,.9)";ctx.beginPath();ctx.moveTo(-cw*.25,ch/2);ctx.lineTo(0,ch/2+ch*.35+Math.random()*10);ctx.lineTo(cw*.25,ch/2);ctx.fill();}
   ctx.restore();
   C.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.8);ctx.fillStyle=p.c;if(p.sq){ctx.beginPath();ctx.moveTo(p.x,p.y-6);ctx.lineTo(p.x+5,p.y+5);ctx.lineTo(p.x-5,p.y+5);ctx.fill();}else{ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fill();}});ctx.globalAlpha=1;
@@ -688,7 +743,7 @@ function drawSpace(){
   ctx.fillStyle="#C6D6F2";ctx.beginPath();ctx.ellipse(0,0,sw/2,sw*.2,0,0,7);ctx.fill();ctx.strokeStyle="#56668F";ctx.lineWidth=3;ctx.stroke();
   ctx.fillStyle="#FFC93C";for(let i=-2;i<=2;i++){ctx.beginPath();ctx.arc(i*sw*.17,sw*.05,4,0,7);ctx.fill();}
   ctx.fillStyle="rgba(170,220,255,.45)";ctx.beginPath();ctx.arc(0,-sw*.08,sw*.26,Math.PI,0);ctx.fill();
-  if(owlImg.complete){const ow=sw*.42;ctx.drawImage(owlImg,-ow/2,-sw*.08-ow*.95,ow,ow*1.167);}
+  if(avImg.complete){const ow=sw*.42;ctx.drawImage(avImg,-ow/2,-sw*.08-ow*.95,ow,ow*1.167);}
   ctx.strokeStyle="rgba(255,255,255,.6)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(0,-sw*.08,sw*.26,Math.PI,0);ctx.stroke();
   ctx.translate(0,-sw*.34);ctx.rotate(A.ang);
   ctx.strokeStyle="rgba(124,240,177,.35)";ctx.setLineDash([6,10]);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(0,-H*.07);ctx.lineTo(0,-H*.6);ctx.stroke();ctx.setLineDash([]);
@@ -918,7 +973,7 @@ function towerLanded(){
   if(T.n>=TGOAL){T.over=true;setTimeout(moonLanding,500);return;}
   setTimeout(()=>{if(T&&!T.over)towerTask();},450);
 }
-function moonLanding(){if(!T)return;T.done=true;T.doneT=0;$("q").innerHTML="Ugglan når månen! 🌙";$("q").className="q ok";window.Ljud&&Ljud.fanfare();
+function moonLanding(){if(!T)return;T.done=true;T.doneT=0;$("q").innerHTML="Du når månen! 🌙";$("q").className="q ok";window.Ljud&&Ljud.fanfare();
   setTimeout(()=>finishTower(),2600);}
 function towerFrame(now){
   if(!T)return;const dt=Math.min(.05,(now-T.last)/1000);T.last=now;const g=towerGeom();
@@ -970,9 +1025,9 @@ function drawTower(){
   T.blocks.forEach((b,i)=>{const y=Y(lvlY(i+1));if(y>H+10||y<-g.bh-10)return;drawBlock(b.x,y,g,b.col);});
   const topY=Y(lvlY(T.n));
   // ugglan högst upp (eller på månen)
-  if(owlImg.complete){const ow=g.bw*.55;let ox=W/2,oy=topY-ow*1.1-T.owlHop*14;
+  if(avImg.complete){const ow=g.bw*.55;let ox=W/2,oy=topY-ow*1.1-T.owlHop*14;
     if(T.done){const p=Math.min(1,T.doneT/.6);oy=topY-ow*1.1-Math.sin(p*Math.PI)*40-(moonY-g.moonR+ow*.15-(topY-ow*1.1))*-p;ox=W/2-g.moonR*.18*p;}
-    ctx.drawImage(owlImg,ox-ow/2,oy,ow,ow*1.167);
+    ctx.drawImage(avImg,ox-ow/2,oy,ow,ow*1.167);
     if(T.done&&T.doneT>.7){const fx=ox+ow*.55,fy=moonY-g.moonR+4,wave=Math.sin(T.t*6)*3;ctx.strokeStyle="#1D2B53";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx,fy-48);ctx.stroke();
       ctx.fillStyle="#FF5FA2";ctx.beginPath();ctx.moveTo(fx,fy-48);ctx.lineTo(fx+30,fy-40+wave);ctx.lineTo(fx,fy-30);ctx.fill();}}
   ctx.restore();
@@ -990,7 +1045,7 @@ function finishTower(){
   const st=T.miss===0?3:T.miss<=3?2:1,mi=T.miss;
   data.tower=data.tower||{};const r=data.tower[cat]||{stars:0};data.tower[cat]={stars:Math.max(r.stars||0,st)};data.towerPlayed=(data.towerPlayed||0)+1;data.towerWon=true;if(st===3)data.towerPerfect=true;save();
   stopTower();stopKang();stopSkatt();stopKiosk();
-  $("rTitle").textContent=st===3?"Ända till månen, utan ett enda fel!":"Ugglan är på månen!";
+  $("rTitle").textContent=st===3?"Ända till månen, utan ett enda fel!":"Du är på månen!";
   $("rBig").innerHTML=starHtml(st);
   $("rSub").textContent=`Tornet blev ${TGOAL} klossar högt.`+(mi?` ${mi} ${mi===1?"kloss":"klossar"} ramlade ner på vägen.`:"")+(st<3?" Utan några fel får du tre stjärnor.":"");
   showOnly("result");confetti();
@@ -1154,7 +1209,7 @@ function drawSkatt(shipI){
   ctx.fillStyle="#8A5A2B";ctx.beginPath();ctx.moveTo(-26,0);ctx.lineTo(26,0);ctx.lineTo(18,12);ctx.lineTo(-18,12);ctx.closePath();ctx.fill();
   ctx.strokeStyle="#5E3F1E";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-40);ctx.stroke();
   ctx.fillStyle="#fff";ctx.beginPath();ctx.moveTo(2,-38);ctx.quadraticCurveTo(22,-22,2,-6);ctx.closePath();ctx.fill();ctx.fillStyle="#1D2B53";ctx.fillRect(0,-44,12,6);
-  if(owlImg.complete)ctx.drawImage(owlImg,-24,-26,20,23);
+  if(avImg.complete)ctx.drawImage(avImg,-24,-26,20,23);
   ctx.restore();
   SK.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.c;ctx.beginPath();p.coin?ctx.ellipse(p.x,p.y,5,5*Math.abs(Math.sin(SK.t*8+p.x)),0,0,7):ctx.arc(p.x,p.y,3.5,0,7);ctx.fill();});ctx.globalAlpha=1;
 }
@@ -1217,7 +1272,7 @@ function drawKiosk(){
   if(t.type==="change"&&!KI.out){const nx=gx+H*.08,ny=gy+H*.05;ctx.fillStyle=t.pay>=100?"#3D8BFD":t.pay>=50?"#FF9F43":t.pay>=20?"#9C6ADE":"#2BB673";ctx.fillRect(nx,ny,58,30);ctx.strokeStyle="#1D2B53";ctx.lineWidth=2;ctx.strokeRect(nx,ny,58,30);
     ctx.fillStyle="#fff";ctx.font='800 15px "Baloo 2", system-ui, sans-serif';ctx.fillText(`${t.pay} kr`,nx+29,ny+16);}
   // ugglan bakom disken
-  if(owlImg.complete){const ow=Math.min(H*.3,110);ctx.drawImage(owlImg,W*.78-ow/2,H*.72-ow*1.05,ow,ow*1.167);}
+  if(avImg.complete){const ow=Math.min(H*.3,110);ctx.drawImage(avImg,W*.78-ow/2,H*.72-ow*1.05,ow,ow*1.167);}
   ctx.fillStyle="#A86F36";ctx.fillRect(0,H*.72,W,H*.28);ctx.fillStyle="#8A5A2B";ctx.fillRect(0,H*.72,W,8);
   // varorna med prislappar
   t.items.forEach((it,i)=>{const x=W*(t.items.length===1?.5:.36+i*.24),y=H*.82;ctx.font=`${Math.round(H*.09)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(it[0],x,y);
@@ -1260,7 +1315,7 @@ function startMem(){
   const pairs=makePairs(),cards=[];
   pairs.forEach((p,i)=>{cards.push({pair:i,kind:"q",html:p.q,txt:false});cards.push({pair:i,kind:"a",html:p.a,txt:!!p.txt});});
   M={cards:shuffle(cards),open:[],found:0,moves:0,lock:false};
-  $("memGrid").innerHTML=M.cards.map((c,i)=>`<div class="mc" data-i="${i}" role="button" tabindex="0" aria-label="Kort ${i+1}"><div class="side back"><img src="${owlSrc}" alt=""></div><div class="side front ${c.kind}${c.txt?" txt":""}">${c.html}</div></div>`).join("");
+  $("memGrid").innerHTML=M.cards.map((c,i)=>`<div class="mc" data-i="${i}" role="button" tabindex="0" aria-label="Kort ${i+1}"><div class="side back"><img src="${avSrc}" alt=""></div><div class="side front ${c.kind}${c.txt?" txt":""}">${c.html}</div></div>`).join("");
   memHud();showOnly("mem");
 }
 function memHud(){$("memPairs").textContent=`Par: ${M.found} / ${PAIRS}`;$("memMoves").textContent=`Drag: ${M.moves}`;}
