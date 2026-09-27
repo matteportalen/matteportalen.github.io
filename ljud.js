@@ -62,8 +62,38 @@
         Object.assign(this,{g,nodes});},
       stop(){if(!this.g)return;const c=ac(),t=c.currentTime;this.g.gain.setTargetAtTime(0.0001,t,.3);this.nodes.forEach(x=>{try{x.stop(t+1.5)}catch(e){}});this.g=null;}
     },
-    stopLoops(){this.engine.stop();this.space.stop();}
+    /* Grodan: studsigt hopp */
+    hop(){if(!isOn())return;tone(260,0,.18,'sine',.14,720);tone(520,0,.12,'triangle',.05,1100);},
+    /* Grodan kväker: två korta, raspiga "kvack" */
+    croak(n){if(!isOn())return;const c=ac();if(!c)return;for(let i=0;i<(n||2);i++)croakPulse(c,i*.16);},
+    /* Plask när näckrosbladet sjunker */
+    splash(){if(!isOn())return;const c=ac();if(!c)return;noiseBurst(c,0,.5,1400,.9,.3,180);tone(400,.02,.25,'sine',.06,90);},
+    /* Tungan fångar en fluga */
+    slurp(){if(!isOn())return;tone(500,0,.1,'sine',.1,1400);tone(1400,.1,.08,'sine',.06,700);},
+    /* Vattenporl i bakgrunden med små bubblor */
+    water:{
+      start(){if(!isOn()||this.g)return;const c=ac();if(!c)return;
+        const g=c.createGain();g.gain.setValueAtTime(0.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.06,c.currentTime+1.5);g.connect(c.destination);
+        const n=c.createBufferSource();n.buffer=noiseBuf(c);n.loop=true;const f=c.createBiquadFilter();f.type='lowpass';f.frequency.value=520;
+        const l=c.createOscillator(),lg=c.createGain();l.frequency.value=.18;lg.gain.value=220;l.connect(lg);lg.connect(f.frequency);
+        n.connect(f).connect(g);n.start();l.start();
+        const bub=()=>{if(!this.g)return;const t=c.currentTime,o=c.createOscillator(),bg=c.createGain(),fr=500+Math.random()*700;
+          o.type='sine';o.frequency.setValueAtTime(fr,t);o.frequency.exponentialRampToValueAtTime(fr*2.2,t+.06);
+          bg.gain.setValueAtTime(0.0001,t);bg.gain.exponentialRampToValueAtTime(.05,t+.01);bg.gain.exponentialRampToValueAtTime(0.0001,t+.08);
+          o.connect(bg).connect(c.destination);o.start(t);o.stop(t+.1);this.timer=setTimeout(bub,700+Math.random()*1600);};
+        Object.assign(this,{g,nodes:[n,l]});this.timer=setTimeout(bub,900);},
+      stop(){if(!this.g)return;clearTimeout(this.timer);const c=ac(),t=c.currentTime;this.g.gain.setTargetAtTime(0.0001,t,.25);this.nodes.forEach(x=>{try{x.stop(t+1.2)}catch(e){}});this.g=null;}
+    },
+    stopLoops(){this.engine.stop();this.space.stop();this.water.stop();}
   };
+  function croakPulse(c,start){
+    const t=c.currentTime+start,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain(),am=c.createOscillator(),ag=c.createGain();
+    o.type='sawtooth';o.frequency.setValueAtTime(115,t);o.frequency.exponentialRampToValueAtTime(80,t+.12);
+    f.type='bandpass';f.frequency.value=650;f.Q.value=2.5;
+    am.frequency.value=38;ag.gain.value=.5;am.connect(ag);ag.connect(g.gain);
+    g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(.35,t+.015);g.gain.exponentialRampToValueAtTime(0.0001,t+.13);
+    o.connect(f).connect(g).connect(c.destination);o.start(t);am.start(t);o.stop(t+.16);am.stop(t+.16);
+  }
   let nb=null;
   function noiseBuf(c){if(nb)return nb;nb=c.createBuffer(1,c.sampleRate*2,c.sampleRate);const d=nb.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;return nb;}
   function noiseBurst(c,start,dur,freq,q,vol,toFreq){
