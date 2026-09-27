@@ -69,6 +69,8 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .spacebtns button{flex:1;height:64px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.7rem;font-weight:800}
 .spacebtns .fire{flex:1.4;background:#E5484D;color:#fff;box-shadow:0 4px 0 #B8323A;font-size:1.3rem}
 .spacebtns button:active{transform:translateY(3px)}
+.gamecard.frog{background:linear-gradient(135deg,#2BB673,#17AFC4);box-shadow:0 6px 0 #1E8A55;margin-top:14px}
+.gamecard.frog:active{box-shadow:0 3px 0 #1E8A55}
 /* Memory */
 .memtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}
 .memtop .quit{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-size:1.2rem;font-weight:800}
@@ -126,6 +128,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard mem" id="btnMem"><span class="pic cards3">🃏</span><span><b>Memory</b><small>Vänd korten och hitta paren: uppgiften och svaret.</small></span></button>
   <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Kör i filen med rätt svar och ta dig i mål!</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
+  <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
   <div class="soon">Fler spel kommer!</div>
 </div>
 
@@ -134,6 +137,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <h2>Vad vill du räkna med?</h2>
   <div class="cats" id="cats"></div>
   <div class="tables" id="tables" hidden><p id="tablesTitle">Vilka tabeller?</p><div class="chips" id="chips"></div></div>
+  <div class="laneopt" id="frogOpt" hidden><p>Hur är vattnet?</p><div class="chips" id="frogChips"><button data-m="lugnt">Lugnt vatten</button><button data-m="strom">Strömt vatten (svårare)</button></div></div>
   <div class="laneopt" id="laneOpt" hidden><p>Hur många filer?</p><div class="chips" id="laneChips"><button data-l="3">3 filer</button><button data-l="4">4 filer (svårare)</button></div></div>
   <button class="go" id="btnStart">Flyg iväg! 🦉</button>
 </div>
@@ -265,14 +269,18 @@ function gen(){
 function showOnly(id){["menu","choose","game","mem","result"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);}
 $("btnFly").onclick=()=>{game="fly";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
+$("btnFrog").onclick=()=>{game="frog";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
+$("frogChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.frogMode=b.dataset.m;save();renderChoose();};
 $("btnSpace").onclick=()=>{game="space";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("btnCar").onclick=()=>{game="car";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("laneChips").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.lanes=+b.dataset.l;save();renderChoose();};
 $("backMenu").onclick=()=>showOnly("menu");
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function renderChoose(){
-  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):(data.mem=data.mem||{});
-  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":"Börja spela! 🃏";
+  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):(data.mem=data.mem||{});
+  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":"Börja spela! 🃏";
+  $("frogOpt").hidden=game!=="frog";
+  $("frogChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.frogMode||"lugnt")));
   $("laneOpt").hidden=game!=="car";
   $("laneChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.l===(data.lanes||3)));
   $("cats").innerHTML=CATS.filter(c=>game==="mem"||!c.memOnly).map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best?`<small>Rekord: ${r.best} ${game==="mem"?"drag":"rätt"}</small>`:""}</button>`;}).join("");
@@ -284,7 +292,7 @@ function renderChoose(){
 }
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;if(cat!==b.dataset.c)tables.clear();cat=b.dataset.c;renderChoose();};
 $("chips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;if(!t)tables.clear();else tables.has(t)?tables.delete(t):tables.add(t);renderChoose();};
-const startCurrent=()=>game==="fly"?startGame():game==="car"?startCar():game==="space"?startSpace():startMem();
+const startCurrent=()=>game==="fly"?startGame():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():startMem();
 $("btnStart").onclick=()=>{data.cat=cat;data.tables=[...tables];save();startCurrent();};
 
 /* ---------- Spelet ---------- */
@@ -298,7 +306,7 @@ const owlX=()=>W*0.2,owlS=()=>Math.min(H*0.26,120);
 const gateW=()=>Math.min(W*0.24,130),gateH=()=>H*0.2;
 
 function startGame(){
-  OPTN=3;C=null;cancelAnimationFrame(craf);stopSpace();window.Ljud&&Ljud.stopLoops();$("carBtns").hidden=true;$("hint").textContent="Tryck högt, i mitten eller lågt för att flyga dit.";
+  OPTN=3;C=null;cancelAnimationFrame(craf);stopSpace();stopFrog();window.Ljud&&Ljud.stopLoops();$("carBtns").hidden=true;$("hint").textContent="Tryck högt, i mitten eller lågt för att flyga dit.";
   showOnly("game");resize();
   G={hearts:3,score:0,lane:1,y:laneY(1),vy:0,t:0,col:null,nextAt:0,shake:0,parts:[],bg:0,clouds:Array.from({length:6},()=>({x:Math.random()*W,y:Math.random()*H*.9,s:.5+Math.random()*.8})),over:false,running:false,last:0};
   hud();$("q").innerHTML="";$("q").className="q";
@@ -317,11 +325,11 @@ function spawn(){
   G.col={x:W+gateW(),vals:task.opts,ans:task.a,resolved:false,hit:-1,ok:false,speed:(W+gateW()-owlX())/travel};
 }
 function setLane(i){if(!G||G.over)return;const n=Math.max(0,Math.min(2,i));if(n!==G.lane)window.Ljud&&Ljud.flap();G.lane=n;}
-cv.addEventListener("pointerdown",e=>{if(C||A)return;const r=cv.getBoundingClientRect(),y=e.clientY-r.top;setLane(y<r.height/3?0:y<r.height*2/3?1:2);});
-document.addEventListener("keydown",e=>{if($("game").hidden||!G||C||A)return;
+cv.addEventListener("pointerdown",e=>{if(C||A||F)return;const r=cv.getBoundingClientRect(),y=e.clientY-r.top;setLane(y<r.height/3?0:y<r.height*2/3?1:2);});
+document.addEventListener("keydown",e=>{if($("game").hidden||!G||C||A||F)return;
   if(e.key==="ArrowUp"){e.preventDefault();setLane(G.lane-1);}else if(e.key==="ArrowDown"){e.preventDefault();setLane(G.lane+1);}
   else if(["1","2","3"].includes(e.key))setLane(+e.key-1);});
-$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();showOnly("choose");renderChoose();};
+$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();showOnly("choose");renderChoose();};
 
 function resolve(){
   const c=G.col;c.resolved=true;c.hit=G.lane;c.ok=c.vals[G.lane]===c.ans;
@@ -425,7 +433,7 @@ function carHud(){
 }
 function roadGeom(){const x0=W*.1,rw=W*.8,lw=rw/C.L;return{x0,rw,lw,cx:i=>x0+lw*(i+.5),carY:H*.8,carW:Math.min(lw*.7,74),signH:Math.min(H*.1,58)};}
 function startCar(){
-  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();
+  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();stopFrog();
   OPTN=data.lanes||3;
   $("carBtns").hidden=false;$("hint").textContent="Byt fil med pilarna. Vet du svaret? Tryck på 🚀 Turbo!";
   showOnly("game");resize();
@@ -444,7 +452,7 @@ function carSpawn(){
   C.gate={y:-g.signH,vals:task.opts,ans:task.a,resolved:false,hit:-1,v:(g.carY-g.carW*.9+g.signH)/travel};
 }
 function carLane(i){if(!C||C.over)return;C.lane=Math.max(0,Math.min(C.L-1,i));}
-cv.addEventListener("pointerdown",e=>{if(!C||A)return;const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,g=roadGeom();carLane(Math.floor((x-g.x0)/g.lw));});
+cv.addEventListener("pointerdown",e=>{if(!C||A||F)return;const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,g=roadGeom();carLane(Math.floor((x-g.x0)/g.lw));});
 $("carL").onclick=()=>carLane(C.lane-1);$("carR").onclick=()=>carLane(C.lane+1);
 // Turbo: när man redan vet svaret och står i rätt fil kan man skynda sig fram till skyltarna
 function carTurbo(){if(!C||!C.running||C.over||!C.gate||C.gate.resolved||C.gate.turbo)return;C.gate.turbo=true;C.boost=1.2;window.Ljud&&Ljud.whoosh();}
@@ -546,7 +554,7 @@ function stopSpace(){if(A)A.over=true;cancelAnimationFrame(araf);A=null;$("space
 function spaceHud(){$("hearts").innerHTML=[0,1,2].map(i=>shield(i<A.shields)).join("");$("score").textContent=`${A.score} / ${GOAL}`;$("progFill").style.width=(A.score/GOAL*100)+"%";}
 const shipPos=()=>({x:W/2,y:H*.9});
 function startSpace(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();
   OPTN=4;$("carBtns").hidden=true;$("spaceBtns").hidden=false;$("hint").textContent="Tryck på en sten för att sikta och skjuta, eller vrid kanonen och tryck Skjut!";
   showOnly("game");resize();
   A={shields:3,score:0,t:0,ang:0,rocks:[],shots:[],parts:[],stars:Array.from({length:70},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.4,tw:Math.random()*6})),
@@ -659,6 +667,158 @@ function finishSpace(won){
   $("rTitle").textContent=won?(st===3?"Rymden är räddad, utan en skråma!":"Rymden är räddad!"):"Skölden tog slut";
   $("rBig").innerHTML=st?starHtml(st):`${s} rätt`;
   $("rSub").textContent=(won?`${s} rätt stenar sprängda.`:`Du sprängde ${s} rätt stenar.`)+(rec?" Nytt rekord!":data.space[cat].best?` Ditt rekord är ${data.space[cat].best} rätt.`:"")+(!won&&s<10?" Med 10 rätt får du en stjärna.":"");
+  showOnly("result");if(won||rec){window.Ljud&&Ljud.fanfare();confetti();}
+}
+
+/* ---------- Grodhoppet ---------- */
+let F=null,fraf=0;
+function stopFrog(){if(F)F.over=true;cancelAnimationFrame(fraf);F=null;window.Ljud&&Ljud.water.stop();}
+const ROWS=5;
+function frogGeom(){const top=H*.11,bot=H*.9,gap=(bot-top)/(ROWS+1);return{top,bot,gap,rowY:i=>bot-(i+1)*gap,padR:Math.min(W*.12,gap*.42,48)};}
+function startFrog(){
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();
+  OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("hint").textContent="Tryck på näckrosbladet med rätt svar. Fånga flugorna om du hinner!";
+  showOnly("game");resize();
+  F={lives:3,score:0,river:0,r:-1,t:0,rows:[],drift:data.frogMode==="strom",frog:{x:W/2,y:0,on:null},jump:null,sink:0,parts:[],glow:null,glowT:0,
+     flies:0,fly:null,tongue:null,busy:true,over:false,running:false,last:performance.now(),ripple:0};
+  buildRiver();frogHud();$("q").innerHTML="";$("q").className="q";
+  const c=$("count"),steps=["3","2","1","Hoppa!"];let i=0;c.hidden=false;
+  (function tick(){if(!F||F.over){c.hidden=true;return;}if(i<steps.length){c.textContent=steps[i++];setTimeout(tick,600);}else{c.hidden=true;F.running=true;F.last=performance.now();frogQuestion();window.Ljud&&Ljud.water.start();}})();
+  fraf=requestAnimationFrame(frogFrame);
+}
+function frogHud(){$("hearts").textContent="❤️".repeat(F.lives)+"🤍".repeat(3-F.lives);$("score").textContent=`${F.score} / ${GOAL}`;$("progFill").style.width=(F.score/GOAL*100)+"%";}
+function buildRiver(){
+  const g=frogGeom();
+  F.rows=Array.from({length:ROWS},(_,i)=>({i,y:g.rowY(i),pads:[0,1,2].map(j=>({j,base:W*(.2+j*.3)+(Math.random()-.5)*W*.05,phase:Math.random()*6.28,val:null,sink:0,wob:0}))}));
+  F.r=-1;F.frog.on=null;F.frog.x=W/2;F.frog.y=H*.95;
+}
+const padX=(p,row)=>p.base+(F.drift?Math.sin(F.t*(.55+F.score*.02)+p.phase+row.i)*W*.075:0);
+function frogQuestion(){
+  const row=F.rows[F.r+1];if(!row)return;
+  const task=gen();F.task=task;row.pads.forEach((p,k)=>{p.val=task.opts[k];p.sink=0;p.wob=0;});
+  $("q").innerHTML=task.q+"<span>= ?</span>";$("q").className="q";F.busy=false;
+}
+function frogTap(x,y){
+  if(!F||!F.running||F.over)return;
+  if(F.fly&&Math.hypot(x-F.fly.x,y-F.fly.y)<36){F.tongue={t:0,x:F.fly.x,y:F.fly.y};F.fly=null;F.flies++;window.Ljud&&Ljud.slurp();
+    for(let i=0;i<10;i++)F.parts.push({x,y,vx:(Math.random()-.5)*160,vy:(Math.random()-.5)*160,life:.6,c:"#FFC93C"});return;}
+  if(F.busy||F.jump)return;
+  const row=F.rows[F.r+1],g=frogGeom();if(!row)return;
+  let best=null,bd=1e9;row.pads.forEach(p=>{const d=Math.hypot(x-padX(p,row),y-row.y);if(d<bd){bd=d;best=p;}});
+  if(best&&bd<g.padR*1.6)hopTo(best,row);
+}
+function hopTo(pad,row){F.busy=true;F.jump={fx:F.frog.x,fy:F.frog.y,pad,row,t:0,dur:.45};window.Ljud&&Ljud.hop();}
+cv.addEventListener("pointerdown",e=>{if(!F)return;const r=cv.getBoundingClientRect();frogTap((e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H);});
+document.addEventListener("keydown",e=>{if(!F||$("game").hidden)return;if(["1","2","3"].includes(e.key)){const row=F.rows[F.r+1];if(!row||F.busy||F.jump)return;
+  const ord=row.pads.slice().sort((a,b)=>padX(a,row)-padX(b,row));hopTo(ord[+e.key-1],row);}});
+function land(pad,row){
+  if(pad.val===F.task.a){
+    F.r++;F.frog.on=pad;F.score++;pad.wob=.6;window.Ljud&&Ljud.croak(2);$("q").className="q ok";frogHud();
+    row.pads.forEach(p=>p.val=null);
+    for(let i=0;i<14;i++)F.parts.push({x:padX(pad,row),y:row.y,vx:(Math.random()-.5)*200,vy:-Math.random()*180,life:.7,c:pickOne(["#7CF0B1","#fff","#FFC93C"])});
+    if(!F.fly&&Math.random()<.3)F.fly={cx:Math.min(W-40,padX(pad,row)+70),cy:row.y-50,t:0,life:3.2,x:0,y:0};
+    if(F.score>=GOAL){F.over=true;setTimeout(()=>{hopToBank();setTimeout(()=>finishFrog(true),1100);},450);return;}
+    if(F.r===ROWS-1){setTimeout(()=>{hopToBank();setTimeout(()=>{F.river++;buildRiver();frogQuestion();},1300);},450);}
+    else setTimeout(frogQuestion,350);
+  }else{
+    pad.sink=.001;F.sink=.001;F.lives--;frogHud();window.Ljud&&Ljud.splash();
+    for(let i=0;i<22;i++)F.parts.push({x:padX(pad,row),y:row.y,vx:(Math.random()-.5)*240,vy:-Math.random()*240,life:.8,c:pickOne(["#9CD7FF","#fff","#5EB8FF"])});
+    F.glow=row.pads.find(p=>p.val===F.task.a);F.glowT=1.6;
+    $("q").innerHTML=F.task.q+`<span>= ${F.task.a}</span>`;$("q").className="q bad";
+    if(F.lives<=0){F.over=true;setTimeout(()=>finishFrog(false),1400);return;}
+    setTimeout(()=>{if(!F)return;F.sink=0;const g=frogGeom();   // grodan simmar tillbaka
+      if(F.frog.on){const prow=F.rows[F.r];F.frog.x=padX(F.frog.on,prow);F.frog.y=prow.y;}else{F.frog.x=W/2;F.frog.y=H*.95;}
+      setTimeout(frogQuestion,250);},1300);
+  }
+}
+function hopToBank(){if(!F)return;F.jump={fx:F.frog.x,fy:F.frog.y,bank:true,t:0,dur:.5};window.Ljud&&Ljud.hop();
+  setTimeout(()=>{if(!F)return;window.Ljud&&Ljud.croak(3);$("q").innerHTML="Över floden! 🎉";$("q").className="q ok";
+    for(let i=0;i<40;i++)F.parts.push({x:W/2,y:H*.05,vx:(Math.random()-.5)*400,vy:Math.random()*200,life:1,c:pickOne(["#FFC93C","#FF5FA2","#7CF0B1","#3D8BFD"])});},500);}
+function frogFrame(now){
+  if(!F)return;const dt=Math.min(.05,(now-F.last)/1000);F.last=now;
+  if(F.running&&!document.hidden){
+    if(window.Ljud&&!F.over&&!Ljud.water.g)Ljud.water.start();
+    F.t+=dt;F.ripple+=dt;F.glowT=Math.max(0,F.glowT-dt);
+    F.rows.forEach(row=>row.pads.forEach(p=>{p.wob=Math.max(0,p.wob-dt);if(p.sink>0)p.sink=Math.min(1,p.sink+dt*1.4);}));
+    if(F.sink>0)F.sink=Math.min(1,F.sink+dt*1.2);
+    const j=F.jump;
+    if(j){j.t+=dt;const p=Math.min(1,j.t/j.dur);let tx,ty;
+      if(j.bank){tx=W/2;ty=H*.055;}else{tx=padX(j.pad,j.row);ty=j.row.y;}
+      F.frog.x=j.fx+(tx-j.fx)*p;F.frog.y=j.fy+(ty-j.fy)*p-Math.sin(p*Math.PI)*H*.07;F.frog.hop=Math.sin(p*Math.PI);
+      if(p>=1){F.jump=null;F.frog.hop=0;if(!j.bank)land(j.pad,j.row);}}
+    else if(F.frog.on&&F.sink===0){const row=F.rows[F.r];if(row){F.frog.x=padX(F.frog.on,row);F.frog.y=row.y;}}
+    if(F.fly){const f=F.fly;f.t+=dt;f.life-=dt;f.x=f.cx+Math.sin(f.t*3)*34;f.y=f.cy+Math.sin(f.t*6)*14;if(f.life<=0)F.fly=null;}
+    if(F.tongue){F.tongue.t+=dt;if(F.tongue.t>.28)F.tongue=null;}
+    F.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;});F.parts=F.parts.filter(p=>p.life>0);
+  }
+  drawFrogGame();fraf=requestAnimationFrame(frogFrame);
+}
+function drawFrog(x,y,S,alpha,hop){
+  ctx.save();ctx.globalAlpha=alpha;ctx.translate(x,y);const sc=1+.2*(hop||0);ctx.scale(sc,sc);
+  ctx.fillStyle="rgba(0,0,0,.18)";ctx.beginPath();ctx.ellipse(0,S*.42,S*.5,S*.12,0,0,7);ctx.fill();
+  ctx.fillStyle="#2E9E4F";[[-.5,.32],[.5,.32]].forEach(([a,b])=>{ctx.beginPath();ctx.ellipse(a*S,b*S,S*.2,S*.1,0,0,7);ctx.fill();});
+  ctx.fillStyle="#4CBB5A";ctx.beginPath();ctx.ellipse(0,0,S*.55,S*.42,0,0,7);ctx.fill();
+  ctx.fillStyle="#BFF0C8";ctx.beginPath();ctx.ellipse(0,S*.12,S*.32,S*.24,0,0,7);ctx.fill();
+  const ex=S*.26,ey=-S*.36;
+  [-1,1].forEach(k=>{ctx.fillStyle="#4CBB5A";ctx.beginPath();ctx.arc(k*ex,ey,S*.17,0,7);ctx.fill();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(k*ex,ey,S*.12,0,7);ctx.fill();
+    ctx.fillStyle="#1D2B53";ctx.beginPath();ctx.arc(k*ex+S*.02,ey+S*.02,S*.06,0,7);ctx.fill();});
+  ctx.strokeStyle="#1D2B53";ctx.lineWidth=S*.04;ctx.lineCap="round";ctx.beginPath();ctx.arc(0,-S*.05,S*.22,.25,Math.PI-.25);ctx.stroke();
+  // ugglans glasögon och hatt
+  const gl=owlCfg.glasses,ht=owlCfg.hat;ctx.lineWidth=S*.05;
+  if(gl==="runda"||gl==="stjarn"||gl==="hjarta"){ctx.strokeStyle=gl==="runda"?"#FFC93C":gl==="stjarn"?"#FF5FA2":"#E5484D";[-1,1].forEach(k=>{ctx.beginPath();ctx.arc(k*ex,ey,S*.15,0,7);ctx.stroke();});ctx.beginPath();ctx.moveTo(-ex+S*.15,ey);ctx.lineTo(ex-S*.15,ey);ctx.stroke();}
+  if(gl==="sol"){ctx.fillStyle="#1D2B53";[-1,1].forEach(k=>{ctx.beginPath();ctx.ellipse(k*ex,ey,S*.17,S*.12,0,0,7);ctx.fill();});ctx.fillRect(-ex,ey-S*.02,2*ex,S*.04);}
+  const hy=ey-S*.2;
+  if(ht==="keps"){ctx.fillStyle="#E5484D";ctx.beginPath();ctx.arc(0,hy,S*.24,Math.PI,0);ctx.fill();ctx.fillStyle="#B8323A";ctx.fillRect(0,hy-S*.02,S*.36,S*.06);}
+  if(ht==="mossa"){ctx.fillStyle="#2BB673";ctx.beginPath();ctx.arc(0,hy,S*.24,Math.PI,0);ctx.fill();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,hy-S*.26,S*.07,0,7);ctx.fill();}
+  if(ht==="party"){ctx.fillStyle="#FFC93C";ctx.beginPath();ctx.moveTo(-S*.16,hy);ctx.lineTo(0,hy-S*.42);ctx.lineTo(S*.16,hy);ctx.fill();ctx.fillStyle="#FF5FA2";ctx.beginPath();ctx.arc(0,hy-S*.44,S*.05,0,7);ctx.fill();}
+  if(ht==="troll"){ctx.fillStyle="#3D5AFE";ctx.beginPath();ctx.moveTo(-S*.2,hy);ctx.lineTo(S*.06,hy-S*.5);ctx.lineTo(S*.2,hy);ctx.fill();ctx.fillStyle="#2A44C9";ctx.fillRect(-S*.28,hy-S*.03,S*.56,S*.06);}
+  if(ht==="krona"){ctx.fillStyle="#F2C230";ctx.beginPath();ctx.moveTo(-S*.2,hy);ctx.lineTo(-S*.2,hy-S*.2);ctx.lineTo(-S*.1,hy-S*.1);ctx.lineTo(0,hy-S*.26);ctx.lineTo(S*.1,hy-S*.1);ctx.lineTo(S*.2,hy-S*.2);ctx.lineTo(S*.2,hy);ctx.fill();}
+  ctx.restore();
+}
+function drawPad(x,y,R,pad,label,glow){
+  const s=1-pad.sink,w=1+Math.sin(pad.wob*20)*.06*pad.wob;if(s<=0)return;
+  ctx.save();ctx.translate(x,y);ctx.scale(s*w,s*w*.82);ctx.globalAlpha=Math.max(0,1-pad.sink*.6);
+  if(glow){ctx.fillStyle="rgba(124,240,177,.5)";ctx.beginPath();ctx.arc(0,0,R*1.3,0,7);ctx.fill();}
+  ctx.fillStyle="#2E9E4F";ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R+3,.35,Math.PI*2-.05);ctx.closePath();ctx.fill();
+  ctx.fillStyle="#48C06A";ctx.beginPath();ctx.moveTo(0,0);ctx.arc(0,0,R,.35,Math.PI*2-.05);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="rgba(0,0,0,.12)";ctx.lineWidth=2;[.9,2.2,3.6,5].forEach(a=>{ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(Math.cos(a)*R*.85,Math.sin(a)*R*.85);ctx.stroke();});
+  ctx.restore();
+  if(label!=null&&pad.sink===0){ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(x,y,R*.55,0,7);ctx.fill();
+    ctx.fillStyle="#1D2B53";ctx.font=`800 ${Math.round(R*.7)}px "Baloo 2", system-ui, sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(label),x,y+2);}
+}
+function drawFrogGame(){
+  if(!W)return;const g=frogGeom();
+  const wat=ctx.createLinearGradient(0,0,0,H);wat.addColorStop(0,"#2F8FD8");wat.addColorStop(1,"#5EB8FF");ctx.fillStyle=wat;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="rgba(255,255,255,.25)";ctx.lineWidth=2;
+  for(let i=0;i<14;i++){const y=(i*53+F.ripple*18)%H,x=(i*97)%W;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+14,y-5,x+28,y);ctx.stroke();}
+  // stränderna
+  ctx.fillStyle="#6BCB77";ctx.fillRect(0,0,W,g.top*.95);ctx.fillRect(0,g.bot+g.gap*.35,W,H);
+  ctx.fillStyle="#4FAF5E";for(let x=6;x<W;x+=22){ctx.beginPath();ctx.moveTo(x,g.top*.95);ctx.lineTo(x+5,g.top*.95-14);ctx.lineTo(x+10,g.top*.95);ctx.fill();
+    ctx.beginPath();ctx.moveTo(x,g.bot+g.gap*.35);ctx.lineTo(x+5,g.bot+g.gap*.35-14);ctx.lineTo(x+10,g.bot+g.gap*.35);ctx.fill();}
+  ctx.fillStyle="#fff";ctx.font=`800 ${Math.round(g.top*.32)}px "Baloo 2", system-ui, sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillText(`Flod ${F.river+1} av ${GOAL/ROWS}`,W/2,g.top*.45);
+  // näckrosblad
+  F.rows.forEach(row=>row.pads.forEach(p=>{drawPad(padX(p,row),row.y,g.padR,p,row.i===F.r+1?p.val:null,F.glowT>0&&p===F.glow);}));
+  // flugan och tungan
+  if(F.fly){const f=F.fly;ctx.fillStyle="rgba(255,255,255,.7)";ctx.beginPath();ctx.ellipse(f.x-6,f.y-5,7,4,-.5,0,7);ctx.ellipse(f.x+6,f.y-5,7,4,.5,0,7);ctx.fill();
+    ctx.fillStyle="#1D2B53";ctx.beginPath();ctx.arc(f.x,f.y,6,0,7);ctx.fill();}
+  if(F.tongue){ctx.strokeStyle="#FF5FA2";ctx.lineWidth=5;ctx.lineCap="round";const p=1-Math.abs(F.tongue.t/.28*2-1);
+    ctx.beginPath();ctx.moveTo(F.frog.x,F.frog.y-g.padR*.1);ctx.lineTo(F.frog.x+(F.tongue.x-F.frog.x)*p,F.frog.y+(F.tongue.y-F.frog.y)*p);ctx.stroke();}
+  // grodan
+  const S=g.padR*1.35;
+  if(F.sink>0){drawFrog(F.frog.x,F.frog.y+F.sink*20,S*(1-F.sink*.5),1-F.sink,0);}
+  else drawFrog(F.frog.x,F.frog.y,S,1,F.frog.hop);
+  F.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,7);ctx.fill();});ctx.globalAlpha=1;
+}
+function finishFrog(won){
+  cancelAnimationFrame(fraf);window.Ljud&&Ljud.water.stop();
+  const s=F.score,st=won?(F.lives===3?3:2):(s>=10?1:0),fl=F.flies;
+  data.frog=data.frog||{};const r=data.frog[cat]||{best:0,stars:0},rec=s>r.best;
+  data.frog[cat]={best:Math.max(r.best,s),stars:Math.max(r.stars,st)};data.frogPlayed=(data.frogPlayed||0)+1;if(won)data.frogWon=true;if(st===3)data.frogPerfect=true;
+  data.frogFlies=(data.frogFlies||0)+fl;save();F=null;
+  $("rTitle").textContent=won?(st===3?"Torrskodd över alla floder!":"Grodan kom över!"):"Grodan blev blöt";
+  $("rBig").innerHTML=st?starHtml(st):`${s} rätt`;
+  $("rSub").textContent=(won?`${s} rätt hopp.`:`Du fick ${s} rätt.`)+(fl?` Du fångade ${fl} ${fl===1?"fluga":"flugor"}! 🪰`:"")+(rec?" Nytt rekord!":data.frog[cat].best?` Ditt rekord är ${data.frog[cat].best} rätt.`:"")+(!won&&s<10?" Med 10 rätt får du en stjärna.":"");
   showOnly("result");if(won||rec){window.Ljud&&Ljud.fanfare();confetti();}
 }
 
