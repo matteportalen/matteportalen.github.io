@@ -205,8 +205,8 @@ const HN=['tolv','ett','två','tre','fyra','fem','sex','sju','åtta','nio','tio'
 const hn=h=>HN[((h%12)+12)%12||12];
 function phrase(h,m){           // h = timme 0–23, m = minuter (multipel av 5)
   const a=hn(h),b=hn(h+1);
-  return({0:`klockan ${a}`,5:`fem över ${a}`,10:`tio över ${a}`,15:`kvart över ${a}`,20:`tio i halv ${b}`,25:`fem i halv ${b}`,
-    30:`halv ${b}`,35:`fem över halv ${b}`,40:`tio över halv ${b}`,45:`kvart i ${b}`,50:`tio i ${b}`,55:`fem i ${b}`})[m];
+  return({0:`klockan ${a}`,5:`fem över ${a}`,10:`tio över ${a}`,15:`kvart över ${a}`,20:`tjugo över ${a}`,25:`fem i halv ${b}`,
+    30:`halv ${b}`,35:`fem över halv ${b}`,40:`tjugo i ${b}`,45:`kvart i ${b}`,50:`tio i ${b}`,55:`fem i ${b}`})[m];
 }
 const cap=s=>s[0].toUpperCase()+s.slice(1);
 const two=n=>String(n).padStart(2,'0');
@@ -243,7 +243,7 @@ const LEVELS=[
   {id:'halv',name:'Halv',desc:'Halv fyra, halv åtta …',mins:[30],ex:[3,30]},
   {id:'kvart',name:'Kvart',desc:'Kvart över och kvart i.',mins:[15,45],ex:[3,15]},
   {id:'fem',name:'Fem och tio',desc:'Fem över, tio i …',mins:[5,10,50,55],ex:[3,10]},
-  {id:'runthalv',name:'Runt halv',desc:'Fem i halv, fem över halv …',mins:[20,25,35,40],ex:[2,25]},
+  {id:'runthalv',name:'Tjugo och fem i halv',desc:'Tjugo över, fem i halv, fem över halv, tjugo i …',mins:[20,25,35,40],ex:[2,25]},
   {id:'dig',name:'Digital tid',desc:'24-timmarsklockan, t.ex. 15.45.',digital:true},
   {id:'mata',name:'Mäta tid',desc:'Hur lång tid tar det?',measure:true},
   {id:'mix',name:'Blanda allt',desc:'Alla sorters klockslag.',mins:[0,5,10,15,20,25,30,35,40,45,50,55],ex:[8,40],mix:true}
@@ -271,9 +271,9 @@ function explain(h,m){
   const a=hn(h),b=hn(h+1);
   if(m===0)return`Den långa visaren pekar rakt upp på 12. Då är klockan hel. Den korta visaren pekar på ${h%12||12}. Klockan är ${a}.`;
   if(m===30)return`Den långa visaren pekar rakt ner på 6. Då är det halv. Den korta visaren står mitt emellan ${h%12||12} och ${(h%12)+1}. Halv betyder halvvägs till ${b}.`;
-  if(m<30){if(m>=20)return`Den långa visaren är nästan nere vid 6, men inte riktigt. Det fattas ${30-m} minuter till halv. Alltså ${30-m===5?'fem':'tio'} i halv ${b}.`;
+  if(m<30){if(m===25)return`Den långa visaren är nästan nere vid 6, men inte riktigt. Det fattas 5 minuter till halv. Alltså fem i halv ${b}.`;
     return`Den långa visaren är på högra sidan, där står det "över". Den har gått ${m} minuter efter hel. Den korta visaren har precis gått förbi ${h%12||12}. Alltså ${phrase(h,m)}.`;}
-  if(m<=40)return`Den långa visaren har gått förbi 6, alltså förbi halv. Den har gått ${m-30} minuter till. Alltså ${phrase(h,m)}.`;
+  if(m===35)return`Den långa visaren har gått förbi 6, alltså förbi halv. Den har gått 5 minuter till. Alltså fem över halv ${b}.`;
   return`Den långa visaren är på vänstra sidan, där står det "i". Det fattas ${60-m} minuter tills klockan blir ${b}. Alltså ${phrase(h,m)}.`;
 }
 const helpAnalog=(h,m)=>()=>({fact:cap(phrase(h,m)),vis:clockSVG(h,m,{halves:true,ring:true}),tip:explain(h,m)});
