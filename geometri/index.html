@@ -244,16 +244,16 @@ function figKind(kind){
   if(kind==="punkt")body=dotLbl(p1,"A",true);
   else if(kind==="sträcka")body=LN(p1,p2)+dotLbl(p1,"A",true)+dotLbl(p2,"B",true);
   else if(kind==="stråle"){const e=edgePt(p2,ux,uy,W,H,pad),ang=Math.atan2(uy,ux)*180/Math.PI;
-    body=LN(p1,e)+arrowHead(e.x,e.y,ang)+dotLbl(p1,"A",true)+dotLbl(p2,"B",false);}
+    body=LN(p1,e)+arrowHead(e.x,e.y,ang)+dotLbl(p1,"A",true);}
   else{const e1=edgePt(p1,-ux,-uy,W,H,pad),e2=edgePt(p2,ux,uy,W,H,pad),a1=Math.atan2(-uy,-ux)*180/Math.PI,a2=Math.atan2(uy,ux)*180/Math.PI;
-    body=LN(e1,e2)+arrowHead(e1.x,e1.y,a1)+arrowHead(e2.x,e2.y,a2)+dotLbl(p1,"A",false)+dotLbl(p2,"B",false);}
+    body=LN(e1,e2)+arrowHead(e1.x,e1.y,a1)+arrowHead(e2.x,e2.y,a2);}
   return svg(body,`0 0 ${W} ${H}`);
 }
 const FIGNAME={punkt:"Punkt",sträcka:"Sträcka",stråle:"Stråle",linje:"Linje"};
 const FIGTIP={punkt:"En punkt är bara ett läge, ett ställe. Den har ingen längd.",
   sträcka:"En sträcka har två ändpunkter, här A och B. Den slutar i båda ändarna.",
-  stråle:"En stråle har en ändpunkt, här A, och fortsätter sedan hur långt som helst åt ett håll, genom B och vidare.",
-  linje:"En linje har ingen ändpunkt alls. Den fortsätter hur långt som helst åt båda hållen, genom både A och B."};
+  stråle:"En stråle har en ändpunkt, här A, och fortsätter sedan hur långt som helst åt ett håll, dit pilen pekar.",
+  linje:"En linje har ingen ändpunkt alls. Den fortsätter hur långt som helst åt båda hållen, dit pilarna pekar."};
 function genPunkt(){
   const kind=pickOne(["punkt","sträcka","stråle","linje"]),vis=figKind(kind),opts=shuffle(Object.values(FIGNAME));
   return{kind:"opts",instr:"Vad heter figuren?",speak:"Vad heter figuren?",html:vis,options:opts,answer:FIGNAME[kind],
