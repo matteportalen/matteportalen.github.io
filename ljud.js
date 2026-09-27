@@ -62,6 +62,14 @@
         Object.assign(this,{g,nodes});},
       stop(){if(!this.g)return;const c=ac(),t=c.currentTime;this.g.gain.setTargetAtTime(0.0001,t,.3);this.nodes.forEach(x=>{try{x.stop(t+1.5)}catch(e){}});this.g=null;}
     },
+    /* Kiosken: kassaapparat */
+    kaching(){if(!isOn())return;const c=ac();if(!c)return;noiseBurst(c,0,.08,3000,1,.12);tone(1760,.06,.35,'triangle',.12);tone(2637,.1,.45,'sine',.09);},
+    /* Tornbygget: klossen landar */
+    clonk(){if(!isOn())return;const c=ac();if(!c)return;tone(180,0,.22,'triangle',.22,110);tone(360,0,.08,'square',.05,200);noiseBurst(c,0,.12,900,1,.12);},
+    /* Kloss som ramlar ner */
+    fall(){if(!isOn())return;tone(700,0,.5,'sine',.08,120);},
+    /* Fåglar som kvittrar */
+    chirp(){if(!isOn())return;const b=2600+Math.random()*900;for(let i=0;i<3;i++)tone(b,i*.09,.07,'sine',.05,b*1.35);},
     /* Grodan: studsigt hopp */
     hop(){if(!isOn())return;tone(260,0,.18,'sine',.14,720);tone(520,0,.12,'triangle',.05,1100);},
     /* Grodan kväker: två korta, raspiga "kvack" */
