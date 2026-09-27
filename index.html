@@ -173,7 +173,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   </div>
 
   <nav class="cards" aria-label="Övningar">
-    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Nio spel! Flyg, kör, hoppa, bygg, segla och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
+    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Åtta spel! Flyg, kör, hoppa, bygg, segla och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="lillaplus/"><span class="tile sm" style="--c:#2BB673">+ −</span><span class="txt"><b>Lilla plus &amp; minus</b><small>Huvudräkning med tal upp till 10.</small><span class="badge" id="bLilla" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="tiotal/"><span class="tile" style="--c:#3D8BFD">10</span><span class="txt"><b>Tiotalsövergång</b><small>Räkna via tiotalet med tioruta och tallinje.</small><span class="badge" id="bTiotal" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="multiplikation/"><span class="tile" style="--c:#7B61FF">×</span><span class="txt"><b>Multiplikation</b><small>Tabellerna 1–10. Samla medaljer!</small><span class="badge" id="bMulti" hidden></span></span><span class="chev">›</span></a>
@@ -301,7 +301,7 @@ S.dRest=!!dv&&[...Object.keys(dv.race||{}),...Object.keys(dv.blitz||{})].some(k=
 const kl=get("mattespel-klockan-v1");S.kl=(kl&&kl.stars)||{};
 {const s=sum(S.kl);S.stars+=s;if(s)show("bKlocka",`⭐ ${s} stjärnor`)}
 const sp=get("mattespel-spel-v1");S.spel=sp||{fly:{},played:0,perfect:false};
-{const s=[...Object.values(S.spel.fly||{}),...Object.values(S.spel.mem||{}),...Object.values(S.spel.car||{}),...Object.values(S.spel.space||{}),...Object.values(S.spel.frog||{}),...Object.values(S.spel.tower||{}),...Object.values(S.spel.kang||{}),...Object.values(S.spel.skatt||{}),...Object.values(S.spel.kiosk||{})].reduce((a,r)=>a+(r.stars||0),0);S.stars+=s;
+{const s=[...Object.values(S.spel.fly||{}),...Object.values(S.spel.mem||{}),...Object.values(S.spel.car||{}),...Object.values(S.spel.space||{}),...Object.values(S.spel.frog||{}),...Object.values(S.spel.tower||{}),...Object.values(S.spel.skatt||{}),...Object.values(S.spel.kiosk||{})].reduce((a,r)=>a+(r.stars||0),0);S.stars+=s;
  const best=Math.max(0,...[...Object.values(S.spel.fly||{}),...Object.values(S.spel.car||{}),...Object.values(S.spel.space||{}),...Object.values(S.spel.frog||{})].map(r=>r.best||0));
  if(s)show("bSpel",`⭐ ${s} stjärnor`);else if(best)show("bSpel",`Rekord: ${best} rätt`);}
 const ge=get("mattespel-geometri-v1");S.geo=(ge&&ge.stars)||{};
@@ -489,8 +489,6 @@ const STICKERS=[
   ["nackros","🪷","Näckrosmästaren","Klara Grodhoppet utan att bli blöt en enda gång.",()=>!!S.spel.frogPerfect],
   ["bygg","🏗️","Byggmästaren","Bygg tornet ända upp till månen.",()=>!!S.spel.towerWon],
   ["mane","🌙","Månlandaren","Nå månen utan att en enda kloss ramlar.",()=>!!S.spel.towerPerfect],
-  ["kanguru","🦘","Hopp-proffset","Klara en runda i Känguruhoppet.",()=>!!S.spel.kangWon],
-  ["smarthopp","🎯","Smarthopparen","Hoppa smart minst 8 gånger i en runda Känguruhopp.",()=>!!S.spel.kangSmart],
   ["skatt","💰","Skattjägaren","Hitta skatten i Skattkartan.",()=>!!S.spel.skattWon],
   ["pirat","🏴‍☠️","Piratkaptenen","Hitta skatten utan ett enda fel.",()=>!!S.spel.skattPerfect],
   ["kiosk","🏪","Kioskbiträdet","Klara en dag i Kiosken.",()=>!!S.spel.kioskWon],
