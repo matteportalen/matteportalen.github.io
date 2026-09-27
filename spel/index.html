@@ -71,6 +71,26 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .spacebtns button:active{transform:translateY(3px)}
 .gamecard.frog{background:linear-gradient(135deg,#2BB673,#17AFC4);box-shadow:0 6px 0 #1E8A55;margin-top:14px}
 .gamecard.frog:active{box-shadow:0 3px 0 #1E8A55}
+.gamecard.tower{background:linear-gradient(180deg,#8FD3FF,#3D5AFE 60%,#141D3D);box-shadow:0 6px 0 #0B1026;margin-top:14px}
+.gamecard.tower:active{box-shadow:0 3px 0 #0B1026}
+#game.tower #cv{height:clamp(240px,40vh,420px)}
+.towerpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:620px;margin:8px auto 0;padding:0 12px}
+.towerpad button{height:50px;border-radius:14px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.6rem;font-weight:800}
+.towerpad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.towerpad .okb{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.3rem}
+.tans{display:inline-block;min-width:1.6em;padding:0 .15em;border-radius:12px;border:3px solid var(--accent);color:var(--accent);background:#EEF1FF;line-height:1.1}
+.gamecard.kang{background:linear-gradient(135deg,#FF9F43,#E5484D);box-shadow:0 6px 0 #B8323A;margin-top:14px}
+.gamecard.skatt{background:linear-gradient(135deg,#17AFC4,#1D2B53);box-shadow:0 6px 0 #0E1735;margin-top:14px}
+.gamecard.kiosk{background:linear-gradient(135deg,#FF5FA2,#7B61FF);box-shadow:0 6px 0 #4B3AA8;margin-top:14px}
+.gamecard.kang:active,.gamecard.skatt:active,.gamecard.kiosk:active{transform:translateY(3px)}
+.q{flex-wrap:wrap}
+.qnote{flex-basis:100%;font-size:.42em;line-height:1.2}
+.kangbtns{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:620px;margin:8px auto 0;padding:0 12px}
+.kangbtns button{height:56px;border-radius:14px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.4rem;font-weight:800}
+.kangbtns button.ten{background:#FFE7C7;color:#C96A0C}
+.kangbtns button.one{background:#E1ECFF;color:#2A58C9}
+.kangbtns .land{grid-column:1/-1;background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);height:52px}
+.kangbtns button:active{transform:translateY(3px)}
 /* Memory */
 .memtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}
 .memtop .quit{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-size:1.2rem;font-weight:800}
@@ -129,6 +149,10 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Kör i filen med rätt svar och ta dig i mål!</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
+  <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Varje rätt svar bygger tornet högre. Kommer ugglan ända upp till månen?</small></span></button>
+  <button class="gamecard kang" id="btnKang"><span class="pic cards3">🦘</span><span><b>Känguruhoppet</b><small>Hoppa på tallinjen med tiotal och ental tills du landar på svaret.</small></span></button>
+  <button class="gamecard skatt" id="btnSkatt"><span class="pic cards3">🏴‍☠️</span><span><b>Skattkartan</b><small>Segla från ö till ö och hitta skatten!</small></span></button>
+  <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Ugglans kiosk</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
   <div class="soon">Fler spel kommer!</div>
 </div>
 
@@ -148,6 +172,8 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="stage"><canvas id="cv" aria-label="Spelplan"></canvas><div class="overlay" id="count" hidden></div></div>
   <div class="carbtns" id="carBtns" hidden><button id="carL" aria-label="Byt fil åt vänster">◀</button><button class="turbo" id="carTurbo">🚀 Turbo</button><button id="carR" aria-label="Byt fil åt höger">▶</button></div>
   <div class="spacebtns" id="spaceBtns" hidden><button id="aimL" aria-label="Vrid kanonen åt vänster">↺</button><button class="fire" id="fireBtn">Skjut!</button><button id="aimR" aria-label="Vrid kanonen åt höger">↻</button></div>
+  <div class="towerpad" id="towerPad" hidden><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okb">OK</button></div>
+  <div class="kangbtns" id="kangBtns" hidden><button class="ten" data-d="-10">−10</button><button class="one" data-d="-1">−1</button><button class="one" data-d="1">+1</button><button class="ten" data-d="10">+10</button><button class="land" data-d="land">Landa här ✓</button></div>
   <p class="hint" id="hint">Tryck högt, i mitten eller lågt för att flyga dit.</p>
 </div>
 
@@ -241,7 +267,7 @@ const CATS=[
   {id:"plus10",name:"Plus upp till 10",t:"+",c:"#2BB673",desc:"Till exempel 3 + 5"},
   {id:"minus10",name:"Minus upp till 10",t:"−",c:"#FF6B6B",desc:"Till exempel 9 − 4"},
   {id:"tiotal",name:"Plus och minus till 20",t:"20",c:"#3D8BFD",desc:"Över tiotalet, t.ex. 8 + 5"},
-  {id:"hundra",name:"Plus och minus till 100",t:"100",c:"#17AFC4",desc:"Till exempel 36 + 27, 84 − 9"},
+  {id:"hundra",name:"Plus och minus till 100",t:"100",c:"#17AFC4",desc:"Till exempel 36 + 27, 84 − 9",noRush:true},
   {id:"multi",name:"Multiplikation",t:"×",c:"#7B61FF",desc:"Välj vilka tabeller",tables:true},
   {id:"div",name:"Division",t:"÷",c:"#FF5FA2",desc:"Välj vilka tal att dela med",tables:true},
   {id:"klocka",name:"Klockan",t:"🕒",c:"#F7C531",desc:"Klocka och klockslag",memOnly:true}
@@ -274,6 +300,10 @@ function gen(){
 function showOnly(id){["menu","choose","game","mem","result"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);}
 $("btnFly").onclick=()=>{game="fly";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
+$("btnKang").onclick=()=>{game="kang";renderChoose();showOnly("choose");};
+$("btnSkatt").onclick=()=>{game="skatt";renderChoose();showOnly("choose");};
+$("btnKiosk").onclick=()=>{game="kiosk";renderChoose();showOnly("choose");};
+$("btnTower").onclick=()=>{game="tower";if(cat==="klocka")cat="hundra";renderChoose();showOnly("choose");};
 $("btnFrog").onclick=()=>{game="frog";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("frogChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.frogMode=b.dataset.m;save();renderChoose();};
 $("btnSpace").onclick=()=>{game="space";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
@@ -282,13 +312,18 @@ $("laneChips").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;dat
 $("backMenu").onclick=()=>showOnly("menu");
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function renderChoose(){
-  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):(data.mem=data.mem||{});
-  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":"Börja spela! 🃏";
+  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="kang"?(data.kang=data.kang||{}):game==="skatt"?(data.skatt=data.skatt||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):(data.mem=data.mem||{});
+  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="kang"?"Hoppa iväg! 🦘":game==="skatt"?"Hissa seglen! ⛵":game==="kiosk"?"Öppna kiosken! 🏪":"Börja spela! 🃏";
   $("frogOpt").hidden=game!=="frog";
   $("frogChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.frogMode||"lugnt")));
   $("laneOpt").hidden=game!=="car";
   $("laneChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.l===(data.lanes||3)));
-  $("cats").innerHTML=CATS.filter(c=>game==="mem"||!c.memOnly).map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best?`<small>Rekord: ${r.best} ${game==="mem"?"drag":"rätt"}</small>`:""}</button>`;}).join("");
+  const rush=game==="fly"||game==="car";
+  let list=CATS.filter(c=>(game==="mem"||!c.memOnly)&&!(rush&&c.noRush));
+  if(game==="kang")list=CATS.filter(c=>["plus10","minus10","tiotal","hundra"].includes(c.id));
+  if(game==="kiosk")list=[{id:"tiotal",name:"Priser upp till 20 kr",t:"20",c:"#FF9F43",desc:"Handla och räkna växel med små pengar"},{id:"hundra",name:"Priser upp till 100 kr",t:"100",c:"#17AFC4",desc:"Större summor och växel upp till 100 kr"}];
+  if(!list.find(c=>c.id===cat))cat=list[0].id;
+  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&!["tower","kang","skatt","kiosk"].includes(game)?`<small>Rekord: ${r.best} ${game==="mem"?"drag":"rätt"}</small>`:""}</button>`;}).join("");
   const C=CATS.find(c=>c.id===cat);$("tables").hidden=!C.tables;
   if(C.tables){
     $("tablesTitle").textContent=cat==="multi"?"Vilka tabeller?":"Vilka tal vill du dela med?";
@@ -297,7 +332,7 @@ function renderChoose(){
 }
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;if(cat!==b.dataset.c)tables.clear();cat=b.dataset.c;renderChoose();};
 $("chips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;if(!t)tables.clear();else tables.has(t)?tables.delete(t):tables.add(t);renderChoose();};
-const startCurrent=()=>game==="fly"?startGame():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():startMem();
+const startCurrent=()=>game==="fly"?startGame():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="kang"?startKang():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();
 $("btnStart").onclick=()=>{data.cat=cat;data.tables=[...tables];save();startCurrent();};
 
 /* ---------- Spelet ---------- */
@@ -311,7 +346,7 @@ const owlX=()=>W*0.2,owlS=()=>Math.min(H*0.26,120);
 const gateW=()=>Math.min(W*0.24,130),gateH=()=>H*0.2;
 
 function startGame(){
-  OPTN=3;C=null;cancelAnimationFrame(craf);stopSpace();stopFrog();window.Ljud&&Ljud.stopLoops();$("carBtns").hidden=true;$("hint").textContent="Tryck högt, i mitten eller lågt för att flyga dit.";
+  OPTN=3;C=null;cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopKang();stopSkatt();stopKiosk();window.Ljud&&Ljud.stopLoops();$("carBtns").hidden=true;$("hint").textContent="Tryck högt, i mitten eller lågt för att flyga dit.";
   showOnly("game");resize();
   G={hearts:3,score:0,lane:1,y:laneY(1),vy:0,t:0,col:null,nextAt:0,shake:0,parts:[],bg:0,clouds:Array.from({length:6},()=>({x:Math.random()*W,y:Math.random()*H*.9,s:.5+Math.random()*.8})),over:false,running:false,last:0};
   hud();$("q").innerHTML="";$("q").className="q";
@@ -330,11 +365,11 @@ function spawn(){
   G.col={x:W+gateW(),vals:task.opts,ans:task.a,resolved:false,hit:-1,ok:false,speed:(W+gateW()-owlX())/travel};
 }
 function setLane(i){if(!G||G.over)return;const n=Math.max(0,Math.min(2,i));if(n!==G.lane)window.Ljud&&Ljud.flap();G.lane=n;}
-cv.addEventListener("pointerdown",e=>{if(C||A||F)return;const r=cv.getBoundingClientRect(),y=e.clientY-r.top;setLane(y<r.height/3?0:y<r.height*2/3?1:2);});
-document.addEventListener("keydown",e=>{if($("game").hidden||!G||C||A||F)return;
+cv.addEventListener("pointerdown",e=>{if(C||A||F||T||KG||SK||KI)return;const r=cv.getBoundingClientRect(),y=e.clientY-r.top;setLane(y<r.height/3?0:y<r.height*2/3?1:2);});
+document.addEventListener("keydown",e=>{if($("game").hidden||!G||C||A||F||T||KG||SK||KI)return;
   if(e.key==="ArrowUp"){e.preventDefault();setLane(G.lane-1);}else if(e.key==="ArrowDown"){e.preventDefault();setLane(G.lane+1);}
   else if(["1","2","3"].includes(e.key))setLane(+e.key-1);});
-$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();showOnly("choose");renderChoose();};
+$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopKang();stopSkatt();stopKiosk();showOnly("choose");renderChoose();};
 
 function resolve(){
   const c=G.col;c.resolved=true;c.hit=G.lane;c.ok=c.vals[G.lane]===c.ans;
@@ -438,7 +473,7 @@ function carHud(){
 }
 function roadGeom(){const x0=W*.1,rw=W*.8,lw=rw/C.L;return{x0,rw,lw,cx:i=>x0+lw*(i+.5),carY:H*.8,carW:Math.min(lw*.7,74),signH:Math.min(H*.1,58)};}
 function startCar(){
-  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();stopFrog();
+  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();stopFrog();stopTower();stopKang();stopSkatt();stopKiosk();
   OPTN=data.lanes||3;
   $("carBtns").hidden=false;$("hint").textContent="Byt fil med pilarna. Vet du svaret? Tryck på 🚀 Turbo!";
   showOnly("game");resize();
@@ -559,7 +594,7 @@ function stopSpace(){if(A)A.over=true;cancelAnimationFrame(araf);A=null;$("space
 function spaceHud(){$("hearts").innerHTML=[0,1,2].map(i=>shield(i<A.shields)).join("");$("score").textContent=`${A.score} / ${GOAL}`;$("progFill").style.width=(A.score/GOAL*100)+"%";}
 const shipPos=()=>({x:W/2,y:H*.9});
 function startSpace(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKang();stopSkatt();stopKiosk();
   OPTN=4;$("carBtns").hidden=true;$("spaceBtns").hidden=false;$("hint").textContent="Tryck på en sten för att sikta och skjuta, eller vrid kanonen och tryck Skjut!";
   showOnly("game");resize();
   A={shields:3,score:0,t:0,ang:0,rocks:[],shots:[],parts:[],stars:Array.from({length:70},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.4,tw:Math.random()*6})),
@@ -681,7 +716,7 @@ function stopFrog(){if(F)F.over=true;cancelAnimationFrame(fraf);F=null;window.Lj
 const ROWS=5;
 function frogGeom(){const top=H*.11,bot=H*.9,gap=(bot-top)/(ROWS+1);return{top,bot,gap,rowY:i=>bot-(i+1)*gap,padR:Math.min(W*.12,gap*.42,48)};}
 function startFrog(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKang();stopSkatt();stopKiosk();
   OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("hint").textContent="Tryck på näckrosbladet med rätt svar. Fånga flugorna om du hinner!";
   showOnly("game");resize();
   F={lives:3,score:0,river:0,r:-1,t:0,rows:[],drift:data.frogMode==="strom",frog:{x:W/2,y:0,on:null},jump:null,sink:0,parts:[],glow:null,glowT:0,
@@ -825,6 +860,377 @@ function finishFrog(won){
   $("rBig").innerHTML=st?starHtml(st):`${s} rätt`;
   $("rSub").textContent=(won?`${s} rätt hopp.`:`Du fick ${s} rätt.`)+(fl?` Du fångade ${fl} ${fl===1?"fluga":"flugor"}! 🪰`:"")+(rec?" Nytt rekord!":data.frog[cat].best?` Ditt rekord är ${data.frog[cat].best} rätt.`:"")+(!won&&s<10?" Med 10 rätt får du en stjärna.":"");
   showOnly("result");if(won||rec){window.Ljud&&Ljud.fanfare();confetti();}
+}
+
+/* ---------- Tornbygget ---------- */
+let T=null,traf=0;
+const TGOAL=20;
+const ZONES=[{from:0,name:"🌳 Marken"},{from:5,name:"☁️ Molnen"},{from:10,name:"✈️ Högt upp"},{from:15,name:"🚀 Rymden"}];
+const zoneOf=n=>ZONES.filter(z=>n>=z.from).pop();
+const BLOCKCOL=["#FF6B6B","#FF9F43","#F7C531","#2BB673","#17AFC4","#3D8BFD","#7B61FF","#FF5FA2"];
+function stopTower(){if(T)T.over=true;cancelAnimationFrame(traf);T=null;$("towerPad").hidden=true;$("game").classList.remove("tower");window.Ljud&&Ljud.space.stop();clearTimeout(chirpT);}
+let chirpT=0;
+function chirpLoop(){clearTimeout(chirpT);if(!T||T.over)return;const z=T.n;if(z>=5&&z<=11&&!document.hidden)window.Ljud&&Ljud.chirp();chirpT=setTimeout(chirpLoop,1800+Math.random()*2500);}
+function towerGeom(){const bh=Math.min(H*.085,44),bw=Math.min(W*.36,150),ground=H*.9,moonR=Math.min(W*.3,130);return{bh,bw,ground,moonR};}
+function startTower(){
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKang();stopSkatt();stopKiosk();
+  OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("kangBtns").hidden=true;$("towerPad").hidden=false;$("game").classList.add("tower");
+  $("hint").textContent="Skriv svaret och tryck OK. Varje rätt svar bygger tornet högre!";
+  showOnly("game");resize();
+  T={n:0,miss:0,first:true,input:"",task:null,blocks:[],drop:null,fall:null,cam:0,wob:0,parts:[],t:0,over:false,done:false,owlY:0,owlHop:0,zoneMsg:null,
+     birds:Array.from({length:5},()=>({x:Math.random(),lvl:6.5+Math.random()*4.5,v:.04+Math.random()*.05,ph:Math.random()*6})),
+     clouds:Array.from({length:9},()=>({x:Math.random(),lvl:6+Math.random()*6,s:.6+Math.random()*.8})),
+     stars:Array.from({length:90},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.5,tw:Math.random()*6})),
+     ship:{x:-.2},last:performance.now()};
+  towerHud();towerTask();traf=requestAnimationFrame(towerFrame);chirpLoop();
+}
+function towerHud(){$("hearts").textContent=zoneOf(T.n).name;$("score").textContent=`${T.n} / ${TGOAL}`;$("progFill").style.width=(T.n/TGOAL*100)+"%";}
+function towerTask(){T.task=gen();T.input="";T.first=true;T.busy=false;towerQ();}
+function towerQ(state){$("q").innerHTML=T.task.q+`<span>=</span><span class="tans${state?" "+state:""}">${T.input||"?"}</span>`;$("q").className="q"+(state==="ok"?" ok":state==="bad"?" bad":"");}
+function towerKey(k){
+  if(!T||T.busy||T.over)return;
+  if(k==="del")T.input=T.input.slice(0,-1);
+  else if(k==="ok"){if(T.input!=="")towerSubmit();return;}
+  else if(T.input.length<3)T.input+=k;
+  towerQ();
+}
+const padGame=()=>T?towerKey:SK?skattKey:KI?kioskKey:null;
+$("towerPad").onclick=e=>{const b=e.target.closest("button"),f=padGame();if(b&&f)f(b.dataset.k);};
+document.addEventListener("keydown",e=>{const f=padGame();if(!f||$("game").hidden)return;if(/^\d$/.test(e.key))f(e.key);else if(e.key==="Backspace"){e.preventDefault();f("del");}else if(e.key==="Enter"){e.preventDefault();f("ok");}});
+function towerSubmit(){
+  const g=towerGeom(),ok=+T.input===T.task.a;T.busy=true;
+  const col=BLOCKCOL[T.n%BLOCKCOL.length],x=W/2+(Math.random()-.5)*14,topY=g.ground-T.n*g.bh;
+  if(ok){
+    towerQ("ok");
+    T.drop={x,col,y:topY-H*.7,ty:topY-g.bh,t:0};
+  }else{
+    if(T.first)T.miss++;T.first=false;window.Ljud&&Ljud.bad();towerQ("bad");
+    T.fall={x,col,y:topY-H*.5,vy:0,vx:(Math.random()<.5?-1:1)*140,rot:0,land:topY-g.bh,phase:0};
+    setTimeout(()=>{if(!T)return;$("q").innerHTML=T.task.q+`<span>= ${T.task.a}</span>`;$("q").className="q bad";},500);
+    setTimeout(()=>{if(!T||T.over)return;towerTask();},2100);
+  }
+}
+function towerLanded(){
+  const g=towerGeom();T.blocks.push({x:T.drop.x,col:T.drop.col});T.drop=null;T.n++;T.wob=.5;T.owlHop=1;window.Ljud&&Ljud.clonk();
+  for(let i=0;i<14;i++)T.parts.push({x:W/2,y:g.ground-T.n*g.bh+T.cam,vx:(Math.random()-.5)*260,vy:-Math.random()*160,life:.6,c:"#fff"});
+  const z=zoneOf(T.n);if(z.from===T.n&&T.n>0){T.zoneMsg={txt:z.name,t:2.2};if(T.n===15&&window.Ljud)Ljud.space.start();}
+  towerHud();
+  if(T.n>=TGOAL){T.over=true;setTimeout(moonLanding,500);return;}
+  setTimeout(()=>{if(T&&!T.over)towerTask();},450);
+}
+function moonLanding(){if(!T)return;T.done=true;T.doneT=0;$("q").innerHTML="Ugglan når månen! 🌙";$("q").className="q ok";window.Ljud&&Ljud.fanfare();
+  setTimeout(()=>finishTower(),2600);}
+function towerFrame(now){
+  if(!T)return;const dt=Math.min(.05,(now-T.last)/1000);T.last=now;const g=towerGeom();
+  if(!document.hidden){
+    T.t+=dt;T.wob=Math.max(0,T.wob-dt);T.owlHop=Math.max(0,T.owlHop-dt*3);if(T.zoneMsg){T.zoneMsg.t-=dt;if(T.zoneMsg.t<=0)T.zoneMsg=null;}
+    const target=Math.max(0,H*.52-(g.ground-T.n*g.bh))+(T.done?g.moonR*.8:0);T.cam+=(target-T.cam)*Math.min(1,dt*3);
+    if(T.drop){T.drop.t+=dt;const p=Math.min(1,T.drop.t/.45);T.drop.cy=T.drop.y+(T.drop.ty-T.drop.y)*p*p;if(p>=1)towerLanded();}
+    if(T.fall){const f=T.fall;f.phase+=dt;if(f.phase<.4){f.cy=f.y+(f.land-f.y)*(f.phase/.4)**2;}else{if(!f.tipped){f.tipped=true;window.Ljud&&Ljud.fall();}f.vy+=900*dt;f.x+=f.vx*dt;f.cy+=f.vy*dt;f.rot+=dt*4*Math.sign(f.vx);}
+      if(f.cy+T.cam>H+80)T.fall=null;}
+    T.birds.forEach(b=>{b.x+=b.v*dt;if(b.x>1.15)b.x=-.15;});T.ship.x+=dt*.18;if(T.ship.x>1.3)T.ship.x=-.3;
+    if(T.done)T.doneT+=dt;
+    T.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;});T.parts=T.parts.filter(p=>p.life>0);
+  }
+  drawTower();traf=requestAnimationFrame(towerFrame);
+}
+function lerpCol(a,b,t){const h=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)),A=h(a),B=h(b);return`rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`;}
+function drawTower(){
+  if(!W)return;const g=towerGeom(),cam=T.cam,Y=wy=>wy+cam,lvlY=l=>g.ground-l*g.bh;
+  const alt=Math.min(1,Math.max(0,(g.ground-H*.52+cam-g.ground+H*.52)/(TGOAL*g.bh)));const a=Math.min(1,cam/(TGOAL*g.bh));
+  const top=a<.5?lerpCol("#8FD3FF","#3D8BFD",a*2):lerpCol("#3D8BFD","#0B1026",Math.min(1,(a-.5)*2.2));
+  const bot=a<.5?lerpCol("#D6F0FF","#8FD3FF",a*2):lerpCol("#8FD3FF","#1B1F4A",Math.min(1,(a-.5)*2.2));
+  const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,top);sky.addColorStop(1,bot);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+  // stjärnor syns mer ju högre upp
+  const sa=Math.max(0,(a-.55)*2.5);if(sa>0){T.stars.forEach(s=>{ctx.globalAlpha=sa*(.5+.5*Math.sin(T.t*2+s.tw));ctx.fillStyle="#fff";ctx.fillRect(s.x*W,s.y*H,s.s,s.s);});ctx.globalAlpha=1;}
+  // månen
+  const moonY=Y(lvlY(TGOAL)-g.moonR*.92);
+  if(moonY>-g.moonR*1.2){ctx.fillStyle="#E8EDF7";ctx.beginPath();ctx.arc(W/2,moonY,g.moonR,0,7);ctx.fill();ctx.fillStyle="rgba(150,160,190,.45)";
+    [[-.35,-.2,.18],[.3,.1,.14],[-.05,.35,.11],[.4,-.4,.08]].forEach(([x,y,r])=>{ctx.beginPath();ctx.arc(W/2+x*g.moonR,moonY+y*g.moonR,r*g.moonR,0,7);ctx.fill();});}
+  // planeter och rymdfarkost
+  const pl=(l,x,r,c,ring)=>{const y=Y(lvlY(l));if(y<-60||y>H+60)return;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x*W,y,r,0,7);ctx.fill();if(ring){ctx.strokeStyle="rgba(255,201,60,.8)";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x*W,y,r*1.7,r*.4,-.3,0,7);ctx.stroke();}};
+  pl(16,.15,22,"#FF9F43",true);pl(18.5,.85,16,"#7B61FF",false);
+  {const y=Y(lvlY(17.3)),x=T.ship.x*W;if(y>-40&&y<H+40){ctx.fillStyle="#C6D6F2";ctx.beginPath();ctx.ellipse(x,y,30,9,0,0,7);ctx.fill();ctx.fillStyle="rgba(170,220,255,.8)";ctx.beginPath();ctx.arc(x,y-5,11,Math.PI,0);ctx.fill();ctx.fillStyle="#FFC93C";[-16,0,16].forEach(d=>{ctx.beginPath();ctx.arc(x+d,y+3,3,0,7);ctx.fill();});}}
+  // flygplan och luftballong
+  {const y=Y(lvlY(12)),x=((T.t*.06)%1.4-.2)*W;if(y>-40&&y<H+40){ctx.fillStyle="#fff";ctx.beginPath();ctx.ellipse(x,y,26,6,0,0,7);ctx.fill();ctx.fillRect(x-6,y-16,8,32);ctx.fillRect(x-24,y-10,5,12);ctx.fillStyle="#3D8BFD";ctx.fillRect(x+10,y-2,8,3);}}
+  {const y=Y(lvlY(13.6))+Math.sin(T.t)*6,x=W*.8;if(y>-60&&y<H+60){ctx.fillStyle="#FF6B6B";ctx.beginPath();ctx.arc(x,y,20,0,7);ctx.fill();ctx.fillStyle="#FFC93C";ctx.fillRect(x-4,y-20,8,40);ctx.strokeStyle="#8A5A00";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-12,y+14);ctx.lineTo(x-6,y+30);ctx.moveTo(x+12,y+14);ctx.lineTo(x+6,y+30);ctx.stroke();ctx.fillStyle="#C99A6B";ctx.fillRect(x-7,y+28,14,9);}}
+  // moln och fåglar
+  T.clouds.forEach(c=>{const y=Y(lvlY(c.lvl)),x=((c.x+T.t*.01*c.s)%1.3-.15)*W;if(y<-40||y>H+40)return;ctx.fillStyle="rgba(255,255,255,.85)";
+    [[-22,4,16],[0,-6,20],[22,3,15]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(x+dx*c.s,y+dy*c.s,r*c.s,0,7);ctx.fill();});});
+  T.birds.forEach(b=>{const y=Y(lvlY(b.lvl))+Math.sin(T.t*2+b.ph)*8,x=b.x*W,f=Math.sin(T.t*10+b.ph)*5;if(y<-20||y>H+20)return;
+    ctx.strokeStyle="#1D2B53";ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x-10,y-f);ctx.quadraticCurveTo(x-4,y-6,x,y);ctx.quadraticCurveTo(x+4,y-6,x+10,y-f);ctx.stroke();});
+  // marken
+  const gy=Y(g.ground);
+  if(gy<H+10){ctx.fillStyle="#6BCB77";ctx.fillRect(0,gy,W,H-gy+20);ctx.fillStyle="#4FAF5E";ctx.fillRect(0,gy,W,6);
+    [[.12,"#FF6B6B"],[.86,"#3D8BFD"]].forEach(([hx,rc])=>{const x=hx*W;ctx.fillStyle="#FFF4CC";ctx.fillRect(x-18,gy-30,36,30);ctx.fillStyle=rc;ctx.beginPath();ctx.moveTo(x-24,gy-30);ctx.lineTo(x,gy-50);ctx.lineTo(x+24,gy-30);ctx.fill();ctx.fillStyle="#8A5A00";ctx.fillRect(x-5,gy-14,10,14);});
+    [.3,.7].forEach(tx=>{const x=tx*W;ctx.fillStyle="#8A5A00";ctx.fillRect(x-4,gy-22,8,22);ctx.fillStyle="#2BB673";ctx.beginPath();ctx.arc(x,gy-30,16,0,7);ctx.fill();});}
+  // tornet
+  const wob=Math.sin(T.t*30)*T.wob*.02;
+  ctx.save();ctx.translate(W/2,gy);ctx.rotate(wob);ctx.translate(-W/2,-gy);
+  T.blocks.forEach((b,i)=>{const y=Y(lvlY(i+1));if(y>H+10||y<-g.bh-10)return;drawBlock(b.x,y,g,b.col);});
+  const topY=Y(lvlY(T.n));
+  // ugglan högst upp (eller på månen)
+  if(owlImg.complete){const ow=g.bw*.55;let ox=W/2,oy=topY-ow*1.1-T.owlHop*14;
+    if(T.done){const p=Math.min(1,T.doneT/.6);oy=topY-ow*1.1-Math.sin(p*Math.PI)*40-(moonY-g.moonR+ow*.15-(topY-ow*1.1))*-p;ox=W/2-g.moonR*.18*p;}
+    ctx.drawImage(owlImg,ox-ow/2,oy,ow,ow*1.167);
+    if(T.done&&T.doneT>.7){const fx=ox+ow*.55,fy=moonY-g.moonR+4,wave=Math.sin(T.t*6)*3;ctx.strokeStyle="#1D2B53";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx,fy-48);ctx.stroke();
+      ctx.fillStyle="#FF5FA2";ctx.beginPath();ctx.moveTo(fx,fy-48);ctx.lineTo(fx+30,fy-40+wave);ctx.lineTo(fx,fy-30);ctx.fill();}}
+  ctx.restore();
+  if(T.drop)drawBlock(T.drop.x,Y(T.drop.cy),g,T.drop.col);
+  if(T.fall){ctx.save();const f=T.fall;ctx.translate(f.x,Y(f.cy)+g.bh/2);ctx.rotate(f.rot);ctx.translate(-f.x,-(Y(f.cy)+g.bh/2));drawBlock(f.x,Y(f.cy),g,f.col);ctx.restore();}
+  T.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.6);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,3,0,7);ctx.fill();});ctx.globalAlpha=1;
+  if(T.zoneMsg){ctx.globalAlpha=Math.min(1,T.zoneMsg.t);ctx.fillStyle="rgba(29,43,83,.75)";const tw=200;ctx.beginPath();ctx.roundRect?ctx.roundRect(W/2-tw/2,18,tw,40,20):ctx.rect(W/2-tw/2,18,tw,40);ctx.fill();
+    ctx.fillStyle="#fff";ctx.font='800 20px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(T.zoneMsg.txt,W/2,39);ctx.globalAlpha=1;}
+}
+function drawBlock(cx,y,g,col){const x=cx-g.bw/2;ctx.fillStyle=col;ctx.fillRect(x,y,g.bw,g.bh);ctx.fillStyle="rgba(255,255,255,.3)";ctx.fillRect(x,y,g.bw,g.bh*.22);
+  ctx.fillStyle="rgba(0,0,0,.15)";ctx.fillRect(x,y+g.bh*.8,g.bw,g.bh*.2);ctx.strokeStyle="#1D2B53";ctx.lineWidth=2.5;ctx.strokeRect(x,y,g.bw,g.bh);
+  ctx.fillStyle="rgba(255,255,255,.55)";[.25,.5,.75].forEach(k=>{ctx.beginPath();ctx.arc(x+g.bw*k,y+g.bh*.5,g.bh*.12,0,7);ctx.fill();});}
+function finishTower(){
+  cancelAnimationFrame(traf);window.Ljud&&Ljud.space.stop();clearTimeout(chirpT);
+  const st=T.miss===0?3:T.miss<=3?2:1,mi=T.miss;
+  data.tower=data.tower||{};const r=data.tower[cat]||{stars:0};data.tower[cat]={stars:Math.max(r.stars||0,st)};data.towerPlayed=(data.towerPlayed||0)+1;data.towerWon=true;if(st===3)data.towerPerfect=true;save();
+  stopTower();stopKang();stopSkatt();stopKiosk();
+  $("rTitle").textContent=st===3?"Ända till månen, utan ett enda fel!":"Ugglan är på månen!";
+  $("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=`Tornet blev ${TGOAL} klossar högt.`+(mi?` ${mi} ${mi===1?"kloss":"klossar"} ramlade ner på vägen.`:"")+(st<3?" Utan några fel får du tre stjärnor.":"");
+  showOnly("result");confetti();
+}
+
+/* ========== Gemensamt för spelen med sifferknappar ========== */
+function prepPlay(hint,mode){
+  $("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=mode!=="pad";$("kangBtns").hidden=mode!=="kang";
+  $("game").classList.toggle("tower",mode==="pad"||mode==="kang");$("hint").textContent=hint;showOnly("game");resize();
+}
+function stopOthers(){if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKang();stopSkatt();stopKiosk();}
+const qBox=(pre,input,post,state)=>{$("q").innerHTML=`${pre}<span class="tans${state?" "+state:""}">${input||"?"}</span>${post||""}`;$("q").className="q"+(state==="ok"?" ok":state==="bad"?" bad":"");};
+
+/* ---------- Känguruhoppet ---------- */
+let KG=null,kraf=0;
+function stopKang(){if(KG)KG.over=true;cancelAnimationFrame(kraf);KG=null;if($("kangBtns"))$("kangBtns").hidden=true;}
+function startKang(){
+  stopOthers();OPTN=3;prepPlay("Hoppa med knapparna tills du står på svaret. Tryck sedan på Landa!","kang");
+  KG={parts:[],i:0,n:10,miss:0,smart:0,max:cat==="hundra"?100:20,pos:0,x:0,hops:[],anim:null,cam:0,t:0,busy:false,over:false,show:null,last:performance.now()};
+  kangTask();kraf=requestAnimationFrame(kangFrame);
+}
+function kangTask(){
+  let a,b,op="+";
+  if(cat==="plus10"){a=rnd(1,8);b=rnd(1,10-a);}
+  else if(cat==="minus10"){a=rnd(3,10);b=rnd(1,a-1);op="−";}
+  else if(cat==="tiotal"){if(Math.random()<.5){a=rnd(2,9);b=rnd(11-a,9);}else{a=rnd(11,18);b=rnd(a-9,9);op="−";}}
+  else{if(Math.random()<.5){a=rnd(11,70);b=rnd(5,Math.min(49,100-a));}else{a=rnd(30,100);b=rnd(5,Math.min(49,a-1));op="−";}}
+  const ans=op==="+"?a+b:a-b,d=Math.abs(ans-a),q10=Math.floor(d/10),r=d%10;
+  KG.task={a,b,op,ans,opt:Math.min(q10+r,r?q10+1+(10-r):Infinity)};KG.pos=a;KG.x=a;KG.hops=[];KG.show=null;KG.busy=false;KG.first=true;
+  if(!KG.cam)KG.cam=a;
+  $("q").innerHTML=`${a} ${op} ${b} = ?`;$("q").className="q";kangHud();
+}
+function kangHud(){$("hearts").textContent="🦘 Hoppa!";$("score").textContent=`${KG.i} / ${KG.n}`;$("progFill").style.width=(KG.i/KG.n*100)+"%";}
+function kangHop(d){
+  if(!KG||KG.busy||KG.anim||KG.over)return;const to=KG.pos+d;
+  if(to<0||to>KG.max){KG.shake=.35;window.Ljud&&Ljud.bad();return;}
+  KG.anim={from:KG.pos,to,t:0,dur:Math.abs(d)>=10?.5:.3};KG.hops.push({from:KG.pos,to});window.Ljud&&Ljud.hop();
+}
+function kangLand(){
+  if(!KG||KG.busy||KG.anim||KG.over)return;KG.busy=true;const t=KG.task;
+  if(KG.pos===t.ans){
+    window.Ljud&&Ljud.ok();KG.i++;const smart=KG.hops.length<=t.opt;if(smart)KG.smart++;
+    $("q").innerHTML=`${t.a} ${t.op} ${t.b} = ${t.ans}`+(smart?`<span class="qnote">Smart hoppat! 🎯</span>`:"");$("q").className="q ok";
+    for(let i=0;i<20;i++)KG.parts.push({x:W/2,y:H*.5,vx:(Math.random()-.5)*300,vy:-Math.random()*260,life:.8,c:pickOne(["#FFC93C","#FF9F43","#7CF0B1"])});
+    kangHud();
+    if(KG.i>=KG.n){KG.over=true;setTimeout(finishKang,1300);return;}
+    setTimeout(kangTask,1300);
+  }else{
+    KG.miss++;window.Ljud&&Ljud.bad();KG.show=t.ans;
+    $("q").innerHTML=`${t.a} ${t.op} ${t.b} = ${t.ans}<span class="qnote">Du stod på ${KG.pos}.</span>`;$("q").className="q bad";
+    KG.i++;kangHud();
+    if(KG.i>=KG.n){KG.over=true;setTimeout(finishKang,2400);return;}
+    setTimeout(kangTask,2600);
+  }
+}
+function kangFrame(now){
+  if(!KG)return;const dt=Math.min(.05,(now-KG.last)/1000);KG.last=now;KG.t+=dt;KG.parts=KG.parts||[];KG.shake=Math.max(0,(KG.shake||0)-dt);
+  if(KG.anim){const a=KG.anim;a.t+=dt;const p=Math.min(1,a.t/a.dur);KG.x=a.from+(a.to-a.from)*p;KG.jump=Math.sin(p*Math.PI)*(Math.abs(a.to-a.from)>=10?1:.45);if(p>=1){KG.pos=a.to;KG.anim=null;KG.jump=0;}}
+  KG.cam+=(KG.x-KG.cam)*Math.min(1,dt*4);
+  KG.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;});KG.parts=KG.parts.filter(p=>p.life>0);
+  drawKang();kraf=requestAnimationFrame(kangFrame);
+}
+function drawKang(){
+  if(!W)return;const span=KG.max===20?22:30,u=W/span,lineY=H*.72,X=v=>W/2+(v-KG.cam)*u+(KG.shake?Math.sin(KG.t*60)*6*KG.shake:0);
+  const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,"#FFD9A0");sky.addColorStop(1,"#FFF1D6");ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
+  ctx.fillStyle="#FF9F43";ctx.beginPath();ctx.arc(W*.84,H*.18,H*.08,0,7);ctx.fill();
+  ctx.fillStyle="#E8B96A";ctx.fillRect(0,lineY+18,W,H);ctx.fillStyle="#D9A24E";for(let x=((-KG.cam*u)%60+60)%60;x<W;x+=60)ctx.fillRect(x,lineY+30,22,4);
+  // tallinjen
+  ctx.strokeStyle="#1D2B53";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(Math.max(0,X(0)),lineY);ctx.lineTo(Math.min(W,X(KG.max)),lineY);ctx.stroke();
+  const lo=Math.max(0,Math.floor(KG.cam-span/2-1)),hi=Math.min(KG.max,Math.ceil(KG.cam+span/2+1));
+  ctx.textAlign="center";ctx.textBaseline="top";
+  for(let v=lo;v<=hi;v++){const x=X(v),big=v%10===0,mid=v%5===0;ctx.lineWidth=big?3:1.5;ctx.beginPath();ctx.moveTo(x,lineY-(big?12:mid?8:5));ctx.lineTo(x,lineY+(big?12:mid?8:5));ctx.stroke();
+    if(big||(KG.max===20)||(mid&&u>9)){ctx.fillStyle="#1D2B53";ctx.font=`800 ${big?15:12}px "Baloo 2", system-ui, sans-serif`;ctx.fillText(v,x,lineY+14);}}
+  // startflagga och rätt svar efter fel
+  const flag=(v,col)=>{const x=X(v);ctx.strokeStyle="#1D2B53";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,lineY);ctx.lineTo(x,lineY-34);ctx.stroke();ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(x,lineY-34);ctx.lineTo(x+18,lineY-28);ctx.lineTo(x,lineY-22);ctx.fill();};
+  flag(KG.task.a,"#2BB673");if(KG.show!=null)flag(KG.show,"#E5484D");
+  // hoppen
+  KG.hops.forEach(h=>{const x1=X(h.from),x2=X(h.to),big=Math.abs(h.to-h.from)>=10,hh=big?60:26;ctx.strokeStyle=big?"#FF9F43":"#3D8BFD";ctx.lineWidth=big?4:3;
+    ctx.beginPath();ctx.moveTo(x1,lineY-4);ctx.quadraticCurveTo((x1+x2)/2,lineY-4-hh*2,x2,lineY-4);ctx.stroke();
+    if(big){ctx.fillStyle="#C96A0C";ctx.font='800 13px "Baloo 2", system-ui, sans-serif';ctx.textBaseline="bottom";ctx.fillText((h.to>h.from?"+":"−")+"10",(x1+x2)/2,lineY-4-hh-2);ctx.textBaseline="top";}});
+  // kängurun
+  const kx=X(KG.x),ky=lineY-8-(KG.jump||0)*H*.18,S=Math.min(H*.16,56);
+  ctx.save();ctx.translate(kx,ky);if(KG.task.op==="−")ctx.scale(-1,1);ctx.fillStyle="#B9793F";
+  ctx.beginPath();ctx.ellipse(-S*.05,-S*.45,S*.3,S*.42,-.25,0,7);ctx.fill();
+  ctx.beginPath();ctx.ellipse(S*.18,-S*.95,S*.2,S*.16,.2,0,7);ctx.fill();
+  ctx.beginPath();ctx.ellipse(S*.12,-S*1.17,S*.06,S*.15,-.2,0,7);ctx.fill();ctx.beginPath();ctx.ellipse(S*.24,-S*1.15,S*.06,S*.15,.2,0,7);ctx.fill();
+  ctx.strokeStyle="#B9793F";ctx.lineWidth=S*.12;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(-S*.3,-S*.2);ctx.quadraticCurveTo(-S*.75,-S*.1,-S*.8,S*.02);ctx.stroke();
+  ctx.fillStyle="#8A5A2B";ctx.beginPath();ctx.ellipse(S*.08,-S*.02,S*.28,S*.07,0,0,7);ctx.fill();
+  ctx.fillStyle="#F3D6B0";ctx.beginPath();ctx.ellipse(0,-S*.38,S*.14,S*.22,-.2,0,7);ctx.fill();
+  ctx.fillStyle="#1D2B53";ctx.beginPath();ctx.arc(S*.24,-S*.98,S*.035,0,7);ctx.fill();ctx.beginPath();ctx.arc(S*.36,-S*.9,S*.03,0,7);ctx.fill();
+  ctx.restore();
+  // talet kängurun står på
+  ctx.fillStyle="#fff";ctx.strokeStyle="#1D2B53";ctx.lineWidth=2;const bx=kx,by=ky-S*1.5;ctx.beginPath();ctx.arc(bx,by,17,0,7);ctx.fill();ctx.stroke();
+  ctx.fillStyle="#1D2B53";ctx.font='800 16px "Baloo 2", system-ui, sans-serif';ctx.textBaseline="middle";ctx.fillText(Math.round(KG.x),bx,by+1);
+  KG.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.8);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,3.5,0,7);ctx.fill();});ctx.globalAlpha=1;
+}
+function finishKang(){
+  cancelAnimationFrame(kraf);const right=KG.n-KG.miss,st=right===KG.n?3:right>=KG.n-2?2:1,sm=KG.smart;
+  data.kang=data.kang||{};const r=data.kang[cat]||{stars:0};data.kang[cat]={stars:Math.max(r.stars||0,st)};data.kangWon=true;if(st===3)data.kangPerfect=true;if(sm>=8)data.kangSmart=true;save();
+  stopKang();
+  $("rTitle").textContent=st===3?"Kängurumästare!":"Bra hoppat!";$("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=`${right} av ${KG?KG.n:10} landade rätt.`.replace("undefined","10")+(sm?` ${sm} gånger hoppade du smart, med så få hopp som möjligt. 🎯`:"");
+  showOnly("result");window.Ljud&&Ljud.fanfare();if(st===3)confetti();
+}
+$("kangBtns").onclick=e=>{const b=e.target.closest("button");if(!b)return;b.dataset.d==="land"?kangLand():kangHop(+b.dataset.d);};
+document.addEventListener("keydown",e=>{if(!KG||$("game").hidden)return;const m={ArrowRight:1,ArrowLeft:-1,ArrowUp:10,ArrowDown:-10};
+  if(m[e.key]!=null){e.preventDefault();kangHop(m[e.key]);}else if(e.key==="Enter"||e.key===" "){e.preventDefault();kangLand();}});
+
+/* ---------- Skattkartan ---------- */
+let SK=null,skraf=0;
+const ISL=10;
+function stopSkatt(){if(SK)SK.over=true;cancelAnimationFrame(skraf);SK=null;}
+function skPos(i){const gap=Math.min(H*.3,110);return{x:W*(i%2?.7:.3)+Math.sin(i*1.7)*W*.05,y:H*.78-i*gap};}
+function startSkatt(){
+  stopOthers();OPTN=3;prepPlay("Skriv svaret och tryck OK. Varje rätt svar tar skeppet till nästa ö!","pad");
+  SK={i:0,miss:0,first:true,input:"",sail:null,cam:0,t:0,parts:[],over:false,done:false,last:performance.now()};
+  skTask();skraf=requestAnimationFrame(skFrame);
+}
+function skHud(){$("hearts").textContent=`🗺️ Ö ${Math.min(SK.i+1,ISL)} av ${ISL}`;$("score").textContent=`${SK.i} / ${ISL}`;$("progFill").style.width=(SK.i/ISL*100)+"%";}
+function skTask(){SK.task=gen();SK.input="";SK.first=true;SK.busy=false;qBox(SK.task.q+"<span>=</span>","");skHud();}
+function skattKey(k){if(!SK||SK.busy||SK.over)return;
+  if(k==="del")SK.input=SK.input.slice(0,-1);else if(k==="ok"){if(SK.input!=="")skSubmit();return;}else if(SK.input.length<3)SK.input+=k;qBox(SK.task.q+"<span>=</span>",SK.input);}
+function skSubmit(){
+  SK.busy=true;const ok=+SK.input===SK.task.a;
+  if(ok){qBox(SK.task.q+"<span>=</span>",SK.input,"","ok");window.Ljud&&Ljud.ok();setTimeout(()=>{if(!SK)return;SK.sail={t:0,from:SK.i};window.Ljud&&Ljud.whoosh();},350);}
+  else{if(SK.first)SK.miss++;SK.first=false;window.Ljud&&Ljud.splash();qBox(SK.task.q+"<span>=</span>",SK.input,"","bad");
+    const p=skPos(SK.i);for(let i=0;i<20;i++)SK.parts.push({x:p.x,y:p.y+SK.cam,vx:(Math.random()-.5)*240,vy:-Math.random()*220,life:.8,c:pickOne(["#9CD7FF","#fff"])});
+    setTimeout(()=>{if(!SK)return;$("q").innerHTML=SK.task.q+`<span>= ${SK.task.a}</span>`;$("q").className="q bad";},600);
+    setTimeout(()=>{if(SK&&!SK.over)skTask();},2300);}
+}
+function skFrame(now){
+  if(!SK)return;const dt=Math.min(.05,(now-SK.last)/1000);SK.last=now;SK.t+=dt;
+  if(SK.sail){SK.sail.t+=dt;if(SK.sail.t>=1.3){SK.i++;SK.sail=null;skHud();
+    if(SK.i>=ISL){SK.over=true;SK.done=true;SK.doneT=0;window.Ljud&&Ljud.fanfare();$("q").innerHTML="Skatten är hittad! 💰";$("q").className="q ok";setTimeout(finishSkatt,2800);}
+    else skTask();}}
+  if(SK.done){SK.doneT+=dt;if(Math.random()<.5)SK.parts.push({x:skPos(ISL).x,y:skPos(ISL).y+SK.cam-10,vx:(Math.random()-.5)*220,vy:-120-Math.random()*200,life:1,c:"#FFC93C",coin:true});}
+  const shipI=SK.sail?SK.sail.from+Math.min(1,SK.sail.t/1.3):SK.i,target=Math.max(0,H*.6-(H*.78-shipI*Math.min(H*.3,110)));SK.cam+=(target-SK.cam)*Math.min(1,dt*3);
+  SK.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=320*dt;p.life-=dt;});SK.parts=SK.parts.filter(p=>p.life>0);
+  drawSkatt(shipI);skraf=requestAnimationFrame(skFrame);
+}
+function drawSkatt(shipI){
+  if(!W)return;const cam=SK.cam;
+  const sea=ctx.createLinearGradient(0,0,0,H);sea.addColorStop(0,"#2F8FD8");sea.addColorStop(1,"#5EB8FF");ctx.fillStyle=sea;ctx.fillRect(0,0,W,H);
+  ctx.strokeStyle="rgba(255,255,255,.3)";ctx.lineWidth=2;for(let i=0;i<16;i++){const y=((i*47+SK.t*10)%(H+40))-20,x=(i*89)%W;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+10,y-5,x+20,y);ctx.quadraticCurveTo(x+30,y+5,x+40,y);ctx.stroke();}
+  // streckad skattkarteväg
+  ctx.strokeStyle="#E5484D";ctx.lineWidth=3;ctx.setLineDash([8,8]);ctx.beginPath();
+  for(let i=0;i<=ISL;i++){const p=skPos(i);i?ctx.lineTo(p.x,p.y+cam):ctx.moveTo(p.x,p.y+cam);}ctx.stroke();ctx.setLineDash([]);
+  for(let i=0;i<=ISL;i++){const p=skPos(i),y=p.y+cam;if(y<-60||y>H+60)continue;const R=i===ISL?38:28;
+    ctx.fillStyle="#F2D48A";ctx.beginPath();ctx.ellipse(p.x,y,R,R*.55,0,0,7);ctx.fill();ctx.fillStyle="#E6C06E";ctx.beginPath();ctx.ellipse(p.x,y+R*.12,R*.8,R*.35,0,0,7);ctx.fill();
+    if(i===0){ctx.fillStyle="#8A5A2B";ctx.fillRect(p.x-18,y-6,36,6);}
+    else if(i<ISL){ctx.strokeStyle="#8A5A2B";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(p.x+6,y);ctx.quadraticCurveTo(p.x+10,y-18,p.x+4,y-30);ctx.stroke();ctx.fillStyle="#2BB673";
+      [-1,1,-.3,.4].forEach(k=>{ctx.beginPath();ctx.ellipse(p.x+4+k*10,y-32,12,4,k*.6,0,7);ctx.fill();});
+      if(i<=SK.i){ctx.strokeStyle="#1D2B53";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(p.x-12,y-2);ctx.lineTo(p.x-12,y-22);ctx.stroke();ctx.fillStyle="#FF5FA2";ctx.beginPath();ctx.moveTo(p.x-12,y-22);ctx.lineTo(p.x+2,y-17);ctx.lineTo(p.x-12,y-12);ctx.fill();}}
+    else{ctx.strokeStyle="#E5484D";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(p.x-10,y-10);ctx.lineTo(p.x+10,y+6);ctx.moveTo(p.x+10,y-10);ctx.lineTo(p.x-10,y+6);ctx.stroke();
+      const open=SK.done?Math.min(1,SK.doneT*2):0;ctx.fillStyle="#8A5A2B";ctx.fillRect(p.x+14,y-16,26,16);ctx.fillStyle="#FFC93C";ctx.fillRect(p.x+14,y-10,26,3);
+      ctx.save();ctx.translate(p.x+14,y-16);ctx.rotate(-open*1.2);ctx.fillStyle="#A86F36";ctx.fillRect(0,-8,26,8);ctx.restore();if(open>.3){ctx.fillStyle="#FFC93C";ctx.beginPath();ctx.arc(p.x+27,y-17,6,0,7);ctx.fill();}}}
+  // skeppet
+  let sp;if(SK.sail){const a=skPos(SK.sail.from),b=skPos(SK.sail.from+1),t=Math.min(1,SK.sail.t/1.3),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;sp={x:a.x+(b.x-a.x)*e,y:a.y+(b.y-a.y)*e};}else sp=skPos(SK.i);
+  const sx=sp.x+(SK.sail?0:SK.i>=ISL?-46:34),sy=sp.y+cam+(SK.sail?0:14)+Math.sin(SK.t*3)*2;
+  ctx.save();ctx.translate(sx,sy);ctx.rotate(Math.sin(SK.t*2)*.05);
+  ctx.fillStyle="#8A5A2B";ctx.beginPath();ctx.moveTo(-26,0);ctx.lineTo(26,0);ctx.lineTo(18,12);ctx.lineTo(-18,12);ctx.closePath();ctx.fill();
+  ctx.strokeStyle="#5E3F1E";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-40);ctx.stroke();
+  ctx.fillStyle="#fff";ctx.beginPath();ctx.moveTo(2,-38);ctx.quadraticCurveTo(22,-22,2,-6);ctx.closePath();ctx.fill();ctx.fillStyle="#1D2B53";ctx.fillRect(0,-44,12,6);
+  if(owlImg.complete)ctx.drawImage(owlImg,-24,-26,20,23);
+  ctx.restore();
+  SK.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.c;ctx.beginPath();p.coin?ctx.ellipse(p.x,p.y,5,5*Math.abs(Math.sin(SK.t*8+p.x)),0,0,7):ctx.arc(p.x,p.y,3.5,0,7);ctx.fill();});ctx.globalAlpha=1;
+}
+function finishSkatt(){
+  cancelAnimationFrame(skraf);const mi=SK.miss,st=mi===0?3:mi<=2?2:1;
+  data.skatt=data.skatt||{};const r=data.skatt[cat]||{stars:0};data.skatt[cat]={stars:Math.max(r.stars||0,st)};data.skattWon=true;if(st===3)data.skattPerfect=true;save();
+  stopSkatt();$("rTitle").textContent=st===3?"Piratkapten utan ett enda fel!":"Skatten är din!";$("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=`Skeppet seglade förbi ${ISL} öar.`+(mi?` ${mi===1?"En gång":mi+" gånger"} blev det fel på vägen.`:"")+(st<3?" Utan några fel får du tre stjärnor.":"");
+  showOnly("result");confetti();
+}
+
+/* ---------- Ugglans kiosk ---------- */
+let KI=null,kiraf=0;
+const WARES=[["🍎","äpple"],["🍌","banan"],["🧃","juice"],["🍦","glass"],["🍪","kaka"],["🥐","bulle"],["🍭","klubba"],["🧸","nalle"],["📘","bok"],["⚽","boll"],["🖍️","kritor"],["🧁","muffins"]];
+const GUESTS=["🐶","🐱","🐰","🦊","🐻","🐼","🐯","🐸","🐨","🐷"];
+function stopKiosk(){if(KI)KI.over=true;cancelAnimationFrame(kiraf);KI=null;}
+function startKiosk(){
+  stopOthers();OPTN=3;prepPlay("Räkna ut och skriv svaret i kronor. Tryck sedan på OK.","pad");
+  KI={i:0,n:10,miss:0,first:true,input:"",up:cat==="hundra"?100:20,t:0,slide:1,out:0,parts:[],over:false,last:performance.now()};
+  kiTask();kiraf=requestAnimationFrame(kiFrame);
+}
+function kiHud(){$("hearts").textContent="🏪 Kiosken";$("score").textContent=`${KI.i} / ${KI.n}`;$("progFill").style.width=(KI.i/KI.n*100)+"%";}
+function kiTask(){
+  const up=KI.up,items=shuffle(WARES.slice()).slice(0,2),type=Math.random()<.5?"sum":"change";let p1,p2,pay=0,two=Math.random()<.6||type==="sum";
+  if(up===20){p1=rnd(2,12);p2=two?rnd(1,Math.min(12,20-p1-(type==="change"?1:0))):0;}else{p1=rnd(8,60);p2=two?rnd(5,Math.min(60,100-p1-(type==="change"?1:0))):0;}
+  const tot=p1+p2;if(type==="change"){pay=up===20?(tot<10?10:20):(tot<20?20:tot<50?50:100);}
+  KI.task={items:two?items:[items[0]],prices:two?[p1,p2]:[p1],tot,type,pay,a:type==="sum"?tot:pay-tot};
+  KI.guest=pickOne(GUESTS);KI.slide=1;KI.out=0;KI.input="";KI.first=true;KI.busy=false;kiQ();kiHud();
+}
+function kiQ(state){const t=KI.task;const pre=t.type==="sum"?"Tillsammans:":`Betalar ${t.pay} kr. Tillbaka:`;qBox(`<span style="font-size:.55em">${pre}</span>`,KI.input," <span style=\"font-size:.6em\">kr</span>",state);}
+function kioskKey(k){if(!KI||KI.busy||KI.over)return;if(k==="del")KI.input=KI.input.slice(0,-1);else if(k==="ok"){if(KI.input!=="")kiSubmit();return;}else if(KI.input.length<3)KI.input+=k;kiQ();}
+function kiSubmit(){
+  KI.busy=true;const t=KI.task,ok=+KI.input===t.a;
+  if(ok){kiQ("ok");window.Ljud&&Ljud.kaching();KI.happy=1;KI.i++;kiHud();
+    for(let i=0;i<14;i++)KI.parts.push({x:W*.7,y:H*.55,vx:(Math.random()-.5)*220,vy:-Math.random()*220,life:.8,c:"#FFC93C"});
+    setTimeout(()=>{if(KI)KI.out=.001;},700);
+    if(KI.i>=KI.n){KI.over=true;setTimeout(finishKiosk,1500);return;}
+    setTimeout(()=>{if(KI&&!KI.over)kiTask();},1500);}
+  else{if(KI.first)KI.miss++;KI.first=false;window.Ljud&&Ljud.bad();kiQ("bad");
+    const calc=t.type==="sum"?`${t.prices.join(" + ")} = ${t.tot} kr`:(t.prices.length>1?`${t.prices.join(" + ")} = ${t.tot} kr<br>`:"")+`${t.pay} − ${t.tot} = ${t.a} kr`;
+    setTimeout(()=>{if(!KI)return;$("q").innerHTML=`<span style="font-size:.7em">${calc}</span>`;$("q").className="q bad";},600);
+    KI.i++;kiHud();
+    if(KI.i>=KI.n){KI.over=true;setTimeout(finishKiosk,2600);return;}
+    setTimeout(()=>{if(KI&&!KI.over){KI.out=.001;setTimeout(()=>{if(KI&&!KI.over)kiTask();},500);}},2400);}
+}
+function kiFrame(now){
+  if(!KI)return;const dt=Math.min(.05,(now-KI.last)/1000);KI.last=now;KI.t+=dt;KI.slide=Math.max(0,KI.slide-dt*2.5);if(KI.out>0)KI.out=Math.min(1,KI.out+dt*2.5);KI.happy=Math.max(0,(KI.happy||0)-dt);
+  KI.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=320*dt;p.life-=dt;});KI.parts=KI.parts.filter(p=>p.life>0);
+  drawKiosk();kiraf=requestAnimationFrame(kiFrame);
+}
+function drawKiosk(){
+  if(!W)return;const t=KI.task;
+  ctx.fillStyle="#FFF4E0";ctx.fillRect(0,0,W,H);
+  for(let x=0;x<W;x+=34){ctx.fillStyle=(x/34)%2?"#FF6B6B":"#fff";ctx.fillRect(x,0,34,H*.12);}
+  ctx.fillStyle="#E5484D";for(let x=0;x<W;x+=34){ctx.beginPath();ctx.arc(x+17,H*.12,17,0,Math.PI);ctx.fill();}
+  ctx.fillStyle="#C99A6B";ctx.fillRect(W*.05,H*.26,W*.9,6);["🍬","🍫","🥤","🍩","🧃","🍓"].forEach((e,i)=>{ctx.font=`${Math.round(H*.07)}px serif`;ctx.textAlign="center";ctx.textBaseline="bottom";ctx.fillText(e,W*(.12+i*.155),H*.26);});
+  // kunden
+  const gx=W*(.22-KI.slide*.5-KI.out*.6),gy=H*.55+Math.sin(KI.t*3)*3;ctx.font=`${Math.round(H*.2)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(KI.guest,gx,gy);
+  if(KI.happy>0){ctx.font=`${Math.round(H*.06)}px serif`;ctx.fillText("💖",gx+H*.1,gy-H*.12);}
+  if(t.type==="change"&&!KI.out){const nx=gx+H*.08,ny=gy+H*.05;ctx.fillStyle=t.pay>=100?"#3D8BFD":t.pay>=50?"#FF9F43":t.pay>=20?"#9C6ADE":"#2BB673";ctx.fillRect(nx,ny,58,30);ctx.strokeStyle="#1D2B53";ctx.lineWidth=2;ctx.strokeRect(nx,ny,58,30);
+    ctx.fillStyle="#fff";ctx.font='800 15px "Baloo 2", system-ui, sans-serif';ctx.fillText(`${t.pay} kr`,nx+29,ny+16);}
+  // ugglan bakom disken
+  if(owlImg.complete){const ow=Math.min(H*.3,110);ctx.drawImage(owlImg,W*.78-ow/2,H*.72-ow*1.05,ow,ow*1.167);}
+  ctx.fillStyle="#A86F36";ctx.fillRect(0,H*.72,W,H*.28);ctx.fillStyle="#8A5A2B";ctx.fillRect(0,H*.72,W,8);
+  // varorna med prislappar
+  t.items.forEach((it,i)=>{const x=W*(t.items.length===1?.5:.36+i*.24),y=H*.82;ctx.font=`${Math.round(H*.09)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(it[0],x,y);
+    ctx.fillStyle="#fff";ctx.strokeStyle="#1D2B53";ctx.lineWidth=2;ctx.beginPath();ctx.rect(x-26,y+H*.055,52,24);ctx.fill();ctx.stroke();
+    ctx.fillStyle="#1D2B53";ctx.font='800 15px "Baloo 2", system-ui, sans-serif';ctx.fillText(`${t.prices[i]} kr`,x,y+H*.055+13);});
+  KI.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.8);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fill();});ctx.globalAlpha=1;
+}
+function finishKiosk(){
+  cancelAnimationFrame(kiraf);const right=KI.n-KI.miss,st=right===KI.n?3:right>=KI.n-2?2:1;
+  data.kiosk=data.kiosk||{};const r=data.kiosk[cat]||{stars:0};data.kiosk[cat]={stars:Math.max(r.stars||0,st)};data.kioskWon=true;if(st===3)data.kioskPerfect=true;save();
+  stopKiosk();$("rTitle").textContent=st===3?"Kiosken är nöjd, alla rätt!":"Kiosken har stängt för idag!";$("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=`${right} av 10 kunder fick rätt svar.`+(st<3?" Alla rätt ger tre stjärnor.":"");
+  showOnly("result");window.Ljud&&Ljud.fanfare();if(st===3)confetti();
 }
 
 /* ---------- Memory ---------- */
