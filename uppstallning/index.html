@@ -307,6 +307,12 @@ function render(){
 /* växla: tryck på en siffra i första talet */
 function tapDigit(j){
   if(!G||G.busy||G.t.op!=="−"||j<1)return;const st=G.st,B=digits(G.t.b,G.t.D);
+  if(G.mode==="sjalv"){
+    // Själv: inga tips och inga spärrar. Eleven bestämmer själv, och kan ångra en växling genom att trycka igen.
+    if(st.gave[j]&&!st.gave[j-1]){st.top[j]+=1;st.gave[j]=false;st.top[j-1]-=10;st.recv[j-1]=false;}
+    else if(!st.gave[j]&&st.top[j]>0){st.top[j]-=1;st.gave[j]=true;st.top[j-1]+=10;st.recv[j-1]=true;}
+    render();return;
+  }
   const needs=st.top[j-1]<B[j-1]||(st.top[j-1]===0&&j>=2&&st.top[j-2]<B[j-2]);
   if(st.top[j]===0){say(`Det finns inga ${COLNAME[j]} att växla. Växla först från ${COLDEF[j+1]||"kolumnen till vänster"}.`,"tip");miss();return;}
   if(!needs){say(`Du behöver inte växla här. ${st.top[j-1]} − ${B[j-1]} går redan att räkna.`,"tip");miss();return;}
