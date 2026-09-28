@@ -72,6 +72,45 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .pad button{height:54px;border-radius:16px;background:var(--card);font-size:1.8rem;font-weight:800;box-shadow:0 4px 0 var(--line)}
 .pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.4rem}
+/* Hjälprutan: under uppgiften på mobil, bredvid på stora skärmar */
+.playgrid{display:flex;flex-direction:column}
+.playgrid>.task{order:1}.playgrid>.helper{order:2}.playgrid>.pad{order:3}.playgrid>.help{order:4}
+.helper{background:var(--card);border-radius:22px;padding:10px;box-shadow:0 5px 0 var(--line);margin:0 0 12px}
+.helper p{margin:0 0 6px;font-weight:800;color:var(--muted);font-size:.95rem;text-align:center}
+.hbtn{flex:none;border-radius:999px;background:var(--bg);box-shadow:0 3px 0 var(--line);padding:6px 12px;font-weight:800;font-size:.9rem;white-space:nowrap}
+.hbtn[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 3px 0 #0E1735}
+@media (max-width:899px){
+  #game.withhelp .pad{grid-template-columns:repeat(6,1fr);gap:6px}
+  #game.withhelp .pad button{height:46px;font-size:1.45rem;border-radius:12px}
+  #game.withhelp .pad .okbtn{font-size:1.05rem}
+  #game.withhelp .task{margin:8px 0;padding:8px 10px}
+  #game.withhelp .instr{font-size:1rem}
+  #game.withhelp .spk{width:38px;height:38px;font-size:1.1rem}
+  #game.withhelp .feedback{min-height:1em;margin-top:2px}
+  #game.withhelp .frag .fc{width:min(11vw,46px);font-size:1.1rem;border-radius:9px}
+  #game.withhelp .frag{gap:4px}
+  #game.withhelp .helper{padding:6px;margin-bottom:8px}
+  #game.withhelp .helper p{display:none}
+  #game.withhelp .helper .h100{max-width:300px}
+}
+@media (min-width:900px){
+  body.wide .wrap{max-width:1000px}
+  #game.withhelp .playgrid{display:grid;grid-template-columns:minmax(0,1fr) 400px;column-gap:20px;align-items:start;
+    grid-template-areas:"task helper" "pad helper" "help helper"}
+  #game.withhelp .task{grid-area:task}#game.withhelp .pad{grid-area:pad}#game.withhelp .help{grid-area:help}
+  #game.withhelp .helper{grid-area:helper;margin-top:12px;position:sticky;top:12px}
+}
+.toolcard{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border-radius:22px;padding:14px;box-shadow:0 5px 0 var(--line);margin-bottom:6px}
+.toolcard:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+.toolcard b{font-size:1.35rem;display:block;line-height:1.15}
+.toolcard small{color:var(--muted);font-size:.95rem;display:block;line-height:1.3}
+.toolcard .tico{width:74px;flex:none}.toolcard .tico svg{width:74px;height:62px;display:block}
+.toolcard .chev{margin-left:auto;color:var(--muted);font-size:1.8rem;font-weight:800}
+h2.sub{font-size:1.4rem;margin:18px 0 8px}
+#toolGrid .h100{max-width:640px;gap:3px;padding:3px}
+#toolGrid .h100 i{font-size:clamp(.8rem,3.6vw,1.35rem);cursor:pointer;user-select:none}
+#toolGrid .h100 i.mark{background:#FFC93C;color:var(--ink)}
+@media (min-width:900px){#tool{max-width:none}}
 .go{display:block;width:100%;margin-top:12px;padding:13px;border-radius:18px;background:var(--good);color:#fff;font-size:1.3rem;font-weight:800;box-shadow:0 5px 0 var(--good-dark)}
 .help{background:var(--card);border-radius:22px;padding:12px 12px 16px;box-shadow:0 5px 0 var(--line);text-align:center}
 .help .said{color:var(--muted);margin:0 0 8px;font-weight:700}
@@ -90,18 +129,28 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Hundrarutan</h1>
-  <p class="lead">Upptäck mönstren: ett steg åt sidan är ett mer eller mindre, ett steg upp eller ner är tio.</p>
+  <p class="lead">Ett steg åt sidan är ett mer eller mindre. Ett steg upp eller ner är tio.</p>
+  <button class="toolcard" id="openTool"><span class="tico" id="toolIco"></span><span><b>Hela hundrarutan</b><small>Ha den framme som hjälp när du räknar i boken. Tryck på talen för att markera dem.</small></span><span class="chev">›</span></button>
+  <h2 class="sub">Öva</h2>
   <div class="areas" id="areas"></div>
-  <p class="note">Tre stjärnor får du om alla tio uppgifter blir rätt direkt.</p>
+  <p class="note">Tre stjärnor får du om alla tio uppgifter blir rätt direkt. I Trasig hundraruta kan du ta fram en hel hundraruta som hjälp, eller dölja den för att utmana dig själv.</p>
+</section>
+<section id="tool" class="screen" hidden>
+  <div class="gtop"><button class="back" id="toolBack">← Tillbaka</button><button class="hbtn" id="toolClear">Rensa markeringar</button></div>
+  <h2 style="margin:8px 0 2px">Hundrarutan</h2>
+  <p class="lead" style="margin:0 0 10px">Tryck på ett tal för att markera det. Tryck igen för att ta bort markeringen.</p>
+  <div id="toolGrid"></div>
 </section>
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span id="hrow" hidden><button class="hbtn" id="hbtn" aria-pressed="false">Visa hundrarutan</button></span><span class="info" id="info"></span></div>
   <div class="progress"><i id="prog"></i></div>
+  <div class="playgrid">
   <div class="task" id="task">
     <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
     <div class="content" id="content"></div>
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
+  <div class="helper" id="helper" hidden><p>Hundrarutan</p><div id="helperGrid"></div></div>
   <div class="pad" id="pad">
     <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
     <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
@@ -113,6 +162,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <div id="helpVis"></div>
     <p class="tip" id="helpTip"></p>
     <button class="go" id="helpGo">Fortsätt</button>
+  </div>
   </div>
 </section>
 <section id="result" class="screen result" hidden>
@@ -151,15 +201,6 @@ function grid(cls,arrows,label){
   return h+'</div>';
 }
 
-/* ---------- 1. Grannar (+1 / −1) ---------- */
-function genGrannar(){
-  const d=pickOne(["hoger","vanster"]),[dr,dc,txt,op]=DIR[d];let r,c;
-  do{r=rnd(0,9);c=rnd(0,9);}while(c+dc<0||c+dc>9);
-  const s=num(r,c),t=num(r,c+dc);
-  const vis=grid(n=>n===s?"start":n===t?"goal":"",[[s,t]],n=>n===t?"?":n);
-  return{kind:"keys",instr:`Vilket tal är ${txt} från ${s}?`,speak:`Vilket tal är ${txt} från ${s}?`,html:vis,answer:t,
-    help:()=>({vis:grid(n=>n===s?"start":n===t?"goalok":"",[[s,t]]),tip:`Ett steg åt ${d==="hoger"?"höger är ett mer":"vänster är ett mindre"}: ${s} ${op[0]} 1 = ${t}.`})};
-}
 /* ---------- 2. Tio hopp (+10 / −10) ---------- */
 function genTio(){
   const two=Math.random()<.3,d=pickOne(["ner","upp"]),[dr]=DIR[d],steps=two?2:1;let r,c;
@@ -172,23 +213,7 @@ function genTio(){
     help:()=>({vis:grid(n=>n===s?"start":n===t?"goalok":path.includes(n)?"via":"",arrows),
       tip:`Ett steg ${d} är tio ${d==="ner"?"mer":"mindre"}. Entalen är desamma, bara tiotalen ändras: ${path.join(d==="ner"?" → ":" → ")}.`})};
 }
-/* ---------- 3. Flera steg ---------- */
-function genSteg(){
-  let s,path,moves;
-  for(let tries=0;tries<200;tries++){
-    const [r0,c0]=[rnd(1,8),rnd(1,8)];let r=r0,c=c0;path=[num(r,c)];moves=[];const n=rnd(2,4);let ok=true;
-    for(let i=0;i<n;i++){const opts=Object.keys(DIR).filter(k=>{const[dr,dc]=DIR[k];return r+dr>=0&&r+dr<=9&&c+dc>=0&&c+dc<=9&&!path.includes(num(r+dr,c+dc));});
-      if(!opts.length){ok=false;break;}const k=pickOne(opts);moves.push(k);r+=DIR[k][0];c+=DIR[k][1];path.push(num(r,c));}
-    if(ok&&new Set(moves).size>1)break;
-  }
-  s=path[0];const t=path[path.length-1],arrows=path.slice(1).map((n,i)=>[path[i],n]);
-  const vis=grid(n=>n===s?"start":n===t?"goal":"dim",arrows,n=>n===t?"?":n);
-  const desc=moves.map(k=>DIR[k][3]).join(", ");
-  return{kind:"keys",instr:`Starta på ${s} och följ pilarna. Vilket tal hamnar du på?`,speak:`Starta på ${s} och följ pilarna. Vilket tal hamnar du på?`,html:vis,answer:t,
-    help:()=>({vis:grid(n=>n===s?"start":n===t?"goalok":path.includes(n)?"via":"",arrows),
-      tip:`Gå ett steg i taget: ${path.join(" → ")}. Steg åt sidan är ±1 och steg upp eller ner är ±10 (${desc}).`})};
-}
-/* ---------- 4. Trasig hundraruta ---------- */
+/* ---------- 2. Trasig hundraruta ---------- */
 const SHAPES=[
   {name:"kors",cells:[[0,0],[-1,0],[1,0],[0,-1],[0,1]]},
   {name:"rad",cells:[[0,-2],[0,-1],[0,0],[0,1],[0,2]]},
@@ -221,16 +246,21 @@ function genTrasig(){
 const mini=(fill)=>{let s='<svg viewBox="0 0 76 64" aria-hidden="true"><rect x="2" y="2" width="72" height="60" rx="8" fill="#fff" stroke="#C6D6F2" stroke-width="2"/>';
   for(let r=0;r<4;r++)for(let c=0;c<5;c++){const f=fill(r,c);s+=`<rect x="${7+c*13.2}" y="${6+r*13.5}" width="11" height="11.5" rx="2.5" fill="${f||"#EAF3FF"}"/>`;}return s+'</svg>';};
 const AREAS=[
-  {id:"grannar",name:"Grannar",desc:"Ett steg åt sidan: +1 och −1",ak:"Åk 1",c:"#2BB673",gen:genGrannar,ico:mini((r,c)=>r===1&&c===2?"#3D8BFD":r===1&&c===3?"#FFC93C":"")},
   {id:"tio",name:"Tio hopp",desc:"Ett steg upp eller ner: +10 och −10",ak:"Åk 1–2",c:"#3D8BFD",gen:genTio,ico:mini((r,c)=>r===0&&c===2?"#3D8BFD":r===2&&c===2?"#FFC93C":r===1&&c===2?"#C9DBFF":"")},
-  {id:"steg",name:"Flera steg",desc:"Följ pilarna till målet",ak:"Åk 2",c:"#7B61FF",gen:genSteg,ico:mini((r,c)=>r===0&&c===0?"#3D8BFD":(r===1&&c===0)||(r===1&&c===1)||(r===2&&c===1)?"#C9DBFF":r===2&&c===2?"#FFC93C":"")},
-  {id:"trasig",name:"Trasig hundraruta",desc:"Fyll i talen som fattas",ak:"Åk 2",c:"#FF9F43",gen:genTrasig,ico:mini((r,c)=>r===1&&c===2?"#3D8BFD":(r===0&&c===2)||(r===2&&c===2)||(r===1&&c===1)||(r===1&&c===3)?"#FFF4CC":"")}
+  {id:"trasig",name:"Trasig hundraruta",desc:"Fyll i talen som fattas",ak:"Åk 2",c:"#FF9F43",gen:genTrasig,helper:true,ico:mini((r,c)=>r===1&&c===2?"#3D8BFD":(r===0&&c===2)||(r===2&&c===2)||(r===1&&c===1)||(r===1&&c===3)?"#FFF4CC":"")}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
-function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
+function openHome(){G=null;$("game").classList.remove("withhelp");document.body.classList.remove("wide");if("speechSynthesis" in window)speechSynthesis.cancel();
   $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${a.ico}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${starHtml(data.stars[a.id]||0)}</button>`).join("");
   show("home");}
+$("toolIco").innerHTML=mini((r,c)=>(r+c)%3===0?"#FFC93C":"#fff");
+const marks=new Set();
+function drawTool(){$("toolGrid").innerHTML=grid(n=>marks.has(n)?"mark":"");
+  $("toolGrid").querySelectorAll(".h100 i").forEach((el,i)=>el.onclick=()=>{const n=i+1;marks.has(n)?marks.delete(n):marks.add(n);el.classList.toggle("mark");});}
+$("openTool").onclick=()=>{drawTool();show("tool");};
+$("toolBack").onclick=()=>show("home");
+$("toolClear").onclick=()=>{marks.clear();drawTool();};
 $("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(b)start(AREAS.find(a=>a.id===b.dataset.a));};
 
 /* ---------- Uppläsning ---------- */
@@ -244,7 +274,14 @@ $("spk").onclick=()=>{if(G&&G.t)speak(G.t.speak);};
 
 /* ---------- Spelet ---------- */
 const ROUND=10;let G=null;
-function start(area){G={area,n:ROUND,i:-1,missed:0,pending:[]};show("game");next();}
+function start(area){G={area,n:ROUND,i:-1,missed:0,pending:[]};show("game");
+  $("hrow").hidden=!area.helper;$("helperGrid").innerHTML=area.helper?grid(()=>""):"";next();}
+function helperView(){
+  const on=!!(G&&G.area.helper&&data.showGrid&&$("help").hidden);
+  $("helper").hidden=!on;$("game").classList.toggle("withhelp",on);document.body.classList.toggle("wide",on);
+  $("hbtn").setAttribute("aria-pressed",!!data.showGrid);$("hbtn").textContent=data.showGrid?"Dölj hundrarutan":"Visa hundrarutan";
+}
+$("hbtn").onclick=()=>{data.showGrid=!data.showGrid;save();helperView();};
 function next(){
   G.i++;if(G.i>=G.n)return finish();
   let t=null;if(G.pending.length&&G.pending[0].at<=G.i)t=G.pending.shift().t;
@@ -254,7 +291,7 @@ function next(){
   if("speechSynthesis" in window)speechSynthesis.cancel();
   $("info").textContent=`${G.i+1} av ${G.n}`;$("prog").style.width=(G.i/G.n*100)+"%";
   $("instr").textContent=t.instr;$("feedback").textContent="";$("task").className="task";$("help").hidden=true;$("task").hidden=false;$("pad").hidden=false;
-  render();
+  render();helperView();
 }
 function render(){
   const t=G.t,c=$("content");
@@ -291,7 +328,7 @@ function wrong(given){
   const hp=G.t.help(G.state);
   $("helpSaid").textContent=given?`Du svarade ${given}. Så här är det:`:"Några rutor blev fel. Så här är det:";
   $("helpVis").innerHTML=hp.vis;$("helpTip").textContent="Tips: "+hp.tip;
-  setTimeout(()=>{$("task").hidden=true;$("pad").hidden=true;$("help").hidden=false;$("helpGo").focus({preventScroll:true});},450);
+  setTimeout(()=>{$("task").hidden=true;$("pad").hidden=true;$("help").hidden=false;helperView();$("helpGo").focus({preventScroll:true});},450);
 }
 $("helpGo").onclick=()=>{G.pending.push({t:G.t,at:G.i+3});G.n++;next();};
 $("quit").onclick=openHome;
@@ -300,6 +337,7 @@ function finish(){
   if(st>(data.stars[id]||0)){data.stars[id]=st;save();}
   $("rTitle").textContent=st===3?"Alla rätt direkt!":st===2?"Bra jobbat!":"Klart!";
   $("rBig").innerHTML=starHtml(st);$("rSub").textContent=`${right} av ${ROUND} rätt på första försöket.`;
+  $("game").classList.remove("withhelp");document.body.classList.remove("wide");
   show("result");if(st===3){window.Ljud&&Ljud.fanfare();confetti();}
 }
 $("rAgain").onclick=()=>start(G.area);$("rHome").onclick=openHome;
