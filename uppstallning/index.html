@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Uppställning – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:560px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.6rem;line-height:1;margin:14px 0 4px;font-weight:800}
+h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
+.lead{margin:0 0 14px;color:var(--muted);font-size:1.1rem}
+.stars{color:var(--gold);letter-spacing:1px}
+.stars .off{color:#D5DDEC}
+.opts{background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line);margin-bottom:12px}
+.opts p{margin:0 0 6px;font-weight:800;font-size:1rem}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button{flex:1;min-height:46px;border-radius:12px;background:var(--bg);font-weight:800;font-size:1.05rem;padding:0 10px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.levels{display:grid;gap:10px;margin-top:14px}
+.lv{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line);text-align:left;width:100%}
+.lv:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lv .t{width:54px;height:54px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.5rem;flex:none}
+.lv b{font-size:1.15rem;display:block;line-height:1.15}
+.lv small{color:var(--muted);font-size:.9rem;display:block;line-height:1.25}
+.lv .st{margin-left:auto;flex:none}
+.note{color:var(--muted);font-size:.95rem;margin-top:16px}
+/* spelet */
+.gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.info{font-weight:800;font-size:1.2rem}
+.progress{height:10px;border-radius:5px;background:var(--card);overflow:hidden;margin-top:6px;box-shadow:inset 0 0 0 2px var(--line)}
+.progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.task{background:var(--card);border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--line);margin:12px 0;transition:background .15s}
+.task.ok{background:#DDF5E7}
+.instr{display:flex;gap:10px;align-items:center;font-weight:700;font-size:1.1rem;line-height:1.3}
+.spk{flex:none;width:44px;height:44px;border-radius:50%;background:var(--bg);font-size:1.3rem;box-shadow:0 3px 0 var(--line)}
+/* rutpapperet */
+.paper{--cell:min(14vw,60px);display:inline-grid;grid-auto-rows:var(--cell);margin:10px auto 4px;padding:0;border-radius:12px;overflow:hidden;
+  background-color:#FBFDFF;background-image:linear-gradient(#D3E1F8 1px,transparent 1px),linear-gradient(90deg,#D3E1F8 1px,transparent 1px);background-size:var(--cell) var(--cell);background-position:0 0;
+  box-shadow:inset 0 0 0 2px var(--line),0 3px 0 var(--line)}
+.content{text-align:center}
+.pc{width:var(--cell);height:var(--cell);display:grid;place-items:center;font-weight:800;font-size:calc(var(--cell)*.62);line-height:1;position:relative}
+.pc.lbl{font-size:calc(var(--cell)*.3);color:var(--muted);align-items:end;padding-bottom:4px}
+.pc.small{}
+.pc.uline{box-shadow:inset 0 -4px 0 var(--ink)}
+.carry{width:calc(var(--cell)*.6);height:calc(var(--cell)*.6);border-radius:8px;border:2px dashed #AFC4EA;display:grid;place-items:center;font-size:calc(var(--cell)*.36);font-weight:800;color:var(--accent);background:#fff;cursor:pointer}
+.carry.bor{color:#E5484D}
+.carry.bor.done{border:2px solid #F3B4B6;background:#FFF1F1}
+.carry.s10{position:relative}
+.carry.s10::after{content:"";position:absolute;left:12%;right:12%;top:50%;height:2.5px;background:#E5484D;transform:rotate(-30deg);border-radius:2px}
+.carry.hint{border:3px solid #FFC93C;background:#FFF4CC;animation:pulse 1s ease-in-out infinite}
+.carry.act{border:3px solid var(--accent);background:#EEF1FF}
+.carry.ok{border:2px solid var(--good);color:var(--good-dark);background:#DDF5E7}
+.carry.bad{border:2px solid var(--bad);color:var(--bad);background:#FDE4E4}
+.borrowv{font-size:calc(var(--cell)*.34);color:#E5484D;font-weight:800}
+.dig.tap{cursor:pointer;border-radius:10px}
+.dig.tap:hover{background:#FFF4CC}
+.dig.struck::after{content:"";position:absolute;left:18%;right:18%;top:50%;height:3px;background:#E5484D;transform:rotate(-35deg);border-radius:2px}
+.dig.hint{background:#FFF4CC;border-radius:10px;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 4px #FFC93C}}
+
+.ans{width:calc(var(--cell)*.84);height:calc(var(--cell)*.84);border-radius:10px;border:3px solid #C6D6F2;background:#fff;display:grid;place-items:center;font-size:calc(var(--cell)*.6);color:var(--accent);cursor:pointer}
+.ans.act{border-color:var(--accent);background:#EEF1FF}
+.ans.ok{border-color:var(--good);color:var(--good-dark);background:#DDF5E7}
+.ans.bad{border-color:var(--bad);color:var(--bad);background:#FDE4E4}
+.ans.lead{border-style:dashed;opacity:.6}
+.feedback{min-height:1.5em;font-weight:800;font-size:1.02rem;margin-top:4px;text-align:center;line-height:1.3}
+.feedback.good{color:var(--good-dark)}.feedback.tip{color:#B8323A}.feedback.neutral{color:var(--muted)}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.pad button{height:54px;border-radius:14px;background:var(--card);font-size:1.7rem;font-weight:800;box-shadow:0 4px 0 var(--line)}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pad .wide{grid-column:span 2}
+.pad .next{font-size:1.05rem;background:#FFF4CC}
+.pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.2rem}
+.go{display:block;width:100%;margin-top:12px;padding:13px;border-radius:18px;background:var(--good);color:#fff;font-size:1.3rem;font-weight:800;box-shadow:0 5px 0 var(--good-dark)}
+.help{background:var(--card);border-radius:22px;padding:12px 12px 16px;box-shadow:0 5px 0 var(--line);text-align:center}
+.help .said{color:var(--muted);margin:0 0 4px;font-weight:700}
+.steps{text-align:left;margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.steps li{background:#FFF4CC;border-radius:12px;padding:6px 12px;font-size:1.02rem}
+.steps b{color:var(--ink)}
+.result{text-align:center;padding-top:20px}
+.rbig{font-size:clamp(3.2rem,16vw,4.6rem);font-weight:800;line-height:1;margin:6px 0}
+.rsub{color:var(--muted);font-size:1.15rem;margin:0 0 14px}
+.big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen">
+  <a class="back" href="../">← Till huvudmenyn</a>
+  <h1>Uppställning</h1>
+  <p class="lead">Räkna som i boken: en kolumn i taget, från höger till vänster. Glöm inte minnessiffran och att växla!</p>
+  <div class="opts"><p>Hur stora tal?</p><div class="chips" id="rangeChips"><button data-r="100">Upp till 100</button><button data-r="1000">Upp till 1000</button></div></div>
+  <div class="opts"><p>Hur vill du räkna?</p><div class="chips" id="modeChips"><button data-m="steg">Steg för steg</button><button data-m="sjalv">Själv</button></div></div>
+  <div class="levels" id="levels"></div>
+  <p class="note" id="modeNote"></p>
+</section>
+<section id="game" class="screen" hidden>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="progress"><i id="prog"></i></div>
+  <div class="task" id="task">
+    <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
+    <div class="content" id="content"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+  <div class="pad" id="pad">
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="0">0</button>
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="next" class="next" id="nextKey">Ingen →</button>
+    <button data-k="ok" class="okbtn wide" id="okKey" style="grid-column:1/-1">Rätta</button>
+  </div>
+  <div class="help" id="help" hidden>
+    <p class="said" id="helpSaid"></p>
+    <div id="helpVis"></div>
+    <ul class="steps" id="helpSteps"></ul>
+    <button class="go" id="helpGo">Fortsätt</button>
+  </div>
+</section>
+<section id="result" class="screen result" hidden>
+  <h2 id="rTitle"></h2>
+  <div class="rbig" id="rBig"></div>
+  <p class="rsub" id="rSub"></p>
+  <button class="go" id="rAgain">Spela igen</button>
+  <button class="big" id="rHome">Välj något annat</button>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../ljud.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+const KEY="mattespel-uppstallning-v1";
+const data=(()=>{try{return Object.assign({stars:{},range:"100",mode:"steg"},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},range:"100",mode:"steg"}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const cap1=w=>w[0].toUpperCase()+w.slice(1);
+const COLNAME=["ental","tiotal","hundratal"],COLDEF=["entalen","tiotalen","hundratalen"],COLNAMEU=["Ental","Tiotal","Hundratal"],COLLBL=["E","T","H"];
+const digits=(n,D)=>Array.from({length:D},(_,i)=>Math.floor(n/10**i)%10); // index 0 = ental
+
+/* ---------- Räknaren: räknar ut rätt minnessiffror, växlingar och förklaringar ---------- */
+function solveAdd(a,b,D){
+  const A=digits(a,D),B=digits(b,D),carry=Array(D+1).fill(0),res=[],steps=[];
+  for(let i=0;i<D;i++){const s=A[i]+B[i]+carry[i];res[i]=s%10;carry[i+1]=s>=10?1:0;
+    const parts=(carry[i]?[carry[i]]:[]).concat([A[i],B[i]]);
+    steps.push(`<b>${COLNAMEU[i]}:</b> ${parts.join(" + ")} = ${s}. `+(s>=10?`Skriv ${s%10} och minnessiffran 1 ovanför ${COLDEF[i+1]}.`:`Skriv ${s}.`));}
+  return{A,B,carry,res,steps};
+}
+function solveSub(a,b,D){
+  const A=digits(a,D),B=digits(b,D),top=A.slice(),res=[],steps=[],gave=Array(D).fill(false),recv=Array(D).fill(false);
+  for(let i=0;i<D;i++){
+    if(top[i]<B[i]){
+      let j=i+1;while(top[j]===0)j++;
+      for(let k=j;k>i;k--){top[k]-=1;gave[k]=true;top[k-1]+=10;recv[k-1]=true;}
+      const base=top[i]-10;
+      steps.push(`<b>${COLNAMEU[i]}:</b> ${base} − ${B[i]} går inte. `+(j>i+1?`${cap1(COLDEF[i+1])} är 0, så först växlar du ett ${COLNAME[j]} och skriver 10 ovanför ${COLDEF[i+1]}. Sedan stryker du över den tian och skriver 10 ovanför ${COLDEF[i]}. `:`Växla ett ${COLNAME[j]}: stryk över ${A[j]}:an och skriv 10 ovanför ${COLDEF[i]}. `)+`Räkna 10 + ${base} = ${top[i]}, och ${top[i]} − ${B[i]} = ${top[i]-B[i]}.`);
+    }else if(gave[i]&&recv[i])steps.push(`<b>${COLNAMEU[i]}:</b> ${cap1(COLDEF[i])} fick 10 men gav bort ett, så det är 9 kvar. 9 − ${B[i]} = ${top[i]-B[i]}.`);
+    else if(gave[i])steps.push(`<b>${COLNAMEU[i]}:</b> ${A[i]} blev ${top[i]} när du växlade. ${top[i]} − ${B[i]} = ${top[i]-B[i]}.`);
+    else if(A[i]||B[i]||i===0)steps.push(`<b>${COLNAMEU[i]}:</b> ${top[i]} − ${B[i]} = ${top[i]-B[i]}.`);
+    res[i]=top[i]-B[i];
+  }
+  return{A,B,top,res,steps,gave,recv};
+}
+
+/* ---------- Uppgifter ---------- */
+function classify(op,a,b,D){
+  if(op==="+"){const A=digits(a,D),B=digits(b,D);let c=0,any=false;for(let i=0;i<D;i++){const s=A[i]+B[i]+c;if(s>=10)any=true;c=s>=10?1:0;}return any;}
+  const A=digits(a,D),B=digits(b,D);let br=0,any=false;for(let i=0;i<D;i++){if(A[i]-br<B[i]){any=true;br=1;}else br=0;}return any;
+}
+function makeTask(level,range){
+  const D=range==="1000"?3:2,lo=10**(D-1),hi=10**D-1;
+  let op=level<=2?"+":level<=4?"−":pickOne(["+","−"]),wantCarry=level===2||level===4?true:level===5?Math.random()<.5:false;
+  for(let t=0;t<2000;t++){
+    let a,b;
+    if(op==="+"){a=rnd(lo,hi-lo);const bmin=D===3&&Math.random()<.25?10:lo;b=rnd(bmin,Math.min(hi-a,hi));if(b<10)continue;}
+    else{a=rnd(lo+10,hi);const bmin=D===3&&Math.random()<.25?10:lo;if(a-1<bmin)continue;b=rnd(bmin,a-1);}
+    if(classify(op,a,b,D)!==wantCarry)continue;
+    if(op==="−"&&D===3&&wantCarry&&Math.random()<.35&&Math.floor(a/10)%10!==0)continue; // oftare växling över noll
+    return{op,a,b,D,ans:op==="+"?a+b:a-b};
+  }
+  return makeTask(level,range);
+}
+
+/* ---------- Nivåer ---------- */
+const LEVELS=[
+  {id:1,name:"Addition utan växling",desc:"Ingen minnessiffra behövs",t:"+",c:"#2BB673"},
+  {id:2,name:"Addition med växling",desc:"Skriv minnessiffran ovanför nästa kolumn",t:"+",c:"#1E9E5E"},
+  {id:3,name:"Subtraktion utan växling",desc:"Varje kolumn går att räkna direkt",t:"−",c:"#FF6B6B"},
+  {id:4,name:"Subtraktion med växling",desc:"Tryck på rutan ovanför för att växla",t:"−",c:"#E5484D"},
+  {id:5,name:"Blandat",desc:"Addition och subtraktion om vartannat",t:"±",c:"#7B61FF"}
+];
+const starKey=(lv,r)=>`${lv}-${r}`;
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
+  $("rangeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.r===data.range));
+  $("modeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===data.mode));
+  $("modeNote").textContent=data.mode==="steg"?"Steg för steg: varje siffra kontrolleras direkt, och du får en ledtråd om något blir fel.":"Själv: fyll i hela uppställningen och tryck på Rätta när du är klar.";
+  $("levels").innerHTML=LEVELS.map(l=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${l.t}</span><span><b>${l.name}</b><small>${l.desc}</small></span><span class="st">${starHtml(data.stars[starKey(l.id,data.range)]||0)}</span></button>`).join("");
+  show("home");}
+$("rangeChips").onclick=e=>{const b=e.target.closest("[data-r]");if(b){data.range=b.dataset.r;save();openHome();}};
+$("modeChips").onclick=e=>{const b=e.target.closest("[data-m]");if(b){data.mode=b.dataset.m;save();openHome();}};
+$("levels").onclick=e=>{const b=e.target.closest("[data-l]");if(b)start(+b.dataset.l);};
+
+/* ---------- Uppläsning ---------- */
+let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
+function speak(text){if(!("speechSynthesis" in window))return toast("Uppläsning fungerar inte i den här webbläsaren.");loadVoices();
+  if(!svVoice&&speechSynthesis.getVoices().length)return toast("Den här datorn har ingen svensk röst för uppläsning.");
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
+$("spk").onclick=()=>{if(G&&G.t)speak(G.t.op==="+"?`Räkna ${G.t.a} plus ${G.t.b}. Börja med entalen längst till höger. Glöm inte minnessiffran.`:`Räkna ${G.t.a} minus ${G.t.b}. Börja med entalen längst till höger. Om det inte går, växla från kolumnen till vänster.`);};
+
+/* ---------- Spelet ---------- */
+const ROUND=8;let G=null;
+function start(level){G={level,range:data.range,mode:data.mode,n:ROUND,i:-1,missed:0,pending:[]};show("game");next();}
+function next(){
+  G.i++;if(G.i>=G.n)return finish();
+  let t=null;if(G.pending.length&&G.pending[0].at<=G.i)t=G.pending.shift().t;
+  if(!t)t=makeTask(G.level,G.range);
+  G.t=t;G.first=true;G.busy=false;
+  const D=t.D;G.sol=t.op==="+"?solveAdd(t.a,t.b,D):solveSub(t.a,t.b,D);
+  const lenRes=String(t.ans).length;
+  G.st={ans:Array(D).fill(""),carry:Array(D+1).fill(""),top:digits(t.a,D),orig:digits(t.a,D),gave:Array(D).fill(false),recv:Array(D).fill(false),mark:{},cmark:{},lenRes,
+        cur:{type:"ans",col:0},hintDig:-1};
+  if("speechSynthesis" in window)speechSynthesis.cancel();
+  $("info").textContent=`${G.i+1} av ${G.n}`;$("prog").style.width=(G.i/G.n*100)+"%";
+  $("instr").textContent=t.op==="+"?`Räkna ${t.a} + ${t.b}.`:`Räkna ${t.a} − ${t.b}.`;
+  say(G.mode==="steg"?"Börja med entalen längst till höger. Använd rutorna ovanför om du behöver.":"Fyll i hela uppställningen och tryck på Rätta.","neutral");
+  $("task").className="task";$("help").hidden=true;$("task").hidden=false;$("pad").hidden=false;
+  $("nextKey").hidden=!(t.op==="+"&&G.mode==="steg");$("okKey").hidden=G.mode==="steg";
+  if(t.op!=="+"||G.mode!=="steg"){$("nextKey").hidden=true;}
+  render();
+}
+function say(msg,cls){$("feedback").textContent=msg;$("feedback").className="feedback "+(cls||"");}
+/* rita uppställningen: kolumnerna från vänster: tecken, H, T, E */
+function paper(st,solved){
+  const t=G.t,D=t.D,cols=D+2,B=digits(t.b,D),blen=String(t.b).length,alen=String(t.a).length;
+  let h=`<div class="paper" style="grid-template-columns:repeat(${cols},var(--cell))">`;
+  const pad=()=>`<div class="pc"></div>`;
+  // rad 1: H T E
+  h+=pad();for(let i=D-1;i>=0;i--)h+=`<div class="pc lbl">${COLLBL[i]}</div>`;h+=pad();
+  // rad 2: rutor för minnessiffror och växlingar (finns alltid)
+  h+=pad();
+  for(let i=D-1;i>=0;i--){
+    if(t.op==="+"){
+      if(i===0){h+=pad();continue;}
+      if(solved){h+=`<div class="pc small">${G.sol.carry[i]?`<span class="carry ok">1</span>`:`<span class="carry" style="visibility:hidden"></span>`}</div>`;continue;}
+      const cls="carry"+(st.cur.type==="carry"&&st.cur.col===i?" act":"")+(st.cmark[i]?" "+st.cmark[i]:"");
+      h+=`<div class="pc small"><span class="${cls}" data-carry="${i}">${st.carry[i]}</span></div>`;
+    }else{
+      const src=solved?G.sol:st,tv=src.top[i],gave=src.gave[i],recv=src.recv[i],canTap=!solved&&i>0&&i<alen,show=i<alen;
+      if(!show){h+=pad();continue;}
+      const hint=!solved&&st.hintDig===i?" hint":"",label=recv?"10":"",str=recv&&gave?" s10":"";
+      h+=`<div class="pc small"><span class="carry bor${label!==""?" done":""}${str}${hint}"${canTap?` data-bor="${i}"`:` style="cursor:default"`}>${label}</span></div>`;
+    }
+  }
+  h+=pad();
+  // rad 3: första talet
+  h+=pad();
+  for(let i=D-1;i>=0;i--){const src=solved?G.sol:st,struck=t.op==="−"&&src.gave&&src.gave[i]&&!src.recv[i],show=i<alen;
+    h+=`<div class="pc dig${struck?" struck":""}" data-dig="${i}">${show?st.orig[i]:""}</div>`;}
+  h+=pad();
+  // rad 4: tecken och andra talet, med streck under
+  h+=`<div class="pc uline">${t.op}</div>`;
+  for(let i=D-1;i>=0;i--)h+=`<div class="pc uline">${i<blen?B[i]:""}</div>`;
+  h+=pad();
+  // rad 5: svaret
+  h+=pad();
+  for(let i=D-1;i>=0;i--){
+    const lead=i>=st.lenRes;
+    if(solved){h+=`<div class="pc"><span class="ans ok${lead?" lead":""}">${lead?"":G.sol.res[i]}</span></div>`;continue;}
+    const act=st.cur.type==="ans"&&st.cur.col===i;
+    h+=`<div class="pc"><span class="ans${act?" act":""}${st.mark[i]?" "+st.mark[i]:""}${lead?" lead":""}" data-ans="${i}">${st.ans[i]}</span></div>`;
+  }
+  h+=pad();
+  return h+"</div>";
+}
+function render(){
+  $("content").innerHTML=paper(G.st,false);
+  const c=$("content");
+  c.querySelectorAll("[data-dig]").forEach(el=>el.onclick=()=>tapDigit(+el.dataset.dig));
+  c.querySelectorAll("[data-bor]").forEach(el=>el.onclick=()=>tapDigit(+el.dataset.bor));
+  if(G.mode==="sjalv"){
+    c.querySelectorAll("[data-ans]").forEach(el=>el.onclick=()=>{if(G.busy)return;G.st.cur={type:"ans",col:+el.dataset.ans};render();});
+    c.querySelectorAll("[data-carry]").forEach(el=>el.onclick=()=>{if(G.busy)return;G.st.cur={type:"carry",col:+el.dataset.carry};render();});
+  }
+}
+/* växla: tryck på en siffra i första talet */
+function tapDigit(j){
+  if(!G||G.busy||G.t.op!=="−"||j<1)return;const st=G.st,B=digits(G.t.b,G.t.D);
+  const needs=st.top[j-1]<B[j-1]||(st.top[j-1]===0&&j>=2&&st.top[j-2]<B[j-2]);
+  if(st.top[j]===0){say(`Det finns inga ${COLNAME[j]} att växla. Växla först från ${COLDEF[j+1]||"kolumnen till vänster"}.`,"tip");miss();return;}
+  if(!needs){say(`Du behöver inte växla här. ${st.top[j-1]} − ${B[j-1]} går redan att räkna.`,"tip");miss();return;}
+  st.top[j]-=1;st.gave[j]=true;st.top[j-1]+=10;st.recv[j-1]=true;st.hintDig=-1;window.Ljud&&Ljud.ok();
+  const base=st.top[j-1]-10;
+  if(base===0&&j-1>0&&st.top[j-2]<B[j-2])say(`Du växlade ett ${COLNAME[j]}. Kom ihåg att ${st.orig[j]}:an nu är en mindre. Växla nu från tian också.`,"good");
+  else if(st.recv[j])say(`Du växlade från tian, så där är 9 kvar. Räkna 10 + ${base} − ${B[j-1]}.`,"good");
+  else say(`Du växlade ett ${COLNAME[j]}. Kom ihåg att ${st.orig[j]}:an nu är en mindre. Räkna 10 + ${base} − ${B[j-1]}.`,"good");
+  render();
+}
+function miss(){if(G.first){G.missed++;G.first=false;}window.Ljud&&Ljud.bad();}
+function press(k){
+  if(!G||G.busy)return;
+  G.mode==="steg"?pressSteg(k):pressSjalv(k);
+}
+/* ----- Steg för steg ----- */
+function pressSteg(k){
+  const st=G.st,t=G.t,sol=G.sol,cur=st.cur,B=digits(t.b,t.D);
+  if(k==="del"||k==="ok")return;
+  if(cur.type==="carry"){
+    const need=sol.carry[cur.col];
+    if(k==="next"){ if(need){miss();say(`${cur.col===1?"Entalen":"Tiotalen"} blev tio eller mer. Skriv minnessiffran 1 ovanför ${COLDEF[cur.col]}.`,"tip");return;}
+      st.cur={type:"ans",col:cur.col};say(`Bra! Nu ${COLDEF[cur.col]}.`,"good");render();return;}
+    if(k==="1"&&need){st.carry[cur.col]="1";st.cmark[cur.col]="ok";st.cur={type:"ans",col:cur.col};window.Ljud&&Ljud.ok();say(`Rätt minnessiffra! Nu ${COLDEF[cur.col]}. Kom ihåg att räkna med den.`,"good");render();return;}
+    miss();say(need?"Minnessiffran är alltid 1 när summan är mellan 10 och 19.":`Här behövs ingen minnessiffra, summan blev mindre än tio. Tryck på Ingen →.`,"tip");return;
+  }
+  // svarsruta
+  const i=cur.col;
+  if(k==="next"){say("Skriv först siffran i den blå rutan.","neutral");return;}
+  if(t.op==="−"&&st.top[i]<B[i]){miss();
+    let j=i+1;while(st.top[j]===0)j++;st.hintDig=j;render();
+    say(`${st.top[i]} − ${B[i]} går inte. Växla genom att trycka på den gula rutan.`,"tip");return;}
+  const want=t.op==="+"?sol.res[i]:st.top[i]-B[i];
+  if(+k!==want){miss();st.ans[i]=k;st.mark[i]="bad";render();
+    const hint=t.op==="+"?`Räkna ${[...(sol.carry[i]?["minnessiffran 1"]:[]),sol.A[i],sol.B[i]].join(" + ")} i ${COLDEF[i]}. Blir det tio eller mer skriver du bara entalssiffran här.`:(st.recv[i]&&!st.gave[i]?`Räkna 10 + ${st.orig[i]} = ${st.top[i]}, och sedan ${st.top[i]} − ${B[i]}.`
+      :st.recv[i]&&st.gave[i]?`${cap1(COLDEF[i])} fick 10 men du växlade bort ett, så det är 9 kvar. Räkna 9 − ${B[i]}.`
+      :st.gave[i]?`Kom ihåg att du växlade: ${st.orig[i]} är nu ${st.top[i]}. Räkna ${st.top[i]} − ${B[i]}.`
+      :`Räkna ${st.top[i]} − ${B[i]} i ${COLDEF[i]}.`);
+    say(hint,"tip");{const g=G;setTimeout(()=>{if(G===g&&G.st===st&&st.mark[i]==="bad"){st.ans[i]="";st.mark[i]="";render();}},900);}return;}
+  st.ans[i]=k;st.mark[i]="ok";window.Ljud&&Ljud.ok();
+  const last=t.op==="+"?i===t.D-1:i>=st.lenRes-1;
+  if(last){render();return taskDone();}
+  if(t.op==="+"){st.cur={type:"carry",col:i+1};say(`Rätt! Behövs en minnessiffra ovanför ${COLDEF[i+1]}? Skriv 1, eller tryck på Ingen →.`,"good");}
+  else{st.cur={type:"ans",col:i+1};say(`Rätt! Nu ${COLDEF[i+1]}.`,"good");}
+  render();
+}
+/* ----- Själv ----- */
+function pressSjalv(k){
+  const st=G.st,t=G.t,cur=st.cur;
+  if(k==="ok")return checkSjalv();
+  if(k==="next")return;
+  if(cur.type==="carry"){
+    if(k==="del")st.carry[cur.col]="";else{st.carry[cur.col]=k;st.cur={type:"ans",col:cur.col};}
+  }else{
+    const i=cur.col;
+    if(k==="del"){st.ans[i]="";}
+    else{st.ans[i]=k;
+      if(i<t.D-1)st.cur={type:"ans",col:i+1};}
+  }
+  st.mark={};st.cmark={};render();
+}
+function checkSjalv(){
+  const st=G.st,t=G.t,sol=G.sol;let ok=true;
+  if(!st.ans.slice(0,st.lenRes).every(v=>v!=="")){say("Fyll i alla svarsrutor först.","neutral");return;}
+  for(let i=0;i<t.D;i++){const want=i<st.lenRes?String(sol.res[i]):"",got=st.ans[i]===""&&i>=st.lenRes?"":st.ans[i];
+    if(i>=st.lenRes&&(st.ans[i]===""||st.ans[i]==="0")){continue;}
+    if(got!==want){ok=false;st.mark[i]="bad";}else st.mark[i]="ok";}
+  let carryWrong=false;
+  if(t.op==="+")for(let i=1;i<t.D;i++){const want=sol.carry[i]?"1":"";if(st.carry[i]!==want){carryWrong=true;st.cmark[i]="bad";}}
+  if(ok&&!carryWrong){render();return taskDone();}
+  miss();render();
+  if(ok&&carryWrong){say("Svaret är rätt, men minnessiffrorna stämmer inte. Kolla rutorna ovanför.","tip");
+    {const g=G,i=G.i;setTimeout(()=>{if(G===g&&G.i===i&&!G.busy)showHelp(true);},1400);}return;}
+  {const g=G,i=G.i;setTimeout(()=>{if(G===g&&G.i===i&&!G.busy)showHelp(false);},700);}
+}
+function showHelp(onlyCarry){
+  G.busy=true;$("helpSaid").textContent=onlyCarry?"Minnessiffrorna ska stå så här:":"Så här räknar man:";
+  $("helpVis").innerHTML=paper(G.st,true);
+  $("helpSteps").innerHTML=G.sol.steps.map(s=>`<li>${s}</li>`).join("")+`<li><b>Svar:</b> ${G.t.a} ${G.t.op} ${G.t.b} = ${G.t.ans}</li>`;
+  $("task").hidden=true;$("pad").hidden=true;$("help").hidden=false;
+}
+$("helpGo").onclick=()=>{G.pending.push({t:G.t,at:G.i+3});G.n++;next();};
+const PRAISE=["Rätt!","Snyggt räknat!","Bra!","Toppen!","Klockrent!"];
+function taskDone(){
+  G.busy=true;window.Ljud&&Ljud.ok();$("task").className="task ok";
+  say((G.first?pickOne(PRAISE):"Nu blev det rätt!")+` ${G.t.a} ${G.t.op} ${G.t.b} = ${G.t.ans}`,"good");
+  $("content").innerHTML=paper(G.st,true);
+  const g=G,i=G.i;setTimeout(()=>{if(G===g&&G.i===i)next();},1500);
+}
+document.querySelectorAll("#pad button").forEach(b=>b.onclick=()=>press(b.dataset.k));
+document.addEventListener("keydown",e=>{if($("game").hidden||!G)return;if(!$("help").hidden){if(e.key==="Enter"){e.preventDefault();$("helpGo").click();}return;}
+  if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace"){e.preventDefault();press("del");}
+  else if(e.key==="Enter"){e.preventDefault();press(G.mode==="sjalv"?"ok":"next");}else if(e.key==="ArrowLeft"||e.key==="Tab"){e.preventDefault();press("next");}});
+$("quit").onclick=openHome;
+function finish(){
+  const right=Math.max(0,ROUND-G.missed),st=right===ROUND?3:right>=ROUND-2?2:1,k=starKey(G.level,G.range);
+  if(st>(data.stars[k]||0)){data.stars[k]=st;save();}
+  $("rTitle").textContent=st===3?"Alla rätt direkt!":st===2?"Bra räknat!":"Klart!";
+  $("rBig").innerHTML=starHtml(st);$("rSub").textContent=`${right} av ${ROUND} uppställningar rätt på första försöket.`;
+  show("result");if(st===3){window.Ljud&&Ljud.fanfare();confetti();}
+}
+$("rAgain").onclick=()=>start(G.level);$("rHome").onclick=openHome;
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W/2+(Math.random()-.5)*120,y:H*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pickOne(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);
+}
+openHome();
+</script>
+</body>
+</html>
