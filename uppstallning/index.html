@@ -22,7 +22,7 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 [hidden]{display:none !important}
 .back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
-h1{font-size:2.6rem;line-height:1;margin:14px 0 4px;font-weight:800}
+h1{font-size:2.6rem;line-height:1;margin:14px 0 12px;font-weight:800}
 h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .lead{margin:0 0 14px;color:var(--muted);font-size:1.1rem}
 .stars{color:var(--gold);letter-spacing:1px}
@@ -87,6 +87,53 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .pad .wide{grid-column:span 2}
 .pad .next{font-size:1.05rem;background:#FFF4CC}
 .pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.2rem}
+/* Så här räknar du */
+.howto{background:#E9F4FF;border-radius:20px;overflow:hidden;box-shadow:0 4px 0 #B7C9EE;margin:0 0 14px;border:2px solid #C9D8F5}
+.hhead{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;background:#4B5BD6;color:#fff;padding:8px 12px}
+.htitle{font-weight:800;font-size:1.25rem}
+.htabs{display:flex;gap:6px}
+.htabs button{border-radius:999px;background:rgba(255,255,255,.18);color:#fff;font-weight:800;font-size:.9rem;padding:4px 12px}
+.htabs button[aria-pressed="true"]{background:#fff;color:#4B5BD6}
+.hbody{display:grid;grid-template-columns:1fr;gap:10px;padding:12px}
+@media(min-width:620px){.hbody{grid-template-columns:1.1fr 1fr;align-items:center}}
+.hex{margin:0 0 6px;color:var(--muted);font-weight:700;font-size:1rem}
+.hex b{color:var(--ink)}
+.hsteps ol{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.hsteps li{display:flex;gap:8px;align-items:flex-start;font-size:1.02rem;line-height:1.3;border-radius:12px;padding:4px 6px;transition:background .2s,opacity .2s}
+.hsteps li.on{background:#FFF4CC}
+.hsteps li.dim{opacity:.35}
+.hn{flex:none;width:26px;height:26px;border-radius:50%;background:#4B5BD6;color:#fff;display:grid;place-items:center;font-weight:800;font-size:.95rem}
+.hplay{margin-top:10px;border-radius:999px;background:#fff;box-shadow:0 3px 0 #B7C9EE;padding:6px 14px;font-weight:800;font-size:.95rem;color:#4B5BD6}
+.hpaper{position:relative;display:inline-block;line-height:0}
+.pencil{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.pen{fill:none;stroke:#4A5068;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round;opacity:.85;stroke-dasharray:1;stroke-dashoffset:1;animation:draw 1.4s ease-out forwards}
+.pen:nth-of-type(2){animation-delay:.9s}.pen:nth-of-type(3){animation-delay:1.8s}.pen:nth-of-type(4){animation-delay:2.6s}.pen:nth-of-type(5){animation-delay:3.2s}
+.pen.late{animation-duration:.4s}
+@keyframes draw{to{stroke-dashoffset:0}}
+.pnote{font-family:"Baloo 2","Trebuchet MS",cursive,sans-serif;font-weight:700;font-size:15px;fill:#4A5068;opacity:0;animation:fadein .5s ease-out 1.2s forwards}
+@keyframes fadein{to{opacity:1}}
+.hnav{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+.hnav .hplay{margin-top:0}
+.hplay:disabled{opacity:.4}
+.hplay.main{background:#4B5BD6;color:#fff;box-shadow:0 3px 0 #2F3DA8}
+@media (prefers-reduced-motion:reduce){.pen{animation:none;stroke-dashoffset:0}.pnote{animation:none;opacity:1}}
+.hvis{display:flex;align-items:flex-end;justify-content:center;gap:6px;flex-wrap:wrap}
+.hvis .paper{margin:0}
+.hhl{background:rgba(255,201,60,.35);border-radius:6px}
+.hmk{position:absolute;top:-4px;right:-4px;width:20px;height:20px;border-radius:50%;background:#4B5BD6;color:#fff;font-size:12px;font-weight:800;display:grid;place-items:center;box-shadow:0 0 0 2px #fff;animation:pop .35s ease-out}
+@keyframes pop{0%{transform:scale(0)}70%{transform:scale(1.25)}100%{transform:scale(1)}}
+.howl{position:relative;width:78px;flex:none}
+.howl svg{width:78px;height:auto;display:block}
+.hbub{position:absolute;right:0;bottom:100%;margin-bottom:8px;background:#fff;border:2px solid #4B5BD6;border-radius:12px;padding:4px 8px;font-weight:800;font-size:.8rem;line-height:1.2;width:128px;color:var(--ink);text-align:center}
+.hbub::after{content:"";position:absolute;right:26px;top:100%;border:7px solid transparent;border-top-color:#4B5BD6}
+.howl{margin-top:58px}
+@media(max-width:619px){.hvis{justify-content:space-between}}
+.qbtn{width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:1.25rem;color:#4B5BD6}
+.hmodal{position:fixed;inset:0;background:rgba(29,43,83,.55);display:grid;place-items:center;z-index:9;padding:12px}
+.hmodal[hidden]{display:none}
+.hsheet{width:100%;max-width:640px;max-height:92vh;overflow:auto;background:transparent}
+.hclose{display:block;margin:0 0 0 auto;background:#fff;border-radius:999px;padding:6px 14px;font-weight:800;box-shadow:0 3px 0 var(--line);margin-bottom:8px}
+@media (prefers-reduced-motion:reduce){.hmk{animation:none}}
 .go{display:block;width:100%;margin-top:12px;padding:13px;border-radius:18px;background:var(--good);color:#fff;font-size:1.3rem;font-weight:800;box-shadow:0 5px 0 var(--good-dark)}
 .help{background:var(--card);border-radius:22px;padding:12px 12px 16px;box-shadow:0 5px 0 var(--line);text-align:center}
 .help .said{color:var(--muted);margin:0 0 4px;font-weight:700}
@@ -107,14 +154,14 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Uppställning</h1>
-  <p class="lead">Räkna som i boken: en kolumn i taget, från höger till vänster. Glöm inte minnessiffran och att växla!</p>
+  <div id="howtoHome"></div>
   <div class="opts"><p>Hur stora tal?</p><div class="chips" id="rangeChips"><button data-r="100">Upp till 100</button><button data-r="1000">Upp till 1000</button></div></div>
   <div class="opts"><p>Hur vill du räkna?</p><div class="chips" id="modeChips"><button data-m="steg">Steg för steg</button><button data-m="sjalv">Själv</button></div></div>
   <div class="levels" id="levels"></div>
   <p class="note" id="modeNote"></p>
 </section>
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><button class="qbtn" id="qbtn" aria-label="Så här räknar du">?</button><span class="info" id="info"></span></div>
   <div class="progress"><i id="prog"></i></div>
   <div class="task" id="task">
     <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
@@ -142,6 +189,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="big" id="rHome">Välj något annat</button>
 </section>
 </div>
+<div class="hmodal" id="hmodal" hidden><div class="hsheet"><button class="hclose" id="hclose">Stäng ✕</button><div id="howtoModal"></div></div></div>
 <div class="toast" id="toast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
@@ -199,6 +247,83 @@ function makeTask(level,range){
   return makeTask(level,range);
 }
 
+/* ---------- "Så här räknar du" med animering ---------- */
+const OWL_SVG="<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 -20 120 140\"><ellipse cx=\"60\" cy=\"112\" rx=\"34\" ry=\"5\" fill=\"rgba(0,0,0,.18)\"/><path d=\"M24 44 L30 16 L46 34 Z\" fill=\"#6B4E9B\"/><path d=\"M96 44 L90 16 L74 34 Z\" fill=\"#6B4E9B\"/><ellipse cx=\"60\" cy=\"68\" rx=\"40\" ry=\"42\" fill=\"#8A6BC6\"/><ellipse cx=\"60\" cy=\"80\" rx=\"26\" ry=\"28\" fill=\"#F3E8FF\"/><path d=\"M44 74q4 4 8 0M56 82q4 4 8 0M68 74q4 4 8 0M50 92q4 4 8 0M62 92q4 4 8 0\" stroke=\"rgba(0,0,0,.14)\" stroke-width=\"2.5\" fill=\"none\" stroke-linecap=\"round\"/><path d=\"M22 72q-10 10 -2 24q8-6 10-16z\" fill=\"#6B4E9B\"/><path d=\"M98 72q10 10 2 24q-8-6-10-16z\" fill=\"#6B4E9B\"/><path d=\"M46 108h8M66 108h8\" stroke=\"#FF9F43\" stroke-width=\"5\" stroke-linecap=\"round\"/><circle cx=\"42\" cy=\"50\" r=\"16\" fill=\"#fff\"/><circle cx=\"78\" cy=\"50\" r=\"16\" fill=\"#fff\"/><circle cx=\"45\" cy=\"52\" r=\"7\" fill=\"#1D2B53\"/><circle cx=\"75\" cy=\"52\" r=\"7\" fill=\"#1D2B53\"/><circle cx=\"47.5\" cy=\"49.5\" r=\"2.4\" fill=\"#fff\"/><circle cx=\"77.5\" cy=\"49.5\" r=\"2.4\" fill=\"#fff\"/><circle cx=\"42\" cy=\"50\" r=\"17\" fill=\"none\" stroke=\"#FFC93C\" stroke-width=\"4\"/><circle cx=\"78\" cy=\"50\" r=\"17\" fill=\"none\" stroke=\"#FFC93C\" stroke-width=\"4\"/><line x1=\"59\" y1=\"50\" x2=\"61\" y2=\"50\" stroke=\"#FFC93C\" stroke-width=\"4\"/><path d=\"M55 62 L65 62 L60 71 Z\" fill=\"#FF9F43\"/></svg>";
+const HOWTO={
+  "+":{title:"Addition med växling",ex:"47 + 38",bubble:"Glöm inte minnessiffran!",
+    steps:["Börja med entalen: 7 + 8 = 15.","Skriv 5 under strecket och minnessiffran 1 ovanför tiotalen.","Räkna tiotalen, med minnessiffran: 1 + 4 + 3 = 8."]},
+  "−":{title:"Subtraktion med växling",ex:"52 − 27",bubble:"Kom ihåg att 5:an nu är en mindre!",
+    steps:["Börja med entalen: 2 − 7 går inte.","Växla: stryk över 5:an och skriv 10 ovanför entalen.","Räkna entalen: 10 + 2 − 7 = 5.","Räkna tiotalen: 5:an är nu 4, så 4 − 2 = 2."]}
+};
+function demoPaper(op,stage){
+  const add=op==="+",hl=(col,row)=>{
+    if(add)return stage===1&&col==="E"&&(row==="top"||row==="bot")||stage===2&&(col==="E"&&row==="ans"||col==="T"&&row==="box")||stage===3&&col==="T";
+    return stage===1&&col==="E"&&(row==="top"||row==="bot")||stage===2&&(col==="T"&&row==="top"||col==="E"&&row==="box")||stage===3&&col==="E"||stage===4&&col==="T"&&row!=="box";};
+  const mk=n=>`<span class="hmk">${n}</span>`,cell=(col,row,inner,extra)=>`<div class="pc${hl(col,row)?" hhl":""}${extra||""}">${inner}</div>`,pad=`<div class="pc"></div>`;
+  let h=`<div class="paper" style="--cell:46px;grid-template-columns:repeat(4,var(--cell))">`;
+  h+=pad+`<div class="pc lbl">T</div><div class="pc lbl">E</div>`+pad;
+  if(add){h+=pad+cell("T","box",`<span class="carry${stage>=2?" ok":""}">${stage>=2?"1":""}</span>`+(stage>=2?mk(2):""))+pad+pad;}
+  else{h+=pad+cell("T","box",`<span class="carry bor" style="cursor:default"></span>`)+cell("E","box",`<span class="carry bor${stage>=2?" done":""}" style="cursor:default">${stage>=2?"10":""}</span>`)+pad;}
+  h+=pad+cell("T","top",add?"4":"5"+(stage>=2?mk(2):""),!add&&stage>=2?" dig struck":"")+cell("E","top",(add?"7":"2")+(stage>=1?mk(1):""))+pad;
+  h+=`<div class="pc uline">${op}</div>`+cell("T","bot",add?"3":"2"," uline")+cell("E","bot",add?"8":"7"," uline")+pad;
+  const aT=add?(stage>=3?"8":""):(stage>=4?"2":""),aE=add?(stage>=2?"5":""):(stage>=3?"5":"");
+  h+=pad+cell("T","ans",`<span class="ans${aT?" ok":""}">${aT}</span>`+(add&&stage>=3?mk(3):!add&&stage>=4?mk(4):""))+cell("E","ans",`<span class="ans${aE?" ok":""}">${aE}</span>`+(!add&&stage>=3?mk(3):""))+pad;
+  return h+"</div>";
+}
+// Blyerts: en lite ojämn ring (som ritad för hand) och pilar. Rutorna är 46 px: kolumn 1 = T, 2 = E; rad 1 = rutor ovanför, 2 = första talet, 3 = andra talet, 4 = svaret.
+const C=46,cx=c=>c*C+C/2,cy=r=>r*C+C/2;
+function ring(x1,y1,x2,y2,seed){
+  const mx=(x1+x2)/2,my=(y1+y2)/2,rx=(x2-x1)/2+8,ry=(y2-y1)/2+8;let d="";const n=72,start=-2.2+seed*.4;
+  for(let i=0;i<=n;i++){const t=start+i/n*Math.PI*2.14,w=1+Math.sin(t*2+seed)*.03+(i/n)*.07;
+    const x=mx+Math.cos(t)*rx*w,y=my+Math.sin(t)*ry*w;d+=(i?"L":"M")+x.toFixed(1)+" "+y.toFixed(1);}
+  return`<path class="pen" pathLength="1" d="${d}"/>`;
+}
+function arrow(x1,y1,x2,y2,bend){
+  const mx=(x1+x2)/2+bend,my=(y1+y2)/2-Math.abs(bend)*.4,ang=Math.atan2(y2-my,x2-mx),a1=ang+2.6,a2=ang-2.6,h=9;
+  return`<path class="pen" pathLength="1" d="M${x1} ${y1}Q${mx} ${my} ${x2} ${y2}"/><path class="pen late" pathLength="1" d="M${(x2+Math.cos(a1)*h).toFixed(1)} ${(y2+Math.sin(a1)*h).toFixed(1)}L${x2} ${y2}L${(x2+Math.cos(a2)*h).toFixed(1)} ${(y2+Math.sin(a2)*h).toFixed(1)}"/>`;
+}
+const note=(x,y,t)=>`<text class="pnote" x="${x}" y="${y}">${t}</text>`;
+function pencil(op,stage){
+  const L=c=>c*C,R=c=>c*C+C;let g="";
+  if(op==="+"){
+    if(stage===1)g=ring(L(2)+2,L(2)+2,R(2)-2,R(3)-2,1)+note(R(2)+4,L(3)-4,"7+8")+note(R(2)+4,L(3)+14,"=15");
+    if(stage===2)g=ring(L(2)+4,L(4)+4,R(2)-4,R(4)-4,2)+ring(L(1)+6,L(1)+6,R(1)-6,R(1)-6,3)+arrow(cx(2)+10,L(4)+4,cx(1)+12,R(1)-2,22);
+    if(stage===3)g=ring(L(1)+3,L(1)+3,R(1)-3,R(4)-3,4)+note(R(2)+4,L(3)+4,"1+4+3")+note(R(2)+4,L(3)+22,"=8");
+  }else{
+    if(stage===1)g=ring(L(2)+2,L(2)+2,R(2)-2,R(3)-2,1)+note(R(2)+4,L(3)-4,"2−7")+note(R(2)+4,L(3)+14,"går inte");
+    if(stage===2)g=ring(L(1)+6,L(2)+4,R(1)-6,R(2)-4,2)+arrow(cx(1)+6,L(2)+6,cx(2)-4,cy(1)+4,-10)+ring(L(2)+6,L(1)+6,R(2)-6,R(1)-6,3);
+    if(stage===3)g=ring(L(2)+3,L(1)+3,R(2)-3,R(4)-3,4)+note(R(2)+4,L(2)+10,"10+2−7")+note(R(2)+4,L(2)+28,"=5");
+    if(stage===4)g=ring(L(1)+3,L(2)+3,R(1)-3,R(4)-3,5)+note(2,L(2)+10,"nu 4")+note(2,L(4)+30,"4−2=2");
+  }
+  return`<svg class="pencil" viewBox="0 0 ${4*C} ${5*C}" aria-hidden="true">${g}</svg>`;
+}
+function howtoHTML(op,stage,playing){
+  const d=HOWTO[op];
+  return `<div class="howto">
+    <div class="hhead"><span class="htitle">Så här räknar du</span>
+      <span class="htabs"><button data-op="+" aria-pressed="${op==="+"}">Addition</button><button data-op="−" aria-pressed="${op==="−"}">Subtraktion</button></span></div>
+    <div class="hbody">
+      <div class="hsteps"><p class="hex">${d.title}: <b>${d.ex}</b></p>
+        <ol>${d.steps.map((s,i)=>`<li class="${playing?(i+1<stage?"done":i+1===stage?"on":"dim"):""}"><span class="hn">${i+1}</span><span>${s}</span></li>`).join("")}</ol>
+        ${playing?`<div class="hnav"><button class="hplay" data-back ${stage<=1?"disabled":""}>← Tillbaka</button><button class="hplay main" data-next>${stage>=d.steps.length?"↻ Börja om":"Nästa steg →"}</button><button class="hplay" data-stop>Klar</button></div>`
+          :`<button class="hplay main" data-play>▶ Visa steg för steg</button>`}</div>
+      <div class="hvis"><div class="hpaper">${demoPaper(op,stage)}${playing?pencil(op,stage):""}</div>
+        <div class="howl">${OWL_SVG}<span class="hbub">${d.bubble}</span></div></div>
+    </div></div>`;
+}
+function mountHowto(el,op){
+  const last=o=>HOWTO[o].steps.length;
+  let cur={op,stage:last(op),playing:false,timer:0};
+  const draw=()=>{el.innerHTML=howtoHTML(cur.op,cur.stage,cur.playing);
+    el.querySelectorAll("[data-op]").forEach(b=>b.onclick=()=>{clearTimeout(cur.timer);cur={op:b.dataset.op,stage:last(b.dataset.op),playing:false,timer:0};draw();});
+    const b=q=>el.querySelector(q);
+    if(b("[data-play]"))b("[data-play]").onclick=()=>{cur.playing=true;cur.stage=1;draw();};
+    if(b("[data-next]"))b("[data-next]").onclick=()=>{cur.stage=cur.stage>=last(cur.op)?1:cur.stage+1;draw();};
+    if(b("[data-back]"))b("[data-back]").onclick=()=>{if(cur.stage>1){cur.stage--;draw();}};
+    if(b("[data-stop]"))b("[data-stop]").onclick=()=>{cur.playing=false;cur.stage=last(cur.op);draw();};};
+  draw();return{stop:()=>clearTimeout(cur.timer)};
+}
+
 /* ---------- Nivåer ---------- */
 const LEVELS=[
   {id:1,name:"Addition utan växling",desc:"Ingen minnessiffra behövs",t:"+",c:"#2BB673"},
@@ -210,7 +335,8 @@ const LEVELS=[
 const starKey=(lv,r)=>`${lv}-${r}`;
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
-function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
+let homeHow=null,modalHow=null;
+function openHome(){G=null;if(!homeHow)homeHow=mountHowto($("howtoHome"),"+");if("speechSynthesis" in window)speechSynthesis.cancel();
   $("rangeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.r===data.range));
   $("modeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===data.mode));
   $("modeNote").textContent=data.mode==="steg"?"Steg för steg: varje siffra kontrolleras direkt, och du får en ledtråd om något blir fel.":"Själv: fyll i hela uppställningen och tryck på Rätta när du är klar.";
@@ -407,6 +533,9 @@ document.addEventListener("keydown",e=>{if($("game").hidden||!G)return;if(!$("he
   if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace"){e.preventDefault();press("del");}
   else if(e.key==="Enter"){e.preventDefault();press(G.mode==="sjalv"?"ok":"next");}else if(e.key==="ArrowLeft"||e.key==="Tab"){e.preventDefault();press("next");}});
 $("quit").onclick=openHome;
+$("qbtn").onclick=()=>{modalHow&&modalHow.stop();modalHow=mountHowto($("howtoModal"),G&&G.t?G.t.op:"+");$("hmodal").hidden=false;};
+$("hclose").onclick=()=>{modalHow&&modalHow.stop();$("hmodal").hidden=true;};
+$("hmodal").onclick=e=>{if(e.target.id==="hmodal"){modalHow&&modalHow.stop();$("hmodal").hidden=true;}};
 function finish(){
   const right=Math.max(0,ROUND-G.missed),st=right===ROUND?3:right>=ROUND-2?2:1,k=starKey(G.level,G.range);
   if(st>(data.stars[k]||0)){data.stars[k]=st;save();}
