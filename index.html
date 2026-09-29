@@ -134,6 +134,26 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .qrbox{display:grid;place-items:center;min-height:40px}
 .qrbox img,.qrbox canvas{border:8px solid #fff;border-radius:8px;box-shadow:0 3px 0 var(--line)}
 .pcode{width:100%;min-height:80px;font:inherit;font-size:.8rem;border:3px solid var(--line);border-radius:12px;padding:8px;word-break:break-all;color:var(--ink)}
+.logincard{width:100%;max-width:340px;margin:6px auto 0;border:3px dashed #C6D6F2;border-radius:18px;padding:14px 14px 12px;background:#fff}
+.lc-head{display:flex;align-items:center;gap:10px;justify-content:center;text-align:left}
+.lc-head b{display:block;font-size:1.2rem;line-height:1.1}.lc-head small{color:var(--muted);font-weight:700}
+.lc-owl{width:54px;display:block}.lc-owl svg{width:54px;height:auto;display:block}
+.lc-qr{display:grid;place-items:center;margin:10px auto 4px;min-height:60px}
+.lc-qr img,.lc-qr canvas{width:230px!important;height:230px!important;image-rendering:pixelated}
+.lc-name{font-size:1.7rem;font-weight:800;line-height:1.1;margin:4px 0}
+.lc-how{font-size:.85rem;color:var(--muted);margin:6px 0 0}
+.scanbox{position:relative;border-radius:16px;overflow:hidden;background:#1D2B53;aspect-ratio:1;max-width:340px;margin:0 auto}
+.scanbox video{width:100%;height:100%;object-fit:cover;display:block}
+.scanframe{position:absolute;inset:18%;border:4px solid #FFC93C;border-radius:16px;box-shadow:0 0 0 999px rgba(29,43,83,.35)}
+@media print{
+  body *{visibility:hidden!important}
+  #mCard,#mCard *{visibility:visible!important}
+  #mCard{position:absolute;inset:0;background:none;display:block;padding:0}
+  #mCard .sheet{box-shadow:none;max-width:none;padding:0}
+  #mCard .noprint{display:none!important}
+  .logincard{margin:1cm auto 0;width:9cm;max-width:none;border:2px dashed #999}
+  .lc-qr img,.lc-qr canvas{width:6cm!important;height:6cm!important}
+}
 </style>
 </head>
 <body>
@@ -199,6 +219,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <h2 style="text-align:center">Vem tränar idag?</h2>
   <div class="who" id="whoGrid"></div>
   <p class="pnote">Profilerna finns bara på den här enheten.</p>
+  <button class="gobtn" id="scanBtn" style="background:#3D5AFE;box-shadow:0 5px 0 #2A3FB8">📷 Logga in med QR-kod</button>
   <button class="soundbtn" id="guestBtn" style="display:block;margin:10px auto 0">Fortsätt som gäst</button>
 </div></div>
 
@@ -224,11 +245,32 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <div class="top"><h2 id="profName"></h2><button class="close" data-close aria-label="Stäng">✕</button></div>
   <div class="plist">
     <button class="tool" id="pSwitch"><span class="ic">👥</span><span><b>Byt profil</b><small>Låt någon annan träna</small></span></button>
+    <button class="tool" id="pCard"><span class="ic">🪪</span><span><b>Ta med min profil</b><small>Skriv ut ditt inloggningskort med QR-kod</small></span></button>
     <button class="tool" id="pMove"><span class="ic">📲</span><span><b>Flytta mina framsteg</b><small>Till en annan dator eller surfplatta</small></span></button>
     <button class="tool" id="pImport"><span class="ic">📥</span><span><b>Hämta framsteg</b><small>Har du en flyttkod? Lägg in den här</small></span></button>
     <button class="tool" id="pPin"><span class="ic">🔑</span><span><b>Byt kod</b><small>Välj en ny kod med 4 siffror</small></span></button>
     <button class="tool" id="pDel"><span class="ic">🗑️</span><span><b>Ta bort profilen</b><small>Allt för den här profilen raderas</small></span></button>
   </div>
+</div></div>
+
+<div class="modal" id="mCard" hidden><div class="sheet" role="dialog" aria-label="Mitt inloggningskort" style="max-width:420px;text-align:center">
+  <div class="top noprint"><h2>Mitt inloggningskort</h2><button class="close" data-close aria-label="Stäng">✕</button></div>
+  <div class="logincard" id="loginCard">
+    <div class="lc-head"><span class="lc-owl" id="lcOwl"></span><span><b>Matte-Portalen</b><small>Mitt inloggningskort</small></span></div>
+    <div class="lc-qr" id="lcQr"></div>
+    <div class="lc-name" id="lcName"></div>
+    <p class="lc-how">Logga in: tryck på <b>Logga in med QR-kod</b> och håll upp kortet framför kameran.</p>
+  </div>
+  <p class="pnote noprint" id="lcNote"></p>
+  <div class="noprint" style="display:flex;gap:8px;margin-top:10px"><button class="gobtn" id="lcPrint" style="margin:0">🖨️ Skriv ut</button></div>
+</div></div>
+
+<div class="modal" id="mScan" hidden><div class="sheet" role="dialog" aria-label="Logga in med QR-kod" style="max-width:440px;text-align:center">
+  <div class="top"><h2>Logga in med QR-kod</h2><button class="close" id="scanClose" aria-label="Stäng">✕</button></div>
+  <p style="margin:0 0 8px">Håll upp ditt kort framför kameran.</p>
+  <div class="scanbox"><video id="scanVideo" playsinline muted></video><span class="scanframe"></span></div>
+  <canvas id="scanCanvas" hidden></canvas>
+  <p class="pinmsg" id="scanMsg"></p>
 </div></div>
 
 <div class="modal" id="mMove" hidden><div class="sheet" role="dialog" aria-label="Flytta framsteg" style="max-width:440px;text-align:center">
@@ -553,7 +595,7 @@ if(fresh.length){
 }
 
 /* ---------- Stäng rutor ---------- */
-document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(m.id==="mWho"||m.id==="mPin")return;if(e.target===m||e.target.closest("[data-close]"))m.hidden=true;}));
+document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(m.id==="mWho"||m.id==="mPin"||m.id==="mScan")return;if(e.target===m||e.target.closest("[data-close]"))m.hidden=true;}));
 document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelectorAll(".modal").forEach(m=>{if(m.id!=="mWho")m.hidden=true;});});
 
 /* ---------- Ljud ---------- */
@@ -624,7 +666,7 @@ const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",
 $("whoGrid").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.id==="whoAdd")return openNew();
   const p=byId(b.dataset.id);askPin(`Hej ${p.name}! Skriv din kod.`,owlOf(p.id),v=>{if(hash(v+p.salt)!==p.pinH){$("pinMsg").textContent="Fel kod. Försök igen.";return false;}switchTo(p.id);return true;},
     {cancel:openWho,forgot:()=>adultReset(p)});};
-$("guestBtn").onclick=()=>switchTo("gast");
+$("guestBtn").onclick=()=>{if(!list().length&&!owner()){closeAll();return;}switchTo("gast");};
 
 /* ---------- Ny profil ---------- */
 const ADJ=["Glada","Snabba","Modiga","Kloka","Busiga","Lugna","Starka","Pigga","Nyfikna","Coola"],DJUR=["Ugglan","Räven","Björnen","Haren","Lodjuret","Ekorren","Igelkotten","Delfinen","Pandan","Tigern"];
@@ -666,11 +708,11 @@ function chip(){
   const w=$("whoChip");
   if(me)w.innerHTML=`<span class="mini">${owlOf(me.id)}</span>${esc(me.name)} ▾`;
   else if(act==="gast")w.innerHTML=`👤 Gäst ▾`;
-  else w.innerHTML=list().length?"👥 Välj profil":"＋ Skapa profil";
+  else w.innerHTML=list().length?"👥 Välj profil":"👤 Logga in";
 }
-$("whoChip").onclick=()=>{if(me){$("profName").textContent=me.name;["pMove","pPin","pDel"].forEach(i=>$(i).hidden=false);openM("mProf");}
-  else if(act==="gast"){$("profName").textContent="Gäst";["pMove","pPin","pDel"].forEach(i=>$(i).hidden=true);openM("mProf");}
-  else if(list().length)openWho();else openNew();};
+$("whoChip").onclick=()=>{if(me){$("profName").textContent=me.name;["pCard","pMove","pPin","pDel"].forEach(i=>$(i).hidden=false);openM("mProf");}
+  else if(act==="gast"){$("profName").textContent="Gäst";["pCard","pMove","pPin","pDel"].forEach(i=>$(i).hidden=true);openM("mProf");}
+  else openWho();};
 $("pSwitch").onclick=()=>{stash();try{sessionStorage.removeItem("mp-active")}catch(e){}openWho();};
 $("pPin").onclick=()=>askPin("Skriv din nuvarande kod",owlOf(me.id),v=>{if(hash(v+me.salt)!==me.pinH){$("pinMsg").textContent="Fel kod.";return false;}
   askPin("Välj en ny kod",owlOf(me.id),n=>{const ps=list(),q=ps.find(x=>x.id===me.id);q.pinH=hash(n+q.salt);saveList(ps);closeAll();alert("Klart! Din nya kod är sparad.");return true;});return true;});
@@ -688,7 +730,7 @@ async function pack(obj){
   return"J"+b64u(bytes);
 }
 async function unpack(code){
-  code=code.trim().replace(/^.*#flytta=/,"").replace(/\s+/g,"");const kind=code[0],bytes=unb64u(code.slice(1));
+  code=code.trim().replace(/^.*#(flytta|kort)=/,"").replace(/\s+/g,"");const kind=code[0],bytes=unb64u(code.slice(1));
   let txt;if(kind==="Z"){const buf=await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).arrayBuffer();txt=new TextDecoder().decode(buf);}
   else txt=new TextDecoder().decode(bytes);
   const o=JSON.parse(txt);if(!o||o.v!==1||!o.n||!o.d)throw new Error("fel");return o;
@@ -711,6 +753,63 @@ $("moveFile").onclick=()=>{const a=document.createElement("a");a.href=URL.create
 $("pImport").onclick=()=>{$("impCode").value="";$("impMsg").textContent="";openM("mImp");};
 $("impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("impCode").value=String(r.result).trim();};r.readAsText(f);};
 $("impGo").onclick=async()=>{let o;try{o=await unpack($("impCode").value);}catch(e){$("impMsg").textContent="Koden fungerade inte. Kontrollera att hela koden är med.";return;}importBundle(o);};
+/* ---------- Inloggningskort med QR-kod ---------- */
+const loadScript=src=>new Promise((ok,no)=>{if(document.querySelector(`script[src="${src}"]`))return ok();const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=no;document.head.appendChild(s);});
+const cardURL=code=>location.origin+location.pathname+"#kort="+code;
+$("pCard").onclick=async()=>{
+  stash();const code=await pack({v:1,n:me.name,h:me.pinH,s:me.salt,d:trimmed()}),url=cardURL(code);
+  $("lcOwl").innerHTML=owlOf(me.id);$("lcName").textContent=me.name;$("lcQr").innerHTML="";$("lcNote").textContent="";openM("mCard");
+  if(url.length>2900){$("lcNote").textContent="Du har samlat så mycket att koden blev för stor för ett kort. Använd Flytta mina framsteg i stället.";return;}
+  try{await loadScript("https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js");
+    new QRCode($("lcQr"),{text:url,width:460,height:460,correctLevel:url.length>1200?QRCode.CorrectLevel.L:QRCode.CorrectLevel.M});
+    $("lcNote").textContent="Kortet sparar dina framsteg som de är idag. Skriv gärna ut ett nytt kort ibland.";}
+  catch(e){$("lcNote").textContent="QR-koden kräver internet. Försök igen när du är uppkopplad.";}
+};
+$("lcPrint").onclick=()=>window.print();
+// Sammanslagning: för varje övning behålls den version som kommit längst, så att kortet aldrig tar bort framsteg.
+function progressOf(v){try{const o=JSON.parse(v);let n=0;const walk=x=>{if(typeof x==="number")n+=x;else if(x&&typeof x==="object")Object.values(x).forEach(walk);};
+  walk(o.stars||{});walk(o.fly||{});walk(o.mem||{});walk(o.car||{});walk(o.space||{});walk(o.frog||{});walk(o.tower||{});walk(o.skatt||{});walk(o.kiosk||{});
+  n+=Object.keys(o.facts||{}).length+(o.days||[]).length+(o.seen||[]).length+(Array.isArray(o)?o.length:0)+Object.keys(o.race||{}).length+Object.keys(o.blitz||{}).length;return n;}catch(e){return 0;}}
+function mergeBundles(a,b){const out=Object.assign({},a);
+  Object.keys(b).forEach(k=>{if(!(k in a)){out[k]=b[k];return;}
+    if(k==="matteportalen-dagar"||k==="matteportalen-klister"){try{const x=JSON.parse(a[k]),y=JSON.parse(b[k]),f=k==="matteportalen-dagar"?"days":"seen";
+      x[f]=[...new Set([...(x[f]||[]),...(y[f]||[])])].sort();out[k]=JSON.stringify(x);}catch(e){}return;}
+    if(progressOf(b[k])>progressOf(a[k]))out[k]=b[k];});
+  return out;}
+function loginWithCard(o){
+  const ps=list();let p=ps.find(x=>x.salt===o.s);
+  if(p){const cur=p.id===owner()?snapLive():(jGet("mp-bundle-"+p.id)||{}),merged=mergeBundles(cur,o.d);
+    if(p.id===owner())loadLive(merged);else jSet("mp-bundle-"+p.id,merged);}
+  else{let name=o.n;while(ps.some(x=>x.name.toLowerCase()===name.toLowerCase()))name+=" 2";
+    p={id:"p"+Date.now().toString(36),name,salt:o.s,pinH:o.h,created:Date.now()};ps.push(p);saveList(ps);jSet("mp-bundle-"+p.id,o.d);}
+  window.Ljud&&Ljud.magic();switchTo(p.id);
+}
+/* Kameran */
+let scanStream=null,scanRaf=0,detector=null;
+function stopScan(){cancelAnimationFrame(scanRaf);if(scanStream){scanStream.getTracks().forEach(t=>t.stop());scanStream=null;}}
+$("scanClose").onclick=()=>{stopScan();openWho();};
+$("scanBtn").onclick=async()=>{
+  openM("mScan");$("scanMsg").className="pinmsg";$("scanMsg").textContent="Startar kameran …";
+  try{scanStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:"environment"},audio:false});}
+  catch(e){$("scanMsg").textContent="Kameran gick inte att starta. Tillåt kameran i webbläsaren och försök igen.";return;}
+  const v=$("scanVideo");v.srcObject=scanStream;await v.play().catch(()=>{});
+  if("BarcodeDetector" in window){try{detector=new BarcodeDetector({formats:["qr_code"]});}catch(e){detector=null;}}
+  if(!detector){try{await loadScript("https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js");}catch(e){$("scanMsg").textContent="QR-läsaren kräver internet.";return;}}
+  $("scanMsg").textContent="";
+  const c=$("scanCanvas"),x=c.getContext("2d",{willReadFrequently:true});let busy=false;
+  const tick=async()=>{
+    if(!scanStream)return;
+    if(!busy&&v.readyState>=2){busy=true;let text=null;
+      try{if(detector){const r=await detector.detect(v);if(r&&r[0])text=r[0].rawValue;}
+        else{const w=Math.min(640,v.videoWidth),h=Math.round(w*v.videoHeight/v.videoWidth);c.width=w;c.height=h;x.drawImage(v,0,0,w,h);const r=window.jsQR&&jsQR(x.getImageData(0,0,w,h).data,w,h);if(r)text=r.data;}}catch(e){}
+      busy=false;
+      if(text){const m=text.match(/#(kort|flytta)=(.+)$/);
+        if(m){stopScan();try{const o=await unpack(m[2]);loginWithCard(o);}catch(e){$("scanMsg").textContent="Kortet gick inte att läsa. Försök igen.";}return;}
+        $("scanMsg").textContent="Det där är inte ett inloggningskort från Matte-Portalen.";}}
+    scanRaf=requestAnimationFrame(tick);};
+  tick();
+};
+
 function importBundle(o){
   if(!confirm(`Lägga in framstegen för ${o.n} på den här enheten?`))return;
   const ps=list();let p=ps.find(x=>x.salt===o.s);
@@ -724,7 +823,8 @@ function importBundle(o){
 
 /* ---------- Start ---------- */
 chip();
-if(location.hash.startsWith("#flytta=")){unpack(location.hash).then(importBundle).catch(()=>{alert("Flyttkoden fungerade inte.");history.replaceState(null,"",location.pathname);});}
+if(location.hash.startsWith("#kort=")){unpack(location.hash.replace("#kort=","")).then(loginWithCard).catch(()=>{alert("Inloggningskortet fungerade inte.");history.replaceState(null,"",location.pathname);});}
+else if(location.hash.startsWith("#flytta=")){unpack(location.hash).then(importBundle).catch(()=>{alert("Flyttkoden fungerade inte.");history.replaceState(null,"",location.pathname);});}
 else if(list().length&&!act)openWho();
 else if(act&&act!==owner()){switchTo(act);}  // en annan flik har bytt profil
 })();
