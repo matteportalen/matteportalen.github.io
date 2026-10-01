@@ -199,7 +199,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   </div>
 
   <nav class="cards" aria-label="Övningar">
-    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Åtta spel! Flyg, kör, hoppa, bygg, segla och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
+    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Nio spel! Flyg, kör, hoppa, bygg, handla och leta skatter i labyrinten medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="lillaplus/"><span class="tile sm" style="--c:#2BB673">+ −</span><span class="txt"><b>Lilla plus &amp; minus</b><small>Huvudräkning med tal upp till 10.</small><span class="badge" id="bLilla" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="tiotal/"><span class="tile" style="--c:#3D8BFD">10</span><span class="txt"><b>Tiotalsövergång</b><small>Räkna via tiotalet med tioruta och tallinje.</small><span class="badge" id="bTiotal" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="hundraruta/"><span class="tile" style="--c:#17AFC4"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="21" y="12" width="7.5" height="7.5" rx="1.5" fill="#FFC93C" opacity="1"/><rect x="30" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="3" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="30" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/></svg></span><span class="txt"><b>Hundrarutan</b><small>Steg åt sidan är ett, steg upp och ner är tio. Laga den trasiga hundrarutan!</small><span class="badge" id="bHundra" hidden></span></span><span class="chev">›</span></a>
@@ -371,13 +371,15 @@ const lp=get("mattespel-lillaplus-v1");
 S.lpBlitz=lp?Math.max(0,...Object.values(lp.blitz||{})):0;S.lpRace=lp?Object.values(lp.race||{}).map(r=>r.time):[];
 if(S.lpBlitz)show("bLilla",`⚡ Rekord: ${S.lpBlitz} rätt på 60 s`);else if(S.lpRace.length)show("bLilla",`🏁 Rekord: ${fmt(Math.min(...S.lpRace))}`);
 const np=get("np3-resultat");S.np=Object.values(np||{});
+/* Skattjakten (i Spelhörnan): en till tre stjärnor per nivå */
+const sj=get("mattespel-skattjakten-v1");S.sj=sj||{};S.stars+=Object.values(S.sj.stars||{}).reduce((a,b)=>a+(+b||0),0);
 if(S.np.length){const last=S.np.slice().sort((a,b)=>b.d-a.d)[0];show("bNp",`Senast: ${last.r} av ${last.t} rätt`)}
 $("sStars").textContent=S.stars;
 
 /* ---------- Dagar i rad (en dag räknas när något har tränats) ---------- */
 const day=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const today=day(new Date()),yest=day(new Date(Date.now()-864e5));
-const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat"].map(k=>localStorage.getItem(k)||"").join("|");
+const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1"].map(k=>localStorage.getItem(k)||"").join("|");
 let fp=0;for(let i=0;i<snap.length;i++)fp=(fp*31+snap.charCodeAt(i))|0;
 const st=get("matteportalen-dagar")||{fp:null,days:[]};
 if(st.fp!==null&&st.fp!==fp&&!st.days.includes(today))st.days.push(today);
@@ -478,7 +480,10 @@ const STICKERS=[
   ["diagnos","📋","Diagnosen klar","Gör en diagnos i Bedömningsstöd i taluppfattning.",()=>S.taDiag.length>0],
   ["allaratt","🏆","Alla rätt","Få alla rätt på en diagnos.",()=>S.taDiag.some(d=>d.ok===d.n)],
   ["prov","📝","Provtränaren","Rätta ett delprov i Nationella prov.",()=>S.np.length>0],
-  ["fullpott","🎯","Fullpott","Få alla rätt på ett delprov i Nationella prov.",()=>S.np.some(r=>r.r===r.t&&r.t>0)]
+  ["fullpott","🎯","Fullpott","Få alla rätt på ett delprov i Nationella prov.",()=>S.np.some(r=>r.r===r.t&&r.t>0)],
+  ["skattjagare","🗝️","Skattjägaren","Hitta utgången i Skattjakten.",()=>Object.values(S.sj.stars||{}).some(v=>v>=1)],
+  ["kronjuvel","👑","Kronjuvelen","Hitta en krona i Skattjakten.",()=>((S.sj.chamber||{}).crown||0)>0],
+  ["skattmastare","🏴‍☠️","Skattmästaren","Hitta alla skatter på nivå 3 i Skattjakten.",()=>((S.sj.stars||{})[3]||0)>=3]
 ];
 const got=STICKERS.filter(x=>x[4]()).map(x=>x[0]);
 const kst=Object.assign({seen:[]},get("matteportalen-klister")||{});
@@ -527,7 +532,7 @@ $("bubble").textContent=`${hi} ${msg}`;
 /* ============ Elevprofiler (allt sparas bara på den här enheten) ============ */
 (function(){
 const PKEYS=["mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
-  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
+  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const jGet=k=>{try{return JSON.parse(lsGet(k)||"null")}catch(e){return null}},jSet=(k,v)=>lsSet(k,JSON.stringify(v));
 const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};

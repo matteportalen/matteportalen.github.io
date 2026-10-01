@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Skattjakten – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.35;-webkit-tap-highlight-color:transparent;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.wrap{max-width:620px;margin:0 auto;padding:12px 16px 40px}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.5rem;line-height:1;margin:0;font-weight:800}
+h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
+.lead{margin:6px 0 0;color:var(--muted);font-size:1.05rem}
+.party{display:flex;align-items:center;gap:12px;margin-top:6px}
+.ppet{width:84px;flex:none}
+.pet svg{width:100%;height:auto;display:block}
+.world{display:inline-block;font-size:.95rem;vertical-align:middle;background:#17AFC4;color:#fff;border-radius:999px;padding:2px 10px;margin-left:4px;transform:rotate(-3deg)}
+
+/* Teman och nivåer */
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.theme{background:var(--card);border-radius:18px;padding:8px 6px 8px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:800;border:3px solid transparent}
+.theme canvas{width:100%;max-width:120px;aspect-ratio:1;border-radius:10px;image-rendering:pixelated}
+.theme[aria-pressed="true"]{border-color:var(--accent);background:#EEF1FF}
+.levels{display:grid;gap:10px}
+.lvl{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:10px 14px;box-shadow:0 4px 0 var(--line);text-align:left;border:3px solid transparent}
+.lvl .num{width:44px;height:44px;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.4rem;flex:none}
+.lvl b{display:block;font-size:1.15rem;line-height:1.1}
+.lvl small{color:var(--muted);font-size:.9rem}
+.lvl .st{margin-left:auto;color:var(--gold);letter-spacing:1px;white-space:nowrap}
+.lvl .st .off{color:#D5DDEC}
+.lvl[aria-pressed="true"]{border-color:var(--accent);background:#EEF1FF}
+.go{display:block;width:100%;margin-top:16px;padding:14px;border-radius:18px;background:var(--good);color:#fff;font-size:1.4rem;font-weight:800;box-shadow:0 5px 0 var(--good-dark)}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
+.chamber{margin-top:18px;background:linear-gradient(135deg,#FFF4CC,#FFE58A);border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 #E2C252;text-align:center}
+.chamber b{font-size:1.15rem}
+.loot{display:flex;justify-content:center;gap:18px;margin-top:6px;font-size:1.5rem;font-weight:800}
+.chamber small{display:block;color:#7A5B00;font-size:.9rem;margin-top:4px}
+
+/* Spelet */
+#game{position:fixed;inset:0;display:flex;flex-direction:column;background:#1D2B53;
+  padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px)}
+.hud{display:flex;align-items:center;gap:10px;padding:8px 12px;color:#fff;font-weight:800;flex-wrap:wrap}
+.hud .quit{color:#C6D6F2;font-weight:700}
+.hud .lv{background:rgba(255,255,255,.12);border-radius:999px;padding:1px 10px;font-size:.95rem}
+.hud .hl{margin-left:auto;display:flex;gap:12px;font-size:1.1rem;align-items:center}
+.hud .hl small{font-size:.85rem;color:#C6D6F2}
+.stage{flex:1;min-height:0;position:relative}
+#cv{position:absolute;inset:0;width:100%;height:100%;touch-action:none;image-rendering:pixelated}
+.hint{position:absolute;left:50%;top:10px;transform:translateX(-50%);background:rgba(255,255,255,.92);color:var(--ink);border-radius:12px;padding:4px 12px;font-weight:700;font-size:.95rem;max-width:92%;text-align:center;pointer-events:none;transition:opacity .4s}
+.pad{display:grid;grid-template-columns:repeat(3,60px);grid-template-rows:repeat(2,52px);gap:6px;justify-content:center;padding:8px 0 10px}
+.pad button{background:rgba(255,255,255,.14);color:#fff;border-radius:14px;font-size:1.6rem;font-weight:800;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+.pad button:active,.pad button.on{background:rgba(255,255,255,.3);transform:translateY(2px)}
+.pad .u{grid-column:2;grid-row:1}.pad .l{grid-column:1;grid-row:2}.pad .d{grid-column:2;grid-row:2}.pad .r{grid-column:3;grid-row:2}
+@media (min-width:900px) and (pointer:fine){.pad{display:none}}
+/* liggande mobil: pilknapparna ligger i hörnet ovanpå spelplanen, så att labyrinten får hela höjden */
+@media (orientation:landscape) and (max-height:520px){.pad{position:absolute;right:max(10px,env(safe-area-inset-right,0px));bottom:max(8px,env(safe-area-inset-bottom,0px));padding:0;z-index:3}.pad button{background:rgba(255,255,255,.2);backdrop-filter:blur(2px)}.toast{bottom:16px}}
+
+/* Hindrets pratbubbla med uppgiften */
+.dlg{position:fixed;inset:0;background:rgba(14,24,56,.6);display:flex;align-items:flex-end;justify-content:center;z-index:10;padding:10px}
+.dcard{background:var(--card);border-radius:22px;max-width:520px;width:100%;padding:12px 14px 14px;box-shadow:0 6px 0 var(--line);max-height:100%;overflow:auto}
+.who{display:flex;align-items:flex-start;gap:10px}
+.who canvas{width:64px;height:64px;flex:none;image-rendering:pixelated;background:#EEF2FA;border-radius:14px}
+.bubble{position:relative;background:#EEF1FF;border-radius:16px;padding:8px 12px;flex:1}
+.bubble::before{content:"";position:absolute;left:-8px;top:18px;border:8px solid transparent;border-right-color:#EEF1FF;border-left:0}
+.bubble .nm{font-weight:800;color:var(--accent);font-size:.95rem}
+.bubble .say{color:var(--muted);font-weight:700;font-size:.95rem}
+.bubble .q{font-weight:700;font-size:1.15rem;line-height:1.35;margin-top:4px}
+.spk{flex:none;width:44px;height:44px;border-radius:50%;background:var(--bg);font-size:1.3rem;box-shadow:0 3px 0 var(--line)}
+.ansrow{display:flex;align-items:center;justify-content:center;gap:10px;margin:10px 0 6px}
+.ans{min-width:3.2em;text-align:center;font-size:2rem;font-weight:800;border:3px solid var(--accent);border-radius:14px;color:var(--accent);background:#EEF1FF;line-height:1.25}
+.ans.empty{color:#B7C3DA}
+.fb{min-height:1.3em;text-align:center;font-weight:800}
+.fb.ok{color:var(--good)}.fb.bad{color:#B86E00}
+.tip{background:#FFF4CC;border-radius:12px;padding:6px 10px;margin:6px 0;font-size:1rem}
+.keys{display:grid;grid-template-columns:repeat(6,1fr);gap:6px}
+.keys button{height:48px;border-radius:12px;background:var(--bg);font-size:1.4rem;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.keys .ok{grid-column:span 2;background:var(--good);color:#fff;box-shadow:0 3px 0 var(--good-dark);font-size:1.2rem}
+.keys .del{font-size:1.2rem}
+.backbtn{display:block;margin:10px auto 0;color:var(--muted);font-weight:700;text-decoration:underline}
+
+/* Vinst */
+.result{text-align:center;padding-top:16px}
+.rbig{font-size:3rem;color:var(--gold);letter-spacing:4px;margin:4px 0}
+.rbig .off{color:#D5DDEC}
+.rsub{color:var(--muted);font-size:1.1rem;margin:4px 0 0}
+.big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#FFF4CC;color:var(--ink);padding:8px 16px;border-radius:14px;font-weight:800;z-index:12;max-width:90vw;text-align:center;box-shadow:0 4px 0 #E2C252}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="home">
+  <a class="back" href="../">← Spelhörnan</a>
+  <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
+    <div><h1>Skattjakten <span class="world">🗝️ Labyrint</span></h1><p class="lead" id="homeLead">Gå runt i labyrinten och leta skatter. Hindren släpper bara förbi den som löser deras uppgift.</p></div></div>
+  <h2>Välj tema</h2>
+  <div class="themes" id="themes"></div>
+  <h2>Välj nivå</h2>
+  <div class="levels" id="levels"></div>
+  <button class="go" id="start">Starta skattjakten</button>
+  <div class="chamber" id="chamber"></div>
+</div>
+
+<section id="game" hidden>
+  <div class="hud"><button class="quit" id="quit">← Avsluta</button><span class="lv" id="hudLv"></span>
+    <span class="hl"><span id="hudChest"></span><span>💰 <span id="hCoin">0</span></span><span>💎 <span id="hGem">0</span></span><span>👑 <span id="hCrown">0</span></span></span></div>
+  <div class="stage" id="stage"><canvas id="cv"></canvas><div class="hint" id="hint"></div></div>
+  <div class="pad" id="pad" aria-label="Pilknappar">
+    <button class="u" data-d="0,-1" aria-label="Upp">▲</button><button class="l" data-d="-1,0" aria-label="Vänster">◀</button>
+    <button class="d" data-d="0,1" aria-label="Ner">▼</button><button class="r" data-d="1,0" aria-label="Höger">▶</button>
+  </div>
+</section>
+
+<div class="dlg" id="dlg" hidden>
+  <div class="dcard" role="dialog" aria-modal="true" aria-labelledby="dName">
+    <div class="who"><canvas id="dPic" width="64" height="64"></canvas>
+      <div class="bubble"><div class="nm" id="dName"></div><div class="say" id="dSay"></div><div class="q" id="dQ"></div></div>
+      <button class="spk" id="dSpk" aria-label="Läs upp">🔊</button></div>
+    <div class="ansrow"><span class="ans empty" id="dAns">?</span><b id="dUnit"></b></div>
+    <div class="fb" id="dFb" aria-live="polite"></div>
+    <div class="tip" id="dTip" hidden></div>
+    <div class="keys" id="dKeys">
+      <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="del" class="del" aria-label="Sudda">⌫</button>
+      <button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="0">0</button><button data-k="ok" class="ok" style="grid-column:auto">OK</button>
+    </div>
+    <button class="backbtn" id="dBack">Gå tillbaka och ta en annan väg</button>
+  </div>
+</div>
+
+<div class="wrap result" id="win" hidden>
+  <h1 id="wTitle">Du hittade utgången!</h1>
+  <div class="rbig" id="wStars"></div>
+  <p class="rsub" id="wSub"></p>
+  <div class="loot" id="wLoot"></div>
+  <button class="go" id="wAgain">Ny labyrint</button>
+  <button class="big" id="wHome">Välj tema och nivå</button>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+/* ---------- Lagring ---------- */
+const KEY="mattespel-skattjakten-v1";
+const data=(()=>{const std={theme:"tradgarden",level:1,stars:{},chamber:{coin:0,gem:0,crown:0},runs:0};
+  try{const d=JSON.parse(localStorage.getItem(KEY)||"null");return d?Object.assign(std,d,{chamber:Object.assign(std.chamber,d.chamber||{})}):std;}catch(e){return std;}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
+
+/* ---------- Teman: rutor ur Kenneys paket (CC0, kenney.nl). Index = plats i bildens rutnät, 12 rutor per rad. ---------- */
+const THEMES={
+  tradgarden:{name:"Trädgården",img:"bilder/tradgarden.png",floor:[0,0,0,0,1,2],walls:[16,28,5,16,28,15],exit:{s:"t",i:112,name:"Porten"},bg:"#5BB264",
+    foes:[{s:"t",i:94,name:"Bikupan",say:"Bzzz! Svara rätt, så flyger bina undan."},{s:"t",i:83,name:"Skylten",say:"Här får bara den gå som kan räkna."},{s:"t",i:95,name:"Måltavlan",say:"Pricka rätt svar, så får du passera."}]},
+  grottan:{name:"Grottan",img:"bilder/grottan.png",floor:[48,48,48,49,50,48],walls:[57,58,59,57],exit:{s:"g",i:45,name:"Dörren ut"},bg:"#2A1E1B",
+    foes:[{s:"g",i:121,name:"Spöket",say:"Buuu! Jag släpper bara förbi den som löser min gåta."},{s:"g",i:108,name:"Slemmet",say:"Blubb! Svara rätt, så kryper jag undan."},
+          {s:"g",i:120,name:"Fladdermusen",say:"Pip! Svara rätt, så flyger jag iväg."},{s:"g",i:122,name:"Spindeln",say:"Mitt nät är kvar tills du löser uppgiften."}]},
+  vintern:{name:"Vintern",img:"bilder/vintern.png",floor:[0,0,0,0],walls:[6,18,30,6,81],exit:{s:"v",i:21,name:"Målflaggan"},bg:"#DCEBFA",
+    foes:[{s:"v",i:78,name:"Yetin",say:"Grrr… jag är snäll egentligen. Svara rätt så flyttar jag mig."},{s:"v",i:79,name:"Yetin",say:"Brrr, vad kallt! Hjälp mig räkna, så får du gå förbi."},
+          {s:"v",i:69,name:"Snögubben",say:"Jag smälter bort om du svarar rätt!"}]}
+};
+const CHEST={s:"g",i:89};
+const IMG={};
+function loadImg(k,src){return new Promise(r=>{const im=new Image();im.onload=()=>{IMG[k]=im;r();};im.onerror=()=>r();im.src=src;});}
+const ready=Promise.all([loadImg("t",THEMES.tradgarden.img),loadImg("g",THEMES.grottan.img),loadImg("v",THEMES.vintern.img)]);
+const sheetOf=t=>t==="tradgarden"?"t":t==="grottan"?"g":"v";
+function tile(ctx,s,i,x,y,size){const im=IMG[s];if(!im)return;ctx.drawImage(im,(i%12)*16,Math.floor(i/12)*16,16,16,x,y,size,size);}
+
+/* ---------- Elevens djur ---------- */
+const pet=lasDjur(),petName=PETNAME[pet.animal]||"Ugglan",lc=petName.toLowerCase();
+$("homePet").innerHTML=owlSVG(pet);
+const petImg=new Image();petImg.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(pet,"",true));
+
+/* ---------- Uppläsning ---------- */
+let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+function speak(t){if(!("speechSynthesis" in window))return toast("Uppläsning fungerar inte i den här webbläsaren.");loadVoices();
+  if(!svVoice&&speechSynthesis.getVoices().length)return toast("Den här datorn har ingen svensk röst för uppläsning.");
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
+let toastT;function toast(m,ms){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,ms||2400);}
+
+/* ---------- Textuppgifter: nivå 1 (upp till 20), nivå 2 (upp till 100, två steg), nivå 3 (upp till 1000, gånger och delat) ---------- */
+const NAMES=["Moa","Elias","Saga","Noah","Alva","Liam","Ella","Omar","Maja","Ali","Ines","Leo","Selma","Hugo","Nora","Adam","Wilma","Sami"];
+const KIN=["sin syster","sin bror","sin kompis","sin kusin","sin granne"];
+const ITEMS=[{p:"godisar",v:"äter"},{p:"äpplen",v:"äter"},{p:"kulor",v:"tappar"},{p:"klistermärken",v:"tappar"},{p:"pärlor",v:"tappar"},{p:"pennor",v:"tappar"},{p:"bullar",v:"äter"},{p:"jordgubbar",v:"äter"},{p:"kort",v:"tappar"}];
+const SHOP=[["glass","glassar"],["bulle","bullar"],["serietidning","serietidningar"],["boll","bollar"],["penna","pennor"]];
+function two(){const a=pick(NAMES);let b;do{b=pick(NAMES);}while(b===a);return[a,b];}
+function problem(lv){
+  const[A,B]=two(),it=pick(ITEMS),k=pick(KIN);
+  const T=[];
+  if(lv===1){
+    T.push(()=>{const a=rnd(3,12),b=rnd(2,8);return{q:`${A} har ${a} ${it.p}. ${A} får ${b} till av ${k}. Hur många ${it.p} har ${A} nu?`,a:a+b,tip:`Lägg ihop: ${a} + ${b}.`,sol:`${a} + ${b} = ${a+b}`};});
+    T.push(()=>{const a=rnd(8,20),b=rnd(2,a-2);return{q:`${A} har ${a} ${it.p}. ${A} ger ${b} till ${k}. Hur många ${it.p} har ${A} kvar?`,a:a-b,tip:`Ta bort det som ${A} ger bort: ${a} − ${b}.`,sol:`${a} − ${b} = ${a-b}`};});
+    T.push(()=>{const a=rnd(7,18),b=rnd(2,a-2);return{q:`${A} har ${a} ${it.p} och ${B} har ${b}. Hur många fler ${it.p} har ${A} än ${B}?`,a:a-b,tip:`Skillnaden: hur långt är det från ${b} upp till ${a}?`,sol:`${a} − ${b} = ${a-b}`};});
+    T.push(()=>{const a=rnd(3,10),b=rnd(3,10);return{q:`${A} har ${a} ${it.p} och ${B} har ${b}. Hur många ${it.p} har de tillsammans?`,a:a+b,tip:`Tillsammans betyder att du lägger ihop: ${a} + ${b}.`,sol:`${a} + ${b} = ${a+b}`};});
+  }else if(lv===2){
+    T.push(()=>{const a=rnd(30,90),b=rnd(3,12),c=rnd(3,12);return{q:`${A} har ${a} ${it.p}. ${A} ger ${b} till ${k} och ${it.v} själv ${c}. Hur många ${it.p} har ${A} kvar?`,a:a-b-c,
+      tip:`Två steg: först ${a} − ${b}, sedan minus ${c} till.`,sol:`${a} − ${b} = ${a-b}, och ${a-b} − ${c} = ${a-b-c}`};});
+    T.push(()=>{const a=rnd(20,60),b=rnd(5,25),c=rnd(3,15);return{q:`I en låda finns ${a} ${it.p}. ${A} lägger dit ${b} till och tar sedan ${c}. Hur många ${it.p} finns i lådan nu?`,a:a+b-c,
+      tip:`Först plus ${b}, sedan minus ${c}.`,sol:`${a} + ${b} = ${a+b}, och ${a+b} − ${c} = ${a+b-c}`};});
+    T.push(()=>{const g=rnd(2,5),n=rnd(2,10);return{q:`${A} har ${g} påsar med ${n} ${it.p} i varje. Hur många ${it.p} är det sammanlagt?`,a:g*n,tip:`${g} påsar med ${n} i varje: ${n} + ${n}${g>2?" + …":""} eller ${g} · ${n}.`,sol:`${g} · ${n} = ${g*n}`};});
+    T.push(()=>{const a=rnd(10,50),b=rnd(5,30);return{q:`${A} fick ${b} ${it.p} av ${k} och har nu ${a+b}. Hur många ${it.p} hade ${A} från början?`,a:a,tip:`Gå baklänges: ta bort det ${A} fick. ${a+b} − ${b}.`,sol:`${a+b} − ${b} = ${a}`};});
+    T.push(()=>{const b=rnd(10,40),d=rnd(5,30);return{q:`${B} har ${b} ${it.p}. ${A} har ${d} fler än ${B}. Hur många ${it.p} har ${A}?`,a:b+d,tip:`Fler än betyder plus: ${b} + ${d}.`,sol:`${b} + ${d} = ${b+d}`};});
+  }else{
+    T.push(()=>{const m=pick([50,100,200]),p=rnd(2,9)*(m>=100?5:1),q=rnd(2,4),[s,pl]=pick(SHOP);if(p*q>=m)return null;
+      return{q:`${A} har ${m} kr. ${A} köper ${q} ${pl} som kostar ${p} kr styck. Hur många kronor har ${A} kvar?`,a:m-p*q,unit:"kr",tip:`Först vad det kostar: ${q} · ${p}. Sedan ${m} minus det.`,sol:`${q} · ${p} = ${p*q}, och ${m} − ${p*q} = ${m-p*q}`};});
+    T.push(()=>{const k2=rnd(2,6),e=rnd(3,12);return{q:`${k2*e} ${it.p} ska delas lika mellan ${k2} barn. Hur många ${it.p} får varje barn?`,a:e,tip:`Dela ${k2*e} i ${k2} lika stora delar. Tänk: ${k2} · ? = ${k2*e}.`,sol:`${k2*e} / ${k2} = ${e}`};});
+    T.push(()=>{const a=rnd(180,600),b=rnd(20,90),c=rnd(20,150);return{q:`En skola har ${a} elever. ${b} elever går hem tidigt och ${c} elever kommer på besök från en annan skola. Hur många elever är på skolan nu?`,a:a-b+c,
+      tip:`Två steg: först ${a} − ${b}, sedan plus ${c}.`,sol:`${a} − ${b} = ${a-b}, och ${a-b} + ${c} = ${a-b+c}`};});
+    T.push(()=>{const p=rnd(4,12),d=rnd(3,7),e=rnd(5,30);return{q:`${A} läser ${p} sidor varje dag i ${d} dagar. Sedan läser ${A} ${e} sidor till. Hur många sidor har ${A} läst?`,a:p*d+e,
+      tip:`Först ${d} dagar med ${p} sidor: ${d} · ${p}. Lägg sedan till ${e}.`,sol:`${d} · ${p} = ${p*d}, och ${p*d} + ${e} = ${p*d+e}`};});
+    T.push(()=>{const n=rnd(3,9)*2,x=rnd(10,40);return{q:`${A} har ${n} ${it.p}. ${B} har dubbelt så många som ${A} och ${x} till. Hur många ${it.p} har ${B}?`,a:2*n+x,
+      tip:`Dubbelt så många som ${n} är ${n} + ${n}. Lägg sedan till ${x}.`,sol:`${n} · 2 = ${2*n}, och ${2*n} + ${x} = ${2*n+x}`};});
+  }
+  let r=null,g=0;while(!r&&g++<20)r=pick(T)();return r;
+}
+
+/* ---------- Labyrinten: slumpas varje gång, med extra öppningar så att det finns många vägar ---------- */
+const LV={1:{n:15,foes:5,onPath:2,chests:5,c:"#2BB673",desc:"Tal upp till 20. Ett steg."},2:{n:19,foes:7,onPath:3,chests:7,c:"#3D8BFD",desc:"Tal upp till 100. Två steg och grupper."},3:{n:23,foes:9,onPath:4,chests:9,c:"#7B61FF",desc:"Tal upp till 1000. Pengar, gånger och delat."}};
+function makeMaze(n){
+  const g=Array.from({length:n},()=>Array(n).fill(1));
+  const st=[[1,1]];g[1][1]=0;
+  while(st.length){const[x,y]=st[st.length-1];const nb=shuffle([[2,0],[-2,0],[0,2],[0,-2]]).map(([dx,dy])=>[x+dx,y+dy,dx,dy]).filter(([a,b])=>a>0&&b>0&&a<n-1&&b<n-1&&g[b][a]===1);
+    if(!nb.length){st.pop();continue;}const[a,b,dx,dy]=nb[0];g[y+dy/2][x+dx/2]=0;g[b][a]=0;st.push([a,b]);}
+  /* öppna några väggar till, så att labyrinten får flera vägar och slingor */
+  let extra=Math.round(n*n/28),tries=0;
+  while(extra>0&&tries++<4000){const x=rnd(1,n-2),y=rnd(1,n-2);if(g[y][x]!==1)continue;
+    const h=g[y][x-1]===0&&g[y][x+1]===0&&g[y-1][x]===1&&g[y+1][x]===1,v=g[y-1][x]===0&&g[y+1][x]===0&&g[y][x-1]===1&&g[y][x+1]===1;
+    if(h||v){g[y][x]=0;extra--;}}
+  return g;
+}
+function bfs(g,sx,sy){const n=g.length,d=Array.from({length:n},()=>Array(n).fill(-1)),prev={};d[sy][sx]=0;const q=[[sx,sy]];
+  while(q.length){const[x,y]=q.shift();for(const[dx,dy]of[[1,0],[-1,0],[0,1],[0,-1]]){const a=x+dx,b=y+dy;if(g[b][a]===0&&d[b][a]<0){d[b][a]=d[y][x]+1;prev[a+","+b]=[x,y];q.push([a,b]);}}}
+  return{d,prev};}
+const degree=(g,x,y)=>[[1,0],[-1,0],[0,1],[0,-1]].filter(([dx,dy])=>g[y+dy][x+dx]===0).length;
+
+/* ---------- Spelet ---------- */
+let G=null;
+function newGame(){
+  const L=LV[data.level],th=THEMES[data.theme],n=L.n,g=makeMaze(n);
+  const {d,prev}=bfs(g,1,1);let ex=[1,1],best=0;
+  for(let y=1;y<n-1;y++)for(let x=1;x<n-1;x++)if(g[y][x]===0&&d[y][x]>best){best=d[y][x];ex=[x,y];}
+  /* vägen till utgången: några hinder står där, så att man måste lösa uppgifter */
+  const path=[];let c=ex;while(c&&!(c[0]===1&&c[1]===1)){path.unshift(c);c=prev[c[0]+","+c[1]];}
+  const used=new Set(["1,1",ex.join(",")]),objs={};
+  const put=(x,y,o)=>{used.add(x+","+y);objs[x+","+y]=o;};
+  const cand=path.slice(3,-1).filter(([x,y])=>degree(g,x,y)===2);
+  for(let i=0;i<L.onPath&&cand.length;i++){const seg=Math.floor(cand.length/(L.onPath))||1,p=cand[Math.min(cand.length-1,i*seg+rnd(0,Math.max(0,seg-1)))];
+    if(p&&!used.has(p.join(","))&&![...used].some(u=>{const[a,b]=u.split(",").map(Number);return Math.abs(a-p[0])+Math.abs(b-p[1])<2;}))put(p[0],p[1],{t:"foe",f:pick(th.foes)});}
+  const free=[];for(let y=1;y<n-1;y++)for(let x=1;x<n-1;x++)if(g[y][x]===0&&d[y][x]>3)free.push([x,y]);
+  /* skatter i återvändsgränder, längst bort först */
+  const ends=shuffle(free.filter(([x,y])=>degree(g,x,y)===1&&!used.has(x+","+y)));
+  for(const[x,y]of ends.slice(0,L.chests))put(x,y,{t:"chest"});
+  let extraChests=L.chests-Object.values(objs).filter(o=>o.t==="chest").length;
+  for(const[x,y]of shuffle(free.slice()))if(extraChests>0&&!used.has(x+","+y)&&degree(g,x,y)<=2){put(x,y,{t:"chest"});extraChests--;}
+  /* fler hinder på andra vägar, ofta framför skatterna */
+  let foes=L.foes-Object.values(objs).filter(o=>o.t==="foe").length;
+  for(const[x,y]of shuffle(free.filter(([x,y])=>degree(g,x,y)===2)))if(foes>0&&!used.has(x+","+y)&&!(Math.abs(x-1)+Math.abs(y-1)<4)){put(x,y,{t:"foe",f:pick(th.foes)});foes--;}
+  put(ex[0],ex[1],{t:"exit"});
+  /* varje ruta får en egen variant av golv och vägg, som inte ändras */
+  const look=Array.from({length:n},()=>Array.from({length:n},()=>Math.random()));
+  G={n,g,objs,look,th,sheet:sheetOf(data.theme),px:1,py:1,ax:1,ay:1,seen:Array.from({length:n},()=>Array(n).fill(false)),
+     chests:Object.values(objs).filter(o=>o.t==="chest").length,found:0,loot:{coin:0,gem:0,crown:0},solved:0,firstTry:0,busy:false,over:false,anim:null,sparks:[]};
+  reveal();
+  $("hudLv").textContent=`${th.name} · Nivå ${data.level}`;updHud();
+  $("home").hidden=true;$("win").hidden=true;$("game").hidden=false;
+  resize();hint(`Hitta utgången: ${th.exit.name.toLowerCase()}! Skatter finns ofta i återvändsgränder.`,4500);
+}
+const R=3.2;
+function reveal(){for(let y=0;y<G.n;y++)for(let x=0;x<G.n;x++)if(Math.hypot(x-G.px,y-G.py)<=R+.4)G.seen[y][x]=true;}
+function updHud(){$("hCoin").textContent=G.loot.coin;$("hGem").textContent=G.loot.gem;$("hCrown").textContent=G.loot.crown;$("hudChest").innerHTML=`<small>Kistor</small> ${G.found}/${G.chests}`;}
+let hintT;function hint(t,ms){const h=$("hint");h.textContent=t;h.style.opacity=1;clearTimeout(hintT);hintT=setTimeout(()=>h.style.opacity=0,ms||2600);}
+
+/* ---------- Ritning ---------- */
+const cv=$("cv"),ctx=cv.getContext("2d");let TS=48,W=0,H=0,dpr=1;
+function resize(){const r=$("stage").getBoundingClientRect();dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
+  TS=Math.max(34,Math.min(64,Math.floor(Math.min(W,H)/7.2)));draw();}
+addEventListener("resize",()=>{if(G&&!$("game").hidden)resize();});
+function draw(){
+  if(!G)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;
+  ctx.fillStyle="#141C38";ctx.fillRect(0,0,W,H);
+  const camX=G.ax*TS+TS/2-W/2,camY=G.ay*TS+TS/2-H/2,th=G.th,s=G.sheet;
+  const x0=Math.max(0,Math.floor(camX/TS)-1),y0=Math.max(0,Math.floor(camY/TS)-1),x1=Math.min(G.n-1,Math.ceil((camX+W)/TS)+1),y1=Math.min(G.n-1,Math.ceil((camY+H)/TS)+1);
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){
+    if(!G.seen[y][x])continue;const dx=Math.round(x*TS-camX),dy=Math.round(y*TS-camY),lk=G.look[y][x];
+    ctx.fillStyle=th.bg;ctx.fillRect(dx,dy,TS,TS);
+    tile(ctx,s,th.floor[Math.floor(lk*th.floor.length)],dx,dy,TS);
+    if(G.g[y][x]===1)tile(ctx,s,th.walls[Math.floor(lk*th.walls.length)],dx,dy,TS);
+    const o=G.objs[x+","+y];
+    if(o){if(o.t==="chest")tile(ctx,CHEST.s,CHEST.i,dx,dy,TS);else if(o.t==="exit")tile(ctx,th.exit.s,th.exit.i,dx,dy,TS);else if(o.t==="foe"&&!o.solved)tile(ctx,o.f.s,o.f.i,dx,dy,TS);}
+  }
+  /* allt utanför synfältet blir mörkare: man ser bara en bit runt sig */
+  for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(!G.seen[y][x])continue;const dd=Math.hypot(x-G.ax,y-G.ay);
+    if(dd>R){ctx.fillStyle="rgba(20,28,56,.62)";ctx.fillRect(Math.round(x*TS-camX),Math.round(y*TS-camY),TS,TS);}}
+  const grd=ctx.createRadialGradient(W/2,H/2,TS*2,W/2,H/2,TS*(R+1.4));grd.addColorStop(0,"rgba(20,28,56,0)");grd.addColorStop(1,"rgba(20,28,56,.55)");ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+  /* elevens djur */
+  if(petImg.complete){const pw=TS*1.05,ph=pw*280/240;ctx.imageSmoothingEnabled=true;ctx.drawImage(petImg,W/2-pw/2,H/2+TS/2-ph*.92,pw,ph);ctx.imageSmoothingEnabled=false;}
+  G.sparks.forEach(p=>{ctx.globalAlpha=Math.max(0,p.l);ctx.font=`${Math.round(TS*.45)}px serif`;ctx.textAlign="center";ctx.fillText(p.e,p.x-camX,p.y-camY);});ctx.globalAlpha=1;
+}
+function loop(){if(!G||G.over)return;let again=false;
+  if(G.anim){const t=Math.min(1,(performance.now()-G.anim.t0)/G.anim.ms);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+    G.ax=G.anim.fx+(G.px-G.anim.fx)*e;G.ay=G.anim.fy+(G.py-G.anim.fy)*e;if(t>=1){G.ax=G.px;G.ay=G.py;G.anim=null;arrive();}else again=true;}
+  if(G.sparks.length){G.sparks.forEach(p=>{p.y-=1.2;p.l-=.018;});G.sparks=G.sparks.filter(p=>p.l>0);again=true;}
+  draw();if(again)requestAnimationFrame(loop);}
+const kick=()=>requestAnimationFrame(loop);
+
+/* ---------- Röra sig ---------- */
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+function move(dx,dy){
+  if(!G||G.over||G.anim||!$("dlg").hidden)return;
+  const x=G.px+dx,y=G.py+dy;if(G.g[y][x]===1){window.Ljud&&Ljud.clonk&&Ljud.clonk();return;}
+  const o=G.objs[x+","+y];
+  if(o&&o.t==="foe"&&!o.solved){openFoe(o,x,y);return;}
+  G.anim={fx:G.px,fy:G.py,t0:performance.now(),ms:reduced()?1:140};G.px=x;G.py=y;reveal();kick();
+}
+function arrive(){
+  const k=G.px+","+G.py,o=G.objs[k];if(!o)return;
+  if(o.t==="chest"){delete G.objs[k];G.found++;const r=Math.random();let txt,e;
+    if(r<.08){G.loot.crown++;txt="En krona! 👑 Det är den finaste skatten.";e="👑";}
+    else if(r<.33){G.loot.gem++;txt="En ädelsten! 💎";e="💎";}
+    else{const c=rnd(2,6);G.loot.coin+=c;txt=`${c} guldmynt! 💰`;e="💰";}
+    for(let i=0;i<6;i++)G.sparks.push({x:G.px*TS+TS/2+rnd(-18,18),y:G.py*TS+rnd(-4,10),l:1,e:i%2?"✨":e});
+    window.Ljud&&(Ljud.kaching?Ljud.kaching():Ljud.ok());toast("Skattkista: "+txt);updHud();kick();}
+  else if(o.t==="exit")win();
+}
+const DIRS={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
+document.addEventListener("keydown",e=>{
+  if(!$("dlg").hidden){if(/^[0-9]$/.test(e.key))key(e.key);else if(e.key==="Backspace"){e.preventDefault();key("del");}else if(e.key==="Enter"){e.preventDefault();key("ok");}else if(e.key==="Escape")closeFoe();return;}
+  if($("game").hidden)return;const d=DIRS[e.key];if(d){e.preventDefault();move(d[0],d[1]);}});
+/* pilknapparna: håll inne för att gå flera steg */
+let holdT=null;
+document.querySelectorAll("#pad button").forEach(b=>{const[dx,dy]=b.dataset.d.split(",").map(Number);
+  const stop=()=>{clearInterval(holdT);holdT=null;b.classList.remove("on");};
+  b.addEventListener("pointerdown",e=>{e.preventDefault();b.classList.add("on");move(dx,dy);clearInterval(holdT);holdT=setInterval(()=>move(dx,dy),170);});
+  b.addEventListener("pointerup",stop);b.addEventListener("pointerleave",stop);b.addEventListener("pointercancel",stop);});
+/* svep på spelplanen */
+let sw=null;
+cv.addEventListener("pointerdown",e=>{sw={x:e.clientX,y:e.clientY};});
+cv.addEventListener("pointerup",e=>{if(!sw)return;const dx=e.clientX-sw.x,dy=e.clientY-sw.y;sw=null;if(Math.max(Math.abs(dx),Math.abs(dy))<24)return;
+  Math.abs(dx)>Math.abs(dy)?move(Math.sign(dx),0):move(0,Math.sign(dy));});
+
+/* ---------- Hindret och uppgiften ---------- */
+let F=null;
+function openFoe(o,x,y){
+  if(!o.p)o.p=problem(data.level);o.tries=o.tries||0;F={o,x,y,input:""};
+  const pc=$("dPic").getContext("2d");pc.imageSmoothingEnabled=false;pc.clearRect(0,0,64,64);pc.fillStyle=G.th.bg;pc.fillRect(0,0,64,64);tile(pc,G.sheet,G.th.floor[0],0,0,64);tile(pc,o.f.s,o.f.i,0,0,64);
+  $("dName").textContent=o.f.name;$("dSay").textContent=o.f.say;$("dQ").textContent=o.p.q;$("dUnit").textContent=o.p.unit||"";
+  $("dFb").textContent="";$("dFb").className="fb";$("dTip").hidden=!o.tries;if(o.tries)$("dTip").textContent=o.tries>=2?`Så här: ${o.p.sol}.`:"Tips: "+o.p.tip;
+  showAns();$("toast").hidden=true;$("dlg").hidden=false;window.Ljud&&Ljud.chirp&&Ljud.chirp();
+}
+function showAns(){const a=$("dAns");a.textContent=F.input||"?";a.classList.toggle("empty",!F.input);}
+function key(k){if(!F||F.done)return;
+  if(k==="del")F.input=F.input.slice(0,-1);else if(k==="ok"){if(F.input)check();return;}else if(F.input.length<4)F.input+=k;showAns();}
+document.querySelectorAll("#dKeys button").forEach(b=>b.onclick=()=>key(b.dataset.k));
+function check(){
+  const o=F.o,ok=+F.input===o.p.a;
+  if(ok){F.done=true;if(!o.tries)G.firstTry++;G.solved++;o.solved=true;$("dFb").textContent=pick(["Rätt!","Snyggt!","Klockrent!","Toppen!"])+` ${o.f.name} släpper förbi dig.`;$("dFb").className="fb ok";
+    window.Ljud&&Ljud.ok();for(let i=0;i<5;i++)G.sparks.push({x:F.x*TS+TS/2+rnd(-16,16),y:F.y*TS+rnd(0,12),l:1,e:"✨"});
+    setTimeout(()=>{closeFoe();kick();},900);}
+  else{o.tries++;window.Ljud&&Ljud.bad();$("dFb").textContent="Inte riktigt. Försök igen!";$("dFb").className="fb bad";
+    $("dTip").hidden=false;$("dTip").textContent=o.tries>=2?`Så här: ${o.p.sol}.`:"Tips: "+o.p.tip;F.input="";showAns();}
+}
+function closeFoe(){$("dlg").hidden=true;F=null;if("speechSynthesis" in window)speechSynthesis.cancel();}
+$("dBack").onclick=closeFoe;
+$("dSpk").onclick=()=>{if(F)speak(`${F.o.f.name} säger: ${F.o.f.say} ${F.o.p.q}`);};
+$("dlg").addEventListener("click",e=>{if(e.target.id==="dlg")closeFoe();});
+
+/* ---------- Vinst ---------- */
+function win(){
+  G.over=true;const half=G.found>=Math.ceil(G.chests/2),all=G.found===G.chests,st=1+(half?1:0)+(all?1:0);
+  if(st>(data.stars[data.level]||0))data.stars[data.level]=st;
+  ["coin","gem","crown"].forEach(k=>data.chamber[k]+=G.loot[k]);data.runs++;save();
+  $("wTitle").textContent=all?"Alla skatter och utgången!":"Du hittade utgången!";
+  $("wStars").innerHTML=[1,2,3].map(i=>i<=st?"★":'<span class="off">★</span>').join("");
+  $("wSub").textContent=`${G.found} av ${G.chests} skattkistor. ${G.solved} ${G.solved===1?"hinder":"hinder"} löst${G.firstTry?`, ${G.firstTry} rätt direkt`:""}.`+(st<3?(half?" Hitta alla kistor för tre stjärnor.":" Hitta minst hälften av kistorna för två stjärnor."):"");
+  $("wLoot").innerHTML=`<span>💰 ${G.loot.coin}</span><span>💎 ${G.loot.gem}</span><span>👑 ${G.loot.crown}</span>`;
+  $("game").hidden=true;$("win").hidden=false;window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
+}
+$("wAgain").onclick=newGame;$("wHome").onclick=openHome;
+$("quit").onclick=()=>{if(G)G.over=true;closeFoe();openHome();};
+function confetti(){
+  if(reduced())return;const c=$("fx"),x=c.getContext("2d"),r=devicePixelRatio||1,w=innerWidth,h=innerHeight;c.width=w*r;c.height=h*r;x.setTransform(r,0,0,r,0,0);c.hidden=false;
+  const C=["#FF6B6B","#FF9F43","#F7C531","#2BB673","#17AFC4","#3D8BFD","#7B61FF","#FF5FA2"];
+  const P=Array.from({length:140},()=>({x:w/2+(Math.random()-.5)*120,y:h*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pick(C),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,w,h);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2600)requestAnimationFrame(f);else{x.clearRect(0,0,w,h);c.hidden=true;}})(t0);
+}
+
+/* ---------- Startsidan: tema, nivå och skattkammaren ---------- */
+function preview(cvEl,key){const th=THEMES[key],s=sheetOf(key),c=cvEl.getContext("2d");c.imageSmoothingEnabled=false;
+  const m=[[1,1,1],[0,2,3],[1,0,1]];for(let y=0;y<3;y++)for(let x=0;x<3;x++){c.fillStyle=th.bg;c.fillRect(x*32,y*32,32,32);tile(c,s,th.floor[0],x*32,y*32,32);
+    const v=m[y][x];if(v===1)tile(c,s,th.walls[(x+y)%th.walls.length],x*32,y*32,32);if(v===2)tile(c,th.foes[0].s,th.foes[0].i,x*32,y*32,32);if(v===3)tile(c,CHEST.s,CHEST.i,x*32,y*32,32);}}
+function openHome(){
+  $("game").hidden=true;$("win").hidden=true;$("home").hidden=false;window.scrollTo(0,0);
+  $("themes").innerHTML=Object.entries(THEMES).map(([k,t])=>`<button class="theme" data-t="${k}" aria-pressed="${data.theme===k}"><canvas width="96" height="96" data-p="${k}"></canvas>${t.name}</button>`).join("");
+  document.querySelectorAll("[data-p]").forEach(c=>preview(c,c.dataset.p));
+  document.querySelectorAll(".theme").forEach(b=>b.onclick=()=>{data.theme=b.dataset.t;save();openHome();});
+  const stars=n=>[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("");
+  $("levels").innerHTML=[1,2,3].map(l=>`<button class="lvl" data-l="${l}" aria-pressed="${data.level===l}" style="--c:${LV[l].c}"><span class="num">${l}</span><span><b>Nivå ${l}</b><small>${LV[l].desc}</small></span><span class="st">${stars(data.stars[l]||0)}</span></button>`).join("");
+  document.querySelectorAll(".lvl").forEach(b=>b.onclick=()=>{data.level=+b.dataset.l;save();openHome();});
+  const ch=data.chamber;
+  $("chamber").innerHTML=`<b>🏰 ${petName}s skattkammare</b><div class="loot"><span>💰 ${ch.coin}</span><span>💎 ${ch.gem}</span><span>👑 ${ch.crown}</span></div>`+
+    `<small>${data.runs?`${data.runs} ${data.runs===1?"skattjakt":"skattjakter"} klara. `:""}Ett stjärnmärke per nivå: hitta utgången ★, minst hälften av kistorna ★★, alla kistor ★★★.</small>`;
+}
+$("start").onclick=()=>{ready.then(newGame);};
+ready.then(openHome);openHome();
+</script>
+</body>
+</html>

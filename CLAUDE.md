@@ -29,6 +29,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 | `taluppfattning/` | Bedömningsstöd i taluppfattning åk 1 och 2, diagnos | `mattespel-taluppfattning-v1` |
 | `np3/` | Nationella prov åk 3 (äldre sida, patchad) | `np3-resultat` |
 | `spel/` | Spelhörnan: Ugglans flygtur, Memory, Racerbanan, Asteroidjakten, Grodhoppet, Tornbygget, Skattkartan, Kiosken | `mattespel-spel-v1` |
+| `spel/skattjakten/` | **Skattjakten** (nås från Spelhörnan): labyrint som slumpas varje gång, man ser bara en bit runt sig. Hinder (pratbubbla, 🔊) släpper förbi den som löser en textuppgift; skattkistor i återvändsgränder; skattkammare. Teman Trädgården, Grottan, Vintern (rutor från Kenney.nl, CC0, i `spel/skattjakten/bilder/`). Nivå 1 (upp till 20, ett steg), 2 (upp till 100, två steg, grupper), 3 (upp till 1000, pengar, gånger, delat). 1–3 stjärnor per nivå räknas in på startsidan; klistermärken Skattjägaren, Kronjuvelen, Skattmästaren. Piltangenter/WASD, pilknappar, svep. | `mattespel-skattjakten-v1` |
 | `tiobas/` | Tiobas: ett **verktyg** med träklossar på ett bord (ny version, godkänd av läraren). Fritt bord + panelen **"+ − Räkna"** som fälls fram och bort: addition/subtraktion upp till 100, 1 000 eller 10 000, eller egna tal. Steg: 1 bygg första talet, 2 lägg till/ta bort det andra kloss för kloss (växlingar räknas inte), 3 eleven skriver svaret. Summan överst döljs under steg 2–3, siffrorna under kolumnerna syns. Inga stjärnor. Se "Tiobas: beslut". | – (sparar inget; `sessionStorage` `mp-tiobas-tip` för stängt vridtips) |
 
 ### När en ny övning läggs till
@@ -95,6 +96,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
 - **Blandade uppgifter med saknat tal** (`__ · 5 = 15`, `__ + 7 = 12`) och "Stämmer det?" i fler övningar (addition, multiplikation osv.). Prövas först i Division (Kalaset); läraren gillar idén.
 - **Egen värld per övning**: klart i Division (Kalaset), Multiplikation (Bageriet), Lilla plus (Hönsgården) och Tiotal (Bussen). Kvar att fundera på: övriga övningar.
+- **Skattkartan** i Spelhörnan: läraren tycker den håller för låg kvalitet; ska tas bort eller göras om senare. Fråga först.
 - **Dra klossar i Tiobas**: bara om eleverna själva försöker dra (tryck räcker för nu).
 - **Små tryckytor i Formjakten** (Geometri): flaggan och trädstammen är små i mobilstorlek. Åtgärdas bara om det visar sig vara ett problem för eleverna.
 - Kort kod utan server (sammanfattning i 8–30 tecken) diskuterades men byggdes inte.
