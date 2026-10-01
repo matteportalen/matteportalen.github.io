@@ -334,7 +334,7 @@ function newGame(){
 }
 const R=3.2;
 function reveal(){for(let y=0;y<G.n;y++)for(let x=0;x<G.n;x++)if(Math.hypot(x-G.px,y-G.py)<=R+.4)G.seen[y][x]=true;}
-function updHud(){$("hudChest").innerHTML=`<small>Kistor</small> ${G.found}/${G.chests}`;}
+function updHud(){$("hudChest").innerHTML=`<small>Poäng</small> ${G.points||0} &nbsp;<small>Kistor</small> ${G.found}/${G.chests}`;}
 let hintT;function hint(t,ms){const h=$("hint");h.textContent=t;h.style.opacity=1;clearTimeout(hintT);hintT=setTimeout(()=>h.style.opacity=0,ms||2600);}
 
 /* ---------- Ritning ---------- */
@@ -439,7 +439,7 @@ function openFoe(o,x,y){
   if(!o.p)o.p=problem(data.level);o.tries=o.tries||0;F={o,x,y,input:""};
   const pc=$("dPic").getContext("2d");pc.imageSmoothingEnabled=false;pc.clearRect(0,0,64,64);pc.fillStyle=G.th.bg;pc.fillRect(0,0,64,64);tile(pc,G.sheet,G.th.floor[0],0,0,64);tile(pc,o.f.s,o.f.i,0,0,64);
   $("dName").textContent=o.f.name;$("dSay").textContent=o.f.say;$("dQ").textContent=o.p.q;$("dUnit").textContent=o.p.unit||"";
-  $("dFb").textContent="";$("dFb").className="fb";$("dTip").hidden=!o.tries;if(o.tries)$("dTip").textContent=o.tries>=2?`Så här: ${o.p.sol}.`:"Tips: "+o.p.tip;
+  $("dFb").textContent="";$("dFb").className="fb";$("dTip").hidden=!o.tries;if(o.tries)$("dTip").textContent="Tips: "+o.p.tip;
   showAns();$("toast").hidden=true;$("dlg").hidden=false;window.Ljud&&Ljud.chirp&&Ljud.chirp();
 }
 function showAns(){const a=$("dAns");a.textContent=F.input||"?";a.classList.toggle("empty",!F.input);}
@@ -448,11 +448,12 @@ function key(k){if(!F||F.done)return;
 document.querySelectorAll("#dKeys button").forEach(b=>b.onclick=()=>key(b.dataset.k));
 function check(){
   const o=F.o,ok=+F.input===o.p.a;
-  if(ok){F.done=true;if(!o.tries)G.firstTry++;G.solved++;o.solved=true;$("dFb").textContent=pick(["Rätt!","Snyggt!","Klockrent!","Toppen!"])+` ${o.f.name} släpper förbi dig.`;$("dFb").className="fb ok";
+  if(ok){F.done=true;const pts=o.tries?5:10;G.points=(G.points||0)+pts;updHud();if(!o.tries)G.firstTry++;G.solved++;o.solved=true;$("dFb").textContent=pick(["Rätt!","Snyggt!","Klockrent!","Toppen!"])+` +${pts} poäng. ${o.f.name} släpper förbi dig.`;$("dFb").className="fb ok";
     window.Ljud&&Ljud.ok();for(let i=0;i<5;i++)G.sparks.push({x:F.x*TS+TS/2+rnd(-16,16),y:F.y*TS+rnd(0,12),l:1,e:"✨"});
     setTimeout(()=>{closeFoe();kick();},900);}
   else{o.tries++;window.Ljud&&Ljud.bad();$("dFb").textContent="Inte riktigt. Försök igen!";$("dFb").className="fb bad";
-    $("dTip").hidden=false;$("dTip").textContent=o.tries>=2?`Så här: ${o.p.sol}.`:"Tips: "+o.p.tip;F.input="";showAns();}
+    if(o.tries>=2)$("dFb").textContent="Inte riktigt. Läs tipset och försök igen, eller ta en annan väg.";
+    $("dTip").hidden=false;$("dTip").textContent="Tips: "+o.p.tip;F.input="";showAns();}
 }
 function closeFoe(){$("dlg").hidden=true;F=null;if("speechSynthesis" in window)speechSynthesis.cancel();}
 $("dBack").onclick=closeFoe;
@@ -463,10 +464,10 @@ $("dlg").addEventListener("click",e=>{if(e.target.id==="dlg")closeFoe();});
 function win(){
   G.over=true;const half=G.found>=Math.ceil(G.chests/2),all=G.found===G.chests,st=1+(half?1:0)+(all?1:0);
   if(st>(data.stars[data.level]||0))data.stars[data.level]=st;
-  Object.entries(G.loot).forEach(([k,v])=>data.chamber[k]=(data.chamber[k]||0)+v);data.runs++;save();window.Ljud&&Ljud.ambient&&Ljud.ambient.stop();
+  Object.entries(G.loot).forEach(([k,v])=>data.chamber[k]=(data.chamber[k]||0)+v);data.runs++;const pts=G.points||0;data.points=(data.points||0)+pts;data.best=data.best||{};const rec=pts>(data.best[data.level]||0);if(rec)data.best[data.level]=pts;save();window.Ljud&&Ljud.ambient&&Ljud.ambient.stop();
   $("wTitle").textContent=all?"Alla skatter och utgången!":"Du hittade utgången!";
   $("wStars").innerHTML=[1,2,3].map(i=>i<=st?"★":'<span class="off">★</span>').join("");
-  $("wSub").textContent=`${G.found} av ${G.chests} skattkistor. ${G.solved} ${G.solved===1?"hinder":"hinder"} löst${G.firstTry?`, ${G.firstTry} rätt direkt`:""}.`+(st<3?(half?" Hitta alla kistor för tre stjärnor.":" Hitta minst hälften av kistorna för två stjärnor."):"");
+  $("wSub").textContent=`${pts} poäng${rec&&pts?" – nytt rekord!":data.best[data.level]?` (rekord ${data.best[data.level]}).`:"."} ${G.found} av ${G.chests} skattkistor. ${G.solved} ${G.solved===1?"hinder":"hinder"} löst${G.firstTry?`, ${G.firstTry} rätt direkt`:""}.`+(st<3?(half?" Hitta alla kistor för tre stjärnor.":" Hitta minst hälften av kistorna för två stjärnor."):"");
   $("wLoot").innerHTML=lootHTML(G.loot)||"<span>Inga skatter den här gången.</span>";
   $("game").hidden=true;$("win").hidden=false;window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
 }
@@ -494,11 +495,11 @@ function openHome(){
   document.querySelectorAll("[data-p]").forEach(c=>preview(c,c.dataset.p));
   document.querySelectorAll(".theme").forEach(b=>b.onclick=()=>{data.theme=b.dataset.t;save();openHome();});
   const stars=n=>[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("");
-  $("levels").innerHTML=[1,2,3].map(l=>`<button class="lvl" data-l="${l}" aria-pressed="${data.level===l}" style="--c:${LV[l].c}"><span class="num">${l}</span><span><b>Nivå ${l}</b><small>${LV[l].desc}</small></span><span class="st">${stars(data.stars[l]||0)}</span></button>`).join("");
+  $("levels").innerHTML=[1,2,3].map(l=>`<button class="lvl" data-l="${l}" aria-pressed="${data.level===l}" style="--c:${LV[l].c}"><span class="num">${l}</span><span><b>Nivå ${l}</b><small>${LV[l].desc}</small></span><span class="st">${stars(data.stars[l]||0)}${(data.best||{})[l]?`<br><small>Rekord ${data.best[l]} p</small>`:""}</span></button>`).join("");
   document.querySelectorAll(".lvl").forEach(b=>b.onclick=()=>{data.level=+b.dataset.l;save();openHome();});
   const ch=data.chamber;
   $("chamber").innerHTML=`<b>🏰 ${petName}s skattkammare</b><div class="chest-loot">${lootHTML(ch)||"<span style='font-size:1rem'>Tom än så länge. Hitta skatter i labyrinten!</span>"}</div>`+
-    `<small>${data.runs?`${data.runs} ${data.runs===1?"skattjakt":"skattjakter"} klara. `:""}Ett stjärnmärke per nivå: hitta utgången ★, minst hälften av kistorna ★★, alla kistor ★★★.</small>`;
+    `<small>${data.points?`${data.points} poäng totalt. `:""}${data.runs?`${data.runs} ${data.runs===1?"skattjakt":"skattjakter"} klara. `:""}Varje löst hinder ger 10 poäng, eller 5 om du behövde tipset. Ett stjärnmärke per nivå: hitta utgången ★, minst hälften av kistorna ★★, alla kistor ★★★.</small>`;
 }
 $("start").onclick=()=>{ready.then(newGame);};
 ready.then(openHome);openHome();
