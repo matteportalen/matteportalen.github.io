@@ -29,7 +29,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 | `taluppfattning/` | Bedömningsstöd i taluppfattning åk 1 och 2, diagnos | `mattespel-taluppfattning-v1` |
 | `np3/` | Nationella prov åk 3 (äldre sida, patchad) | `np3-resultat` |
 | `spel/` | Spelhörnan: Ugglans flygtur, Memory, Racerbanan, Asteroidjakten, Grodhoppet, Tornbygget, Skattkartan, Kiosken | `mattespel-spel-v1` |
-| `tiobas/` | Tiobasmaterial. **Byggs om** (prototyp i `tiobas/ny.html`, den gamla `index.html` ligger kvar tills läraren godkänt). Rör inte utan att fråga. Se "Tiobas: beslut" nedan. | – |
+| `tiobas/` | Tiobas: ett **verktyg** med träklossar på ett bord (ny version, godkänd av läraren). Fritt bord + panelen **"+ − Räkna"** som fälls fram och bort: addition/subtraktion upp till 100, 1 000 eller 10 000, eller egna tal. Steg: 1 bygg första talet, 2 lägg till/ta bort det andra kloss för kloss (växlingar räknas inte), 3 eleven skriver svaret. Summan överst döljs under steg 2–3, siffrorna under kolumnerna syns. Inga stjärnor. Se "Tiobas: beslut". | – (sparar inget; `sessionStorage` `mp-tiobas-tip` för stängt vridtips) |
 
 ### När en ny övning läggs till
 
@@ -91,7 +91,6 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 ## Idéer som väntar
 
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
-- **Tiobasmaterialet** ska byggas om.
 - **Dra klossar i Tiobas**: bara om eleverna själva försöker dra (tryck räcker för nu).
 - **Små tryckytor i Formjakten** (Geometri): flaggan och trädstammen är små i mobilstorlek. Åtgärdas bara om det visar sig vara ett problem för eleverna.
 - Kort kod utan server (sammanfattning i 8–30 tecken) diskuterades men byggdes inte.
