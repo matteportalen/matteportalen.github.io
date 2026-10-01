@@ -91,6 +91,26 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gamecard.skatt:active,.gamecard.kiosk:active{transform:translateY(3px)}
 .q{flex-wrap:wrap}
 .qnote{flex-basis:100%;font-size:.42em;line-height:1.2}
+/* Bubbeljakten */
+.gamecard.bub{background:linear-gradient(135deg,#7B61FF,#3D8BFD 55%,#17AFC4);box-shadow:0 6px 0 #4B3AA8;margin-top:14px}
+.gamecard.bub:active{transform:translateY(3px);box-shadow:0 3px 0 #4B3AA8}
+#bub{position:fixed;inset:0;display:flex;flex-direction:column;background:linear-gradient(180deg,#D3E0FF,#A9BCF0);z-index:5;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
+.bubbar{display:flex;align-items:center;gap:10px;padding:8px 10px;width:100%;max-width:640px;margin:0 auto}
+.bubbar .quit{width:42px;height:42px;flex:none;border-radius:50%;background:var(--card);box-shadow:0 3px 0 rgba(29,43,83,.25);font-size:1.2rem;font-weight:800}
+.bublvl{flex:none;text-align:center;font-weight:800;line-height:1.05;font-size:1.05rem}
+.bublvl .stars{font-size:.95rem;display:block}
+.bubmeter{flex:1;height:16px;border-radius:9px;background:rgba(29,43,83,.22);overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.12)}
+.bubmeter i{display:block;height:100%;width:0;background:linear-gradient(90deg,#FFC93C,#FF9F43);transition:width .4s}
+.bubpts{flex:none;background:var(--card);border-radius:14px;padding:2px 12px;font-weight:800;font-size:1.25rem;min-width:70px;text-align:center;box-shadow:0 3px 0 rgba(29,43,83,.22)}
+.bubstage{position:relative;flex:1;min-height:0}
+#bcv{position:absolute;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.bubban{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);background:var(--card);border-radius:18px;padding:10px 20px;font-weight:800;font-size:1.5rem;line-height:1.2;text-align:center;box-shadow:0 5px 0 rgba(29,43,83,.25);pointer-events:none;opacity:0;transition:opacity .3s;width:max-content;max-width:88%}
+.bubban small{display:block;font-size:1rem;color:var(--muted)}
+.bubban.show{opacity:1}
+.bubmsg{position:absolute;inset:0;display:grid;place-items:center;background:rgba(29,43,83,.35);padding:16px}
+.bubmsg .box{background:var(--card);border-radius:22px;padding:18px;max-width:340px;width:100%;text-align:center;box-shadow:0 6px 0 rgba(29,43,83,.3)}
+.bubmsg h3{font-size:1.9rem;margin:0;line-height:1.1}
+.bubmsg p{margin:6px 0 0;color:var(--muted);font-weight:700}
 /* Memory */
 .memtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}
 .memtop .quit{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-size:1.2rem;font-weight:800}
@@ -145,6 +165,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <h1>Spelhörnan</h1>
   <p class="lead">Spela och räkna samtidigt!</p>
   <a class="gamecard jakt hero" href="skattjakten/"><span class="pic cards3">🗝️</span><span><span class="new">Nytt!</span><b>Skattjakten</b><small>Utforska labyrinten, lös hindrens textuppgifter och fyll skattkammaren!</small></span></a>
+  <button class="gamecard bub" id="btnBub"><span class="pic cards3">🫧</span><span><span class="new">Nytt!</span><b>Bubbeljakten</b><small>Sikta och skjut uppgiften mot bubblan med rätt svar. Poppa hela planen!</small></span></button>
   <button class="gamecard mem" id="btnMem"><span class="pic cards3">🃏</span><span><b>Memory</b><small>Vänd korten och hitta paren: uppgiften och svaret.</small></span></button>
   <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Kör i filen med rätt svar och ta dig i mål!</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
@@ -162,6 +183,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="tables" id="tables" hidden><p id="tablesTitle">Vilka tabeller?</p><div class="chips" id="chips"></div></div>
   <div class="laneopt" id="frogOpt" hidden><p>Hur är vattnet?</p><div class="chips" id="frogChips"><button data-m="lugnt">Lugnt vatten</button><button data-m="strom">Strömt vatten (svårare)</button></div></div>
   <div class="laneopt" id="laneOpt" hidden><p>Hur många filer?</p><div class="chips" id="laneChips"><button data-l="3">3 filer</button><button data-l="4">4 filer (svårare)</button></div></div>
+  <div class="laneopt" id="bubOpt" hidden><p>Var vill du börja?</p><div class="chips" id="bubChips"></div></div>
   <button class="go" id="btnStart">Flyg iväg! 🦉</button>
 </div>
 
@@ -179,6 +201,14 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="memtop"><button class="quit" id="memQuit" aria-label="Avsluta">✕</button><span id="memPairs"></span><span id="memMoves"></span></div>
   <div class="memgrid" id="memGrid"></div>
   <p class="memhint">Hitta paren. Den vita är uppgiften och den gula är svaret.</p>
+</div>
+
+<div id="bub" hidden>
+  <div class="bubbar"><button class="quit" id="bubQuit" aria-label="Avsluta">✕</button><span class="bublvl"><span id="bubLvl">Bana 1</span><span id="bubStars"></span></span><div class="bubmeter" aria-hidden="true"><i id="bubFill"></i></div><span class="bubpts" id="bubPts" aria-label="Poäng">0</span></div>
+  <div class="bubstage"><canvas id="bcv" aria-label="Bubbelplanen. Sikta med fingret, musen eller piltangenterna."></canvas>
+    <div class="bubban" id="bubBan"></div>
+    <div class="bubmsg" id="bubMsg" hidden><div class="box"><h3 id="bmT"></h3><p id="bmP"></p><button class="go" id="bmGo">Nästa bana ▶</button></div></div>
+  </div>
 </div>
 
 <div class="wrap result" id="result" hidden>
@@ -247,7 +277,9 @@ function gen(){
 }
 
 /* ---------- Menyer ---------- */
-function showOnly(id){["menu","choose","game","mem","result"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);}
+function showOnly(id){["menu","choose","game","mem","result","bub"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);}
+$("btnBub").onclick=()=>{game="bub";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
+$("bubChips").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.bubFrom=b.dataset.f;save();renderChoose();};
 $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
 $("btnSkatt").onclick=()=>{game="skatt";renderChoose();showOnly("choose");};
 $("btnKiosk").onclick=()=>{game="kiosk";renderChoose();showOnly("choose");};
@@ -260,8 +292,8 @@ $("laneChips").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;dat
 $("backMenu").onclick=()=>showOnly("menu");
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function renderChoose(){
-  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="skatt"?(data.skatt=data.skatt||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):(data.mem=data.mem||{});
-  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="skatt"?"Hissa seglen! ⛵":game==="kiosk"?"Öppna kiosken! 🏪":"Börja spela! 🃏";
+  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="skatt"?(data.skatt=data.skatt||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):game==="bub"?(data.bubbel=data.bubbel||{}):(data.mem=data.mem||{});
+  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="skatt"?"Hissa seglen! ⛵":game==="kiosk"?"Öppna kiosken! 🏪":game==="bub"?"Börja poppa! 🫧":"Börja spela! 🃏";
   $("frogOpt").hidden=game!=="frog";
   $("frogChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.frogMode||"lugnt")));
   $("laneOpt").hidden=game!=="car";
@@ -270,8 +302,10 @@ function renderChoose(){
   let list=CATS.filter(c=>(game==="mem"||!c.memOnly)&&!(rush&&c.noRush));
   if(game==="kiosk")list=[{id:"tiotal",name:"Priser upp till 20 kr",t:"20",c:"#FF9F43",desc:"Handla och räkna växel med små pengar"},{id:"hundra",name:"Priser upp till 100 kr",t:"100",c:"#17AFC4",desc:"Större summor och växel upp till 100 kr"}];
   if(!list.find(c=>c.id===cat))cat=list[0].id;
-  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&!["tower","kiosk"].includes(game)?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="skatt"?"poäng":"rätt"}</small>`:""}</button>`;}).join("");
+  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&!["tower","kiosk"].includes(game)?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="skatt"||game==="bub"?"poäng":"rätt"}</small>`:""}${game==="bub"&&r&&r.bana?`<small>Klarat bana ${r.bana}</small>`:""}</button>`;}).join("");
   const C=CATS.find(c=>c.id===cat);$("tables").hidden=!C.tables;
+  const bs=game==="bub"&&store[cat];$("bubOpt").hidden=!(bs&&bs.bana);
+  if(bs&&bs.bana){const f=data.bubFrom==="cont"?"cont":"1";$("bubChips").innerHTML=`<button data-f="1" aria-pressed="${f==="1"}">Bana 1</button><button data-f="cont" aria-pressed="${f==="cont"}">Fortsätt på bana ${bs.bana+1}</button>`;}
   if(C.tables){
     $("tablesTitle").textContent=cat==="multi"?"Vilka tabeller?":"Vilka tal vill du dela med?";
     $("chips").innerHTML=`<button data-t="0" aria-pressed="${!tables.size}">Alla</button>`+[1,2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${tables.has(t)}">${t}</button>`).join("");
@@ -279,7 +313,7 @@ function renderChoose(){
 }
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;if(cat!==b.dataset.c)tables.clear();cat=b.dataset.c;renderChoose();};
 $("chips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;if(!t)tables.clear();else tables.has(t)?tables.delete(t):tables.add(t);renderChoose();};
-const startCurrent=()=>game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();
+const startCurrent=()=>game==="bub"?startBub():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();
 $("btnStart").onclick=()=>{data.cat=cat;data.tables=[...tables];save();startCurrent();};
 
 /* ---------- Spelet ---------- */
@@ -1075,6 +1109,338 @@ function finishMem(){
   $("rBig").innerHTML=starHtml(st);
   $("rSub").textContent=`Du hittade alla ${PAIRS} par på ${mv} drag.`+(rec&&r.best?" Nytt rekord!":r.best&&!rec?` Ditt rekord är ${r.best} drag.`:"")+(st<3?` Klarar du det på ${PAIRS+3} drag får du tre stjärnor.`:"");
   showOnly("result");window.Ljud&&Ljud.fanfare();if(st===3||rec)confetti();
+}
+
+/* ---------- Bubbeljakten ---------- */
+// Bubblorna har svar, skjutbubblan har en uppgift. Rätt granne: hela gruppen med samma tal spricker.
+// Fel: skjutbubblan fastnar och visar sitt svar. Varje uppgift har alltid ett svar som går att träffa.
+const BCOLS=10,BLIM=12; // 10 bubblor i bredd, 12 rader ner till strecket
+// tabell 1–10; närliggande tabeller har tydligt olika färger
+const BPAL=["#5A6B8F","#FF6B6B","#2BB673","#3D8BFD","#FF9F43","#7B61FF","#F2B707","#FF5FA2","#17AFC4","#A0673C"];
+const BNEUT="#F4F7FD";
+const bcv=$("bcv"),bx=bcv.getContext("2d");
+let B=null,BL=null,braf=0,bT=0,bBanT=0,bSpr={};
+const bFont=fs=>`800 ${fs}px "Baloo 2", system-ui, sans-serif`;
+const bCount=r=>r%2?BCOLS-1:BCOLS;
+// Multiplikation och division: färg per tabell. Plus och minus: färg per tal (skjutbubblan är vit, så färgen avslöjar inget).
+const bColor=o=>o.t?BPAL[(o.t-1)%10]:BPAL[o.v%10];
+function bLevel(l){return{rows:Math.min(8,l+3),shots:[0,22,24,26,28,28][Math.min(l,5)],drop:l<3?0:l===3?10:l===4?8:Math.max(5,12-l),kinds:Math.min(8,l+3)};}
+function bNbrs(r,c){
+  const o=r%2?[[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]]:[[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]];
+  return o.map(([a,b])=>[r+a,c+b]).filter(([a,b])=>a>=0&&a<BLIM+4&&b>=0&&b<bCount(a));
+}
+function bPool(){
+  const T=tabList();let p=[];
+  if(cat==="plus10")for(let v=2;v<=10;v++)p.push({v,t:0});
+  else if(cat==="minus10")for(let v=1;v<=9;v++)p.push({v,t:0});
+  else if(cat==="tiotal"){for(let v=2;v<=9;v++)p.push({v,t:0});for(let v=11;v<=18;v++)p.push({v,t:0});}
+  else if(cat==="hundra"){const s=new Set();while(s.size<12)s.add(rnd(12,98));p=[...s].map(v=>({v,t:0}));}
+  else if(cat==="multi")T.forEach(t=>{for(let b=1;b<=10;b++)p.push({v:t*b,t});});
+  else T.forEach(t=>{for(let q=1;q<=10;q++)p.push({v:q,t});});
+  shuffle(p);const seen=new Set();return p.filter(o=>!seen.has(o.v)&&seen.add(o.v));
+}
+function bTask(o){
+  const v=o.v;let txt,fr=null;
+  if(cat==="plus10"){const a=rnd(1,v-1);txt=`${a} + ${v-a}`;}
+  else if(cat==="minus10"){const a=rnd(v+1,10);txt=`${a} − ${a-v}`;}
+  else if(cat==="tiotal"){if(v>10){const a=rnd(Math.max(2,v-9),Math.min(9,v-2));txt=`${a} + ${v-a}`;}else{const a=rnd(11,Math.min(18,v+9));txt=`${a} − ${a-v}`;}}
+  else if(cat==="hundra"){if(Math.random()<.5){const a=rnd(Math.max(2,v-89),v-2);txt=`${a} + ${v-a}`;}else{const b=rnd(2,Math.min(60,100-v));txt=`${v+b} − ${b}`;}}
+  else if(cat==="multi"){const b=v/o.t,[x,y]=Math.random()<.5?[o.t,b]:[b,o.t];txt=`${x} · ${y}`;}
+  else{fr=[v*o.t,o.t];txt=`${v*o.t} / ${o.t}`;}
+  return{a:v,t:o.t,txt,fr};
+}
+function bBuild(l){
+  const P=bLevel(l),pool=bPool(),vals=pool.slice(0,Math.min(pool.length,P.kinds)),g=[];
+  for(let r=0;r<BLIM+4;r++)g.push(new Array(bCount(r)).fill(null));
+  for(let r=0;r<P.rows;r++)for(let c=0;c<bCount(r);c++){
+    const nb=bNbrs(r,c).filter(([a,b])=>(a<r||(a===r&&b<c))&&g[a][b]);
+    const n=nb.length&&Math.random()<.55?pickOne(nb):null,o=n?g[n[0]][n[1]]:pickOne(vals);
+    g[r][c]={v:o.v,t:o.t};
+  }
+  return g;
+}
+const bAll=()=>{const a=[];B.g.forEach((row,r)=>row.forEach((o,c)=>{if(o)a.push([r,c]);}));return a;};
+const bLowest=()=>bAll().reduce((m,[r])=>Math.max(m,r),-1);
+const bCeil=()=>BL.top+B.dropA*BL.rowH;
+const bXY=(r,c)=>[BL.left+BL.R+c*BL.D+(r%2?BL.R:0),bCeil()+BL.R+r*BL.rowH];
+
+function bResize(){
+  const rc=bcv.getBoundingClientRect(),dpr=window.devicePixelRatio||1,W=rc.width,H=rc.height;
+  bcv.width=Math.round(W*dpr);bcv.height=Math.round(H*dpr);bx.setTransform(dpr,0,0,dpr,0,0);
+  const D=Math.min((W-12)/BCOLS,58,(H-14)/((BLIM-1)*.866+3.3)),R=D/2,rowH=D*.866,left=(W-D*BCOLS)/2,top=6;
+  const Rs=R*1.62,Rn=R*1.15;
+  BL={W,H,D,R,rowH,left,top,deadY:top+(BLIM-1)*rowH+D+3,shX:W/2,shY:H-Rs-10,Rs,Rn,dpr};bSpr={};
+}
+window.addEventListener("resize",()=>{if(B&&!$("bub").hidden)bResize();});
+
+/* Banan för ett skott: studsar mot väggarna och stannar vid första bubblan eller taket. */
+function bTrace(ang){
+  const {R,D,left}=BL,minX=left+R,maxX=left+BCOLS*D-R,cy=bCeil(),hit=D*.82,st=R/3;
+  const balls=bAll().map(([r,c])=>bXY(r,c));
+  let x=BL.shX,y=BL.shY,dx=Math.cos(ang),dy=-Math.sin(ang);const pts=[[x,y]];
+  for(let i=0;i<8000;i++){
+    x+=dx*st;y+=dy*st;
+    if(x<minX){x=2*minX-x;dx=-dx;pts.push([minX,y]);}else if(x>maxX){x=2*maxX-x;dx=-dx;pts.push([maxX,y]);}
+    if(y-R<=cy){y=cy+R;break;}
+    if(balls.some(([bx2,by])=>(bx2-x)*(bx2-x)+(by-y)*(by-y)<hit*hit))break;
+  }
+  pts.push([x,y]);
+  return{pts,cell:bSnap(x,y)};
+}
+function bSnap(x,y){
+  let best=null,bd=1e9;
+  for(let r=0;r<BLIM+3;r++)for(let c=0;c<bCount(r);c++){
+    if(B.g[r][c])continue;const [cx,cy]=bXY(r,c),d=Math.hypot(cx-x,cy-y);
+    if(d>=bd||d>BL.D*1.6)continue;
+    if(r>0&&!bNbrs(r,c).some(([a,b])=>B.g[a][b]))continue;
+    bd=d;best=[r,c];
+  }
+  return best;
+}
+/* Bubblor som går att träffa: de som gränsar till en tom ruta med fri väg nerifrån. */
+function bHittable(){
+  const last=BLIM-1-B.drop,seen=new Set(),q=[],hit=new Map();
+  for(let c=0;c<bCount(last);c++){if(B.g[last][c])hit.set(last+","+c,B.g[last][c]);else{q.push([last,c]);seen.add(last+","+c);}}
+  while(q.length){const [r,c]=q.pop();
+    for(const [a,b] of bNbrs(r,c)){if(a>last)continue;const k=a+","+b,o=B.g[a][b];
+      if(o){hit.set(k,o);continue;}if(!seen.has(k)){seen.add(k);q.push([a,b]);}}}
+  return [...hit.values()];
+}
+function bPick(avoid,avoidTxt){
+  const H=bHittable();if(!H.length)return null;
+  let c=H.filter(o=>o.v!==avoid);if(!c.length)c=H;
+  const v=pickOne([...new Set(c.map(o=>o.v))]);let t=bTask(pickOne(c.filter(o=>o.v===v)));
+  for(let i=0;i<4&&t.txt===avoidTxt;i++)t=bTask(pickOne(c.filter(o=>o.v===v)));
+  return t;
+}
+function bFix(){
+  const H=new Set(bHittable().map(o=>o.v));
+  if(!B.cur||!H.has(B.cur.a))B.cur=bPick(B.next&&B.next.a,B.last&&B.last.txt);
+  if(!B.next||!H.has(B.next.a))B.next=bPick(B.cur&&B.cur.a,B.cur&&B.cur.txt);
+}
+function bFlood(starts,v){
+  const S=new Set(),q=[...starts];
+  while(q.length){const [r,c]=q.pop(),k=r+","+c;if(S.has(k))continue;const o=B.g[r][c];if(!o||o.v!==v)continue;S.add(k);bNbrs(r,c).forEach(n=>q.push(n));}
+  return [...S].map(k=>k.split(",").map(Number));
+}
+function bLoose(){
+  const S=new Set(),q=[];for(let c=0;c<bCount(0);c++)if(B.g[0][c])q.push([0,c]);
+  while(q.length){const [r,c]=q.pop(),k=r+","+c;if(S.has(k)||!B.g[r][c])continue;S.add(k);bNbrs(r,c).forEach(n=>q.push(n));}
+  return bAll().filter(([r,c])=>!S.has(r+","+c));
+}
+const bStarsFor=n=>n>=5?3:n>=3?2:n>=1?1:0;
+function bRec(){data.bubbel=data.bubbel||{};return data.bubbel[cat]||(data.bubbel[cat]={stars:0,best:0,bana:0});}
+function bHud(){
+  $("bubLvl").textContent=`Bana ${B.lvl}`;$("bubStars").innerHTML=starHtml(bRec().stars||0);$("bubPts").textContent=B.pts;
+  const left=bAll().length,tot=Math.max(1,B.init+B.added);$("bubFill").style.width=Math.round((1-left/tot)*100)+"%";
+}
+function bBanner(html,ms){const b=$("bubBan");b.innerHTML=html;b.classList.add("show");clearTimeout(bBanT);bBanT=setTimeout(()=>b.classList.remove("show"),ms||1800);}
+
+function stopBub(){if(B)B.over=true;cancelAnimationFrame(braf);clearTimeout(bT);B=null;$("bubBan").classList.remove("show");$("bubMsg").hidden=true;}
+function startBub(){
+  stopBub();const r=bRec(),from=data.bubFrom==="cont"&&r.bana?r.bana+1:1;
+  data.bubbelPlayed=(data.bubbelPlayed||0)+1;save();
+  B={pts:0,prevBest:r.best||0,right:0,wrong:0,over:false,petJ:0,shake:0,tip:true,ang:Math.PI/2,aiming:false,last:null};
+  showOnly("bub");bResize();bLevelStart(from);
+  cancelAnimationFrame(braf);braf=requestAnimationFrame(bFrame);
+}
+function bLevelStart(l){
+  const P=bLevel(l);
+  Object.assign(B,{lvl:l,P,g:bBuild(l),shots:P.shots,drop:0,dropA:0,since:0,added:0,state:"aim",fly:null,pops:[],falls:[],parts:[],labels:[],cur:null,next:null,last:null});
+  B.init=bAll().length;bFix();bHud();$("bubMsg").hidden=true;
+  const tip=BL.W>BL.H&&BL.H<520?"<small>Håll mobilen upprätt så blir bubblorna större.</small>":"";
+  bBanner(`Bana ${l}`+(P.drop?`<small>Taket sjunker var ${P.drop}:e skott!</small>`:"<small>Poppa alla bubblor!</small>")+tip,P.drop?2600:1800);
+}
+function bSwap(){if(!B||B.state!=="aim"||!B.next)return;[B.cur,B.next]=[B.next,B.cur];B.swapA=1;window.Ljud&&Ljud.slurp();}
+function bFire(){
+  if(!B||B.state!=="aim"||!B.cur)return;const tr=bTrace(B.ang);if(!tr.cell)return;
+  let len=0;for(let i=1;i<tr.pts.length;i++)len+=Math.hypot(tr.pts[i][0]-tr.pts[i-1][0],tr.pts[i][1]-tr.pts[i-1][1]);
+  B.state="fly";B.tip=false;B.fly={task:B.cur,pts:tr.pts,cell:tr.cell,len,s:0};B.last=B.cur;B.cur=null;
+  window.Ljud&&Ljud.shoot();
+}
+function bAt(pts,s){
+  for(let i=1;i<pts.length;i++){const [x0,y0]=pts[i-1],[x1,y1]=pts[i],l=Math.hypot(x1-x0,y1-y0);if(s<=l||i===pts.length-1){const k=l?Math.min(1,s/l):1;return[x0+(x1-x0)*k,y0+(y1-y0)*k];}s-=l;}
+  return pts[pts.length-1];
+}
+function bLand(){
+  const f=B.fly,[r,c]=f.cell,task=f.task,[x,y]=bXY(r,c);B.fly=null;B.state="busy";B.shots--;B.since++;
+  const near=bNbrs(r,c).filter(([a,b])=>B.g[a][b]&&B.g[a][b].v===task.a);
+  if(near.length){
+    const grp=bFlood(near,task.a);let got=grp.length*10;
+    B.pops.push({x,y,col:task.t?bColor(task):BNEUT,t:0});
+    grp.forEach(([a,b],i)=>{const [px,py]=bXY(a,b);B.pops.push({x:px,y:py,col:bColor(B.g[a][b]),t:-i*.04});B.g[a][b]=null;setTimeout(()=>window.Ljud&&Ljud.pop(i),i*45);});
+    const loose=bLoose();
+    loose.forEach(([a,b])=>{const [px,py]=bXY(a,b),o=B.g[a][b];B.falls.push({x:px,y:py,vx:(Math.random()-.5)*80,vy:-Math.random()*120,o,t:0});B.g[a][b]=null;});
+    if(loose.length){got+=loose.length*20;setTimeout(()=>window.Ljud&&Ljud.fall(),150);}
+    if(loose.length>=5){data.bubbelRas=true;save();}
+    B.pts+=got;B.right++;B.petJ=1;
+    B.labels.push({kind:"pts",txt:`+${got}`,x,y,t:0});
+    for(let i=0;i<18;i++)B.parts.push({x,y,vx:(Math.random()-.5)*360,vy:(Math.random()-.5)*360,life:.6,c:pickOne(["#fff","#FFC93C",bTaskCol(task)])});
+    bT=setTimeout(bAfter,520);
+  }else{
+    // Fel svar: bubblan fastnar och visar sitt svar, så att eleven ser rätt svar direkt.
+    B.g[r][c]={v:task.a,t:task.t,fresh:1};B.added++;B.wrong++;B.shake=.35;
+    B.labels.push({kind:"fact",task,x,y,t:0});
+    window.Ljud&&Ljud.bad();
+    bT=setTimeout(bAfter,900);
+  }
+  bHud();
+}
+function bAfter(){
+  if(!B||B.over)return;
+  if(!bAll().length)return bClear();
+  if(B.P.drop&&B.since>=B.P.drop){B.drop++;B.since=0;window.Ljud&&Ljud.clonk();}
+  if(bLowest()+B.drop>BLIM-1)return bEnd("ner");
+  if(B.shots<=0)return bEnd("skott");
+  B.cur=B.next;B.next=null;bFix();
+  if(!B.cur)return bEnd("skott");
+  B.state="aim";bHud();
+}
+function bSaveBest(){const r=bRec(),rec=B.pts>(r.best||0);if(rec)r.best=B.pts;save();return rec;}
+function bClear(){
+  B.state="msg";const bonus=B.shots*10;B.pts+=bonus;
+  const r=bRec(),before=r.stars||0;r.bana=Math.max(r.bana||0,B.lvl);r.stars=Math.max(before,bStarsFor(r.bana));bSaveBest();bHud();
+  $("bmT").textContent=`Bana ${B.lvl} klar!`;
+  $("bmP").innerHTML=(B.shots?`${B.shots} skott kvar: +${bonus} bonuspoäng.`:"Planen är tom!")+(r.stars>before?`<br>Du fick en ny stjärna! ${starHtml(r.stars)}`:"");
+  $("bubMsg").hidden=false;window.Ljud&&Ljud.fanfare();confetti();
+}
+$("bmGo").onclick=()=>{if(B)bLevelStart(B.lvl+1);};
+function bEnd(why){
+  bSaveBest();B.state="over";const rec=B.pts>B.prevBest,r=bRec(),pts=B.pts,lvl=B.lvl;
+  bBanner(why==="ner"?"Bubblorna nådde strecket!":"Skotten tog slut!",1400);
+  bT=setTimeout(()=>{
+    stopBub();
+    $("rTitle").textContent=why==="ner"?"Bubblorna nådde strecket":"Skotten tog slut";
+    $("rBig").innerHTML=r.stars?starHtml(r.stars):`${pts} poäng`;
+    $("rSub").textContent=`Du kom till bana ${lvl} och fick ${pts} poäng.`+(rec&&pts?" Nytt rekord!":r.best?` Ditt rekord är ${r.best} poäng.`:"")+
+      (r.stars<3?` Klara bana ${r.stars<1?1:r.stars<2?3:5} för ${r.stars<1?"en stjärna":r.stars<2?"två stjärnor":"tre stjärnor"}.`:"");
+    showOnly("result");if(rec&&pts){window.Ljud&&Ljud.fanfare();confetti();}
+  },1500);
+}
+$("bubQuit").onclick=()=>{if(B)bSaveBest();stopBub();renderChoose();showOnly("choose");};
+
+/* Sikta: dra med fingret och släpp, eller peka med musen och klicka. */
+function bPos(e){const rc=bcv.getBoundingClientRect();return[e.clientX-rc.left,e.clientY-rc.top];}
+function bAim(x,y){if(y>BL.shY-BL.Rs*.4)return false;const a=Math.atan2(BL.shY-y,x-BL.shX);B.ang=Math.max(.13,Math.min(Math.PI-.13,a));return true;}
+const bOnNext=(x,y)=>Math.hypot(x-(BL.shX+BL.Rs+BL.D*1.45),y-BL.shY)<BL.Rn+BL.D*.5;
+bcv.addEventListener("pointerdown",e=>{
+  if(!B||B.state!=="aim")return;const [x,y]=bPos(e);
+  if(bOnNext(x,y)){bSwap();return;}
+  if(bAim(x,y)){B.aiming=true;try{bcv.setPointerCapture(e.pointerId);}catch(_){}}
+});
+bcv.addEventListener("pointermove",e=>{if(!B||B.state!=="aim")return;const [x,y]=bPos(e);if(B.aiming||e.pointerType==="mouse")bAim(x,y);});
+bcv.addEventListener("pointerup",e=>{if(!B||!B.aiming)return;B.aiming=false;const [x,y]=bPos(e);if(bAim(x,y))bFire();});
+bcv.addEventListener("pointercancel",()=>{if(B)B.aiming=false;});
+document.addEventListener("keydown",e=>{
+  if(!B||$("bub").hidden)return;
+  if(!$("bubMsg").hidden){if(e.key==="Enter"||e.key===" "){e.preventDefault();$("bmGo").click();}return;}
+  if(e.key==="ArrowLeft"){e.preventDefault();B.ang=Math.min(Math.PI-.13,B.ang+.035);}
+  else if(e.key==="ArrowRight"){e.preventDefault();B.ang=Math.max(.13,B.ang-.035);}
+  else if(e.key===" "||e.key==="Enter"||e.key==="ArrowUp"){e.preventDefault();bFire();}
+  else if(e.key==="ArrowDown"||e.key==="x"){e.preventDefault();bSwap();}
+});
+
+function bFrame(now){
+  if(!B)return;const dt=Math.min(.05,(now-(B.t0||now))/1000);B.t0=now;
+  if(B.fly){B.fly.s+=BL.D*24*dt;if(B.fly.s>=B.fly.len)bLand();}
+  B.dropA+=(B.drop-B.dropA)*Math.min(1,dt*7);
+  B.pops.forEach(p=>p.t+=dt);B.pops=B.pops.filter(p=>p.t<.3);
+  B.falls.forEach(p=>{p.t+=dt;p.vy+=1500*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;});B.falls=B.falls.filter(p=>p.y<BL.H+BL.D);
+  B.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=500*dt;p.life-=dt;});B.parts=B.parts.filter(p=>p.life>0);
+  B.labels.forEach(l=>l.t+=dt);B.labels=B.labels.filter(l=>l.t<(l.kind==="fact"?2.2:1.1));
+  B.petJ=Math.max(0,B.petJ-dt*2.2);B.shake=Math.max(0,B.shake-dt);B.swapA=Math.max(0,(B.swapA||0)-dt*4);
+  B.g.forEach(row=>row.forEach(o=>{if(o&&o.fresh)o.fresh=Math.max(0,o.fresh-dt*3);}));
+  bDraw();braf=requestAnimationFrame(bFrame);
+}
+
+/* ---------- Ritning ---------- */
+function bMix(a,b,k){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(a),Bc=p(b);return"#"+A.map((v,i)=>Math.round(v+(Bc[i]-v)*k).toString(16).padStart(2,"0")).join("");}
+function bSprite(col,r){
+  const k=col+"|"+Math.round(r*2);if(bSpr[k])return bSpr[k];
+  const dpr=BL.dpr,s=Math.ceil(r*2*dpr)+4,c=document.createElement("canvas");c.width=c.height=s;
+  const x=c.getContext("2d");x.scale(dpr,dpr);const m=s/dpr/2;
+  const g=x.createRadialGradient(m-r*.35,m-r*.4,r*.08,m,m,r);
+  g.addColorStop(0,bMix(col,"#ffffff",.6));g.addColorStop(.55,col);g.addColorStop(1,bMix(col,"#000000",.25));
+  x.fillStyle=g;x.beginPath();x.arc(m,m,r-.5,0,7);x.fill();
+  x.fillStyle="rgba(255,255,255,.75)";x.beginPath();x.ellipse(m-r*.36,m-r*.45,r*.3,r*.17,-.7,0,7);x.fill();
+  return bSpr[k]=c;
+}
+function bBub(x,y,r,col){const s=bSprite(col,r),w=s.width/BL.dpr;bx.drawImage(s,x-w/2,y-w/2,w,w);}
+function bText(s,x,y,maxW,fs,ink){
+  bx.font=bFont(fs);const w=bx.measureText(s).width;if(w>maxW){fs*=maxW/w;bx.font=bFont(fs);}
+  bx.textAlign="center";bx.textBaseline="middle";const yy=y+fs*.07;
+  if(!ink){bx.lineJoin="round";bx.lineWidth=Math.max(2,fs*.2);bx.strokeStyle="rgba(29,43,83,.75)";bx.strokeText(s,x,yy);bx.fillStyle="#fff";}else bx.fillStyle="#1D2B53";
+  bx.fillText(s,x,yy);
+}
+// Uppgiften i en bubbla. Division skrivs med bråkstreck.
+function bTaskText(t,x,y,r){
+  const ink=!t.t;
+  if(t.fr){const fs=r*.62;bText(String(t.fr[0]),x,y-fs*.52,r*1.4,fs,ink);bText(String(t.fr[1]),x,y+fs*.56,r*1.4,fs,ink);
+    bx.fillStyle=ink?"#1D2B53":"#fff";bx.strokeStyle="rgba(29,43,83,.75)";const w=r*.9;bx.lineWidth=2;bx.fillRect(x-w/2,y-1.5,w,3);if(!ink)bx.strokeRect(x-w/2,y-1.5,w,3);}
+  else bText(t.txt,x,y,r*1.66,r*.72,ink);
+}
+const bTaskCol=t=>t.t?bColor(t):BNEUT;
+function bRR(x,y,w,h,r){bx.beginPath();bx.moveTo(x+r,y);bx.arcTo(x+w,y,x+w,y+h,r);bx.arcTo(x+w,y+h,x,y+h,r);bx.arcTo(x,y+h,x,y,r);bx.arcTo(x,y,x+w,y,r);bx.closePath();}
+// "6 · 7 = 42" i en vit lapp ovanför bubblan som fastnade
+function bFact(l){
+  const {R}=BL,fs=Math.max(17,R*.95),a=Math.min(1,(2.2-l.t)*3);bx.save();bx.globalAlpha=Math.max(0,a);
+  bx.font=bFont(fs);const tail=` = ${l.task.a}`,tw=bx.measureText(tail).width;
+  const fw=l.task.fr?Math.max(bx.measureText(String(l.task.fr[0])).width,bx.measureText(String(l.task.fr[1])).width)+6:bx.measureText(l.task.txt).width;
+  const w=fw+tw+22,h=l.task.fr?fs*2.3:fs*1.5,cx=Math.max(w/2+4,Math.min(BL.W-w/2-4,l.x)),cy=l.y+BL.R+h/2+8+Math.min(1,l.t*4)*6;
+  bx.fillStyle="rgba(29,43,83,.25)";bRR(cx-w/2,cy-h/2+3,w,h,12);bx.fill();bx.fillStyle="#FFF4CC";bRR(cx-w/2,cy-h/2,w,h,12);bx.fill();
+  bx.fillStyle="#1D2B53";bx.textBaseline="middle";const x0=cx-w/2+11;
+  if(l.task.fr){bx.textAlign="center";const mx=x0+fw/2;bx.fillText(String(l.task.fr[0]),mx,cy-fs*.5);bx.fillText(String(l.task.fr[1]),mx,cy+fs*.62);bx.fillRect(mx-fw/2+2,cy-1,fw-4,2.5);}
+  else{bx.textAlign="left";bx.fillText(l.task.txt,x0,cy+fs*.07);}
+  bx.textAlign="left";bx.fillText(tail,x0+fw,cy+fs*.07);bx.restore();
+}
+function bDraw(){
+  if(!BL)return;const {W,H,D,R,left,top,deadY,shX,shY,Rs,Rn}=BL,bw=BCOLS*D,cy=bCeil();
+  bx.clearRect(0,0,W,H);
+  bx.save();if(B.shake)bx.translate((Math.random()-.5)*8*B.shake,0);
+  // spelplanen
+  bx.fillStyle="rgba(255,255,255,.3)";bRR(left-5,top-5,bw+10,deadY-top+8,14);bx.fill();
+  // taket (sjunker från bana 3 och skakar strax innan)
+  const warn=B.P.drop&&B.since>=B.P.drop-1&&B.state==="aim",wob=warn?Math.sin(performance.now()/40)*1.5:0;
+  if(cy>top+.5){bx.fillStyle="#5A6B8F";bRR(left-5,top-5+wob,bw+10,cy-top+5,10);bx.fill();bx.fillStyle="rgba(255,255,255,.25)";for(let i=0;i<8;i++)bx.fillRect(left+i*bw/8+bw/16-1,top+wob,2,cy-top-4);}
+  else{bx.fillStyle="#5A6B8F";bRR(left-5,top-5+wob,bw+10,8,4);bx.fill();}
+  // strecket som bubblorna inte får nå
+  bx.strokeStyle="rgba(229,72,77,.55)";bx.lineWidth=3;bx.setLineDash([10,8]);bx.beginPath();bx.moveTo(left,deadY);bx.lineTo(left+bw,deadY);bx.stroke();bx.setLineDash([]);
+  // bubblorna
+  B.g.forEach((row,r)=>row.forEach((o,c)=>{if(!o)return;const [x,y]=bXY(r,c),rr=R*(1+(o.fresh||0)*.25);bBub(x,y,rr,bColor(o));bText(String(o.v),x,y,R*1.62,R*1.02);}));
+  // siktlinje och var bubblan landar
+  if(B.state==="aim"&&B.cur){
+    const tr=bTrace(B.ang),gap=D*.42;let acc=0;bx.fillStyle="rgba(255,255,255,.9)";
+    for(let i=1;i<tr.pts.length;i++){const [x0,y0]=tr.pts[i-1],[x1,y1]=tr.pts[i],l=Math.hypot(x1-x0,y1-y0);
+      for(let s=(gap-acc)%gap;s<l;s+=gap){const k=s/l,px=x0+(x1-x0)*k,py=y0+(y1-y0)*k;if(Math.hypot(px-shX,py-shY)<Rs+4)continue;bx.beginPath();bx.arc(px,py,Math.max(2.5,R*.13),0,7);bx.fill();}
+      acc=(acc+l)%gap;}
+    if(tr.cell){const [gx,gy]=bXY(tr.cell[0],tr.cell[1]);bx.strokeStyle="rgba(255,255,255,.95)";bx.lineWidth=3;bx.setLineDash([5,4]);bx.beginPath();bx.arc(gx,gy,R-2,0,7);bx.stroke();bx.setLineDash([]);}
+  }
+  // skottet i luften
+  if(B.fly){const [x,y]=bAt(B.fly.pts,B.fly.s),r=R+(Rs-R)*Math.max(0,1-B.fly.s/(D*2));bBub(x,y,r,bTaskCol(B.fly.task));bTaskText(B.fly.task,x,y,r);}
+  // effekter
+  B.pops.forEach(p=>{if(p.t<0){bBub(p.x,p.y,R,p.col);return;}const k=p.t/.3;bx.globalAlpha=1-k;bBub(p.x,p.y,R*(1+k*.5),p.col);bx.globalAlpha=1;});
+  B.falls.forEach(p=>{bBub(p.x,p.y,R,bColor(p.o));bText(String(p.o.v),p.x,p.y,R*1.62,R*1.02);});
+  B.parts.forEach(p=>{bx.globalAlpha=Math.max(0,p.life/.6);bx.fillStyle=p.c;bx.beginPath();bx.arc(p.x,p.y,3,0,7);bx.fill();});bx.globalAlpha=1;
+  B.labels.forEach(l=>{if(l.kind==="fact")return bFact(l);bx.globalAlpha=Math.max(0,1-l.t/1.1);bText(l.txt,l.x,l.y-R-l.t*40,200,Math.max(22,R*1.2));bx.globalAlpha=1;});
+  bx.restore();
+  // elevens djur, skotten kvar, skjutbubblan och nästa uppgift
+  const ps=Math.min(D*1.8,80),hop=Math.sin(B.petJ*Math.PI)*D*.6;
+  if(avImg.complete)bx.drawImage(avImg,Math.max(4,left),shY-ps*.75-hop,ps,ps*1.167);
+  const cx=shX-Rs-D*1.5,cw=Math.max(44,D*1.25),ch=Math.max(40,D*1.05);
+  bx.fillStyle="#1D2B53";bRR(cx-cw/2,shY-ch/2,cw,ch,12);bx.fill();
+  bText(String(B.shots),cx,shY-ch*.1,cw-6,ch*.55,false);
+  bx.fillStyle="rgba(255,255,255,.8)";bx.font=bFont(Math.max(11,ch*.24));bx.textAlign="center";bx.fillText("skott",cx,shY+ch*.3);
+  if(B.P.drop&&B.state!=="over"){const n=B.P.drop-B.since;bx.fillStyle=n<=1?"#E5484D":"#56668F";bx.font=bFont(Math.max(12,D*.36));bx.fillText(`tak ↓ ${Math.max(0,n)}`,cx,shY+ch/2+Math.max(12,D*.36)*.9);}
+  bx.fillStyle="rgba(255,255,255,.6)";bx.beginPath();bx.arc(shX,shY,Rs+6,0,7);bx.fill();
+  bx.strokeStyle="rgba(29,43,83,.2)";bx.lineWidth=2;bx.stroke();
+  if(B.cur){bBub(shX,shY,Rs,bTaskCol(B.cur));bTaskText(B.cur,shX,shY,Rs);}
+  const nx=shX+Rs+D*1.45;
+  if(B.next){const sw=B.swapA||0;bx.save();bx.translate(nx,shY);bx.rotate(sw*Math.PI);bx.translate(-nx,-shY);
+    bx.strokeStyle="rgba(255,255,255,.95)";bx.fillStyle="rgba(255,255,255,.95)";bx.lineWidth=Math.max(3,D*.11);const ar=Rn+D*.3;
+    for(const a0 of [-.3,Math.PI-.3]){bx.beginPath();bx.arc(nx,shY,ar,a0,a0+2.1);bx.stroke();const ea=a0+2.1,ex=nx+Math.cos(ea)*ar,ey=shY+Math.sin(ea)*ar,s=D*.22;
+      bx.beginPath();bx.moveTo(ex+Math.cos(ea)*s,ey+Math.sin(ea)*s);bx.lineTo(ex-Math.cos(ea)*s,ey-Math.sin(ea)*s);bx.lineTo(ex+Math.cos(ea+Math.PI/2)*s*1.3,ey+Math.sin(ea+Math.PI/2)*s*1.3);bx.fill();}
+    bx.restore();bBub(nx,shY,Rn,bTaskCol(B.next));bTaskText(B.next,nx,shY,Rn);}
+  if(B.tip&&B.state==="aim"&&shY-Rs-deadY>D*1.6){bText(matchMedia("(pointer:coarse)").matches?"Dra med fingret för att sikta. Släpp för att skjuta!":"Sikta med musen och klicka för att skjuta!",W/2,shY-Rs-D*.9,W-24,Math.max(15,D*.42),true);}
 }
 
 function confetti(){

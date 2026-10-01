@@ -77,6 +77,9 @@
     /* Plask när näckrosbladet sjunker */
     splash(){if(!isOn())return;const c=ac();if(!c)return;noiseBurst(c,0,.5,1400,.9,.3,180);tone(400,.02,.25,'sine',.06,90);},
     /* Tungan fångar en fluga */
+    /* Bubbeljakten: plopp (stiger i ton när många spricker) och skott */
+    pop(i){if(!isOn())return;const c=ac();if(!c)return;const f=520*Math.pow(1.07,Math.min(i||0,14));tone(f,0,.09,'sine',.17,f*2.2);noiseBurst(c,0,.04,2600,1,.05);},
+    shoot(){if(!isOn())return;tone(240,0,.14,'triangle',.09,560);},
     slurp(){if(!isOn())return;tone(500,0,.1,'sine',.1,1400);tone(1400,.1,.08,'sine',.06,700);},
     /* Vattenporl i bakgrunden med små bubblor */
     water:{
