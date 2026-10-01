@@ -323,6 +323,7 @@ let W=0,H=0,G=null,raf=0;
 function resize(){const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 window.addEventListener("resize",()=>{if(G)resize();});
 
+$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();showOnly("choose");renderChoose();};
 $("rAgain").onclick=()=>startCurrent();
 $("rChoose").onclick=()=>{renderChoose();showOnly("choose");};
 
