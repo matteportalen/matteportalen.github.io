@@ -289,9 +289,9 @@ function genLik(g){
   }else{
     const a=rnd(15,35),b=rnd(2,10),r=a-b,f=rnd(1,4);
     if(f===1){tok=[a,'−','X','=',r];v=b;hint=`Hur långt är det från ${r} upp till ${a}?`;}
-    else if(f===2){tok=[r,'=','X','−',b];v=a;hint=`Tänk plus: ${r} + ${b} = ?`;}
+    else if(f===2){tok=[r,'=','X','−',b];v=a;hint=`Tänk addition: ${r} + ${b} = ?`;}
     else if(f===3){tok=[a,'−',b,'=','X'];v=r;hint=`Räkna ${b} steg bakåt från ${a}.`;}
-    else{tok=['X','−',b,'=',r];v=a;hint=`Tänk plus: ${r} + ${b} = ?`;}
+    else{tok=['X','−',b,'=',r];v=a;hint=`Tänk addition: ${r} + ${b} = ?`;}
   }
   const txt=tok.join(' ').replace('X','?');
   return{kind:'keys',instr:'Vilket tal saknas?',speak:'Vilket tal saknas? '+say(txt),

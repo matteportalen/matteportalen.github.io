@@ -321,7 +321,7 @@ function tipFor(f){
   if(a===b)return 'Ett tal minus samma tal blir 0.';
   if(a===10)return `Tiokompisar: ${b} och ${10-b} blir 10. Därför är 10 − ${b} = ${10-b}.`;
   if(b<=3)return `Börja på ${a} och räkna ${b} steg bakåt: ${range(a-b,a-1).reverse().join(', ')}.`;
-  return `Tänk plus: ${b} + ? = ${a}. Svaret är ${a-b}.`;
+  return `Tänk addition: ${b} + ? = ${a}. Svaret är ${a-b}.`;
 }
 function showHelp(f,v){
   $('#answers').hidden=true;$('#qbox').hidden=true;
