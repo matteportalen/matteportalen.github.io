@@ -92,7 +92,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
 - **Blandade uppgifter med saknat tal** (`__ · 5 = 15`, `__ + 7 = 12`) och "Stämmer det?" i fler övningar (addition, multiplikation osv.). Prövas först i Division (Kalaset); läraren gillar idén.
-- **Egen värld per övning** (Multiplikation = Bageriet, Lilla plus = tioramen, Tiotal = bussen). Division/Kalaset är klar och godkänd av läraren; samma upplägg ska prövas i de andra.
+- **Egen värld per övning**: Division/Kalaset är klar och godkänd. Prototyper att jämföra innan de ersätter `index.html`: `multiplikation/ny.html` (Bageriet, kockmössa, receptboken, bakplåt, `__ · 5 = 15`), `lillaplus/ny.html` (Hönsgården, tioramen som äggkartong, kycklingar vid minus, gårdsdjur för kunskap), `tiotal/ny.html` (Bussen: tiorutan som buss med 10 platser, busslinjen växer med stjärnorna; inga blandade uppgifter där eftersom Tiotal följer bokens steg). Kockmössan (`hat:"kock"`) finns i `djur.js` men inte i Garderoben.
 - **Dra klossar i Tiobas**: bara om eleverna själva försöker dra (tryck räcker för nu).
 - **Små tryckytor i Formjakten** (Geometri): flaggan och trädstammen är små i mobilstorlek. Åtgärdas bara om det visar sig vara ett problem för eleverna.
 - Kort kod utan server (sammanfattning i 8–30 tecken) diskuterades men byggdes inte.
