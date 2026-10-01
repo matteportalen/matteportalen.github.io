@@ -1115,16 +1115,30 @@ function finishMem(){
 // Bubblorna har svar, skjutbubblan har en uppgift. Rätt granne: hela gruppen med samma tal spricker.
 // Fel: skjutbubblan fastnar och visar sitt svar. Varje uppgift har alltid ett svar som går att träffa.
 const BCOLS=10,BLIM=12; // 10 bubblor i bredd, 12 rader ner till strecket
-// tabell 1–10; närliggande tabeller har tydligt olika färger
-const BPAL=["#5A6B8F","#FF6B6B","#2BB673","#3D8BFD","#FF9F43","#7B61FF","#F2B707","#FF5FA2","#17AFC4","#A0673C"];
+// 12 tydliga färger. Varje tal på banan får en egen färg (45 alltid blå, 40 alltid gul osv.).
+const BPAL=["#FF6B6B","#3D8BFD","#F2B707","#1E9E5E","#7B61FF","#FF9F43","#17AFC4","#FF5FA2","#A0673C","#1D2B53","#A3C93A","#9AA7BF"];
 const BNEUT="#F4F7FD";
 const bcv=$("bcv"),bx=bcv.getContext("2d");
 let B=null,BL=null,braf=0,bT=0,bBanT=0,bSpr={};
 const bFont=fs=>`800 ${fs}px "Baloo 2", system-ui, sans-serif`;
 const bCount=r=>r%2?BCOLS-1:BCOLS;
-// Multiplikation och division: färg per tabell. Plus och minus: färg per tal (skjutbubblan är vit, så färgen avslöjar inget).
-const bColor=o=>o.t?BPAL[(o.t-1)%10]:BPAL[o.v%10];
-function bLevel(l){return{rows:Math.min(8,l+3),shots:[0,22,24,26,28,28][Math.min(l,5)],drop:l<3?0:l===3?10:l===4?8:Math.max(5,12-l),kinds:Math.min(8,l+3)};}
+// Färg per tal. Skjutbubblan är alltid vit, så färgen avslöjar aldrig svaret.
+function bColor(o){const m=B.colMap;if(!m.has(o.v))m.set(o.v,m.size%BPAL.length);return BPAL[m.get(o.v)];}
+function bLevel(l){return{rows:Math.min(8,l+3),shots:[0,20,24,24,26,30][Math.min(l,5)],drop:l<3?0:l===3?10:l===4?8:Math.max(5,12-l),kinds:[0,7,8,9,10,12][Math.min(l,5)]};}
+/* Mönster från bana 3, så att banorna ser olika ut. Breda fästen i taket, inga tunna trådar som rasar för lätt.
+   x är bubblans plats i bredd (0–9), r raden, n antal rader. Fönster och galler (kräver studs) först från bana 5. */
+const BSHAPES=[
+  (r,x,n)=>x%3.4<2.3||r<2,                               // pelare
+  (r,x,n)=>r<n-Math.abs(x-4.5)*n/5.5,                     // kupol, djupast i mitten
+  (r,x,n)=>r<2+Math.abs(x-4.5)*(n-1)/4.5,                 // V, djupast vid väggarna
+  (r,x,n)=>r<2+x*(n-1)/9,                                 // trappa
+  (r,x,n)=>r<2||Math.abs(x-2.2)<1.9||Math.abs(x-6.8)<1.9, // två öar
+  (r,x,n)=>r<3||(r+Math.floor(x))%4!==0                   // rutmönster med luckor
+];
+const BSHAPES_HARD=[
+  (r,x,n)=>!(r>=2&&r<n-1&&x>2&&x<7),                      // fönster mitt i
+  (r,x,n)=>!(r%3===2&&Math.floor(x)%3===1)                // galler
+];
 function bNbrs(r,c){
   const o=r%2?[[0,-1],[0,1],[-1,0],[-1,1],[1,0],[1,1]]:[[0,-1],[0,1],[-1,-1],[-1,0],[1,-1],[1,0]];
   return o.map(([a,b])=>[r+a,c+b]).filter(([a,b])=>a>=0&&a<BLIM+4&&b>=0&&b<bCount(a));
@@ -1134,7 +1148,7 @@ function bPool(){
   if(cat==="plus10")for(let v=2;v<=10;v++)p.push({v,t:0});
   else if(cat==="minus10")for(let v=1;v<=9;v++)p.push({v,t:0});
   else if(cat==="tiotal"){for(let v=2;v<=9;v++)p.push({v,t:0});for(let v=11;v<=18;v++)p.push({v,t:0});}
-  else if(cat==="hundra"){const s=new Set();while(s.size<12)s.add(rnd(12,98));p=[...s].map(v=>({v,t:0}));}
+  else if(cat==="hundra"){const s=new Set();while(s.size<14)s.add(rnd(12,98));p=[...s].map(v=>({v,t:0}));}
   else if(cat==="multi")T.forEach(t=>{for(let b=1;b<=10;b++)p.push({v:t*b,t});});
   else T.forEach(t=>{for(let q=1;q<=10;q++)p.push({v:q,t});});
   shuffle(p);const seen=new Set();return p.filter(o=>!seen.has(o.v)&&seen.add(o.v));
@@ -1154,8 +1168,16 @@ function bBuild(l){
   for(let r=0;r<BLIM+4;r++)g.push(new Array(bCount(r)).fill(null));
   for(let r=0;r<P.rows;r++)for(let c=0;c<bCount(r);c++){
     const nb=bNbrs(r,c).filter(([a,b])=>(a<r||(a===r&&b<c))&&g[a][b]);
-    const n=nb.length&&Math.random()<.55?pickOne(nb):null,o=n?g[n[0]][n[1]]:pickOne(vals);
+    const n=nb.length&&Math.random()<.3?pickOne(nb):null,o=n?g[n[0]][n[1]]:pickOne(vals);
     g[r][c]={v:o.v,t:o.t};
+  }
+  if(l>=3){
+    const sh=pickOne(l>=5?BSHAPES.concat(BSHAPES_HARD):BSHAPES);
+    for(let r=0;r<P.rows;r++)for(let c=0;c<bCount(r);c++)if(!sh(r,c+(r%2?.5:0),P.rows))g[r][c]=null;
+    // bara bubblor som sitter fast i taket får vara kvar
+    const S=new Set(),q=[];for(let c=0;c<bCount(0);c++)if(g[0][c])q.push([0,c]);
+    while(q.length){const [r,c]=q.pop(),k=r+","+c;if(S.has(k)||!g[r][c])continue;S.add(k);bNbrs(r,c).forEach(x=>q.push(x));}
+    g.forEach((row,r)=>row.forEach((o,c)=>{if(o&&!S.has(r+","+c))row[c]=null;}));
   }
   return g;
 }
@@ -1246,7 +1268,7 @@ function startBub(){
 }
 function bLevelStart(l){
   const P=bLevel(l);
-  Object.assign(B,{lvl:l,P,g:bBuild(l),shots:P.shots,drop:0,dropA:0,since:0,added:0,state:"aim",fly:null,pops:[],falls:[],parts:[],labels:[],cur:null,next:null,last:null});
+  B.colMap=new Map();Object.assign(B,{lvl:l,P,g:bBuild(l),shots:P.shots,drop:0,dropA:0,since:0,added:0,state:"aim",fly:null,pops:[],falls:[],parts:[],labels:[],cur:null,next:null,last:null});
   B.init=bAll().length;bFix();bHud();$("bubMsg").hidden=true;
   const tip=BL.W>BL.H&&BL.H<520?"<small>Håll mobilen upprätt så blir bubblorna större.</small>":"";
   bBanner(`Bana ${l}`+(P.drop?`<small>Taket sjunker var ${P.drop}:e skott!</small>`:"<small>Poppa alla bubblor!</small>")+tip,P.drop?2600:1800);
@@ -1267,7 +1289,7 @@ function bLand(){
   const near=bNbrs(r,c).filter(([a,b])=>B.g[a][b]&&B.g[a][b].v===task.a);
   if(near.length){
     const grp=bFlood(near,task.a);let got=grp.length*10;
-    B.pops.push({x,y,col:task.t?bColor(task):BNEUT,t:0});
+    B.pops.push({x,y,col:BNEUT,t:0});
     grp.forEach(([a,b],i)=>{const [px,py]=bXY(a,b);B.pops.push({x:px,y:py,col:bColor(B.g[a][b]),t:-i*.04});B.g[a][b]=null;setTimeout(()=>window.Ljud&&Ljud.pop(i),i*45);});
     const loose=bLoose();
     loose.forEach(([a,b])=>{const [px,py]=bXY(a,b),o=B.g[a][b];B.falls.push({x:px,y:py,vx:(Math.random()-.5)*80,vy:-Math.random()*120,o,t:0});B.g[a][b]=null;});
@@ -1374,12 +1396,12 @@ function bText(s,x,y,maxW,fs,ink){
 }
 // Uppgiften i en bubbla. Division skrivs med bråkstreck.
 function bTaskText(t,x,y,r){
-  const ink=!t.t;
+  const ink=true;
   if(t.fr){const fs=r*.62;bText(String(t.fr[0]),x,y-fs*.52,r*1.4,fs,ink);bText(String(t.fr[1]),x,y+fs*.56,r*1.4,fs,ink);
     bx.fillStyle=ink?"#1D2B53":"#fff";bx.strokeStyle="rgba(29,43,83,.75)";const w=r*.9;bx.lineWidth=2;bx.fillRect(x-w/2,y-1.5,w,3);if(!ink)bx.strokeRect(x-w/2,y-1.5,w,3);}
   else bText(t.txt,x,y,r*1.66,r*.72,ink);
 }
-const bTaskCol=t=>t.t?bColor(t):BNEUT;
+const bTaskCol=()=>BNEUT;
 function bRR(x,y,w,h,r){bx.beginPath();bx.moveTo(x+r,y);bx.arcTo(x+w,y,x+w,y+h,r);bx.arcTo(x+w,y+h,x,y+h,r);bx.arcTo(x,y+h,x,y,r);bx.arcTo(x,y,x+w,y,r);bx.closePath();}
 // "6 · 7 = 42" i en vit lapp ovanför bubblan som fastnade
 function bFact(l){
@@ -1407,13 +1429,15 @@ function bDraw(){
   bx.strokeStyle="rgba(229,72,77,.55)";bx.lineWidth=3;bx.setLineDash([10,8]);bx.beginPath();bx.moveTo(left,deadY);bx.lineTo(left+bw,deadY);bx.stroke();bx.setLineDash([]);
   // bubblorna
   B.g.forEach((row,r)=>row.forEach((o,c)=>{if(!o)return;const [x,y]=bXY(r,c),rr=R*(1+(o.fresh||0)*.25);bBub(x,y,rr,bColor(o));bText(String(o.v),x,y,R*1.62,R*1.02);}));
-  // siktlinje och var bubblan landar
+  // siktlinjen visar bara drygt halva vägen och tonar ut, så att det är lite av en utmaning att sikta
   if(B.state==="aim"&&B.cur){
-    const tr=bTrace(B.ang),gap=D*.42;let acc=0;bx.fillStyle="rgba(255,255,255,.9)";
-    for(let i=1;i<tr.pts.length;i++){const [x0,y0]=tr.pts[i-1],[x1,y1]=tr.pts[i],l=Math.hypot(x1-x0,y1-y0);
-      for(let s=(gap-acc)%gap;s<l;s+=gap){const k=s/l,px=x0+(x1-x0)*k,py=y0+(y1-y0)*k;if(Math.hypot(px-shX,py-shY)<Rs+4)continue;bx.beginPath();bx.arc(px,py,Math.max(2.5,R*.13),0,7);bx.fill();}
-      acc=(acc+l)%gap;}
-    if(tr.cell){const [gx,gy]=bXY(tr.cell[0],tr.cell[1]);bx.strokeStyle="rgba(255,255,255,.95)";bx.lineWidth=3;bx.setLineDash([5,4]);bx.beginPath();bx.arc(gx,gy,R-2,0,7);bx.stroke();bx.setLineDash([]);}
+    const tr=bTrace(B.ang),gap=D*.42;let tot=0;for(let i=1;i<tr.pts.length;i++)tot+=Math.hypot(tr.pts[i][0]-tr.pts[i-1][0],tr.pts[i][1]-tr.pts[i-1][1]);
+    const max=tot*.6;let acc=0,done=0;
+    for(let i=1;i<tr.pts.length&&done<max;i++){const [x0,y0]=tr.pts[i-1],[x1,y1]=tr.pts[i],l=Math.hypot(x1-x0,y1-y0);
+      for(let s=(gap-acc)%gap;s<l&&done+s<max;s+=gap){const k=s/l,px=x0+(x1-x0)*k,py=y0+(y1-y0)*k;if(Math.hypot(px-shX,py-shY)<Rs+4)continue;
+        bx.globalAlpha=.9*Math.min(1,(1-(done+s)/max)*2.2);bx.fillStyle="#fff";bx.beginPath();bx.arc(px,py,Math.max(2.5,R*.13),0,7);bx.fill();}
+      acc=(acc+l)%gap;done+=l;}
+    bx.globalAlpha=1;
   }
   // skottet i luften
   if(B.fly){const [x,y]=bAt(B.fly.pts,B.fly.s),r=R+(Rs-R)*Math.max(0,1-B.fly.s/(D*2));bBub(x,y,r,bTaskCol(B.fly.task));bTaskText(B.fly.task,x,y,r);}
