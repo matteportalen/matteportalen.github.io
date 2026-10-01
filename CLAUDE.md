@@ -80,5 +80,6 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
 - **Tiobasmaterialet** ska byggas om.
+- **Små tryckytor i Formjakten** (Geometri): flaggan och trädstammen är små i mobilstorlek. Åtgärdas bara om det visar sig vara ett problem för eleverna.
 - Kort kod utan server (sammanfattning i 8–30 tecken) diskuterades men byggdes inte.
 - På sikt: riktiga konton för **privat bruk** (kräver server), och senare en skolversion med lärarvy. Elevdata på en server behöver stämmas av med dataskyddsombudet (GDPR), och slumpade användarnamn räcker inte för att undgå GDPR helt.
