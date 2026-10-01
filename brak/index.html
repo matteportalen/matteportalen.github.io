@@ -118,7 +118,16 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 @media (prefers-reduced-motion:reduce){.pet svg{animation:none !important}}
 /* Maten och skärandet */
 .content>svg.roll,.help .vis>svg.roll{width:100%;max-width:380px}
-.cutsvg{cursor:crosshair;touch-action:manipulation}
+.cutsvg{touch-action:none;overflow:visible}
+.pzcut{cursor:none}
+.pv{pointer-events:none}
+.content .things{min-height:2.9rem;border:2px dashed #C6D6F2;border-radius:16px;padding:2px 6px}
+.things .tok{display:inline-block;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;padding:0 1px}
+.plate .tok{font-size:1.05rem;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+.tok.lift{opacity:.3}
+.tok.ghost{position:fixed;z-index:9;pointer-events:none;font-size:2.2rem;transform:translate(-50%,-60%)}
+.dealtip{color:var(--muted);font-size:.95rem;margin-top:8px}
+.reset{color:var(--accent);font-weight:800;text-decoration:underline;padding:4px 6px}
 .content>svg.pzcut{width:min(80vw,290px)}
 .cmpv svg{width:120px !important}
 .plates{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px}
@@ -285,10 +294,17 @@ function genSkarRulle(){
   const check=cuts=>{const s=[...cuts].sort((a,b)=>a-b);if(s.length!==n-1)return`${s.length+1} ${s.length===0?"bit":"bitar"}`;return s.every((f,j)=>Math.abs(f-(j+1)/n)<TOL)?true:"olika stora bitar";};
   return{kind:"cut",instr:`Skär rulltårtan i ${n} lika stora bitar.`,speak:`Skär rulltårtan i ${TAL[n]} lika stora bitar, så att det blir rättvist. Tryck på rulltårtan där kniven ska skära. Trycker du på ett snitt igen försvinner det. Tryck sedan på Klar.`,
     draw:cuts=>rollSVG(cuts,{cls:"cutsvg"}),
+    preview:(cuts,x)=>{const f=(x-10)/180;if(f<.03||f>.97)return"";const rem=cuts.some(c=>Math.abs(c-f)<.045);
+      return`<line x1="${RX(f)}" y1="4" x2="${RX(f)}" y2="52" stroke="${rem?"#E5484D":"#1D2B53"}" stroke-width="1.8" stroke-dasharray="4 3"/>`;},
     tap:(cuts,x)=>{const f=(x-10)/180;if(f<.03||f>.97)return false;const i=cuts.findIndex(c=>Math.abs(c-f)<.045);if(i>=0)cuts.splice(i,1);else cuts.push(f);return true;},
     check,
     help:cuts=>({vis:rollSVG(cuts||[],{ideal:n}),tip:(cuts||[]).length!==n-1?`För ${n} bitar behöver du ${n-1} ${n-1===1?"snitt":"snitt"}. De gröna strecken visar var du ska skära.`:`Bitarna ska vara lika långa. De gröna strecken visar var du ska skära. Dina snitt är de vita.`})};
 }
+/* Pizzaskäraren: hjulet i (0,0), handtaget åt höger. Ritad i kod. */
+const CUTTER=`<g class="cutter"><ellipse cx="2" cy="13" rx="12" ry="3" fill="rgba(0,0,0,.15)"/><rect x="6" y="-2.6" width="18" height="5.2" rx="2" fill="#AEB9CC" stroke="#1D2B53" stroke-width="1.2"/>
+  <rect x="22" y="-5" width="28" height="10" rx="5" fill="#E5484D" stroke="#1D2B53" stroke-width="1.5"/><path d="M27 -2.2 H44" stroke="#FF8A8E" stroke-width="1.6" stroke-linecap="round"/>
+  <circle r="11" fill="#E3E8F2" stroke="#1D2B53" stroke-width="1.8"/><path d="M-7 -4 A8 8 0 0 1 2 -8" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle r="2.8" fill="#56668F" stroke="#1D2B53" stroke-width="1"/></g>`;
+const snapA=(dx,dy)=>Math.round(((Math.atan2(dy,dx)*180/Math.PI)+360)%180/15)*15%180;
 /* Skär pizzan: varje tryck blir ett rakt snitt genom mitten, åt det håll man tryckte (närmaste 15°). */
 function genSkarPizza(){
   const n=pickN([2,4,4,6,8]),m=n/2;
@@ -297,7 +313,11 @@ function genSkarPizza(){
   const check=cuts=>{if(cuts.length!==m)return`${cuts.length?cuts.length*2:1} ${cuts.length?"bitar":"bit"}`;const s=[...cuts].sort((a,b)=>a-b);return s.every((a,i)=>i===0||a-s[i-1]===180/m)?true:"olika stora bitar";};
   return{kind:"cut",instr:`Skär pizzan i ${n} lika stora bitar.`,speak:`Skär pizzan i ${TAL[n]} lika stora bitar. Tryck på pizzan där du vill skära. Kniven skär rakt igenom mitten. Trycker du på ett snitt igen försvinner det. Tryck sedan på Klar.`,
     draw:cuts=>pic(cuts,{cls:"cutsvg pzcut"}),
-    tap:(cuts,x,y)=>{const dx=x-50,dy=y-50,d=Math.hypot(dx,dy);if(d<7||d>54)return false;const a=Math.round(((Math.atan2(dy,dx)*180/Math.PI)+360)%180/15)*15%180;
+    /* Förhandsvisning: pizzaskäraren står på linjen där snittet hamnar, med handtaget utåt. Röd linje = snittet tas bort. */
+    preview:(cuts,x,y)=>{const dx=x-50,dy=y-50,d=Math.hypot(dx,dy);if(d<7||d>54)return"";const a=snapA(dx,dy),r=a*Math.PI/180,out=Math.cos(Math.atan2(dy,dx)-r)>=0?1:-1;
+      const rr=Math.min(Math.max(d,16),44)*out,rem=cuts.includes(a);
+      return lines([a],rem?"#E5484D":"#1D2B53",1.8,"4 3")+`<g transform="translate(${(50+rr*Math.cos(r)).toFixed(1)} ${(50+rr*Math.sin(r)).toFixed(1)}) rotate(${a+(out<0?180:0)})">${CUTTER}</g>`;},
+    tap:(cuts,x,y)=>{const dx=x-50,dy=y-50,d=Math.hypot(dx,dy);if(d<7||d>54)return false;const a=snapA(dx,dy);
       const i=cuts.indexOf(a);if(i>=0)cuts.splice(i,1);else cuts.push(a);return true;},
     check,
     help:cuts=>({vis:pic(cuts||[],{ideal:true,rot:(cuts&&cuts.length?Math.min(...cuts):0)}),tip:(cuts||[]).length!==m?`Varje snitt rakt genom mitten ger två bitar. För ${n} bitar behövs ${m} ${m===1?"snitt":"snitt"}. De gröna strecken visar hur.`:"Bitarna ska vara lika stora. Snitten ska ha lika stora mellanrum, som de gröna strecken."})};
@@ -306,11 +326,28 @@ const genLika=()=>{const r=Math.random();return r<.4?genRattvist():r<.7?genSkarP
 /* ---------- 5. Del av antal: dela lika på tallrikar ---------- */
 const THINGS=["🍓","🍎","🧁","🍪","🍒","🥕","🍋","🍩"];
 const platesHTML=(e,d,each,hl)=>`<div class="plates">${Array.from({length:d},(_,g)=>`<span class="plate${hl&&g<hl?" on":""}">${e.repeat(each)}</span>`).join("")}</div>`;
+/* Prova att dela: dra en sak till en tallrik, eller tryck så hamnar den på tallriken som har minst. Tryck på en sak på en tallrik så går den tillbaka. */
+function mountDeal(c){
+  const pool=c.querySelector(".things"),plates=[...c.querySelectorAll(".plate")];
+  const nextPlate=()=>plates.reduce((a,p)=>p.children.length<a.children.length?p:a,plates[0]);
+  c.querySelectorAll(".tok").forEach(tok=>tok.addEventListener("pointerdown",e=>{
+    if(G.busy)return;e.preventDefault();const sx=e.clientX,sy=e.clientY;let ghost=null;
+    const move=ev=>{if(!ghost&&Math.hypot(ev.clientX-sx,ev.clientY-sy)>8){ghost=tok.cloneNode(true);ghost.className="tok ghost";document.body.appendChild(ghost);tok.classList.add("lift");}
+      if(ghost){ghost.style.left=ev.clientX+"px";ghost.style.top=ev.clientY+"px";}};
+    const up=ev=>{removeEventListener("pointermove",move);removeEventListener("pointerup",up);removeEventListener("pointercancel",up);
+      if(ghost){ghost.remove();tok.classList.remove("lift");const el=document.elementFromPoint(ev.clientX,ev.clientY),pl=el&&el.closest(".plate");
+        if(pl&&plates.includes(pl))pl.appendChild(tok);else if(el&&el.closest(".things"))pool.appendChild(tok);}
+      else(tok.parentElement===pool?nextPlate():pool).appendChild(tok);
+      window.Ljud&&Ljud.hop&&Ljud.hop();};
+    addEventListener("pointermove",move);addEventListener("pointerup",up);addEventListener("pointercancel",up);}));
+  c.querySelector("#reset").onclick=()=>c.querySelectorAll(".plate .tok").forEach(t=>pool.appendChild(t));
+}
 function genAntal(){
   const d=pickN([2,2,3,4,5]),each=rnd(2,d===2?8:5),n=d*each,k=d>2&&Math.random()<.35?rnd(2,d-1):1,e=pickOne(THINGS),ans=k*each;
   const what=k===1&&d===2?"hälften":ordOf(k,d);
   return{kind:"keys",instr:`Hur många är ${what} av ${n}?`,speak:`${petName} har ${n} saker till picknicken. De ska delas lika på ${TAL[d]} tallrikar. Hur många är ${what} av ${n}?`,
-    html:`<div class="things">${e.repeat(n)}</div>`+platesHTML("",d,0),answer:ans,
+    html:`<div class="things">${Array.from({length:n},()=>`<span class="tok">${e}</span>`).join("")}</div>`+platesHTML("",d,0)+
+      `<div class="dealtip">Osäker? Dra eller tryck för att dela ut. <button class="reset" id="reset">Börja om</button></div>`,answer:ans,mount:mountDeal,
     help:()=>({vis:platesHTML(e,d,each,k),tip:`Dela ${n} lika på ${d} tallrikar. Det blir ${each} på varje, eftersom ${d} · ${each} = ${n}.${k>1?` ${cap(what)} är ${k} tallrikar: ${k} · ${each} = ${ans}.`:` ${cap(what)} är en tallrik: ${ans}.`}`})};
 }
 /* ---------- 6. Jämför: hjälpen visar två lika stora pizzor ---------- */
@@ -393,7 +430,7 @@ function render(){
     c.innerHTML=t.html+`<div class="opts${t.emo?" emo":""}${t.pics?" pics":""}${t.fr?" frs":""}">${t.options.map((o,i)=>`<button data-o="${o}">${t.labels?t.labels[i]:o}</button>`).join("")}</div>`;
     c.querySelectorAll(".opts button").forEach(b=>b.onclick=()=>{if(G.busy)return;if(b.dataset.o===String(t.answer)){b.classList.add("right");done();}else{b.classList.add("bad");wrong(b.dataset.o,t.labels?b.innerHTML:null);}});
   }else if(t.kind==="keys"){
-    c.innerHTML=t.html+`<div><span class="box1" id="box">?</span>${t.unit?` <b>${t.unit}</b>`:""}</div>`;
+    c.innerHTML=t.html+`<div><span class="box1" id="box">?</span>${t.unit?` <b>${t.unit}</b>`:""}</div>`;if(t.mount)t.mount(c);
   }else if(t.kind==="tap"){
     c.innerHTML=`<div class="tapgrid">${t.items.map((p,i)=>`<button class="tapit" data-i="${i}">${p}</button>`).join("")}</div><button class="go" id="done">Klar</button>`;
     c.querySelectorAll(".tapit").forEach(b=>b.onclick=()=>{if(!G.busy)b.classList.toggle("sel");});
@@ -401,8 +438,16 @@ function render(){
       const ok=sel.length===t.correct.length&&t.correct.every(i=>sel.includes(i));ok?done():wrong(sel.length?`${sel.length} former`:"ingen form");};
   }else if(t.kind==="cut"){
     /* Skär själv: tryck på bilden där kniven ska skära */
+    /* Med mus syns snittet när man pekar. Med finger syns det medan fingret är nere, och snittet görs när man lyfter. */
     G.cuts=[];G.state=G.cuts;const draw=()=>{c.innerHTML=t.draw(G.cuts)+`<button class="go" id="done">Klar</button>`;
-      const s=c.querySelector("svg.cutsvg");s.addEventListener("click",e=>{if(G.busy)return;const p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(s.getScreenCTM().inverse());if(t.tap(G.cuts,q.x,q.y))draw();});
+      const s=c.querySelector("svg.cutsvg");s.insertAdjacentHTML("beforeend",'<g class="pv"></g>');const pv=s.querySelector(".pv");let down=false;
+      const at=e=>{const p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(s.getScreenCTM().inverse());};
+      const show=e=>{const q=at(e);pv.innerHTML=t.preview(G.cuts,q.x,q.y);};
+      s.addEventListener("pointermove",e=>{if(!G.busy&&(down||e.pointerType==="mouse"))show(e);});
+      s.addEventListener("pointerleave",()=>{if(!down)pv.innerHTML="";});
+      s.addEventListener("pointerdown",e=>{if(G.busy)return;down=true;try{s.setPointerCapture(e.pointerId);}catch(_){}show(e);});
+      s.addEventListener("pointerup",e=>{if(!down)return;down=false;const q=at(e);if(t.tap(G.cuts,q.x,q.y))draw();else pv.innerHTML="";});
+      s.addEventListener("pointercancel",()=>{down=false;pv.innerHTML="";});
       $("done").onclick=()=>{if(G.busy)return;const r=t.check(G.cuts);r===true?done():wrong(r);};};
     draw();
   }else if(t.kind==="color"){
