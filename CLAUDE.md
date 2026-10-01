@@ -5,7 +5,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 
 ## Teknik i korthet
 
-- Ren HTML, CSS och JavaScript. **Inga ramverk, inget byggsteg.** Varje övning är en enda `index.html` i en egen mapp, med CSS och JS i samma fil.
+- Ren HTML, CSS och JavaScript. **Inga ramverk, inget byggsteg.** Varje övning är en enda `index.html` i en egen mapp, med CSS och JS i samma fil. Bilder som hämtats utifrån eller ritats av läraren får ligga i en undermapp `bilder/` i övningens mapp (sajten används alltid via webbläsaren). Ange källa och licens i tabellen nedan.
 - All data sparas i **localStorage** i elevens webbläsare. Ingen server, inga konton på nätet.
 - Typsnitt: **Baloo 2** från Google Fonts (vikt 500/700/800), med `"Trebuchet MS", system-ui, sans-serif` som reserv.
 - Delat ljud: `ljud.js` i roten. Alla sidor laddar den med `<script src="../ljud.js">` (startsidan med `ljud.js`).
@@ -23,7 +23,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 | `multiplikation/` | Tabellerna 1–10, medaljer, Mästartavlan | `mattespel-multiplikation-v1` |
 | `division/` | Utan och med rest, bråkstreck | `mattespel-division-v1` |
 | `klockan/` | Åtta nivåer, analog och digital tid, mäta tid | `mattespel-klockan-v1` |
-| `geometri/` | Former, kroppar, hörn och sidor, punkt/linje/sträcka/stråle + rita sträckan, mönster, symmetri, omkrets och area | `mattespel-geometri-v1` |
+| `geometri/` | Former, kroppar, hörn och sidor, punkt/linje/sträcka/stråle + rita sträckan, mönster, symmetri, omkrets och area. **Hörn och sidor** är en skyltpromenad: sex riktiga svenska vägskyltar i `geometri/bilder/` (public domain, Wikimedia Commons) och djurets egna träskyltar med djurets porträtt. Elevens djur står bredvid och reagerar på svaren. | `mattespel-geometri-v1` (läser även `matteportalen-uggla`) |
 | `brak/` | Bråk: sju områden | `mattespel-brak-v1` |
 | `taluppfattning/` | Bedömningsstöd i taluppfattning åk 1 och 2, diagnos | `mattespel-taluppfattning-v1` |
 | `np3/` | Nationella prov åk 3 (äldre sida, patchad) | `np3-resultat` |
@@ -46,7 +46,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 - Konfetti vid alla rätt eller nytt rekord. Respektera `prefers-reduced-motion`.
 - Rätt svar: grönt och pling. Fel svar: mjukt rosa, en förklaring och uppgiften kommer tillbaka senare i rundan. Aldrig bara ordet "Fel".
 - **Emojis används som ikoner.** Ett försök med egenritade SVG-ikoner och en stilguide gjordes men **valdes bort**: läraren tyckte emojiversionen var snyggare. Rita inte nya figurer i SVG utan att fråga.
-- Maskoten är en **uggla**. Eleven kan välja bland nio djur i Garderoben (uggla, katt, kanin, räv, panda, pingvin, robot, drake, enhörning). Alla ritas med samma mall i funktionen `owlSVG` så att kläderna passar alla. Ugglans flygtur visar alltid ugglan, Grodhoppet alltid grodan.
+- Maskoten är en **uggla**. Eleven kan välja bland nio djur i Garderoben (uggla, katt, kanin, räv, panda, pingvin, robot, drake, enhörning). Alla ritas med samma mall i funktionen `owlSVG` så att kläderna passar alla. Mallen (med `WARD`, `NATUR` och `itemOf`) finns kopierad i `index.html`, `spel/index.html` och `geometri/index.html`. Ändras ett djur eller en klädsel måste alla tre kopiorna uppdateras. Ugglans flygtur visar alltid ugglan, Grodhoppet alltid grodan.
 
 ## Pedagogiska beslut (viktiga, följ dem)
 
