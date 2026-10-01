@@ -129,6 +129,21 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .mc .front svg{width:88%;height:auto}
 .mc.done .front{border-color:#1E9E5E;background:#DDF5E7}
 .mc.miss .front{border-color:#E5484D}
+/* Memory mot en vän */
+.mplayers{display:flex;gap:8px;flex:1;justify-content:flex-end}
+.mpl{display:flex;align-items:center;gap:6px;background:var(--card);border-radius:16px;padding:4px 12px 4px 4px;box-shadow:0 3px 0 var(--line);border:3px solid transparent;opacity:.55;transition:opacity .2s,transform .2s}
+.mpl img{width:40px;height:46px;display:block}
+.mpl b{font-size:1.5rem;line-height:1;min-width:1ch;text-align:center}
+.mpl.p1.on{border-color:#3D8BFD;opacity:1;transform:scale(1.06)}
+.mpl.p2.on{border-color:#FF9F43;opacity:1;transform:scale(1.06)}
+.mpl.on img{animation:mhop .9s ease-in-out infinite}
+@keyframes mhop{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+.mc.done.p1 .front{border-color:#3D8BFD;background:#E3EEFF}
+.mc.done.p2 .front{border-color:#FF9F43;background:#FFEEDD}
+.memban{position:fixed;left:50%;top:45%;transform:translate(-50%,-50%) scale(.9);background:var(--card);border-radius:20px;padding:12px 22px;font-weight:800;font-size:1.7rem;box-shadow:0 6px 0 rgba(29,43,83,.25);pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;z-index:6;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.memban img{width:54px;height:62px}
+.memban.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.memban.p1{border:4px solid #3D8BFD}.memban.p2{border:4px solid #FF9F43}
 .memhint{text-align:center;color:var(--muted);font-weight:700;margin:12px 0 0;font-size:.95rem}
 /* Spelet */
 #game{max-width:none;padding:0}
@@ -183,6 +198,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="tables" id="tables" hidden><p id="tablesTitle">Vilka tabeller?</p><div class="chips" id="chips"></div></div>
   <div class="laneopt" id="frogOpt" hidden><p>Hur är vattnet?</p><div class="chips" id="frogChips"><button data-m="lugnt">Lugnt vatten</button><button data-m="strom">Strömt vatten (svårare)</button></div></div>
   <div class="laneopt" id="laneOpt" hidden><p>Hur många filer?</p><div class="chips" id="laneChips"><button data-l="3">3 filer</button><button data-l="4">4 filer (svårare)</button></div></div>
+  <div class="laneopt" id="memOpt" hidden><p>Vem spelar?</p><div class="chips" id="memChips"><button data-m="solo">Själv</button><button data-m="vs">Mot en vän</button></div></div>
   <div class="laneopt" id="bubOpt" hidden><p>Var vill du börja?</p><div class="chips" id="bubChips"></div></div>
   <button class="go" id="btnStart">Flyg iväg! 🦉</button>
 </div>
@@ -198,7 +214,8 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 </div>
 
 <div class="wrap" id="mem" hidden>
-  <div class="memtop"><button class="quit" id="memQuit" aria-label="Avsluta">✕</button><span id="memPairs"></span><span id="memMoves"></span></div>
+  <div class="memtop"><button class="quit" id="memQuit" aria-label="Avsluta">✕</button><span id="memPairs"></span><span id="memMoves"></span><div class="mplayers" id="memPlayers" hidden></div></div>
+  <div class="memban" id="memBan"></div>
   <div class="memgrid" id="memGrid"></div>
   <p class="memhint">Hitta paren. Den vita är uppgiften och den gula är svaret.</p>
 </div>
@@ -279,6 +296,7 @@ function gen(){
 /* ---------- Menyer ---------- */
 function showOnly(id){["menu","choose","game","mem","result","bub"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);}
 $("btnBub").onclick=()=>{game="bub";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
+$("memChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.memMode=b.dataset.m;save();renderChoose();};
 $("bubChips").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.bubFrom=b.dataset.f;save();renderChoose();};
 $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
 $("btnSkatt").onclick=()=>{game="skatt";renderChoose();showOnly("choose");};
@@ -295,6 +313,8 @@ function renderChoose(){
   const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="skatt"?(data.skatt=data.skatt||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):game==="bub"?(data.bubbel=data.bubbel||{}):(data.mem=data.mem||{});
   $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="skatt"?"Hissa seglen! ⛵":game==="kiosk"?"Öppna kiosken! 🏪":game==="bub"?"Börja poppa! 🫧":"Börja spela! 🃏";
   $("frogOpt").hidden=game!=="frog";
+  $("memOpt").hidden=game!=="mem";
+  $("memChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.memMode||"solo")));
   $("frogChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.frogMode||"lugnt")));
   $("laneOpt").hidden=game!=="car";
   $("laneChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.l===(data.lanes||3)));
@@ -313,7 +333,8 @@ function renderChoose(){
 }
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;if(cat!==b.dataset.c)tables.clear();cat=b.dataset.c;renderChoose();};
 $("chips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;if(!t)tables.clear();else tables.has(t)?tables.delete(t):tables.add(t);renderChoose();};
-const startCurrent=()=>game==="bub"?startBub():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();
+const owlResHtml=`<img src="${avSrc}" alt="" style="width:100%;display:block">`;
+const startCurrent=()=>{$("rOwl").innerHTML=owlResHtml;return game==="bub"?startBub():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();};
 $("btnStart").onclick=()=>{data.cat=cat;data.tables=[...tables];save();startCurrent();};
 
 /* ---------- Spelet ---------- */
@@ -1076,14 +1097,29 @@ function makePairs(){
   return out;
 }
 let M=null;
+let memFriend=null; // vännens djur, samma hela besöket
 function startMem(){
   const pairs=makePairs(),cards=[];
   pairs.forEach((p,i)=>{cards.push({pair:i,kind:"q",html:p.q,txt:false});cards.push({pair:i,kind:"a",html:p.a,txt:!!p.txt});});
-  M={cards:shuffle(cards),open:[],found:0,moves:0,lock:false};
+  const vs=data.memMode==="vs";
+  M={cards:shuffle(cards),open:[],found:0,moves:0,lock:false,vs,turn:0,score:[0,0]};
+  if(vs){
+    // Vännen får ett slumpat annat djur. Spelare 1 är elevens eget djur.
+    const mine=owlCfg.animal||"uggla";if(!memFriend||memFriend===mine)memFriend=pickOne(Object.keys(PETNAME).filter(a=>a!==mine));const fr=memFriend;
+    M.pl=[{name:PETNAME[mine]||"Ugglan",src:avSrc},{name:PETNAME[fr],src:"data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG({animal:fr,color:"natur",glasses:"ingen",hat:"ingen",neck:"ingen"},"",true))}];
+    $("memPlayers").innerHTML=M.pl.map((p,i)=>`<span class="mpl p${i+1}" id="mpl${i}"><img src="${p.src}" alt="${p.name}"><b id="mps${i}">0</b></span>`).join("");
+  }
+  $("memPairs").hidden=$("memMoves").hidden=vs;$("memPlayers").hidden=!vs;
+  document.querySelector(".memhint").textContent=vs?"Turas om att vända två kort. Hittar du ett par får du fortsätta!":"Hitta paren. Den vita är uppgiften och den gula är svaret.";
   $("memGrid").innerHTML=M.cards.map((c,i)=>`<div class="mc" data-i="${i}" role="button" tabindex="0" aria-label="Kort ${i+1}"><div class="side back"><img src="${avSrc}" alt=""></div><div class="side front ${c.kind}${c.txt?" txt":""}">${c.html}</div></div>`).join("");
-  memHud();showOnly("mem");
+  memHud();showOnly("mem");if(vs)memBanner();
 }
-function memHud(){$("memPairs").textContent=`Par: ${M.found} / ${PAIRS}`;$("memMoves").textContent=`Drag: ${M.moves}`;}
+function memHud(){
+  $("memPairs").textContent=`Par: ${M.found} / ${PAIRS}`;$("memMoves").textContent=`Drag: ${M.moves}`;
+  if(M.vs)[0,1].forEach(i=>{$("mpl"+i).classList.toggle("on",M.turn===i);$("mps"+i).textContent=M.score[i];});
+}
+let memBanT=0;
+function memBanner(){const p=M.pl[M.turn],b=$("memBan");b.className=`memban p${M.turn+1} show`;b.innerHTML=`<img src="${p.src}" alt="">${p.name}s tur!`;clearTimeout(memBanT);memBanT=setTimeout(()=>b.classList.remove("show"),1100);}
 function flip(el){
   if(!M||M.lock)return;const i=+el.dataset.i;
   if(el.classList.contains("up")||el.classList.contains("done"))return;
@@ -1092,17 +1128,26 @@ function flip(el){
   M.moves++;memHud();
   const[a,b]=M.open,ca=M.cards[a],cb=M.cards[b],els=M.open.map(k=>$("memGrid").children[k]);M.open=[];
   if(ca.pair===cb.pair&&ca.kind!==cb.kind){
-    M.lock=true;setTimeout(()=>{els.forEach(e=>{e.classList.remove("up");e.classList.add("done");});M.found++;memHud();window.Ljud&&Ljud.ok();M.lock=false;
+    M.lock=true;setTimeout(()=>{els.forEach(e=>{e.classList.remove("up");e.classList.add("done");if(M.vs)e.classList.add("p"+(M.turn+1));});M.found++;if(M.vs)M.score[M.turn]++;memHud();window.Ljud&&Ljud.ok();M.lock=false;
       if(M.found===PAIRS)setTimeout(finishMem,700);},380);
   }else{
     M.lock=true;setTimeout(()=>els.forEach(e=>e.classList.add("miss")),380);
-    setTimeout(()=>{els.forEach(e=>e.classList.remove("up","miss"));M.lock=false;},1300);
+    setTimeout(()=>{els.forEach(e=>e.classList.remove("up","miss"));M.lock=false;if(M&&M.vs){M.turn=1-M.turn;memHud();memBanner();}},1300);
   }
 }
 $("memGrid").addEventListener("click",e=>{const c=e.target.closest(".mc");if(c)flip(c);});
 $("memGrid").addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){const c=e.target.closest(".mc");if(c){e.preventDefault();flip(c);}}});
-$("memQuit").onclick=()=>{M=null;renderChoose();showOnly("choose");};
+$("memQuit").onclick=()=>{M=null;$("memBan").classList.remove("show");renderChoose();showOnly("choose");};
 function finishMem(){
+  if(M.vs){
+    // Mot en vän: inga stjärnor eller rekord, bara vem som vann.
+    const [a,b]=M.score,w=a===b?-1:a>b?0:1;data.memVs=(data.memVs||0)+1;save();
+    $("rOwl").innerHTML=w<0?`<div style="display:flex;gap:6px">${M.pl.map(p=>`<img src="${p.src}" alt="" style="width:50%">`).join("")}</div>`:`<img src="${M.pl[w].src}" alt="" style="width:100%;display:block">`;
+    $("rTitle").textContent=w<0?"Oavgjort – bra kämpat båda två!":`${M.pl[w].name} vann!`;
+    $("rBig").textContent=`${a} – ${b}`;
+    $("rSub").textContent=`${M.pl[0].name} hittade ${a} par och ${M.pl[1].name.toLowerCase()} ${b} par.`;
+    showOnly("result");window.Ljud&&Ljud.fanfare();confetti();return;
+  }
   const mv=M.moves,st=mv<=PAIRS+3?3:mv<=PAIRS+7?2:1;
   data.mem=data.mem||{};const r=data.mem[cat]||{best:0,stars:0},rec=!r.best||mv<r.best;
   data.mem[cat]={best:rec?mv:r.best,stars:Math.max(r.stars,st)};data.memPlayed=(data.memPlayed||0)+1;if(st===3)data.memPerfect=true;save();
