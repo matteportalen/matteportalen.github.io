@@ -29,7 +29,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 | `taluppfattning/` | Bedömningsstöd i taluppfattning åk 1 och 2, diagnos | `mattespel-taluppfattning-v1` |
 | `np3/` | Nationella prov åk 3 (äldre sida, patchad) | `np3-resultat` |
 | `spel/` | Spelhörnan: Ugglans flygtur, Memory, Racerbanan, Asteroidjakten, Grodhoppet, Tornbygget, Skattkartan, Kiosken | `mattespel-spel-v1` |
-| `tiobas/` | Tiobasmaterial. **Ska byggas om senare**, läraren är inte nöjd. Rör inte utan att fråga. | – |
+| `tiobas/` | Tiobasmaterial. **Byggs om** (prototyp i `tiobas/ny.html`, den gamla `index.html` ligger kvar tills läraren godkänt). Rör inte utan att fråga. Se "Tiobas: beslut" nedan. | – |
 
 ### När en ny övning läggs till
 
@@ -38,6 +38,17 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 2. Stjärnorna räknas in i `S.stars` (läs nyckeln, summera `stars`).
 3. Nyckeln läggs i listan `snap` (dagar i rad) och i **`PKEYS`** i profilskriptet (profiler, flyttkod och inloggningskort).
 4. Gärna ett eller två klistermärken i `STICKERS`.
+
+### Tiobas: beslut
+
+- Ett **verktyg** som ersätter fysiskt material (hemma eller när skolans material är upptaget), inte ett spel.
+- **Träklossar med spår** som skolans: tiostaven har 9 spår, hundraplattan ett rutnät av spår, tusenkuben spår på alla sidor.
+- **Lådan har 10 av varje sort.** När 10 ligger på bordet är lådan tom och eleven måste växla; vid växling uppåt går klossarna tillbaka till lådan. **Växla ner** går alltid ("banken"), annars fungerar inte subtraktion.
+- Eleven växlar alltid själv, sidan växlar aldrig automatiskt.
+- Upp till **9 999**. Tusentalskolumnen visas först när den behövs.
+- Ordning som i klassrummet: tusental, hundratal, tiotal, ental (entalen till höger).
+- **Addition:** bygg första talet, lägg sedan till det andra kloss för kloss, växla när det behövs. **Subtraktion:** bygg första talet, ta bort det andra, växla ner när det behövs.
+- **Liggande läge först** på mobil. Stående: vänlig ruta "Vrid mobilen" som går att stänga. Fullskärm + låst liggande läge bara där det fungerar (inte iPhone).
 
 ## Gemensam design
 
