@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Lilla plus & minus – Matte-Portalen</title>
+<title>Lilla plus & minus: Hönsgården – Matte-Portalen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
@@ -101,6 +101,46 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+/* ---------- Hönsgården ---------- */
+.party{display:flex;align-items:center;gap:10px;margin-top:6px}
+.ppet{width:86px;flex:none}
+.world{display:inline-block;font-size:.95rem;vertical-align:middle;background:#E8A33D;color:#fff;border-radius:999px;padding:2px 10px;margin-left:4px;transform:rotate(-3deg)}
+.pet svg{width:100%;height:auto;display:block;transform-origin:50% 90%}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-18px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}}
+@keyframes hmm{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-9deg)}}
+.pet.hop svg{animation:hop .55s ease-out 2}
+.pet.hmm svg{animation:hmm .9s ease-in-out}
+.gright{display:flex;align-items:center;gap:8px}
+.hpet{width:46px}
+.bowl{margin-top:16px;background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:10px 12px;text-align:center}
+.bowl b{display:block;font-size:1.05rem}
+.bowl small{display:block;color:var(--muted);font-size:.85rem;line-height:1.25;margin-top:2px}
+.bowl .sorts{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.bowl .sorts span{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-size:1.55rem;background:#EAF8E0}
+.bowl .sorts span.no{background:#EEF2FA;color:#B7C3DA;font-size:.75rem;font-weight:800}
+.question .ansbox{display:inline-block;min-width:1.2em;border:4px solid var(--accent);border-radius:14px;color:var(--accent);background:#EEF1FF;line-height:1.05;padding:0 .1em}
+.question .ansbox.empty{color:#B7C3DA}
+.question .q{color:var(--muted)}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 2px}
+.tf button{background:var(--bg);border-radius:14px;padding:12px 6px;font-weight:800;font-size:1.25rem;box-shadow:0 3px 0 var(--line);min-height:58px}
+.tf button.right{background:#DDF5E7;color:var(--good-dark)}.tf button.bad{background:#FDE4E4;color:var(--bad)}
+.jar{position:relative;margin:10px auto 0;width:min(320px,90%);min-height:64px;border:4px solid #D9B48F;border-top-width:8px;border-radius:12px 12px 26px 26px;background:#FFF8EC;padding:16px 8px 6px}
+.jarlbl{position:absolute;top:-4px;left:50%;transform:translate(-50%,-50%);background:#E8A33D;color:#fff;font-weight:800;font-size:.8rem;border-radius:999px;padding:0 10px}
+.jarin{display:flex;flex-wrap:wrap-reverse;gap:1px;justify-content:center;font-size:1.15rem;line-height:1}
+.jarin span{animation:drop .35s ease-in}
+@keyframes drop{from{transform:translateY(-30px);opacity:0}}
+.car svg{height:42px;width:auto;display:block}
+.car.ghost svg{filter:grayscale(1)}
+/* tioramen som äggkartong */
+.frame.carton{border:0;background:#E8DCC8;box-shadow:inset 0 -5px 0 #CDBB9F,0 3px 0 #B8A584;border-radius:14px;padding:10px}
+.frame.carton i{border:0;border-radius:50%;background:radial-gradient(circle at 50% 40%,#D6C6AA,#C2AF8E);box-shadow:inset 0 3px 4px rgba(0,0,0,.18)}
+.frame.carton i.b,.frame.carton i.o{border-radius:50% 50% 50% 50%/58% 58% 42% 42%;box-shadow:inset -3px -4px 0 rgba(0,0,0,.08),0 2px 0 rgba(0,0,0,.12);transform:scale(.9)}
+.frame.carton i.b{background:radial-gradient(circle at 35% 30%,#fff,#FBF3E4 60%,#EADBC0)}
+.frame.carton i.o{background:radial-gradient(circle at 35% 30%,#F0CFA6,#D9A066 60%,#B97E45)}
+.frame.carton i.x{background:radial-gradient(circle at 50% 40%,#D6C6AA,#C2AF8E)}
+.frame.carton i.x::after{content:"🐣";font-size:clamp(20px,7vw,30px);color:inherit}
+@media (prefers-reduced-motion:reduce){.pet svg,.jarin span{animation:none !important}}
+
 </style>
 </head>
 <body>
@@ -109,34 +149,37 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <!-- Start -->
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
-  <h1>Lilla plus &amp; minus</h1>
-  <p class="lead">Huvudräkning med tal upp till 10. Välj räknesätt och sedan hur du vill träna.</p>
+  <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
+    <div><h1>Lilla plus &amp; minus <span class="world">🐔 Hönsgården</span></h1><p class="lead" id="homeLead">Huvudräkning med tal upp till 10. Välj räknesätt och sedan hur du vill träna.</p></div></div>
   <div class="ops" id="ops">
     <button class="op" data-op="plus" style="--c:#2BB673"><span class="sym">+</span><span class="lbl">Plus</span></button>
     <button class="op" data-op="minus" style="--c:#FF6B6B"><span class="sym">−</span><span class="lbl">Minus</span></button>
     <button class="op" data-op="mix" style="--c:#7B61FF"><span class="sym">±</span><span class="lbl">Blandat</span></button>
   </div>
   <div class="modes">
-    <button class="big" data-mode="practice"><span class="ic">✏️</span><span><b>Öva</b><small>Ingen tid. Tiorutan hjälper dig om det blir fel.</small></span></button>
+    <button class="big" data-mode="practice"><span class="ic">✏️</span><span><b>Öva</b><small>Ingen tid. Äggkartongen hjälper dig om det blir fel.</small></span></button>
     <button class="big" data-mode="race"><span class="ic">🏁</span><span><b>Racet</b><small>30 uppgifter. Kör mot ditt spöke.</small></span><span class="best" id="bestRace"></span></button>
     <button class="big" data-mode="blitz"><span class="ic">⚡</span><span><b>Blixtrunda</b><small>Så många rätt du hinner på 60 sekunder.</small></span><span class="best" id="bestBlitz"></span></button>
     <button class="big" data-mode="hard"><span class="ic">🎯</span><span><b>Mina svåra</b><small>Tränar de uppgifter du oftast svarar fel på.</small></span></button>
   </div>
+  <div class="bowl" id="bowl"></div>
 </section>
 
 <!-- Spel -->
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="gright"><span class="info" id="info"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></span></div>
   <div id="raceBox" hidden>
     <div class="track">
-      <div class="lane"><span class="who">Du</span><span class="flag">🏁</span><div class="car" id="carMe"></div></div>
+      <div class="lane"><span class="who">Du</span><span class="flag" title="Hönshuset">🏡</span><div class="car" id="carMe"></div></div>
       <div class="lane"><span class="who" id="ghostWho">Spöket</span><div class="car ghost" id="carGhost"></div></div>
     </div>
     <div class="racestatus" id="raceStatus"></div>
   </div>
   <div class="tbar" id="blitzBar" hidden><i id="blitzFill"></i></div>
+  <div class="jar" id="jar" hidden><span class="jarlbl">Äggkorgen</span><div class="jarin" id="jarIn"></div></div>
   <div class="qbox" id="qbox">
     <div class="question"><span id="question"></span><span class="ans" id="answer">?</span></div>
+    <div class="tf" id="tf" hidden><button data-tf="1">Stämmer</button><button data-tf="0">Stämmer inte</button></div>
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
   <div class="answers" id="answers"></div>
@@ -167,6 +210,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -206,6 +250,18 @@ function pick(pool,recent){
 }
 function buildQueue(pool,n){const q=[],recent=[];for(let i=0;i<n;i++){const f=pick(pool,recent);q.push(f);recent.push(fkey(f));if(recent.length>4)recent.shift();}return q;}
 
+/* ---------- Hönsgården: elevens djur i keps, ett nytt djur till gården för varje steg ---------- */
+const pet=Object.assign(lasDjur(),{hat:'keps'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
+const FARM=[[5,'🐣'],[15,'🐥'],[25,'🐔'],[40,'🐓'],[55,'🦆'],[70,'🐑'],[85,'🐐'],[100,'🐖'],[115,'🐄'],[132,'🐴']];
+const petFx=c=>{const p=$('#hpet');if(p){p.classList.remove('hop','hmm');void p.offsetWidth;p.classList.add(c);}};
+$('#homePet').innerHTML=owlSVG(pet);$('#hpet').innerHTML=owlSVG(pet);
+$('#homeLead').textContent=`Hjälp ${lc} i hönsgården! Räkna ägg med tal upp till 10. Välj räknesätt och sedan hur du vill träna.`;
+function renderFarm(){
+  const known=allFacts('mix').filter(f=>level(f)>=2).length,nxt=FARM.find(([n])=>known<n);
+  $('#bowl').innerHTML=`<b>Hönsgården: du kan ${known} av 132 uppgifter</b><div class="sorts">${FARM.map(([n,e])=>known>=n?`<span title="${n} uppgifter">${e}</span>`:`<span class="no" title="${n} uppgifter">${n}</span>`).join('')}</div>`+
+    `<small>${nxt?`Kan du ${nxt[0]} uppgifter flyttar ett nytt djur in på gården. En uppgift kan du när du svarat rätt två gånger i rad.`:'Hela gården är full. Snyggt!'}</small>`;
+}
+
 /* ---------- Startsida ---------- */
 let op=data.op||'plus';
 let G=null;
@@ -218,7 +274,7 @@ function openHome(){
   $$('.op').forEach(b=>b.setAttribute('aria-pressed',b.dataset.op===op));
   $('#bestRace').textContent=data.race[op]?'Rekord\n'+fmt(data.race[op].time):'';
   $('#bestBlitz').textContent=data.blitz[op]?'Rekord\n'+data.blitz[op]+' rätt':'';
-  show('home');
+  renderFarm();show('home');
 }
 $$('.op').forEach(b=>b.onclick=()=>{op=b.dataset.op;data.op=op;save();openHome();});
 $$('[data-mode]').forEach(b=>b.onclick=()=>{
@@ -246,12 +302,13 @@ function startGame(mode,custom){
   $('#raceBox').hidden=mode!=='race';$('#blitzBar').hidden=mode!=='blitz';
   $('#help').hidden=true;$('#answers').hidden=false;$('#qbox').hidden=false;
   if(mode==='race'){
-    $('#carMe').innerHTML=carSvg(OPCOL[op]);$('#carGhost').innerHTML=carSvg('#8E9AB5');
+    $('#carMe').innerHTML=owlSVG(pet);$('#carGhost').innerHTML=owlSVG(pet);
     setPos($('#carMe'),0);setPos($('#carGhost'),0);$('#carGhost').hidden=!G.best;
     $('#ghostWho').textContent=G.best?'Spöket (ditt rekord)':'Inget spöke än. Nu sätter du rekordet!';
     $('#raceStatus').textContent='';
   }
   if(mode==='blitz')$('#blitzFill').style.width='100%';
+  $('#jar').hidden=mode!=='blitz';$('#jarIn').innerHTML='';
   $('#question').textContent='';$('#answer').textContent='?';$('#feedback').textContent='';$('#qbox').className='qbox';$('#info').textContent='';
   if(document.activeElement)document.activeElement.blur();
   show('game');
@@ -282,30 +339,43 @@ function nextQ(){
   if(!G||G.over)return;G.retry=false;
   if(G.mode==='blitz'){G.cur=pick(G.pool,G.recent);G.recent.push(fkey(G.cur));if(G.recent.length>4)G.recent.shift();}
   else{if(!G.queue.length)return finish();G.cur=G.queue.shift();}
+  /* I Öva blandas ibland andra sorters uppgifter in: __ + 4 = 9, 3 + __ = 7 och "Stämmer det?" */
+  G.kind='q';
+  if(G.mode==='practice'&&G.cur.a>0&&G.cur.b>0){const r=Math.random();G.kind=r<.13?'n':r<.26?'m':r<.38?'tf':'q';}
+  if(G.kind==='tf'){const s=ans(G.cur),w=[s+1,s-1,s+2,s-2].filter(v=>v>=0&&v<=10);G.tfv=Math.random()<.5?s:w[Math.floor(Math.random()*w.length)];}
   G.qStart=performance.now();showQ();
 }
+const qText=(k,f,v)=>{const box=`<span class="ansbox${v==null?' empty':''}">${v==null?'?':v}</span>`;
+  return k==='n'?`${box} ${f.s} ${f.b} = ${ans(f)}`:k==='m'?`${f.a} ${f.s} ${box} = ${ans(f)}`:k==='tf'?`${ftext(f)} = ${G.tfv}<span class="q">?</span>`:ftext(f)+' =';};
 function showQ(){
-  $('#question').textContent=ftext(G.cur)+' =';$('#answer').textContent='?';
+  const k=G.kind||'q';$$('#tf button').forEach(x=>x.className='');
+  $('#question').innerHTML=qText(k,G.cur);$('#answer').textContent='?';$('#answer').hidden=k!=='q';
+  $('#tf').hidden=k!=='tf';$('#answers').hidden=k==='tf'||!$('#help').hidden;
   $('#feedback').textContent='';$('#qbox').className='qbox';G.busy=false;updateInfo();
 }
 const PRAISE=['Rätt!','Snyggt!','Bra!','Toppen!','Rätt igen!','Klockrent!'];
-function answer(v){
+function answer(v,tfYes){
   if(!G||G.busy||G.over)return;
-  const f=G.cur,right=ans(f),ok=v===right,ms=performance.now()-G.qStart,k=fkey(f);
-  if(!G.retry){record(f,ok,ms);save();const w=ok?ms:ms+6000;if(!G.slow[k]||w>G.slow[k].w)G.slow[k]={f,w};if(!ok){G.missed.add(k);G.missCount=(G.missCount||0)+1;}}
-  G.busy=true;$('#answer').textContent=v;
+  const f=G.cur,kind=G.kind||'q',right=ans(f),ms=performance.now()-G.qStart,k=fkey(f);
+  const ok=kind==='n'?v===f.a:kind==='m'?v===f.b:kind==='tf'?tfYes===(G.tfv===right):v===right;
+  /* bara vanliga uppgifter räknas till "kan"; de inblandade sorterna är extra träning */
+  if(!G.retry){if(kind==='q'){record(f,ok,ms);save();const w=ok?ms:ms+6000;if(!G.slow[k]||w>G.slow[k].w)G.slow[k]={f,w};}if(!ok){G.missed.add(k);G.missCount=(G.missCount||0)+1;}}
+  G.busy=true;petFx(ok?'hop':'hmm');
+  if(kind==='q')$('#answer').textContent=v;else if(kind!=='tf')$('#question').innerHTML=qText(kind,f,v);
   if(ok){
     G.correct++;G.streak++;$('#qbox').classList.add('ok');window.Ljud&&Ljud.ok();
     $('#feedback').textContent=G.streak>=5?`${G.streak} rätt i rad!`:PRAISE[Math.floor(Math.random()*PRAISE.length)];
     if(G.mode==='race'){G.times.push(elapsed());setPos($('#carMe'),G.correct/RACE_LEN);updateInfo();if(G.correct>=RACE_LEN){setTimeout(finish,500);return;}}
+    if(G.mode==='blitz'&&G.correct<=90)$('#jarIn').insertAdjacentHTML('beforeend','<span>🥚</span>');
     setTimeout(nextQ,G.mode==='blitz'?200:380);
   }else{
     G.streak=0;$('#qbox').classList.add('bad');window.Ljud&&Ljud.bad();
     if(G.mode==='blitz'){$('#feedback').textContent=`${ftext(f)} = ${right}`;setTimeout(nextQ,1300);}
     else if(G.mode==='race'){$('#feedback').textContent='Försök igen!';G.retry=true;setTimeout(()=>{if(G&&!G.over){$('#answer').textContent='?';$('#qbox').className='qbox';$('#feedback').textContent='';G.busy=false;}},550);}
-    else showHelp(f,v);
+    else showHelp(f,kind==='tf'?(tfYes?'Stämmer':'Stämmer inte'):v);
   }
 }
+$$('#tf button').forEach(x=>x.onclick=()=>{if(!G||G.busy||G.over||G.kind!=='tf')return;const yes=x.dataset.tf==='1',ok=yes===(G.tfv===ans(G.cur));x.classList.add(ok?'right':'bad');answer(null,yes);});
 
 /* ---------- Hjälp vid fel svar (bara i Öva) ---------- */
 function tipFor(f){
@@ -327,20 +397,22 @@ function showHelp(f,v){
   $('#answers').hidden=true;$('#qbox').hidden=true;
   $('#helpSaid').textContent=`Du svarade ${v}. Så här blir det:`;
   $('#helpFact').textContent=`${ftext(f)} = ${ans(f)}`;
-  const fr=$('#frame');fr.innerHTML='';
+  const fr=$('#frame');fr.innerHTML='';fr.className='frame carton';
   for(let i=0;i<10;i++){const d=document.createElement('i');
     if(f.s==='+'){if(i<f.a)d.className='b';else if(i<f.a+f.b)d.className='o';}
     else{if(i<f.a-f.b)d.className='b';else if(i<f.a)d.className='x';}
     fr.appendChild(d);}
   $('#helpCap').textContent=f.s==='+'
-    ?`${f.a} blå och ${f.b} orange blir ${f.a+f.b} prickar.`
-    :`${f.a} prickar. Ta bort ${f.b}, då är ${f.a-f.b} kvar.`;
-  $('#helpTip').textContent='Tips: '+tipFor(f);
+    ?`${f.a} vita och ${f.b} bruna ägg blir ${f.a+f.b} ägg.`
+    :`${f.a} ägg. ${f.b} kläcks och blir kycklingar, då är ${f.a-f.b} ägg kvar.`;
+  const kd=G.kind||'q',pre=kd==='tf'?(G.tfv===ans(f)?`Det stämmer: ${ftext(f)} = ${ans(f)}. `:`${ftext(f)} är ${ans(f)}, inte ${G.tfv}. `)
+    :kd==='n'?`Talet som saknas är ${f.a}. `:kd==='m'?`Talet som saknas är ${f.b}. `:'';
+  $('#helpTip').textContent='Tips: '+pre+tipFor(f);
   $('#help').hidden=false;$('#helpGo').focus({preventScroll:true});
 }
 function contHelp(){
   if($('#help').hidden||!G||G.over)return;
-  $('#help').hidden=true;$('#answers').hidden=false;$('#qbox').hidden=false;$('#helpGo').blur();
+  $('#help').hidden=true;$('#answers').hidden=(G.kind==='tf');$('#qbox').hidden=false;$('#helpGo').blur();
   G.retry=true;showQ();   // samma uppgift en gång till
 }
 $('#helpGo').onclick=contHelp;
@@ -364,14 +436,14 @@ function finish(){
   if(G.mode==='race'){
     const best=G.best,rec=ranked&&(!best||t<best.time);
     if(rec){data.race[op]={time:Math.round(t),pace:G.times.map(Math.round)};save();}
-    title=rec?(best?'Nytt rekord!':'Första racet klart!'):'I mål!';big=fmt(t);
+    title=rec?(best?'Nytt rekord!':'Första racet klart!'):'Hemma i hönshuset!';big=fmt(t);
     if(ranked)sub=rec&&best?`Du slog ditt gamla rekord med ${fmt(best.time-t)}.`:rec?'Nästa gång kör du mot ditt spöke.':`Ditt rekord är ${fmt(best.time)}. Bara ${fmt(t-best.time)} ifrån!`;
     party=rec;
   }else if(G.mode==='blitz'){
     const best=data.blitz[op]||0,rec=G.correct>best;
     if(rec){data.blitz[op]=G.correct;save();}
     title=rec?'Nytt rekord!':'Tiden är slut!';big=G.correct;
-    sub='rätt på 60 sekunder.'+(rec&&best?` Förra rekordet var ${best}.`:!rec&&best?` Ditt rekord är ${best}.`:'');party=rec;
+    sub='ägg i korgen på 60 sekunder.'+(rec&&best?` Förra rekordet var ${best}.`:!rec&&best?` Ditt rekord är ${best}.`:'');party=rec;
   }else{
     const right=G.total-(G.missCount||0);
     title=right===G.total?'Alla rätt direkt!':'Klart!';big=`${right}/${G.total}`;sub='rätt på första försöket.';party=right===G.total;

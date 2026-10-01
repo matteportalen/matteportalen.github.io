@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Multiplikation – Matte-Portalen</title>
+<title>Multiplikation: Bageriet – Matte-Portalen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
@@ -135,6 +135,48 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+/* ---------- Bageriet ---------- */
+.party{display:flex;align-items:center;gap:10px;margin-top:6px}
+.ppet{width:86px;flex:none}
+.world{display:inline-block;font-size:.95rem;vertical-align:middle;background:#C9772E;color:#fff;border-radius:999px;padding:2px 10px;margin-left:4px;transform:rotate(-3deg)}
+.pet svg{width:100%;height:auto;display:block;transform-origin:50% 90%}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-18px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}}
+@keyframes hmm{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-9deg)}}
+.pet.hop svg{animation:hop .55s ease-out 2}
+.pet.hmm svg{animation:hmm .9s ease-in-out}
+.gright{display:flex;align-items:center;gap:8px}
+.hpet{width:46px}
+.bowl{margin-top:14px;background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:10px 12px;text-align:center}
+.bowl b{display:block;font-size:1.05rem}
+.bowl small{display:block;color:var(--muted);font-size:.85rem;line-height:1.25;margin-top:2px}
+.bowl .sorts{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.bowl .sorts span{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;background:#FFF3E3}
+.bowl .sorts span.no{background:#EEF2FA;color:#B7C3DA;font-size:1rem;font-weight:800}
+.tcard .candy{position:absolute;left:-7px;top:-9px;font-size:1.35rem;line-height:1;filter:drop-shadow(0 2px 0 rgba(29,43,83,.2))}
+/* bakplåten: rader med kakor */
+.scene{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0 0 6px}
+.tray{display:inline-grid;gap:var(--g);padding:8px 10px;background:linear-gradient(#C9D2E0,#AEB9CC);border-radius:10px;box-shadow:inset 0 0 0 3px #8E9AB5,0 3px 0 #7A869E}
+.tray i{width:var(--d);height:var(--d);border-radius:50%;background:radial-gradient(circle at 35% 35%,#F2C98A,#D9A066 60%,#B97E45);box-shadow:inset 0 -2px 0 rgba(0,0,0,.15)}
+.tray i:nth-child(3n){background:radial-gradient(circle at 35% 35%,#F2C98A,#D9A066 55%,#B97E45)}
+.tray i::after{content:"";display:block;width:24%;height:24%;margin:32% 0 0 30%;border-radius:50%;background:#6B4423;box-shadow:calc(var(--d)*.25) calc(var(--d)*.12) 0 #6B4423}
+.scap{color:var(--muted);font-weight:700;font-size:.95rem}
+.question .ansbox{display:inline-block;min-width:1.4em;border:4px solid var(--accent);border-radius:14px;color:var(--accent);background:#EEF1FF;line-height:1.05;padding:0 .1em}
+.question .ansbox.empty{color:#B7C3DA}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 2px}
+.tf button{background:var(--bg);border-radius:14px;padding:12px 6px;font-weight:800;font-size:1.25rem;box-shadow:0 3px 0 var(--line);min-height:58px}
+.tf button.right{background:#DDF5E7;color:var(--good-dark)}.tf button.bad{background:#FDE4E4;color:var(--bad)}
+.question .q{color:var(--muted)}
+.jar{position:relative;margin:10px auto 0;width:min(320px,90%);min-height:64px;border:4px solid #C6D6F2;border-top-width:8px;border-radius:12px 12px 26px 26px;background:rgba(255,255,255,.7);padding:16px 8px 6px}
+.jarlbl{position:absolute;top:-4px;left:50%;transform:translate(-50%,-50%);background:#C9772E;color:#fff;font-weight:800;font-size:.8rem;border-radius:999px;padding:0 10px}
+.jarin{display:flex;flex-wrap:wrap-reverse;gap:1px;justify-content:center;font-size:1.15rem;line-height:1}
+.jarin span{animation:drop .35s ease-in}
+@keyframes drop{from{transform:translateY(-30px);opacity:0}}
+.car svg{height:42px;width:auto;display:block}
+.car.ghost svg{filter:grayscale(1)}
+.dots.cookies{width:fit-content;padding:8px 10px;background:linear-gradient(#C9D2E0,#AEB9CC);border-radius:10px;box-shadow:inset 0 0 0 3px #8E9AB5}
+.dots.cookies i{background:radial-gradient(circle at 35% 35%,#F2C98A,#D9A066 60%,#B97E45)}
+@media (prefers-reduced-motion:reduce){.pet svg,.jarin span{animation:none !important}}
+
 </style>
 </head>
 <body>
@@ -143,9 +185,10 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <!-- Startsida -->
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
-  <h1>Multiplikation</h1>
-  <p class="lead">Välj en tabell att träna på.</p>
+  <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
+    <div><h1>Multiplikation <span class="world">🧁 Bageriet</span></h1><p class="lead" id="homeLead">Välj en tabell att träna på.</p></div></div>
   <div id="tableGrid" class="tables"></div>
+  <div class="bowl" id="bowl"></div>
   <div class="actions">
     <button class="big" id="btnMix"><span class="ic">🎨</span><span><b>Blanda egen tabell</b><small>Välj flera tabeller och träna dem tillsammans.</small></span></button>
     <button class="big" id="btnHard"><span class="ic">🎯</span><span><b>Mina svåra</b><small>Tränar de uppgifter du oftast svarar fel på.</small></span></button>
@@ -180,19 +223,22 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Spel -->
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="gright"><span class="info" id="info"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></span></div>
   <div id="raceBox" hidden>
     <div class="track">
-      <div class="lane"><span class="who">Du</span><span class="flag">🏁</span><div class="car" id="carMe"></div></div>
+      <div class="lane"><span class="who">Du</span><span class="flag" title="Ugnen">🧁</span><div class="car" id="carMe"></div></div>
       <div class="lane" id="ghostLane"><span class="who" id="ghostWho">Spöket</span><div class="car ghost" id="carGhost"></div></div>
     </div>
     <div class="racestatus" id="raceStatus"></div>
   </div>
   <div class="tbar" id="blitzBar" hidden><i id="blitzFill"></i></div>
+  <div class="jar" id="jar" hidden><span class="jarlbl">Kakburken</span><div class="jarin" id="jarIn"></div></div>
   <div class="ladder" id="ladder" hidden></div>
   <div class="qbox" id="qbox">
+    <div class="scene" id="scene" hidden></div>
     <div class="question" id="question"></div>
     <div class="answer" id="answer">&nbsp;</div>
+    <div class="tf" id="tf" hidden><button data-tf="1">Stämmer</button><button data-tf="0">Stämmer inte</button></div>
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
   <div class="pad" id="pad">
@@ -244,6 +290,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -269,6 +316,14 @@ const everRight=(a,b)=>hist(a,b).some(x=>x[0]);
 function medal(T){const k=range(1,10);if(k.every(n=>level(n,T)===3))return 3;if(k.every(n=>level(n,T)>=2))return 2;if(k.every(n=>everRight(n,T)))return 1;return 0;}
 const medalSnap=()=>range(1,10).map(medal);
 
+/* ---------- Bageriet: elevens djur i kockmössa och ett bakverk per tabell ---------- */
+const pet=Object.assign(lasDjur(),{hat:'kock'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
+const BAKE=['🍪','🥐','🧁','🍩','🥨','🍰','🥧','🍞','🎂','🥯'];
+const bakeOf=t=>BAKE[(t-1)%10];
+const petFx=c=>{const p=$('#hpet');if(p){p.classList.remove('hop','hmm');void p.offsetWidth;p.classList.add(c);}};
+$('#homePet').innerHTML=owlSVG(pet);$('#hpet').innerHTML=owlSVG(pet);
+$('#homeLead').textContent=`Hjälp ${lc} att baka! Varje plåt har rader med kakor. Välj en tabell.`;
+
 /* ---------- Navigering ---------- */
 let sel={tables:[],facts:null,label:''};
 let G=null;
@@ -287,10 +342,13 @@ function renderHome(){
     const b=document.createElement('button');
     b.className='tcard'+(T===3?' dark':'');b.style.setProperty('--c',tcolor(T));
     b.setAttribute('aria-label',`${T}:ans tabell${m?', '+MEDALS[m]:''}, ${known} av 10 kan du`);
-    b.innerHTML=`<span class="num">${T}</span><span class="bar"><i style="width:${known*10}%"></i></span>${m?`<span class="medal" style="background:${MCOL[m]}">★</span>`:''}`;
+    b.innerHTML=`<span class="num">${T}</span><span class="bar"><i style="width:${known*10}%"></i></span>${m?`<span class="medal" style="background:${MCOL[m]}">★</span>`:''}${m?`<span class="candy">${bakeOf(T)}</span>`:''}`;
     b.onclick=()=>{sel={tables:[T],facts:null};openModes();};
     g.appendChild(b);
   });
+  /* Receptboken: ett nytt bakverk för varje tabell med brons */
+  const got=range(1,10).filter(T=>medal(T)>=1).length;
+  $('#bowl').innerHTML=`<b>Receptboken: ${got} av 10 bakverk</b><div class="sorts">${range(1,10).map(T=>medal(T)>=1?`<span title="${T}:ans tabell">${bakeOf(T)}</span>`:`<span class="no" title="${T}:ans tabell">${T}</span>`).join('')}</div><small>Få brons i en tabell, så lär sig ${lc} ett nytt recept.</small>`;
 }
 
 /* Blanda egen */
@@ -373,12 +431,13 @@ function startGame(mode,custom){
   $('#help').hidden=true;$('#pad').hidden=false;
   if(mode==='race'){
     const col=sel.tables.length===1&&!custom&&!sel.facts?tcolor(sel.tables[0]):'#3D5AFE';
-    $('#carMe').innerHTML=carSvg(col);$('#carGhost').innerHTML=carSvg('#8E9AB5');
+    $('#carMe').innerHTML=owlSVG(pet);$('#carGhost').innerHTML=owlSVG(pet);
     setPos($('#carMe'),0);setPos($('#carGhost'),0);
     $('#carGhost').hidden=!G.best;$('#ghostWho').textContent=G.best?'Spöket (ditt rekord)':'Inget spöke än. Nu sätter du rekordet!';
     $('#raceStatus').textContent='';
   }
   if(mode==='blitz')$('#blitzFill').style.width='100%';
+  $('#jar').hidden=mode!=='blitz';$('#jarIn').innerHTML='';
   $('#question').textContent='';$('#answer').innerHTML='&nbsp;';$('#feedback').textContent='';$('#qbox').className='qbox';
   if(document.activeElement)document.activeElement.blur();
   show('game');
@@ -412,15 +471,33 @@ function nextQ(){
   if(!G||G.over)return;G.retry=false;
   if(G.mode==='blitz'){let f;do{f=G.pool[Math.floor(Math.random()*G.pool.length)];}while(G.pool.length>1&&G.cur&&fk(...f)===fk(...G.cur));G.cur=orient(f);}
   else{if(!G.queue.length)return finish();G.cur=G.queue.shift();}
+  /* I Öva blandas ibland andra sorters uppgifter in: __ · 5 = 15, 3 · __ = 15 och "Stämmer det?" */
+  G.kind='q';
+  if(G.mode==='practice'&&G.cur[0]>1&&G.cur[1]>1){const r=Math.random();G.kind=r<.13?'n':r<.25?'m':r<.37?'tf':'q';}
+  if(G.kind==='tf'){const p=G.cur[0]*G.cur[1],w=[p+G.cur[1],p-G.cur[1],p+1,p-1,p+10].filter(v=>v>0);G.tfv=Math.random()<.5?p:w[Math.floor(Math.random()*w.length)];}
   showQ();
 }
+function sceneHTML(a,b){
+  const d=Math.max(12,Math.min(26,Math.floor(250/Math.max(a,b))-4)),g=Math.max(3,Math.round(d/4));
+  return`<div class="tray" style="grid-template-columns:repeat(${b},var(--d));--d:${d}px;--g:${g}px">${'<i></i>'.repeat(a*b)}</div><div class="scap">${a} ${a===1?'rad':'rader'} med ${b} ${b===1?'kaka':'kakor'} i varje</div>`;
+}
 function showQ(){
-  const[a,b]=G.cur;$('#question').textContent=`${a} · ${b} =`;G.input='';renderAnswer();
+  const[a,b]=G.cur,kind=G.kind||'q';G.input='';$$('#tf button').forEach(x=>x.className='');
+  const sc=$('#scene'),show=kind==='q'&&(G.mode==='practice'||G.mode==='order');sc.hidden=!show;if(show)sc.innerHTML=sceneHTML(a,b);
+  $('#tf').hidden=kind!=='tf';$('#pad').hidden=kind==='tf';$('#answer').hidden=kind!=='q';
+  if(kind==='tf')$('#question').innerHTML=`${a} · ${b} = ${G.tfv}<span class="q">?</span>`;
+  else if(kind==='q')$('#question').textContent=`${a} · ${b} =`;
+  renderAnswer();
   $('#feedback').textContent='';$('#qbox').className='qbox';G.qStart=performance.now();G.busy=false;updateInfo();
 }
-function renderAnswer(){$('#answer').innerHTML=G.input||'&nbsp;';}
+function renderAnswer(){
+  const k=G&&G.kind||'q',[a,b]=G.cur,box=`<span class="ansbox${G.input?'':' empty'}">${G.input||'?'}</span>`;
+  if(k==='n')$('#question').innerHTML=`${box} · ${b} = ${a*b}`;
+  else if(k==='m')$('#question').innerHTML=`${a} · ${box} = ${a*b}`;
+  else $('#answer').innerHTML=G.input||'&nbsp;';
+}
 function press(k){
-  if(!G||G.busy||G.over)return;
+  if(!G||G.busy||G.over||G.kind==='tf')return;
   if(k==='del')G.input=G.input.slice(0,-1);
   else if(k==='ok')return submit();
   else if(G.input.length<3)G.input+=k;
@@ -430,14 +507,22 @@ $$('#pad button').forEach(b=>b.onclick=()=>press(b.dataset.k));
 const PRAISE=['Rätt!','Snyggt!','Bra!','Toppen!','Rätt igen!','Klockrent!'];
 function submit(){
   if(!G||G.busy||G.over||!G.input)return;
-  const[a,b]=G.cur,ans=a*b,val=+G.input,ok=val===ans,ms=performance.now()-G.qStart,key=fk(a,b);
-  if(!G.retry){record(a,b,ok,ms);save();const w=ok?ms:ms+8000,s=G.slow[key];if(!s||w>s.w)G.slow[key]={a,b,w};if(!ok)G.missed.add(key);}
-  G.busy=true;
+  const[a,b]=G.cur,val=+G.input,k=G.kind||'q';
+  resolve(k==='n'?val===a:k==='m'?val===b:val===a*b,val);
+}
+$$('#tf button').forEach(x=>x.onclick=()=>{if(!G||G.busy||G.over||G.kind!=='tf')return;const yes=x.dataset.tf==='1',ok=yes===(G.tfv===G.cur[0]*G.cur[1]);
+  x.classList.add(ok?'right':'bad');resolve(ok,yes?'Stämmer':'Stämmer inte');});
+function resolve(ok,val){
+  const[a,b]=G.cur,ans=a*b,ms=performance.now()-G.qStart,key=fk(a,b);
+  /* bara vanliga uppgifter räknas till medaljerna; de inblandade sorterna är extra träning */
+  if(!G.retry){if((G.kind||'q')==='q'){record(a,b,ok,ms);save();const w=ok?ms:ms+8000,s=G.slow[key];if(!s||w>s.w)G.slow[key]={a,b,w};}if(!ok)G.missed.add(key);}
+  G.busy=true;petFx(ok?'hop':'hmm');
   if(ok){
     G.correct++;G.streak++;$('#qbox').classList.add('ok');window.Ljud&&Ljud.ok();
     $('#feedback').textContent=G.streak>=3&&G.streak%1===0&&G.streak>=5?`${G.streak} rätt i rad!`:PRAISE[Math.floor(Math.random()*PRAISE.length)];
     if(G.mode==='order')addLadder(a,b);
     if(G.mode==='race'){G.times.push(elapsed());setPos($('#carMe'),G.correct/20);updateInfo();if(G.correct>=20){setTimeout(finish,500);return;}}
+    if(G.mode==='blitz'&&G.correct<=90)$('#jarIn').insertAdjacentHTML('beforeend',`<span>${bakeOf(b)}</span>`);
     setTimeout(nextQ,G.mode==='blitz'?200:450);
   }else{
     G.streak=0;$('#qbox').classList.add('bad');window.Ljud&&Ljud.bad();
@@ -467,11 +552,13 @@ function showHelp(a,b,val){
   $('#pad').hidden=true;$('#qbox').hidden=true;
   $('#helpSaid').textContent=`Du svarade ${val}. Så här blir det:`;
   $('#helpFact').textContent=`${a} · ${b} = ${a*b}`;
-  const d=$('#dots');d.innerHTML='';const size=Math.min(22,Math.floor((Math.min(innerWidth,560)-90)/b)-5);
+  const d=$('#dots');d.innerHTML='';d.className='dots cookies';const size=Math.min(22,Math.floor((Math.min(innerWidth,560)-90)/b)-5);
   d.style.gridTemplateColumns=`repeat(${b},auto)`;d.style.setProperty('--d',size+'px');d.style.setProperty('--c',tcolor(b));
   for(let i=0;i<a*b;i++)d.appendChild(document.createElement('i'));
-  $('#helpCap').textContent=`${a} rader med ${b} i varje${a!==b?`. Samma svar som ${b} · ${a}.`:'.'}`;
-  $('#helpTip').textContent='Tips: '+tipFor(a,b);
+  $('#helpCap').textContent=`${a} ${a===1?'rad':'rader'} med ${b} ${b===1?'kaka':'kakor'} i varje${a!==b?`. Samma svar som ${b} · ${a}.`:'.'}`;
+  const k=G.kind||'q',pre=k==='tf'?(G.tfv===a*b?`Det stämmer: ${a} · ${b} = ${a*b}. `:`${a} · ${b} är ${a*b}, inte ${G.tfv}. `)
+    :k==='n'?`Talet som saknas är ${a}: ${a} rader med ${b} blir ${a*b}. `:k==='m'?`Talet som saknas är ${b}: ${a} rader med ${b} blir ${a*b}. `:'';
+  $('#helpTip').textContent='Tips: '+pre+tipFor(a,b);
   $('#help').hidden=false;$('#helpGo').focus({preventScroll:true});
 }
 function contHelp(){
@@ -500,14 +587,14 @@ function finish(){
   if(G.mode==='race'){
     const best=G.best,rec=!best||t<best.time;
     if(k&&rec){data.race[k]={time:Math.round(t),pace:G.times.map(Math.round)};save();}
-    title=!k?'I mål!':rec?(best?'Nytt rekord!':'Första racet klart!'):'I mål!';big=fmt(t);
+    title=!k?'Alla plåtar bakade!':rec?(best?'Nytt rekord!':'Första racet klart!'):'Alla plåtar bakade!';big=fmt(t);
     sub=!k?'':rec&&best?`Du slog ditt gamla rekord med ${fmt(best.time-t)}.`:rec?'Nästa gång kör du mot ditt spöke.':`Ditt rekord är ${fmt(best.time)}. Bara ${fmt(t-best.time)} ifrån!`;
     party=!!k&&rec;
   }else if(G.mode==='blitz'){
     const best=G.bestBlitz,rec=!!k&&G.correct>best;
     if(rec){data.blitz[k]=G.correct;save();}
     title=rec?'Nytt rekord!':'Tiden är slut!';big=G.correct;
-    sub='rätt på 60 sekunder.'+(rec&&best?` Förra rekordet var ${best}.`:!rec&&best?` Ditt rekord är ${best}.`:'');party=rec;
+    sub='bakverk i kakburken på 60 sekunder.'+(rec&&best?` Förra rekordet var ${best}.`:!rec&&best?` Ditt rekord är ${best}.`:'');party=rec;
   }else{
     const right=G.total-G.missed.size;title=right===G.total?'Alla rätt direkt!':'Klart!';
     big=`${right}/${G.total}`;sub='rätt på första försöket.';party=right===G.total;

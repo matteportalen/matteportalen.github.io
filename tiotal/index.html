@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Tiotalsövergång – Matte-Portalen</title>
+<title>Tiotalsövergång: Bussen – Matte-Portalen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
@@ -58,6 +58,41 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .rod{width:11px;height:calc(var(--d)*2 + 22px);border-radius:3px;
   background:repeating-linear-gradient(to bottom,var(--blue) 0 calc(10% - 1px),#fff calc(10% - 1px) 10%);border:1px solid var(--blue)}
 .frame{display:grid;grid-template-columns:repeat(5,var(--d));gap:4px;padding:5px;border:3px solid var(--ink);border-radius:8px}
+/* ---------- Bussen ---------- */
+.party{display:flex;align-items:center;gap:10px;margin-top:6px}
+.party .lead{margin:4px 0 0}
+.ppet{width:86px;flex:none}
+.world{display:inline-block;font-size:.95rem;vertical-align:middle;background:#E8A33D;color:#fff;border-radius:999px;padding:2px 10px;margin-left:4px;transform:rotate(-3deg)}
+.pet svg{width:100%;height:auto;display:block;transform-origin:50% 90%}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-18px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}}
+@keyframes hmm{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-9deg)}}
+.pet.hop svg{animation:hop .55s ease-out 2}
+.pet.hmm svg{animation:hmm .9s ease-in-out}
+.gright{display:flex;align-items:center;gap:8px;margin-left:auto}
+.hpet{width:42px}
+.bowl{margin-top:14px;background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:10px 12px;text-align:center}
+.bowl b{display:block;font-size:1.05rem}
+.bowl small{display:block;color:var(--muted);font-size:.85rem;line-height:1.25;margin-top:4px}
+.stops{display:flex;align-items:center;justify-content:center;margin-top:8px;flex-wrap:wrap;row-gap:8px}
+.stops span{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:1.45rem;background:#FFF4CC;position:relative}
+.stops span.no{background:#EEF2FA;color:#B7C3DA;font-size:.8rem;font-weight:800}
+.stops i{width:10px;height:4px;background:#C6D6F2;border-radius:2px}
+.stops i.on{background:#E8A33D}
+/* tiorutan som buss: 10 platser, blått = första talet, orange = de som kliver på */
+.blocks .frame{position:relative;background:#FFC93C;border:3px solid var(--ink);border-radius:14px 14px 8px 8px;padding:8px 8px 16px;margin-bottom:10px;gap:5px}
+.blocks .frame::before{content:"";position:absolute;left:10px;right:10px;bottom:-11px;height:18px;
+  background:radial-gradient(circle,#1D2B53 0 6px,#AEB9CC 6.5px 8px,#1D2B53 8.5px 9px,transparent 9.5px) left center/18px 18px no-repeat,
+             radial-gradient(circle,#1D2B53 0 6px,#AEB9CC 6.5px 8px,#1D2B53 8.5px 9px,transparent 9.5px) right center/18px 18px no-repeat}
+.blocks .frame::after{content:"";position:absolute;right:-3px;bottom:12px;width:7px;height:7px;border-radius:2px;background:#FFF4CC;box-shadow:0 0 0 2px var(--ink)}
+.blocks .frame i{border:0;border-radius:7px;background:#DDF1FF;box-shadow:inset 0 2px 0 rgba(29,43,83,.15)}
+.blocks .frame i.b{background:radial-gradient(circle at 50% 56%,var(--blue) 0 52%,#DDF1FF 55%)}
+.blocks .frame i.o{background:radial-gradient(circle at 50% 56%,var(--orange) 0 52%,#DDF1FF 55%)}
+.blocks .frame i.x{background:#DDF1FF}
+.rod{background:radial-gradient(circle,var(--blue) 0 35%,transparent 40%) center top/100% 10% repeat-y,#FFC93C !important;border:2px solid var(--ink) !important;width:13px !important;border-radius:4px !important}
+.car svg{height:42px;width:auto;display:block}
+.car.ghost svg{filter:grayscale(1)}
+@media (prefers-reduced-motion:reduce){.pet svg{animation:none !important}}
+
 .frame i{width:var(--d);height:var(--d);border-radius:50%;border:2px dashed #C9D3E6;position:relative}
 .frame i.b{background:var(--blue);border-color:var(--blue)}
 .frame i.o{background:var(--orange);border-color:var(--orange)}
@@ -201,7 +236,8 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <!-- Start -->
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
-  <h1>Tiotalsövergång</h1>
+  <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
+    <div><h1>Tiotalsövergång <span class="world">🚌 Bussen</span></h1><p class="lead" id="homeLead"></p></div></div>
   <div id="howtoHome" style="margin-top:12px"></div>
   <div class="pick"><div class="lbl">Talområde</div>
     <div class="seg" id="segRange"><button data-v="20">Upp till 20</button><button data-v="100">Upp till 100</button></div></div>
@@ -211,14 +247,15 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <div class="seg" id="segStrat"><button data-v="take">Ta bort till 10</button><button data-v="think">Tänk addition</button></div></div>
   <div class="levels" id="levels"></div>
   <p class="note">Tre stjärnor får du om alla uppgifter blir rätt direkt.</p>
+  <div class="bowl" id="route"></div>
 </section>
 
 <!-- Spel -->
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><button class="qbtn" id="qbtn" aria-label="Så här räknar du">?</button><span class="info" id="info"></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><button class="qbtn" id="qbtn" aria-label="Så här räknar du">?</button><span class="gright"><span class="info" id="info"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></span></div>
   <div id="raceBox" hidden>
     <div class="track">
-      <div class="lane"><span class="who">Du</span><span class="flag">🏁</span><div class="car" id="carMe"></div></div>
+      <div class="lane"><span class="who">Du</span><span class="flag" title="Hållplatsen">🚏</span><div class="car" id="carMe"></div></div>
       <div class="lane"><span class="who" id="ghostWho">Spöket</span><div class="car ghost" id="carGhost"></div></div>
     </div>
     <div class="racestatus" id="raceStatus"></div>
@@ -259,6 +296,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -278,6 +316,18 @@ const pkey=()=>set.range+set.op;
 const starsOf=lv=>(data.stars[pkey()]||{})[lv]||0;
 const unlocked=lv=>true; // alla nivåer är öppna
 const think=()=>set.op==='minus'&&set.range===20&&set.strat==='think';
+
+/* ---------- Bussen: elevens djur kör bussen, busslinjen växer med stjärnorna ---------- */
+const pet=Object.assign(lasDjur(),{hat:'keps'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
+const STOPS=[[1,'🏫','skolan'],[4,'🏪','affären'],[8,'🏊','badhuset'],[12,'🌳','parken'],[17,'🎡','tivolit'],[22,'🏰','slottet'],[28,'🏖️','stranden'],[36,'🚀','rymdbasen']];
+const petFx=c=>{const p=$('#hpet');if(p){p.classList.remove('hop','hmm');void p.offsetWidth;p.classList.add(c);}};
+$('#homePet').innerHTML=owlSVG(pet);$('#hpet').innerHTML=owlSVG(pet);
+$('#homeLead').textContent=`${petName} kör bussen! En buss har 10 platser. När den är full kör den iväg, och resten kliver på nästa buss.`;
+function renderRoute(){
+  const tot=Object.values(data.stars).reduce((s,o)=>s+Object.values(o||{}).reduce((a,b)=>a+(+b||0),0),0),nxt=STOPS.find(([n])=>tot<n);
+  $('#route').innerHTML=`<b>Busslinjen: ${tot} ${tot===1?'stjärna':'stjärnor'}</b><div class="stops">${STOPS.map(([n,e,nm],i)=>(i?`<i class="${tot>=n?'on':''}"></i>`:'')+(tot>=n?`<span title="${nm}">${e}</span>`:`<span class="no" title="${nm}">${n}★</span>`)).join('')}</div>`+
+    `<small>${nxt?`Med ${nxt[0]} stjärnor kan bussen köra till ${nxt[2]}. Stjärnorna från alla talområden och räknesätt räknas.`:'Bussen kör hela linjen ända till rymdbasen. Snyggt!'}</small>`;
+}
 
 /* ---------- Startsida ---------- */
 let G=null,curLevel=1;
@@ -309,7 +359,7 @@ function openHome(){
     b.onclick=()=>open?startGame(lv):toast(`Få två stjärnor på nivå ${lv-1} först.`);
     L.appendChild(b);
   });
-  show('home');
+  renderRoute();show('home');
 }
 $$('#segRange button').forEach(b=>b.onclick=()=>{set.range=+b.dataset.v;save();openHome();});
 $$('#segOp button').forEach(b=>b.onclick=()=>{set.op=b.dataset.v;save();openHome();});
@@ -381,16 +431,16 @@ function promptFor(t,P,k){
 }
 function hintFor(t,P,k){
   if(t.op==='plus'){
-    if(k==='p1')return'Räkna de tomma rutorna i den första tiorutan. Så många fattas till ett helt tiotal.';
+    if(k==='p1')return'Räkna de tomma platserna i bussen. Så många fattas till ett helt tiotal.';
     if(k==='p2')return`${t.b} delas upp i ${P.p1} och ?. ${P.p1} + ? = ${t.b}`;
     return`Du är på ${P.D}. ${P.D} + ${P.p2} = ?`;
   }
   if(think()){
-    if(k==='p1')return'Räkna de tomma rutorna i tiorutan.';
+    if(k==='p1')return'Räkna de tomma platserna i bussen.';
     if(k==='p2')return`10 + ? = ${t.a}`;
     return`Lägg ihop hoppen: ${P.p1} + ${P.p2} = ?`;
   }
-  if(k==='p1')return'Hur många prickar finns i den högra tiorutan?';
+  if(k==='p1')return'Hur många sitter i den högra bussen?';
   if(k==='p2')return`${t.b} delas upp i ${P.p1} och ?. ${P.p1} + ? = ${t.b}`;
   return`Du är på ${P.D}. ${P.D} − ${P.p2} = ?`;
 }
@@ -451,7 +501,7 @@ function startGame(lv,custom){
      missed:0,correct:0,times:[],slow:{},paused:0,start:performance.now(),busy:true,over:false,raf:0,input:''};
   G.total=G.tasks.length;G.best=race&&!custom?data.race[pkey()]:null;
   $('#raceBox').hidden=!race;$('#visual').hidden=race;
-  if(race){$('#carMe').innerHTML=carSvg('#3D8BFD');$('#carGhost').innerHTML=carSvg('#8E9AB5');setPos($('#carMe'),0);setPos($('#carGhost'),0);
+  if(race){$('#carMe').innerHTML=owlSVG(pet);$('#carGhost').innerHTML=owlSVG(pet);setPos($('#carMe'),0);setPos($('#carGhost'),0);
     $('#carGhost').hidden=!G.best;$('#ghostWho').textContent=G.best?'Spöket (ditt rekord)':'Inget spöke än. Nu sätter du rekordet!';$('#raceStatus').textContent='';}
   $('#rows').innerHTML='';$('#prompt').textContent='';$('#feedback').textContent='';$('#qbox').className='qbox';$('#info').textContent='';
   if(document.activeElement)document.activeElement.blur();
@@ -525,10 +575,11 @@ const PRAISE=['Rätt!','Snyggt!','Bra!','Toppen!','Klockrent!'];
 function submit(){
   if(!G||G.busy||G.over||!G.input)return;
   const step=G.steps[G.si],ok=+G.input===step.v;G.busy=true;
+  petFx(ok?'hop':'hmm');
   if(ok){
     G.si++;$('#qbox').classList.add('ok');window.Ljud&&Ljud.ok();renderRows();
     if(!G.race)renderVisual();
-    const tenMsg=G.steps[G.si-1].k==='p1'&&!G.race&&!(G.t.op==='minus'&&think()&&G.lv>1)?(G.t.op==='plus'?'Ett helt tiotal!':'Nu är du på tiotalet!'):null;
+    const tenMsg=G.steps[G.si-1].k==='p1'&&!G.race&&!(G.t.op==='minus'&&think()&&G.lv>1)?(G.t.op==='plus'?'Ett helt tiotal! Bussen är full.':'Nu är du på tiotalet!'):null;
     if(G.si<G.steps.length){$('#feedback').textContent=tenMsg||PRAISE[Math.floor(Math.random()*PRAISE.length)];setTimeout(startStep,750);return;}
     if(tenMsg&&G.lv===1){$('#feedback').textContent=tenMsg;}
     // uppgiften klar
@@ -558,7 +609,7 @@ function finish(){
   if(G.race){
     const t=elapsed(),best=G.best,ranked=!G.custom,rec=ranked&&(!best||t<best.time);
     if(rec){data.race[pkey()]={time:Math.round(t),pace:G.times.map(Math.round)};save();}
-    $('#rTitle').textContent=rec?(best?'Nytt rekord!':'Första racet klart!'):'I mål!';
+    $('#rTitle').textContent=rec?(best?'Nytt rekord!':'Första racet klart!'):'Framme vid hållplatsen!';
     $('#rBig').textContent=fmt(t);
     $('#rSub').textContent=!ranked?'':rec&&best?`Du slog ditt gamla rekord med ${fmt(best.time-t)}.`:rec?'Nästa gång kör du mot ditt spöke.':`Ditt rekord är ${fmt(best.time)}. Bara ${fmt(t-best.time)} ifrån!`;
     party=rec;
