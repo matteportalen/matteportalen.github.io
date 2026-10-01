@@ -72,6 +72,8 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 - **Själv-läget i Uppställning ger inga tips alls** under räknandet. Tips finns bara i Steg för steg.
 - Borttaget med flit: **Känguruhoppet** (höll inte kvaliteten), **Grannar** i Hundrarutan (kändes billig), **Lägesord** i Geometri (förskoleklassnivå), pilar i Trasig hundraruta.
 
+- **Samlingarna** (Godisskålen, Receptboken, gårdsdjuren i Hönsgården) räknas fram ur det eleven kan *nu*: medaljer, eller "rätt två gånger i rad" per uppgift. De kan alltså krympa om eleven svarar fel. Läraren har valt att behålla det så. Busslinjen bygger på stjärnor och krymper aldrig.
+
 ## Profiler, flyttkod och inloggningskort
 
 - Profiler finns **bara på enheten**. Vid byte sparas alla `PKEYS` för den gamla profilen i `mp-bundle-<id>` och den nya profilens data läses in. Övningssidorna märker ingenting.
