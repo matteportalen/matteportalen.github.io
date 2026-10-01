@@ -91,6 +91,8 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 ## Idéer som väntar
 
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
+- **Blandade uppgifter med saknat tal** (`__ · 5 = 15`, `__ + 7 = 12`) och "Stämmer det?" i fler övningar (addition, multiplikation osv.). Prövas först i Division (Kalaset); läraren gillar idén.
+- **Egen värld per övning** (Multiplikation = Bageriet, Lilla plus = tioramen, Tiotal = bussen). Division/Kalaset är första försöket, i `division/ny.html`.
 - **Dra klossar i Tiobas**: bara om eleverna själva försöker dra (tryck räcker för nu).
 - **Små tryckytor i Formjakten** (Geometri): flaggan och trädstammen är små i mobilstorlek. Åtgärdas bara om det visar sig vara ett problem för eleverna.
 - Kort kod utan server (sammanfattning i 8–30 tecken) diskuterades men byggdes inte.
