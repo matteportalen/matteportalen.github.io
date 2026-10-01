@@ -101,7 +101,7 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
 .toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#FFF4CC;color:var(--ink);padding:8px 16px;border-radius:14px;font-weight:800;z-index:12;max-width:90vw;text-align:center;box-shadow:0 4px 0 #E2C252}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
 /* skatterna: rutor ur skatter.png (Kenney, CC0), 24 px per ruta */
-.spr{display:inline-block;width:var(--s,32px);height:var(--s,32px);background:url(bilder/skatter.png) no-repeat;background-size:calc(13*var(--s,32px)) var(--s,32px);background-position:calc(-1*var(--i)*var(--s,32px)) 0;image-rendering:pixelated;vertical-align:middle}
+.spr{display:inline-block;width:var(--s,32px);height:var(--s,32px);background:url(bilder/skatter.png) no-repeat;background-size:calc(24*var(--s,32px)) var(--s,32px);background-position:calc(-1*var(--i)*var(--s,32px)) 0;image-rendering:pixelated;vertical-align:middle}
 .snd{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);font-size:1.15rem}
 .lootbar{display:flex;align-items:center;gap:10px;padding:6px 12px;background:#0E1735;color:#C6D6F2;min-height:52px;overflow-x:auto}
 .lootbar .lbl{font-weight:800;font-size:.85rem;flex:none}
@@ -202,15 +202,29 @@ const THEMES={
 };
 const CHEST={s:"g",i:89};
 /* Skatterna. cells = rutor i skatter.png, w = hur vanlig, amt = hur många mynt. Kristallkulan är den sällsynta. */
-const TREASURE=[
-  {k:"coin",one:"guldmynt",many:"guldmynt",cells:[0],w:30,amt:[2,6]},{k:"gold",one:"guldklimp",many:"guldklimpar",cells:[1],w:16},
-  {k:"gem",one:"diamant",many:"diamanter",cells:[2],w:11},{k:"crystal",one:"kristall",many:"kristaller",cells:[3,4,5],w:11},
-  {k:"potion",one:"trolldryck",many:"trolldrycker",cells:[6,7,8],w:10},{k:"key",one:"guldnyckel",many:"guldnycklar",cells:[9],w:7},
-  {k:"heart",one:"rubinhjärta",many:"rubinhjärtan",cells:[10],w:6},{k:"sword",one:"riddarsvärd",many:"riddarsvärd",cells:[11],w:4},
-  {k:"orb",one:"kristallkula",many:"kristallkulor",cells:[12],w:2}];
+const TREASURE_BY_THEME={
+  grottan:[
+    {k:"coin",one:"guldmynt",many:"guldmynt",cells:[0],w:30,amt:[2,6]},{k:"gold",one:"guldklimp",many:"guldklimpar",cells:[1],w:16},
+    {k:"gem",one:"diamant",many:"diamanter",cells:[2],w:11},{k:"crystal",one:"kristall",many:"kristaller",cells:[3,4,5],w:11},
+    {k:"potion",one:"trolldryck",many:"trolldrycker",cells:[6,7,8],w:10},{k:"key",one:"guldnyckel",many:"guldnycklar",cells:[9],w:7},
+    {k:"heart",one:"rubinhjärta",many:"rubinhjärtan",cells:[10],w:6},{k:"sword",one:"riddarsvärd",many:"riddarsvärd",cells:[11],w:4},
+    {k:"orb",one:"kristallkula",many:"kristallkulor",cells:[12],w:2,rare:true}],
+  tradgarden:[
+    {k:"honey",one:"honungskupa",many:"honungskupor",cells:[14],w:24},{k:"mushroom",one:"flugsvamp",many:"flugsvampar",cells:[15],w:20,amt:[1,3]},
+    {k:"sprout",one:"magisk groddplanta",many:"magiska groddplantor",cells:[19],w:14},{k:"skey",one:"silvernyckel",many:"silvernycklar",cells:[16],w:10},
+    {k:"bow",one:"pilbåge",many:"pilbågar",cells:[17],w:8},{k:"bag",one:"ryggsäck",many:"ryggsäckar",cells:[18],w:8},
+    {k:"heart",one:"rubinhjärta",many:"rubinhjärtan",cells:[10],w:6},{k:"egg",one:"guldägg",many:"guldägg",cells:[13],w:2,rare:true}],
+  vintern:[
+    {k:"icegem",one:"isdiamant",many:"isdiamanter",cells:[2],w:22},{k:"frost",one:"frostdryck",many:"frostdrycker",cells:[7],w:16},
+    {k:"antler",one:"renhorn",many:"renhorn",cells:[20],w:14},{k:"snowman",one:"liten snögubbe",many:"små snögubbar",cells:[21],w:12},
+    {k:"pennant",one:"segervimpel",many:"segervimplar",cells:[22],w:10},{k:"tree",one:"liten gran",many:"små granar",cells:[23],w:10},
+    {k:"iceorb",one:"iskula",many:"iskulor",cells:[12],w:2,rare:true}]
+};
+/* alla sorter i en lista, för skattkammaren (samma nyckel = samma skatt i alla teman) */
+const TREASURE=[];Object.values(TREASURE_BY_THEME).flat().forEach(t=>{if(!TREASURE.some(x=>x.k===t.k))TREASURE.push(t);});
 const TBY=Object.fromEntries(TREASURE.map(t=>[t.k,t]));
 const spr=(cell,s)=>`<span class="spr" style="--i:${cell}${s?`;--s:${s}px`:""}"></span>`;
-function rollTreasure(){let r=Math.random()*TREASURE.reduce((a,t)=>a+t.w,0);for(const t of TREASURE){r-=t.w;if(r<=0)return t;}return TREASURE[0];}
+function rollTreasure(){const L=TREASURE_BY_THEME[data.theme]||TREASURE_BY_THEME.grottan;let r=Math.random()*L.reduce((a,t)=>a+t.w,0);for(const t of L){r-=t.w;if(r<=0)return t;}return L[0];}
 const IMG={};
 function loadImg(k,src){return new Promise(r=>{const im=new Image();im.onload=()=>{IMG[k]=im;r();};im.onerror=()=>r();im.src=src;});}
 const ready=Promise.all([loadImg("t",THEMES.tradgarden.img),loadImg("g",THEMES.grottan.img),loadImg("v",THEMES.vintern.img)]);

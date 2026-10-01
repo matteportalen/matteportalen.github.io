@@ -482,7 +482,7 @@ const STICKERS=[
   ["prov","📝","Provtränaren","Rätta ett delprov i Nationella prov.",()=>S.np.length>0],
   ["fullpott","🎯","Fullpott","Få alla rätt på ett delprov i Nationella prov.",()=>S.np.some(r=>r.r===r.t&&r.t>0)],
   ["skattjagare","🗝️","Skattjägaren","Hitta utgången i Skattjakten.",()=>Object.values(S.sj.stars||{}).some(v=>v>=1)],
-  ["kristallkula","🔮","Kristallkulan","Hitta den sällsynta kristallkulan i Skattjakten.",()=>((S.sj.chamber||{}).orb||0)>0],
+  ["kristallkula","🔮","Sällsynt fynd","Hitta en sällsynt skatt i Skattjakten: kristallkulan, guldägget eller iskulan.",()=>["orb","egg","iceorb"].some(k=>((S.sj.chamber||{})[k]||0)>0)],
   ["skattmastare","🏴‍☠️","Skattmästaren","Hitta alla skatter på nivå 3 i Skattjakten.",()=>((S.sj.stars||{})[3]||0)>=3]
 ];
 const got=STICKERS.filter(x=>x[4]()).map(x=>x[0]);
