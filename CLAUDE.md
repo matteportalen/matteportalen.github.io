@@ -9,6 +9,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 - All data sparas i **localStorage** i elevens webbläsare. Ingen server, inga konton på nätet.
 - Typsnitt: **Baloo 2** från Google Fonts (vikt 500/700/800), med `"Trebuchet MS", system-ui, sans-serif` som reserv.
 - Delat ljud: `ljud.js` i roten. Alla sidor laddar den med `<script src="../ljud.js">` (startsidan med `ljud.js`).
+- Delat djur: `djur.js` i roten (`WARD`, `NATUR`, `itemOf`, `owlSVG`, `PETNAME`, `lasDjur()`). Laddas av startsidan, Spelhörnan, Geometri och Bråk. **Inga kopior** av djurmallen i sidorna, ändra bara i `djur.js`.
 - Externa skript laddas bara när de behövs: `qrcodejs 1.0.0` från cdnjs (QR-koder) och `jsqr 1.4.0` från jsdelivr (läsa QR med kameran, om webbläsaren saknar `BarcodeDetector`).
 
 ## Mappar och lagring
@@ -24,7 +25,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 | `division/` | Utan och med rest, bråkstreck | `mattespel-division-v1` |
 | `klockan/` | Åtta nivåer, analog och digital tid, mäta tid | `mattespel-klockan-v1` |
 | `geometri/` | Elevens djur är med i alla områden (vid frågan eller i bilden), hoppar vid rätt och lutar huvudet vid fel. **Former:** Formjakt i ett hus byggt av former + namnge formen. **Kroppar:** ritade kroppar och riktiga saker som emojis, åt båda hållen. **Hörn och sidor:** skyltpromenad med sex svenska vägskyltar i `geometri/bilder/` (public domain, Wikimedia Commons) och djurets egna träskyltar med porträtt. **Punkt, linje, sträcka, stråle** + rita sträckan (oförändrad). **Mönster:** pärlhalsband till djurets kalas, djuret får bära halsbandet. **Symmetri:** måla fjärilens andra vinge, "Är fjärilen/nyckelpigan symmetrisk?" (fjärilssiluett: "Butterfly Pinhead icon", CC0, Wikimedia Commons, inlagd direkt i koden). **Omkrets och area:** staket runt djurets hage (meter) och odlingens area med grönsaksemojis. | `mattespel-geometri-v1` (läser även `matteportalen-uggla`) |
-| `brak/` | Bråk: sju områden | `mattespel-brak-v1` |
+| `brak/` | Bråk med mat ritad i kod: **pizza**, **chokladkaka** och **rulltårta**. Elevens djur vid frågan. Halva/tredjedel (en bit dras ut till djuret), Lika stora delar ("rättvist?" + **skär själv**: pizzan med raka snitt genom mitten, närmaste 15°, och rulltårtan där man trycker, ±4 %), Ät rätt del (området hette Färglägg, id `farg`), Hur stor del är kvar, Del av antal (tallrikar), Jämför (pizzor i hjälpen), Tallinjen (rulltårtan lika lång som 0–1). | `mattespel-brak-v1` (läser även `matteportalen-uggla`) |
 | `taluppfattning/` | Bedömningsstöd i taluppfattning åk 1 och 2, diagnos | `mattespel-taluppfattning-v1` |
 | `np3/` | Nationella prov åk 3 (äldre sida, patchad) | `np3-resultat` |
 | `spel/` | Spelhörnan: Ugglans flygtur, Memory, Racerbanan, Asteroidjakten, Grodhoppet, Tornbygget, Skattkartan, Kiosken | `mattespel-spel-v1` |
@@ -46,7 +47,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 - Konfetti vid alla rätt eller nytt rekord. Respektera `prefers-reduced-motion`.
 - Rätt svar: grönt och pling. Fel svar: mjukt rosa, en förklaring och uppgiften kommer tillbaka senare i rundan. Aldrig bara ordet "Fel".
 - **Emojis används som ikoner.** Ett försök med egenritade SVG-ikoner och en stilguide gjordes men **valdes bort**: läraren tyckte emojiversionen var snyggare. Rita inte nya figurer i SVG utan att fråga.
-- Maskoten är en **uggla**. Eleven kan välja bland nio djur i Garderoben (uggla, katt, kanin, räv, panda, pingvin, robot, drake, enhörning). Alla ritas med samma mall i funktionen `owlSVG` så att kläderna passar alla. Mallen (med `WARD`, `NATUR` och `itemOf`) finns kopierad i `index.html`, `spel/index.html` och `geometri/index.html`. Ändras ett djur eller en klädsel måste alla tre kopiorna uppdateras. Ugglans flygtur visar alltid ugglan, Grodhoppet alltid grodan.
+- Maskoten är en **uggla**. Eleven kan välja bland nio djur i Garderoben (uggla, katt, kanin, räv, panda, pingvin, robot, drake, enhörning). Alla ritas med samma mall i funktionen `owlSVG` så att kläderna passar alla. Mallen finns bara i `djur.js`. Ugglans flygtur visar alltid ugglan, Grodhoppet alltid grodan.
 
 ## Pedagogiska beslut (viktiga, följ dem)
 

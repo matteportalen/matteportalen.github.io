@@ -108,6 +108,22 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .cmpv svg{width:220px;height:auto}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
+/* Elevens djur vid frågan */
+.instr .hpet{margin-left:auto;flex:none;width:50px}
+.pet svg{width:100%;height:auto;display:block;transform-origin:50% 90%}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-22px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}}
+@keyframes hmm{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-9deg)}}
+.pet.hop svg{animation:hop .55s ease-out 2}
+.pet.hmm svg{animation:hmm .9s ease-in-out}
+@media (prefers-reduced-motion:reduce){.pet svg{animation:none !important}}
+/* Maten och skärandet */
+.content>svg.roll,.help .vis>svg.roll{width:100%;max-width:380px}
+.cutsvg{cursor:crosshair;touch-action:manipulation}
+.content>svg.pzcut{width:min(80vw,290px)}
+.cmpv svg{width:120px !important}
+.plates{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px}
+.plate{width:86px;height:86px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 7px #E6ECF7,0 3px 0 #C6D6F2;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;font-size:1.05rem;line-height:1.15;padding:13px}
+.plate.on{box-shadow:inset 0 0 0 7px #9BE0B8,0 3px 0 #1E9E5E}
 </style>
 </head>
 <body>
@@ -115,7 +131,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Bråk</h1>
-  <p class="lead">Halvor, fjärdedelar och andra delar. Dela, färglägg och jämför.</p>
+  <p class="lead">Pizza, chokladkaka och rulltårta. Dela, skär och jämför.</p>
   <div class="areas" id="areas"></div>
   <p class="note">Tre stjärnor får du om alla tio uppgifter blir rätt direkt.</p>
 </section>
@@ -123,7 +139,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
   <div class="progress"><i id="prog"></i></div>
   <div class="task" id="task">
-    <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
+    <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></div>
     <div class="content" id="content"></div>
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
@@ -151,6 +167,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <div class="toast" id="toast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -168,26 +185,19 @@ const TAL=["noll","en","två","tre","fyra","fem","sex","sju","åtta","nio","tio"
 const ordOf=(k,n)=>k===1?(n===2?"en halv":`en ${ORD[n][0]}`):`${TAL[k]} ${ORD[n][1]}`;
 const fr=(k,n)=>`<span class="fr"><span>${k}</span><span>${n}</span></span>`;
 const svg=(inner,vb="0 0 100 100")=>`<svg viewBox="${vb}" aria-hidden="true">${inner}</svg>`;
-const FILL="#FF9F43",EMPTY="#fff",ST=`stroke="#1D2B53" stroke-width="2.5" stroke-linejoin="round"`;
+const ST=`stroke="#1D2B53" stroke-width="2.5" stroke-linejoin="round"`;
 function sectorPath(i,n,cx=50,cy=50,r=42,from=null,to=null){
   const a0=(from!=null?from:i/n)*2*Math.PI-Math.PI/2,a1=(to!=null?to:(i+1)/n)*2*Math.PI-Math.PI/2;
-  if(n===1&&from==null)return`M${cx-r} ${cy}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0`;
+  if((n===1&&from==null)||(from!=null&&to-from>=1))return`M${cx-r} ${cy}a${r} ${r} 0 1 0 ${2*r} 0a${r} ${r} 0 1 0 ${-2*r} 0`;
   const large=a1-a0>Math.PI?1:0;
   return`M${cx} ${cy}L${cx+r*Math.cos(a0)} ${cy+r*Math.sin(a0)}A${r} ${r} 0 ${large} 1 ${cx+r*Math.cos(a1)} ${cy+r*Math.sin(a1)}Z`;
 }
 // Delar: lista med [start,slut] mellan 0 och 1
 const equalCuts=n=>Array.from({length:n},(_,i)=>[i/n,(i+1)/n]);
-function pie(cuts,filled,o={}){
-  return svg(cuts.map(([a,b],i)=>`<path d="${sectorPath(0,0,50,50,42,a,b)}" fill="${filled.has(i)?FILL:EMPTY}" ${ST} ${o.tap?`data-p="${i}" class="part"`:""}/>`).join("")+
-    (o.num?cuts.map(([a,b],i)=>{const m=((a+b)/2)*2*Math.PI-Math.PI/2;return`<text x="${50+26*Math.cos(m)}" y="${50+26*Math.sin(m)+4}" text-anchor="middle" font-size="11" font-weight="800" fill="#1D2B53">${i+1}</text>`}).join(""):""));
-}
-function bar(cuts,filled,o={}){
-  return svg(cuts.map(([a,b],i)=>`<rect x="${4+a*92}" y="30" width="${(b-a)*92}" height="40" fill="${filled.has(i)?FILL:EMPTY}" ${ST} ${o.tap?`data-p="${i}" class="part"`:""}/>`).join("")+
-    (o.num?cuts.map(([a,b],i)=>`<text x="${4+(a+b)/2*92}" y="54" text-anchor="middle" font-size="11" font-weight="800" fill="#1D2B53">${i+1}</text>`).join(""):""),"0 20 100 60");
-}
+function unequalCuts(n){let pts=[0];for(let i=1;i<n;i++){let p=i/n+(Math.random()<.5?-1:1)*(.08+Math.random()*.1)/n*2.2;pts.push(p);}pts.push(1);pts=pts.sort((a,b)=>a-b);
+  return pts.slice(0,-1).map((p,i)=>[p,pts[i+1]]);}
 const pickN=list=>pickOne(list);
 const randSet=(n,k)=>new Set(shuffle([...Array(n).keys()]).slice(0,k));
-const drawer=()=>Math.random()<.5?pie:bar;
 function fracOptions(k,n){
   const c=new Set([`${k}/${n}`]);const cand=[`${n-k}/${n}`,`${k}/${n+1}`,`${k+1}/${n}`,`${Math.max(1,k-1)}/${n}`,`${k}/${Math.max(2,n-1)}`,`1/${n}`];
   shuffle(cand).forEach(x=>{const[a,b]=x.split("/").map(Number);if(c.size<4&&a>0&&b>0&&a<b&&!c.has(x))c.add(x);});
@@ -196,87 +206,160 @@ function fracOptions(k,n){
 }
 const frLabel=s=>{const[a,b]=s.split("/");return fr(a,b);};
 
-/* ---------- 1. Halva, tredjedel, fjärdedel ---------- */
+/* ---------- Maten: pizza, chokladkaka och rulltårta, ritade i kod ----------
+   Varje bit har ett läge: "on" (finns kvar), "eaten" (uppäten, bara smulor) eller "out" (utdragen mot djuret). */
+let clipN=0;
+const PEPP=[[50,20],[29,33],[71,33],[50,42],[24,55],[76,55],[38,63],[62,63],[50,79],[31,76],[69,76]];
+const PIZZA=`<circle cx="50" cy="50" r="44" fill="#E3A857"/><circle cx="50" cy="50" r="38.5" fill="#E5484D"/><circle cx="50" cy="50" r="36" fill="#FFD66B"/>`+
+  PEPP.map(([x,y])=>`<circle cx="${x}" cy="${y}" r="5.2" fill="#C2343B"/><circle cx="${x-1.6}" cy="${y-1.6}" r="1.1" fill="#E8777C"/>`).join("")+
+  [[40,28],[60,52],[36,46],[56,86]].map(([x,y])=>`<ellipse cx="${x}" cy="${y}" rx="3.4" ry="1.8" fill="#2BB673" transform="rotate(35 ${x} ${y})"/>`).join("");
+const crumbs=(x,y,c)=>`<circle cx="${x}" cy="${y}" r="1.5" fill="${c}"/><circle cx="${x+4}" cy="${y+3}" r="1.1" fill="${c}"/><circle cx="${x-3}" cy="${y+4}" r="1" fill="${c}"/>`;
+const EATEN=`fill="#F6EEE2" stroke="#C9B79C" stroke-width="1.5" stroke-dasharray="3 3"`;
+function pizzaSVG(cuts,st,o={}){
+  const id0=++clipN;let h=`<svg viewBox="-9 -9 118 118" aria-hidden="true"${o.cls?` class="${o.cls}"`:""}><circle cx="50" cy="50" r="50" fill="#fff" stroke="#C6D6F2" stroke-width="2"/>`;
+  cuts.forEach(([a,b],i)=>{const s=st(i),d=sectorPath(0,0,50,50,44,a,b),m=((a+b)/2)*2*Math.PI-Math.PI/2,cx=50+26*Math.cos(m),cy=50+26*Math.sin(m),tap=o.tap?` data-p="${i}" class="part"`:"";
+    if(s==="eaten")h+=`<g${tap}><path d="${d}" ${EATEN}/>${crumbs(cx-2,cy-2,"#E3A857")}</g>`;
+    else{const tr=s==="out"?` transform="translate(${(9*Math.cos(m)).toFixed(1)} ${(9*Math.sin(m)).toFixed(1)})"`:"",id=`pz${id0}_${i}`;
+      h+=`<g${tap}${tr}><clipPath id="${id}"><path d="${d}"/></clipPath><g clip-path="url(#${id})">${PIZZA}</g><path d="${d}" fill="none" ${ST}/></g>`;}});
+  if(o.num)cuts.forEach(([a,b],i)=>{const m=((a+b)/2)*2*Math.PI-Math.PI/2,x=50+27*Math.cos(m),y=50+27*Math.sin(m);
+    h+=`<circle cx="${x}" cy="${y}" r="7" fill="#fff" stroke="#1D2B53" stroke-width="1.5"/><text x="${x}" y="${y+3.6}" text-anchor="middle" font-size="10" font-weight="800" fill="#1D2B53">${i+1}</text>`;});
+  return h+(o.extra||"")+"</svg>";
+}
+function chocSVG(cuts,st,o={}){
+  let h=`<svg viewBox="0 14 100 66" aria-hidden="true"${o.cls?` class="${o.cls}"`:""}>`;
+  cuts.forEach(([a,b],i)=>{const s=st(i),x=4+a*92,w=(b-a)*92,tap=o.tap?` data-p="${i}" class="part"`:"";
+    if(s==="eaten")h+=`<g${tap}><rect x="${x}" y="32" width="${w}" height="40" ${EATEN}/>${crumbs(x+w/2-2,50,"#7A4A2B")}</g>`;
+    else h+=`<g${tap}${s==="out"?' transform="translate(0 -12)"':""}><rect x="${x}" y="32" width="${w}" height="40" rx="1.5" fill="#7A4A2B" ${ST}/><rect x="${x+3}" y="35.5" width="${Math.max(1,w-6)}" height="33" rx="2" fill="#93603E"/><path d="M${x+3.5} 66 V36 H${x+w-3.5}" stroke="#B07A55" stroke-width="1.6" fill="none"/></g>`;});
+  if(o.num)cuts.forEach(([a,b],i)=>{const x=4+(a+b)/2*92;h+=`<circle cx="${x}" cy="52" r="6.5" fill="#fff" stroke="#1D2B53" stroke-width="1.5"/><text x="${x}" y="55.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#1D2B53">${i+1}</text>`;});
+  return h+"</svg>";
+}
+/* Rulltårta från sidan, från x=10 till x=190 (samma längd som tallinjen 0–1). cuts = snitt som tal mellan 0 och 1. */
+const RX=f=>10+f*180;
+function rollEl(cuts,y,o={}){
+  const r=16,cy=y+r;
+  let h=`<rect x="10" y="${y}" width="180" height="32" rx="5" fill="#F7D58B"/><rect x="12" y="${y+24}" width="176" height="7" rx="3" fill="#E9BE6A"/><rect x="10" y="${y}" width="180" height="32" rx="5" fill="none" ${ST}/>`+
+    Array.from({length:17},(_,i)=>`<circle cx="${22+i*10.1+(i%2)*3}" cy="${y+5+(i%3)*2.2}" r="1.3" fill="#fff" opacity=".95"/>`).join("")+
+    /* änden: sockerkaka runt, grädde och sylt i ringar */
+    `<ellipse cx="10" cy="${cy}" rx="8.5" ry="${r}" fill="#F7D58B" ${ST}/><ellipse cx="10" cy="${cy}" rx="6.4" ry="${r-3}" fill="#FFF6E0"/>`+
+    `<ellipse cx="10" cy="${cy}" rx="4.4" ry="${(r-3)*.66}" fill="none" stroke="#E5484D" stroke-width="2"/><ellipse cx="10" cy="${cy}" rx="2.2" ry="${(r-3)*.32}" fill="none" stroke="#E5484D" stroke-width="2"/>`;
+  cuts.forEach(f=>{const x=RX(f);h+=`<line x1="${x}" y1="${y-3}" x2="${x}" y2="${y+35}" stroke="#fff" stroke-width="5"/><line x1="${x-2.6}" y1="${y}" x2="${x-2.6}" y2="${y+32}" stroke="#1D2B53" stroke-width="1.6"/><line x1="${x+2.6}" y1="${y}" x2="${x+2.6}" y2="${y+32}" stroke="#1D2B53" stroke-width="1.6"/>`;});
+  if(o.ideal)for(let j=1;j<o.ideal;j++){const x=RX(j/o.ideal);h+=`<line x1="${x}" y1="${y-8}" x2="${x}" y2="${y+40}" stroke="#1E9E5E" stroke-width="3" stroke-dasharray="5 3"/>`;}
+  return h;
+}
+const rollSVG=(cuts,o={})=>`<svg viewBox="0 0 200 54" class="roll${o.cls?" "+o.cls:""}" aria-hidden="true">${rollEl(cuts,12,o)}</svg>`;
+/* Slumpar mat för cirkel- eller stapelbilder */
+const food=()=>Math.random()<.55?{D:pizzaSVG,name:"pizzan",kind:"pizza"}:{D:chocSVG,name:"chokladkakan",kind:"choklad"};
+
+/* ---------- Elevens djur (från ../djur.js) ---------- */
+const pet=lasDjur(),petName=PETNAME[pet.animal]||"Ugglan",lc=petName.toLowerCase();
+
+/* ---------- 1. Halva, tredjedel, fjärdedel: en bit dras ut till djuret ---------- */
 function genEnhet(){
-  const n=pickN([2,2,3,3,4,4,5,6,8]),D=drawer(),cuts=equalCuts(n),f=randSet(n,1),vis=D(cuts,f);
+  const n=pickN([2,2,3,3,4,4,5,6,8]),F=food(),cuts=equalCuts(n),p=rnd(0,n-1),st=i=>i===p?"out":"on";
   const words=shuffle([...new Set([ordOf(1,n),...shuffle([2,3,4,5,6,8].filter(x=>x!==n)).slice(0,3).map(x=>ordOf(1,x))])]);
-  return{kind:"opts",instr:"Hur stor del är färgad?",speak:"Hur stor del av figuren är färgad?",html:vis,options:words.map(cap),answer:cap(ordOf(1,n)),
-    help:()=>({vis:D(cuts,f,{num:true}),tip:`Figuren är delad i ${n} lika stora delar. En av dem är färgad. Då heter delen ${ordOf(1,n)}, och skrivs 1/${n}.`})};
+  return{kind:"opts",instr:`Hur stor bit av ${F.name} får ${lc}?`,speak:`${petName} får den utdragna biten. Hur stor bit av ${F.name} är det?`,html:F.D(cuts,st),options:words.map(cap),answer:cap(ordOf(1,n)),
+    help:()=>({vis:F.D(cuts,st,{num:true}),tip:`${cap(F.name)} är delad i ${n} lika stora bitar. ${petName} får en av dem. Då heter biten ${ordOf(1,n)}, och skrivs 1/${n}.`})};
 }
-/* ---------- 2. Hur stor del? (k/n) ---------- */
+/* ---------- 2. Hur stor del är kvar? (k/n) ---------- */
 function genDel(){
-  const n=pickN([3,4,4,5,6,8,10]),k=rnd(1,n-1),D=drawer(),cuts=equalCuts(n),f=randSet(n,k),vis=D(cuts,f),opts=fracOptions(k,n);
-  return{kind:"opts",fr:true,instr:"Vilket bråk visar den färgade delen?",speak:"Vilket bråk visar hur stor del som är färgad?",html:vis,options:opts,labels:opts.map(frLabel),answer:`${k}/${n}`,
-    help:()=>({vis:D(cuts,f,{num:true})+`<div class="big-fr">${fr(k,n)}</div>`,tip:`Räkna alla delar: ${n}. Det talet skrivs under strecket (nämnaren). Räkna de färgade: ${k}. Det talet skrivs över strecket (täljaren). Alltså ${k}/${n}, ${ordOf(k,n)}.`})};
+  const n=pickN([3,4,4,5,6,8,10]),k=rnd(1,n-1),F=food(),cuts=equalCuts(n),f=randSet(n,k),st=i=>f.has(i)?"on":"eaten",opts=fracOptions(k,n);
+  return{kind:"opts",fr:true,instr:`Hur stor del av ${F.name} är kvar?`,speak:`${petName} har ätit lite. Hur stor del av ${F.name} är kvar? Vilket bråk är det?`,html:F.D(cuts,st),options:opts,labels:opts.map(frLabel),answer:`${k}/${n}`,
+    help:()=>({vis:F.D(cuts,st,{num:true})+`<div class="big-fr">${fr(k,n)}</div>`,tip:`Räkna alla bitar, även de uppätna: ${n}. Det talet skrivs under strecket (nämnaren). Räkna bitarna som är kvar: ${k}. Det talet skrivs över strecket (täljaren). Alltså ${k}/${n}, ${ordOf(k,n)}.`})};
 }
-/* ---------- 3. Färglägg ---------- */
+/* ---------- 3. Ät rätt del: eleven trycker på bitarna som djuret ska äta ---------- */
 function genFarg(){
-  const n=pickN([2,3,4,4,5,6,8]),k=n===2?1:rnd(1,n-1),D=drawer(),cuts=equalCuts(n);
-  return{kind:"color",instr:`Färglägg ${ordOf(k,n)} av figuren.`,speakFr:true,speak:`Färglägg ${ordOf(k,n)} av figuren. Tryck på delarna och sedan på Klar.`,
-    topFr:fr(k,n),draw:(sel)=>D(cuts,sel,{tap:true}),need:k,n,
-    help:()=>({vis:D(cuts,new Set([...Array(k).keys()]),{num:true}),tip:`Figuren har ${n} lika stora delar. ${cap(ordOf(k,n))} betyder att ${k} av de ${n} delarna ska vara färgade. Vilka delar spelar ingen roll.`})};
+  const n=pickN([2,3,4,4,5,6,8]),k=n===2?1:rnd(1,n-1),F=food(),cuts=equalCuts(n);
+  return{kind:"color",instr:`Hjälp ${lc} att äta ${ordOf(k,n)} av ${F.name}.`,speak:`${petName} vill äta ${ordOf(k,n)} av ${F.name}. Tryck på bitarna som ${lc} ska äta. Tryck sedan på Klar.`,
+    topFr:fr(k,n),draw:(sel)=>F.D(cuts,i=>sel.has(i)?"eaten":"on",{tap:true}),need:k,n,
+    help:()=>({vis:F.D(cuts,i=>i<k?"eaten":"on",{num:true}),tip:`${cap(F.name)} har ${n} lika stora bitar. ${cap(ordOf(k,n))} betyder att ${k} av de ${n} bitarna ska ätas. Vilka bitar spelar ingen roll.`})};
 }
-/* ---------- 4. Lika stora delar? ---------- */
-function unequalCuts(n){let pts=[0];for(let i=1;i<n;i++){let p=i/n+(Math.random()<.5?-1:1)*(.08+Math.random()*.1)/n*2.2;pts.push(p);}pts.push(1);pts=pts.sort((a,b)=>a-b);
-  return pts.slice(0,-1).map((p,i)=>[p,pts[i+1]]);}
-function genLika(){
-  const n=pickN([2,3,4,4,6]),eq=Math.random()<.5,D=drawer(),cuts=eq?equalCuts(n):unequalCuts(n),f=new Set([0]),vis=D(cuts,f);
-  const q=`Är figuren delad i ${n===2?"halvor":ORD[n][1]}?`;
-  return{kind:"opts",instr:q,speak:q+" Är alla delar lika stora?",html:vis,options:["Ja","Nej"],answer:eq?"Ja":"Nej",
-    help:()=>({vis:D(cuts,f)+(eq?"":D(equalCuts(n),f)),tip:eq?`Ja! Alla ${n} delar är lika stora. Då är varje del ${ordOf(1,n)}.`:`Nej. Delarna är inte lika stora. För att det ska vara ${n===2?"halvor":ORD[n][1]} måste alla delar vara exakt lika stora, som i den nedre bilden.`})};
+/* ---------- 4. Lika stora delar: rättvist? och skär själv ---------- */
+function genRattvist(){
+  const n=pickN([2,3,4,4,6]),eq=Math.random()<.5,F=food(),cuts=eq?equalCuts(n):unequalCuts(n),st=()=>"on",ord=n===2?"halvor":ORD[n][1];
+  return{kind:"opts",instr:`Är ${F.name} delad i ${ord}?`,speak:`${petName} ska dela ${F.name} med sina kompisar. Är ${F.name} delad i ${ord}? Är alla bitar lika stora?`,html:F.D(cuts,st),options:["Ja","Nej"],answer:eq?"Ja":"Nej",
+    help:()=>({vis:F.D(cuts,st)+(eq?"":F.D(equalCuts(n),st)),tip:eq?`Ja! Alla ${n} bitar är lika stora. Då är varje bit ${ordOf(1,n)}. Det blir rättvist.`:`Nej. Bitarna är inte lika stora, så det blir inte rättvist. ${cap(ord)} måste vara exakt lika stora, som i den nedre bilden.`})};
 }
-/* ---------- 5. Del av antal ---------- */
-const THINGS=["🍎","🍓","⚽","🧁","🌟","🐟","🍪","🎈"];
-function groupsHTML(e,d,each,hl){let h='<div class="groups">';for(let g=0;g<d;g++)h+=`<span class="grp${hl&&g<hl?" on":""}">${e.repeat(each)}</span>`;return h+"</div>";}
+/* Skär rulltårtan: eleven trycker där kniven ska skära. Ett snitt räknas som rätt om det är nära rätt ställe. */
+function genSkarRulle(){
+  const n=pickN([2,3,3,4,4,5,6]),TOL=.04;
+  const check=cuts=>{const s=[...cuts].sort((a,b)=>a-b);if(s.length!==n-1)return`${s.length+1} ${s.length===0?"bit":"bitar"}`;return s.every((f,j)=>Math.abs(f-(j+1)/n)<TOL)?true:"olika stora bitar";};
+  return{kind:"cut",instr:`Skär rulltårtan i ${n} lika stora bitar.`,speak:`Skär rulltårtan i ${TAL[n]} lika stora bitar, så att det blir rättvist. Tryck på rulltårtan där kniven ska skära. Trycker du på ett snitt igen försvinner det. Tryck sedan på Klar.`,
+    draw:cuts=>rollSVG(cuts,{cls:"cutsvg"}),
+    tap:(cuts,x)=>{const f=(x-10)/180;if(f<.03||f>.97)return false;const i=cuts.findIndex(c=>Math.abs(c-f)<.045);if(i>=0)cuts.splice(i,1);else cuts.push(f);return true;},
+    check,
+    help:cuts=>({vis:rollSVG(cuts||[],{ideal:n}),tip:(cuts||[]).length!==n-1?`För ${n} bitar behöver du ${n-1} ${n-1===1?"snitt":"snitt"}. De gröna strecken visar var du ska skära.`:`Bitarna ska vara lika långa. De gröna strecken visar var du ska skära. Dina snitt är de vita.`})};
+}
+/* Skär pizzan: varje tryck blir ett rakt snitt genom mitten, åt det håll man tryckte (närmaste 15°). */
+function genSkarPizza(){
+  const n=pickN([2,4,4,6,8]),m=n/2;
+  const lines=(cuts,col,w,dash)=>cuts.map(a=>{const r=a*Math.PI/180,dx=47*Math.cos(r),dy=47*Math.sin(r);return`<line x1="${50-dx}" y1="${50-dy}" x2="${50+dx}" y2="${50+dy}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"${dash?` stroke-dasharray="${dash}"`:""}/>`;}).join("");
+  const pic=(cuts,o={})=>pizzaSVG([[0,1]],()=>"on",{cls:o.cls,extra:lines(cuts,"#1D2B53",5.5)+lines(cuts,"#FFF6E0",2.5)+(o.ideal?lines(Array.from({length:m},(_,i)=>i*180/m+(o.rot||0)),"#1E9E5E",2.5,"5 3"):"")});
+  const check=cuts=>{if(cuts.length!==m)return`${cuts.length?cuts.length*2:1} ${cuts.length?"bitar":"bit"}`;const s=[...cuts].sort((a,b)=>a-b);return s.every((a,i)=>i===0||a-s[i-1]===180/m)?true:"olika stora bitar";};
+  return{kind:"cut",instr:`Skär pizzan i ${n} lika stora bitar.`,speak:`Skär pizzan i ${TAL[n]} lika stora bitar. Tryck på pizzan där du vill skära. Kniven skär rakt igenom mitten. Trycker du på ett snitt igen försvinner det. Tryck sedan på Klar.`,
+    draw:cuts=>pic(cuts,{cls:"cutsvg pzcut"}),
+    tap:(cuts,x,y)=>{const dx=x-50,dy=y-50,d=Math.hypot(dx,dy);if(d<7||d>54)return false;const a=Math.round(((Math.atan2(dy,dx)*180/Math.PI)+360)%180/15)*15%180;
+      const i=cuts.indexOf(a);if(i>=0)cuts.splice(i,1);else cuts.push(a);return true;},
+    check,
+    help:cuts=>({vis:pic(cuts||[],{ideal:true,rot:(cuts&&cuts.length?Math.min(...cuts):0)}),tip:(cuts||[]).length!==m?`Varje snitt rakt genom mitten ger två bitar. För ${n} bitar behövs ${m} ${m===1?"snitt":"snitt"}. De gröna strecken visar hur.`:"Bitarna ska vara lika stora. Snitten ska ha lika stora mellanrum, som de gröna strecken."})};
+}
+const genLika=()=>{const r=Math.random();return r<.4?genRattvist():r<.7?genSkarPizza():genSkarRulle();};
+/* ---------- 5. Del av antal: dela lika på tallrikar ---------- */
+const THINGS=["🍓","🍎","🧁","🍪","🍒","🥕","🍋","🍩"];
+const platesHTML=(e,d,each,hl)=>`<div class="plates">${Array.from({length:d},(_,g)=>`<span class="plate${hl&&g<hl?" on":""}">${e.repeat(each)}</span>`).join("")}</div>`;
 function genAntal(){
   const d=pickN([2,2,3,4,5]),each=rnd(2,d===2?8:5),n=d*each,k=d>2&&Math.random()<.35?rnd(2,d-1):1,e=pickOne(THINGS),ans=k*each;
   const what=k===1&&d===2?"hälften":ordOf(k,d);
-  return{kind:"keys",instr:`Hur många är ${what} av ${n}?`,speak:`Här är ${n} saker. Hur många är ${what} av ${n}?`,html:`<div class="things">${e.repeat(n)}</div>`,answer:ans,
-    help:()=>({vis:groupsHTML(e,d,each,k),tip:`Dela ${n} i ${d} lika stora grupper. Varje grupp blir ${each}, eftersom ${d} · ${each} = ${n}.${k>1?` ${cap(what)} är ${k} grupper: ${k} · ${each} = ${ans}.`:` ${cap(what)} är en grupp: ${ans}.`}`})};
+  return{kind:"keys",instr:`Hur många är ${what} av ${n}?`,speak:`${petName} har ${n} saker till picknicken. De ska delas lika på ${TAL[d]} tallrikar. Hur många är ${what} av ${n}?`,
+    html:`<div class="things">${e.repeat(n)}</div>`+platesHTML("",d,0),answer:ans,
+    help:()=>({vis:platesHTML(e,d,each,k),tip:`Dela ${n} lika på ${d} tallrikar. Det blir ${each} på varje, eftersom ${d} · ${each} = ${n}.${k>1?` ${cap(what)} är ${k} tallrikar: ${k} · ${each} = ${ans}.`:` ${cap(what)} är en tallrik: ${ans}.`}`})};
 }
-/* ---------- 6. Jämför ---------- */
+/* ---------- 6. Jämför: hjälpen visar två lika stora pizzor ---------- */
 function genJamfor(){
-  let a,b,A,B,t=Math.random();
+  let a,b,t=Math.random();
   if(t<.45){const n1=pickN([2,3,4,5,6,8]);let n2;do{n2=pickN([2,3,4,5,6,8]);}while(n2===n1);a=[1,n1];b=[1,n2];}
   else if(t<.85){const n=pickN([4,5,6,8,10]);let k1=rnd(1,n-1),k2;do{k2=rnd(1,n-1);}while(k2===k1);a=[k1,n];b=[k2,n];}
   else{const p=pickOne([[[1,2],[2,4]],[[1,2],[3,6]],[[1,2],[4,8]],[[1,3],[2,6]],[[1,4],[2,8]]]);[a,b]=Math.random()<.5?p:[p[1],p[0]];}
   const va=a[0]/a[1],vb=b[0]/b[1],ans=Math.abs(va-vb)<1e-9?"lika":va>vb?`${a[0]}/${a[1]}`:`${b[0]}/${b[1]}`;
-  const pic=f=>bar(equalCuts(f[1]),new Set([...Array(f[0]).keys()]));
+  const pic=f=>pizzaSVG(equalCuts(f[1]),i=>i<f[0]?"on":"eaten");
   const opts=[`${a[0]}/${a[1]}`,`${b[0]}/${b[1]}`,"lika"];
-  return{kind:"opts",fr:true,instr:"Vilket bråk är störst?",speak:"Vilket bråk är störst? Eller är de lika stora?",html:`<div class="cmp"><div>${fr(a[0],a[1])}</div><div>${fr(b[0],b[1])}</div></div>`,
+  return{kind:"opts",fr:true,instr:"Vilket bråk är störst?",speak:`${petName} är hungrig och vill ha mest pizza. Vilket bråk är störst? Eller är de lika stora?`,html:`<div class="cmp"><div>${fr(a[0],a[1])}</div><div>${fr(b[0],b[1])}</div></div>`,
     options:opts,labels:opts.map(o=>o==="lika"?"Lika stora":frLabel(o)),answer:ans,
     help:()=>({vis:`<div class="cmpv"><div>${fr(a[0],a[1])}${pic(a)}</div><div>${fr(b[0],b[1])}${pic(b)}</div></div>`,
-      tip:a[1]===b[1]&&a[0]!==b[0]?`Delarna är lika stora eftersom båda är delade i ${a[1]}. Då är det bråket med flest delar färgade som är störst.`:ans==="lika"?"Titta på bilderna: lika mycket är färgat. Bråken är olika skrivna men lika stora.":"Titta på bilderna. Ju fler delar något delas i, desto mindre blir varje del. Det bråk där mest är färgat är störst."})};
+      tip:a[1]===b[1]&&a[0]!==b[0]?`Bitarna är lika stora eftersom båda pizzorna är delade i ${a[1]}. Då är det bråket med flest bitar som är störst.`:ans==="lika"?"Titta på pizzorna: det är lika mycket pizza kvar. Bråken är olika skrivna men lika stora.":"Titta på pizzorna. Ju fler bitar en pizza delas i, desto mindre blir varje bit. Den pizza där mest finns kvar är störst."})};
 }
-/* ---------- 7. Bråk på tallinjen ---------- */
+/* ---------- 7. Bråk på tallinjen: rulltårtan är lika lång som sträckan 0–1 ---------- */
 function genLinje(){
-  const n=pickN([2,3,4,5,6,8,10]),k=rnd(1,n-1),x=v=>10+v*180;
-  let s=`<line x1="10" y1="40" x2="190" y2="40" stroke="#1D2B53" stroke-width="3"/>`;
-  for(let i=0;i<=n;i++)s+=`<line x1="${x(i/n)}" y1="${i%n?32:28}" x2="${x(i/n)}" y2="${i%n?48:52}" stroke="#1D2B53" stroke-width="${i%n?2:3}"/>`;
-  s+=`<text x="10" y="70" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">0</text><text x="190" y="70" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">1</text>`;
-  const arrow=`<path d="M${x(k/n)} 26 l-7 -12 h14 z" fill="#E5484D"/><line x1="${x(k/n)}" y1="2" x2="${x(k/n)}" y2="14" stroke="#E5484D" stroke-width="4"/>`;
-  const opts=fracOptions(k,n),base=svg(s+arrow,"0 0 200 80");
-  const hops=Array.from({length:k},(_,i)=>`<path d="M${x(i/n)} 38 Q${x((i+.5)/n)} ${16} ${x((i+1)/n)} 38" fill="none" stroke="#FF9F43" stroke-width="3"/>`).join("");
-  return{kind:"opts",fr:true,instr:"Vilket bråk pekar pilen på?",speak:"Vilket bråk pekar pilen på?",html:base,options:opts,labels:opts.map(frLabel),answer:`${k}/${n}`,
-    help:()=>({vis:svg(s+hops+arrow,"0 0 200 80"),tip:`Sträckan från 0 till 1 är delad i ${n} lika stora delar. Pilen står ${k} steg från 0, se de orange hoppen. Alltså ${k}/${n}.`})};
+  const n=pickN([2,3,4,5,6,8,10]),k=rnd(1,n-1),x=v=>RX(v);
+  let s=rollEl([k/n],4)+`<line x1="10" y1="56" x2="190" y2="56" stroke="#1D2B53" stroke-width="3"/>`;
+  for(let i=0;i<=n;i++)s+=`<line x1="${x(i/n)}" y1="${i%n?49:45}" x2="${x(i/n)}" y2="${i%n?63:67}" stroke="#1D2B53" stroke-width="${i%n?2:3}"/>`;
+  s+=`<text x="10" y="84" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">0</text><text x="190" y="84" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">1</text>`;
+  const mark=`<line x1="${x(k/n)}" y1="38" x2="${x(k/n)}" y2="54" stroke="#E5484D" stroke-width="3" stroke-dasharray="4 2"/><circle cx="${x(k/n)}" cy="56" r="5" fill="#E5484D"/>`;
+  const opts=fracOptions(k,n),VB="0 0 200 90";
+  const hops=Array.from({length:k},(_,i)=>`<path d="M${x(i/n)} 54 Q${x((i+.5)/n)} 40 ${x((i+1)/n)} 54" fill="none" stroke="#FF9F43" stroke-width="3"/>`).join("");
+  return{kind:"opts",fr:true,instr:"Var är rulltårtan skuren? Vilket bråk?",speak:`${petName} har skurit rulltårtan. Rulltårtan är lika lång som sträckan från noll till ett. Vilket bråk på tallinjen visar den röda pricken?`,
+    html:`<svg viewBox="${VB}" class="roll" aria-hidden="true">${s+mark}</svg>`,options:opts,labels:opts.map(frLabel),answer:`${k}/${n}`,
+    help:()=>({vis:`<svg viewBox="${VB}" class="roll" aria-hidden="true">${s+hops+mark}</svg>`,tip:`Sträckan från 0 till 1 är delad i ${n} lika stora delar. Snittet står ${k} steg från 0, se de orange hoppen. Alltså ${k}/${n}.`})};
 }
+
 const ICON={
-  enhet:pie(equalCuts(2),new Set([0])),del:pie(equalCuts(4),new Set([0,1,2])),farg:bar(equalCuts(4),new Set([0,1])),
-  lika:bar([[0,.3],[.3,1]],new Set([0])),antal:`<span style="font-size:1.6rem;line-height:1">🍎🍎<br>🍎🍎</span>`,
+  enhet:pizzaSVG(equalCuts(4),i=>i===1?"out":"on"),del:pizzaSVG(equalCuts(4),i=>i<3?"on":"eaten"),farg:chocSVG(equalCuts(4),i=>i<2?"eaten":"on"),
+  lika:pizzaSVG([[0,1]],()=>"on",{extra:`<line x1="50" y1="3" x2="50" y2="97" stroke="#1D2B53" stroke-width="5.5"/><line x1="3" y1="50" x2="97" y2="50" stroke="#1D2B53" stroke-width="5.5"/><line x1="50" y1="3" x2="50" y2="97" stroke="#FFF6E0" stroke-width="2.5"/><line x1="3" y1="50" x2="97" y2="50" stroke="#FFF6E0" stroke-width="2.5"/>`}),
+  antal:`<span style="font-size:1.6rem;line-height:1">🍓🍓<br>🍓🍓</span>`,
   jamfor:`<span style="font-size:1.8rem;font-weight:800">${fr(1,2)}<span style="font-size:.8em"> &gt; </span>${fr(1,4)}</span>`,
-  linje:svg(`<line x1="10" y1="40" x2="190" y2="40" stroke="#1D2B53" stroke-width="5"/><line x1="10" y1="26" x2="10" y2="54" stroke="#1D2B53" stroke-width="5"/><line x1="100" y1="30" x2="100" y2="50" stroke="#1D2B53" stroke-width="4"/><line x1="190" y1="26" x2="190" y2="54" stroke="#1D2B53" stroke-width="5"/><path d="M100 28 l-10 -16 h20 z" fill="#E5484D"/>`,"0 0 200 64")
+  linje:`<svg viewBox="0 0 200 90" aria-hidden="true">${rollEl([.5],4)}<line x1="10" y1="62" x2="190" y2="62" stroke="#1D2B53" stroke-width="5"/><line x1="10" y1="50" x2="10" y2="74" stroke="#1D2B53" stroke-width="5"/><line x1="190" y1="50" x2="190" y2="74" stroke="#1D2B53" stroke-width="5"/><circle cx="100" cy="62" r="8" fill="#E5484D"/></svg>`
 };
 const AREAS=[
-  {id:"enhet",name:"Halva, tredjedel …",desc:"Vad heter delen?",ak:"Åk 1",c:"#FF9F43",gen:genEnhet},
-  {id:"lika",name:"Lika stora delar",desc:"Är delarna lika stora?",ak:"Åk 1–2",c:"#2BB673",gen:genLika},
-  {id:"farg",name:"Färglägg",desc:"Färglägg rätt del av figuren.",ak:"Åk 1–2",c:"#FF5FA2",gen:genFarg},
-  {id:"del",name:"Hur stor del?",desc:"Skriv delen som bråk.",ak:"Åk 2–3",c:"#3D8BFD",gen:genDel},
-  {id:"antal",name:"Del av antal",desc:"Hälften av 12, en tredjedel av 9 …",ak:"Åk 2–3",c:"#7B61FF",gen:genAntal},
+  {id:"enhet",name:"Halva, tredjedel …",desc:"Hur stor bit får djuret?",ak:"Åk 1",c:"#FF9F43",gen:genEnhet},
+  {id:"lika",name:"Lika stora delar",desc:"Rättvist? Skär själv!",ak:"Åk 1–2",c:"#2BB673",gen:genLika},
+  {id:"farg",name:"Ät rätt del",desc:"Hjälp djuret att äta rätt del.",ak:"Åk 1–2",c:"#FF5FA2",gen:genFarg},
+  {id:"del",name:"Hur stor del?",desc:"Hur mycket är kvar?",ak:"Åk 2–3",c:"#3D8BFD",gen:genDel},
+  {id:"antal",name:"Del av antal",desc:"Dela lika på tallrikar.",ak:"Åk 2–3",c:"#7B61FF",gen:genAntal},
   {id:"jamfor",name:"Jämför bråk",desc:"Vilket bråk är störst?",ak:"Åk 3",c:"#FF6B6B",gen:genJamfor},
-  {id:"linje",name:"Bråk på tallinjen",desc:"Mellan 0 och 1.",ak:"Åk 3",c:"#17AFC4",gen:genLinje}
+  {id:"linje",name:"Bråk på tallinjen",desc:"Rulltårtan på tallinjen.",ak:"Åk 3",c:"#17AFC4",gen:genLinje}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+$("hpet").innerHTML=owlSVG(pet);
 function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
   $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${ICON[a.id]}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${starHtml(data.stars[a.id]||0)}</button>`).join("");
   show("home");}
@@ -316,10 +399,16 @@ function render(){
     c.querySelectorAll(".tapit").forEach(b=>b.onclick=()=>{if(!G.busy)b.classList.toggle("sel");});
     $("done").onclick=()=>{if(G.busy)return;const sel=[...c.querySelectorAll(".tapit.sel")].map(b=>+b.dataset.i);
       const ok=sel.length===t.correct.length&&t.correct.every(i=>sel.includes(i));ok?done():wrong(sel.length?`${sel.length} former`:"ingen form");};
+  }else if(t.kind==="cut"){
+    /* Skär själv: tryck på bilden där kniven ska skära */
+    G.cuts=[];G.state=G.cuts;const draw=()=>{c.innerHTML=t.draw(G.cuts)+`<button class="go" id="done">Klar</button>`;
+      const s=c.querySelector("svg.cutsvg");s.addEventListener("click",e=>{if(G.busy)return;const p=s.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(s.getScreenCTM().inverse());if(t.tap(G.cuts,q.x,q.y))draw();});
+      $("done").onclick=()=>{if(G.busy)return;const r=t.check(G.cuts);r===true?done():wrong(r);};};
+    draw();
   }else if(t.kind==="color"){
     G.state=new Set();const draw=()=>{c.innerHTML=`<div class="topfr">${t.topFr}</div>`+t.draw(G.state)+`<button class="go" id="done">Klar</button>`;
       c.querySelectorAll(".part").forEach(el=>el.onclick=()=>{if(G.busy)return;const p=+el.dataset.p;G.state.has(p)?G.state.delete(p):G.state.add(p);draw();});
-      $("done").onclick=()=>{if(G.busy)return;G.state.size===t.need?done():wrong(`${G.state.size} av ${t.n} delar färgade`);};};
+      $("done").onclick=()=>{if(G.busy)return;G.state.size===t.need?done():wrong(`${G.state.size} av ${t.n} bitar uppätna`);};};
     draw();
   }else{
     G.state=new Set();const draw=()=>{c.innerHTML=t.grid(G.state,false)+`<button class="go" id="done">Klar</button>`;
@@ -333,9 +422,10 @@ document.querySelectorAll("#pad button").forEach(b=>b.onclick=()=>press(b.datase
 document.addEventListener("keydown",e=>{if($("game").hidden||!G)return;if(!$("help").hidden){if(e.key==="Enter"){e.preventDefault();$("helpGo").click();}return;}
   if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace"){e.preventDefault();press("del");}else if(e.key==="Enter"){e.preventDefault();press("ok");}});
 const PRAISE=["Rätt!","Snyggt!","Bra!","Toppen!","Klockrent!"];
-function done(){G.busy=true;window.Ljud&&Ljud.ok();$("task").className="task ok";$("feedback").textContent=G.first?pickOne(PRAISE):"Nu blev det rätt!";setTimeout(next,900);}
+const petFx=c=>{const p=$("hpet");if(p){p.classList.remove("hop","hmm");void p.offsetWidth;p.classList.add(c);}};
+function done(){G.busy=true;window.Ljud&&Ljud.ok();petFx("hop");$("task").className="task ok";$("feedback").textContent=G.first?pickOne(PRAISE):"Nu blev det rätt!";setTimeout(next,900);}
 function wrong(given,givenHTML){
-  G.busy=true;window.Ljud&&Ljud.bad();if(G.first)G.missed++;G.first=false;
+  G.busy=true;window.Ljud&&Ljud.bad();petFx("hmm");if(G.first)G.missed++;G.first=false;
   const hp=G.t.help(G.state);
   $("helpSaid").innerHTML=givenHTML?`Du svarade <span style="display:inline-block;min-width:32px;vertical-align:middle;font-size:1.3rem">${givenHTML}</span>. Så här är det:`:`Du svarade: ${given}. Så här är det:`;
   $("helpVis").innerHTML=hp.vis;$("helpTip").textContent="Tips: "+hp.tip;
