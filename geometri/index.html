@@ -105,6 +105,24 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 @keyframes hmm{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-9deg)}}
 .pet.hop svg{animation:hop .55s ease-out 2}
 .pet.hmm svg{animation:hmm .9s ease-in-out}
+/* Elevens djur vid frågan, i bilder och i Formjakten */
+.instr .hpet{margin-left:auto;flex:none;width:50px}
+.pet svg{width:100%;height:auto;display:block;transform-origin:50% 90%}
+.pov{position:absolute;pointer-events:none}
+.hunt,.pen{position:relative;max-width:360px;margin:4px auto 0}
+.hunt svg,.pen svg{width:100%;height:auto;display:block}
+.hs{cursor:pointer}
+.hs.sel{stroke:#3D5AFE;stroke-width:5px;filter:drop-shadow(0 0 3px #3D5AFE)}
+.hl{stroke:#1E9E5E;stroke-width:4.5px}
+.dim{opacity:.35}
+.necksvg{width:100%;max-width:380px;height:auto}
+.bigpet{width:120px;margin:2px auto 0}
+.mgrid.fj{margin-top:26px}
+.mgrid.fj i.f,.mgrid.fj i.tap.f{background:var(--wing)}
+.mgrid .fbody{position:absolute;left:calc(50% - 7px);top:-14px;bottom:-10px;width:14px;border-radius:7px;background:#4A3428}
+.mgrid .fbody::before,.mgrid .fbody::after{content:"";position:absolute;top:-16px;width:3px;height:19px;background:#4A3428;border-radius:2px;transform-origin:50% 100%}
+.mgrid .fbody::before{left:2px;transform:rotate(-28deg)}
+.mgrid .fbody::after{right:2px;transform:rotate(28deg)}
 @media (prefers-reduced-motion:reduce){.pet svg{animation:none !important}}
 </style>
 </head>
@@ -121,7 +139,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
   <div class="progress"><i id="prog"></i></div>
   <div class="task" id="task">
-    <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
+    <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></div>
     <div class="content" id="content"></div>
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
@@ -180,16 +198,41 @@ const PROPS={cirkel:"En cirkel är helt rund. Den har inga hörn och inga raka s
   kvadrat:"En kvadrat har 4 lika långa sidor och 4 räta hörn.",rektangel:"En rektangel har 4 sidor och 4 räta hörn. Två sidor är längre än de andra två."};
 const SING={cirkel:"cirkel",triangel:"triangel",kvadrat:"kvadrat",rektangel:"rektangel"},PLUR={cirkel:"cirklar",triangel:"trianglar",kvadrat:"kvadrater",rektangel:"rektanglar"};
 function randShape(kind){return svg(shape2D(kind,pickOne(COLS),{s:.75+Math.random()*.25,rot:kind==="kvadrat"||kind==="rektangel"?pickOne([0,0,15,-20]):0,tri:randTri(),ratio:1.6+Math.random()*.8}));}
+/* Formjakt: ett hus byggt av former. Varje form i bilden går att trycka på. */
+const GROUND=`<path d="M0 118 Q43 112 86 118 T172 118 V130 H0Z" fill="#8FD07E"/>`;
+function houseScene(){
+  const S=[],st=c=>`fill="${c}" stroke="#1D2B53" stroke-width="2.5" stroke-linejoin="round"`,add=(k,el,cx,cy)=>S.push({k,el,cx,cy});
+  const sq=Math.random()<.5,bx=12,bw=sq?60:86,bh=sq?60:48,by=118-bh,ax=bx+bw/2,ay=by-34;
+  add(sq?"kvadrat":"rektangel",`<rect {A} x="${bx}" y="${by}" width="${bw}" height="${bh}" ${st(pickOne(["#FFD3C9","#FFE58A","#BFE3FF","#CDEFD6"]))}/>`,bx+bw-12,by+12);
+  add("triangel",`<polygon {A} points="${bx-7},${by} ${bx+bw+7},${by} ${ax},${ay}" ${st(pickOne(["#E5484D","#7B61FF","#3D8BFD"]))}/>`,ax,by-12);
+  const dx=sq?ax-8:bx+10;
+  add("rektangel",`<rect {A} x="${dx}" y="88" width="16" height="30" ${st("#B07A45")}/>`,dx+8,103);
+  const win=(x,y)=>Math.random()<.5?add("kvadrat",`<rect {A} x="${x}" y="${y}" width="18" height="18" ${st("#E6F4FF")}/>`,x+9,y+9)
+    :add("cirkel",`<circle {A} cx="${x+9}" cy="${y+9}" r="9.5" ${st("#E6F4FF")}/>`,x+9,y+9);
+  if(sq)win(ax-9,by+6);else{win(bx+38,by+10);if(Math.random()<.6)win(bx+62,by+10);}
+  if(Math.random()<.4){const top=ay-20;add("",`<line x1="${ax}" y1="${ay}" x2="${ax}" y2="${top}" stroke="#1D2B53" stroke-width="2"/>`);
+    add("triangel",`<polygon {A} points="${ax},${top} ${ax+17},${top+6} ${ax},${top+12}" ${st("#FF5FA2")}/>`,ax+6,top+6);}
+  if(Math.random()<.8)add("cirkel",`<circle {A} cx="148" cy="22" r="13" ${st("#FFC93C")}/>`,148,22);
+  const t=Math.random();
+  if(t<.45){add("rektangel",`<rect {A} x="145" y="90" width="10" height="28" ${st("#8B5A2B")}/>`,150,104);add("cirkel",`<circle {A} cx="150" cy="73" r="18" ${st("#2BB673")}/>`,150,73);}
+  else if(t<.85){add("rektangel",`<rect {A} x="145" y="102" width="10" height="16" ${st("#8B5A2B")}/>`,150,110);add("triangel",`<polygon {A} points="129,104 171,104 150,56" ${st("#1E9E5E")}/>`,150,88);}
+  S.petX=sq?84:100;S.petW=sq?36:28;return S;
+}
+function huntHTML(S,mode,k){
+  let h=`<svg viewBox="0 0 172 130" aria-hidden="true">${GROUND}`;
+  S.forEach((s,i)=>{h+=s.el.replace("{A}",mode==="play"?(s.k?`class="hs" data-i="${i}"`:""):(s.k===k?'class="hl"':'class="dim"'));});
+  if(mode==="help")S.filter(s=>s.k===k).forEach((s,n)=>{h+=`<circle cx="${s.cx}" cy="${s.cy}" r="6.5" fill="#FFC93C" stroke="#1D2B53" stroke-width="1.2"/><text x="${s.cx}" y="${s.cy+3.3}" text-anchor="middle" font-size="9" font-weight="800" fill="#1D2B53">${n+1}</text>`;});
+  return`<div class="hunt">${h}</svg><div class="pet pov" style="left:${S.petX/1.72}%;width:${S.petW/1.72}%;bottom:${10/1.3}%">${owlSVG(pet)}</div></div>`;
+}
 function genFormer(){
-  if(Math.random()<.5){
+  if(Math.random()<.4){
     const k=pickOne(SHAPES2),vis=randShape(k);
     return{kind:"opts",instr:"Vad heter formen?",speak:"Vad heter formen?",html:vis,options:shuffle(SHAPES2.map(cap)),answer:cap(k),
       help:()=>({vis,tip:PROPS[k]})};
   }
-  const k=pickOne(SHAPES2),nT=rnd(2,4),items=shuffle([...Array(nT).fill(k),...Array(8-nT).fill(0).map(()=>pickOne(SHAPES2.filter(x=>x!==k)))]);
-  const pics=items.map(randShape);
-  return{kind:"tap",instr:`Tryck på alla ${PLUR[k]}.`,speak:`Tryck på alla ${PLUR[k]}. Tryck sedan på Klar.`,items:pics,correct:items.map((x,i)=>x===k?i:-1).filter(i=>i>=0),
-    help:()=>({vis:`<div class="tapgrid">${pics.map((p,i)=>`<div class="tapit${items[i]===k?" right":""}">${p}</div>`).join("")}</div>`,tip:PROPS[k]})};
+  const S=houseScene(),k=pickOne(SHAPES2.filter(x=>S.some(s=>s.k===x))),correct=S.map((s,i)=>s.k===k?i:-1).filter(i=>i>=0),n=correct.length;
+  return{kind:"hunt",instr:`Tryck på alla ${PLUR[k]} i bilden.`,speak:`Tryck på alla ${PLUR[k]} i bilden. Tryck sedan på Klar.`,html:huntHTML(S,"play",k),correct,
+    help:()=>({vis:huntHTML(S,"help",k),tip:`${PROPS[k]} I bilden finns ${n} ${n===1?SING[k]:PLUR[k]}, de gula prickarna.`})};
 }
 
 /* ---------- Kroppar (3D) ---------- */
@@ -206,14 +249,22 @@ const SOLIDS=["kub","rätblock","klot","cylinder","kon","pyramid"];
 const SPROPS={kub:"En kub ser ut som en tärning. Alla sidor är lika stora kvadrater.",rätblock:"Ett rätblock ser ut som en låda eller ett mjölkpaket. Sidorna är rektanglar.",
   klot:"Ett klot är runt åt alla håll, som en boll.",cylinder:"En cylinder ser ut som en burk. Den har två runda ytor, en upptill och en nertill.",
   kon:"En kon ser ut som en glasstrut. Den har en rund botten och en spets.",pyramid:"En pyramid har en botten och trekantiga sidor som möts i en spets."};
-const THINGS=[["🎲","kub"],["⚽","klot"],["🥫","cylinder"],["🍦","kon"],["📦","rätblock"],["🏀","klot"],["🕯️","cylinder"]];
+const THINGS=[["🎲","kub"],["🧊","kub"],["⚽","klot"],["🏀","klot"],["🥫","cylinder"],["🕯️","cylinder"],["🧻","cylinder"],["🥁","cylinder"],["🎂","cylinder"],
+  ["🍦","kon"],["📦","rätblock"],["🧱","rätblock"]];
+const ART={kub:"en kub",klot:"ett klot",cylinder:"en cylinder",kon:"en kon",rätblock:"ett rätblock"};
+const thingVis=(e,k,col)=>`<div style="display:flex;justify-content:center;align-items:center;gap:10px"><span style="font-size:4rem">${e}</span><span style="font-size:2rem">=</span>${solid(k,col).replace("<svg",'<svg style="width:110px"')}</div>`;
 function genKroppar(){
-  const col=pickOne(COLS);
-  if(Math.random()<.65){const k=pickOne(SOLIDS),o=shuffle([k,...shuffle(SOLIDS.filter(x=>x!==k)).slice(0,3)]).map(cap),vis=solid(k,col);
+  const col=pickOne(COLS),r=Math.random();
+  if(r<.3){const k=pickOne(SOLIDS),o=shuffle([k,...shuffle(SOLIDS.filter(x=>x!==k)).slice(0,3)]).map(cap),vis=solid(k,col);
     return{kind:"opts",instr:"Vad heter kroppen?",speak:"Vad heter kroppen?",html:vis,options:o,answer:cap(k),help:()=>({vis,tip:SPROPS[k]})};}
-  const [e,k]=pickOne(THINGS),o=shuffle([k,...shuffle(SOLIDS.filter(x=>x!==k)).slice(0,3)]);
-  return{kind:"opts",instr:"Vilken kropp liknar saken?",speak:"Vilken kropp liknar saken?",html:`<div style="font-size:5rem;line-height:1.1">${e}</div>`,
-    options:o.map(cap),answer:cap(k),help:()=>({vis:`<div style="display:flex;justify-content:center;align-items:center;gap:10px"><span style="font-size:4rem">${e}</span><span style="font-size:2rem">=</span>${solid(k,col).replace("<svg",'<svg style="width:110px"')}</div>`,tip:SPROPS[k]})};
+  if(r<.65){const [e,k]=pickOne(THINGS),o=shuffle([k,...shuffle(SOLIDS.filter(x=>x!==k)).slice(0,3)]);
+    return{kind:"opts",instr:"Vilken kropp liknar saken?",speak:"Vilken kropp liknar saken?",html:`<div style="font-size:5rem;line-height:1.1">${e}</div>`,
+      options:o.map(cap),answer:cap(k),help:()=>({vis:thingVis(e,k,col),tip:SPROPS[k]})};}
+  /* Tvärtom: visa kroppen och låt eleven hitta saken */
+  const kinds=[...new Set(THINGS.map(t=>t[1]))],k=pickOne(kinds),right=pickOne(THINGS.filter(t=>t[1]===k));
+  const opts=shuffle([right,...shuffle(kinds.filter(x=>x!==k)).slice(0,3).map(x=>pickOne(THINGS.filter(t=>t[1]===x)))]);
+  return{kind:"opts",emo:true,instr:`Vilken sak har formen av ${ART[k]}?`,speak:`Titta på kroppen. Den heter ${k}. Vilken sak har formen av ${ART[k]}?`,html:solid(k,col),
+    options:opts.map(t=>t[0]),answer:right[0],help:()=>({vis:thingVis(right[0],k,col),tip:SPROPS[k]})};
 }
 
 /* ---------- Elevens eget djur från garderoben (samma mall som på startsidan) ---------- */
@@ -375,18 +426,46 @@ function genHorn(){
       tip:`Räkna hörnen ett i taget, de gula prickarna. Skylten har ${n} hörn och lika många sidor, ${n}. Den kallas en ${NAMES[n]}.`})};
 }
 
-/* ---------- Mönster ---------- */
-const ITEMS=[["cirkel","#FF6B6B"],["triangel","#3D8BFD"],["kvadrat","#F7C531"],["stjärna","#2BB673"]];
-const itemSVG=i=>svg(shape2D(ITEMS[i][0],ITEMS[i][1],{s:.9}));
+/* ---------- Mönster: pärlhalsband till djurets kalas ---------- */
+const BEADS=[["#FF6B6B","rund"],["#3D8BFD","fyrkant"],["#FF5FA2","hjärta"],["#F7C531","romb"]];
+function beadEl(i,x,y,r){
+  x=+x;y=+y;
+  const [c,k]=BEADS[i],st=`fill="${c}" stroke="#1D2B53" stroke-width="${(r/6).toFixed(2)}" stroke-linejoin="round"`;let e;
+  if(k==="rund")e=`<circle cx="${x}" cy="${y}" r="${r}" ${st}/>`;
+  else if(k==="fyrkant")e=`<rect x="${x-r*.9}" y="${y-r*.9}" width="${r*1.8}" height="${r*1.8}" rx="${r*.3}" ${st}/>`;
+  else if(k==="hjärta")e=`<path d="M${x} ${y+r} C${x-r*1.6} ${y-r*.1} ${x-r*.8} ${y-r*1.5} ${x} ${y-r*.5} C${x+r*.8} ${y-r*1.5} ${x+r*1.6} ${y-r*.1} ${x} ${y+r}Z" ${st}/>`;
+  else e=`<polygon points="${x},${y-r*1.15} ${x+r},${y} ${x},${y+r*1.15} ${x-r},${y}" ${st}/>`;
+  return e+`<circle cx="${x-r*.35}" cy="${y-r*.4}" r="${r*.2}" fill="#fff" opacity=".7"/>`;
+}
+const beadSVG=i=>`<svg viewBox="-14 -14 28 28" aria-hidden="true">${beadEl(i,0,0,11)}</svg>`;
+/* Pärlorna hänger på ett snöre som svänger lite nedåt. unit/len: ramar runt varje del av mönstret i hjälpen. */
+function necklaceSVG(seq,q,unit,len){
+  const N=seq.length+(q?1:0),gap=31,W=N*gap+14,pos=i=>{const t=N>1?i/(N-1):.5;return[7+gap/2+i*gap,22+16*4*t*(1-t)];};
+  let h=`<svg viewBox="0 0 ${W} 62" class="necksvg" aria-hidden="true">`;
+  if(unit)for(let g=0;g*unit<N;g++){const a=g*unit,b=Math.min(N,a+unit)-1,ys=[];for(let i=a;i<=b;i++)ys.push(pos(i)[1]);
+    h+=`<rect x="${pos(a)[0]-15}" y="${Math.min(...ys)-17}" width="${(b-a)*gap+30}" height="${Math.max(...ys)-Math.min(...ys)+34}" rx="8" fill="none" stroke="${len>=a&&len<=b?"#1E9E5E":"#FFC93C"}" stroke-width="3"/>`;}
+  h+=`<polyline points="2,10 ${Array.from({length:N},(_,i)=>pos(i).join(",")).join(" ")} ${W-2},10" fill="none" stroke="#56668F" stroke-width="1.6" stroke-linejoin="round"/>`;
+  seq.forEach((b,i)=>{const[x,y]=pos(i);h+=beadEl(b,x,y,12.5);});
+  if(q){const[x,y]=pos(N-1);h+=`<circle cx="${x}" cy="${y}" r="13.5" fill="#EEF1FF" stroke="#3D5AFE" stroke-width="2.2" stroke-dasharray="4 3"/><text x="${x}" y="${y+5.5}" text-anchor="middle" font-size="16" font-weight="800" fill="#3D5AFE">?</text>`;}
+  return h+"</svg>";
+}
+/* Halsbandet ritas på elevens djur när mönstret är klart */
+function petBeads(arr){
+  const a=arr.slice(-9),n=a.length,pt=t=>[(1-t)**2*34+2*(1-t)*t*60+t*t*86,(1-t)**2*74+2*(1-t)*t*100+t*t*74];
+  return`<path d="M34 74 Q60 100 86 74" fill="none" stroke="#56668F" stroke-width="1.2"/>`+a.map((b,i)=>{const[x,y]=pt(n>1?i/(n-1):.5);return beadEl(b,x.toFixed(1),y.toFixed(1),4.4);}).join("");
+}
 const UNITS=[[0,1],[0,1,2],[0,0,1],[0,1,1],[0,0,1,1],[0,1,2,3]];
 function genMonster(){
   const u=pickOne(UNITS),map=shuffle([0,1,2,3]),unit=u.map(x=>map[x]),len=unit.length*2+rnd(0,unit.length-1);
   const seq=Array.from({length:len},(_,i)=>unit[i%unit.length]),ans=unit[len%unit.length];
   const opts=shuffle([...new Set([ans,...shuffle([0,1,2,3].filter(x=>x!==ans)).slice(0,2)])]);
-  return{kind:"opts",pics:true,instr:"Vad kommer sedan i mönstret?",speak:"Titta på mönstret. Vad kommer sedan?",
-    html:`<div class="row">${seq.map(itemSVG).join("")}<span class="qm">?</span></div>`,options:opts.map(String),labels:opts.map(itemSVG),answer:String(ans),
-    help:()=>{let h='<div class="row">';seq.concat([ans]).forEach((x,i)=>{if(i%unit.length===0)h+=`<span style="display:inline-flex;gap:2px;padding:3px;border:3px solid ${i<len?"#FFC93C":"#1E9E5E"};border-radius:10px">`;h+=itemSVG(x);if(i%unit.length===unit.length-1||i===len)h+="</span>";});
-      return{vis:h+"</div>",tip:`Mönstret upprepar sig. En del av mönstret är ${unit.length} saker lång, se de gula ramarna. Efter sista delen börjar mönstret om.`}}};
+  return{kind:"opts",pics:true,instr:"Vilken pärla kommer sedan?",speak:`${petName} gör ett pärlhalsband till sitt kalas. Titta på mönstret. Vilken pärla kommer sedan?`,
+    html:necklaceSVG(seq,true)+`<div class="cap">${petName}s pärlhalsband</div>`,options:opts.map(String),labels:opts.map(beadSVG),answer:String(ans),
+    doneDelay:1800,
+    onDone:()=>{const c=$("content"),all=seq.concat([ans]);c.querySelector(".necksvg").outerHTML=necklaceSVG(all,false);
+      c.querySelector(".cap").outerHTML=`<div class="pet bigpet">${owlSVG(pet).replace(/<\/svg>$/,petBeads(all)+"</svg>")}</div><div class="cap">Nu har ${petName.toLowerCase()} ett nytt halsband!</div>`;
+      c.querySelector(".opts").hidden=true;$("hpet").hidden=true;},
+    help:()=>({vis:necklaceSVG(seq.concat([ans]),false,unit.length,len),tip:`Mönstret upprepar sig. En del av mönstret är ${unit.length} pärlor lång, se de gula ramarna. Efter sista delen börjar mönstret om, den gröna ramen.`})};
 }
 
 /* ---------- Punkt, linje, sträcka, stråle ---------- */
@@ -439,18 +518,43 @@ function genRita(){
 }
 const genStracka=()=>Math.random()<.55?genPunkt():genRita();
 
-/* ---------- Symmetri ---------- */
+/* ---------- Symmetri: fjärilar och nyckelpigor ---------- */
+/* Fjärilssiluett: "Butterfly Pinhead icon", CC0, Wikimedia Commons. Symmetriaxeln ligger vid x = 7,465. */
+const BFLY="M5.61 0.52C5.52 0.55 5.45 0.63 5.44 0.72C5.42 0.81 5.46 0.9 5.54 0.95C6.19 1.41 6.63 2.3 6.88 3.09C6.98 3.4 7.04 3.67 7.09 3.9C6.79 4.09 6.5 4.41 6.5 4.55L6.54 5.66C6.49 5.48 6.43 5.3 6.36 5.12C5.6 3.14 4.07 2.13 2.78 2.01C2.59 1.99 2.41 1.99 2.24 2.01C-1.41 2.41 0.19 5.79 1.21 7.02L1.26 7.08C1.82 7.73 2.6 8.77 3.41 9.49C3.26 9.58 3.1 9.68 2.96 9.81C1.8 10.78 1.49 12.31 2.26 13.23C3.03 14.14 4.59 14.1 5.75 13.13C6.25 12.7 6.58 12.17 6.75 11.63L6.78 12.64C6.77 13.53 8.07 13.56 8.15 12.73L8.19 11.63C8.35 12.17 8.68 12.7 9.19 13.13C10.34 14.1 11.9 14.14 12.67 13.23C13.44 12.31 13.13 10.78 11.97 9.81C11.83 9.69 11.67 9.58 11.52 9.49C12.25 8.84 12.95 7.94 13.5 7.29L13.67 7.08C14.69 5.9 16.4 2.42 12.69 2.01C12.52 1.99 12.34 1.99 12.16 2.01C10.86 2.13 9.33 3.14 8.57 5.12C8.5 5.3 8.44 5.49 8.39 5.67L8.43 4.51C8.43 4.39 8.19 4.13 7.91 3.95C8.03 3.67 8.17 3.35 8.36 2.99C8.81 2.13 9.48 1.18 10.29 0.76C10.41 0.69 10.46 0.55 10.39 0.43C10.33 0.32 10.19 0.27 10.07 0.33C9.1 0.84 8.41 1.87 7.93 2.76C7.66 3.29 7.63 3.43 7.52 3.74L7.45 3.36C7.43 3.26 7.4 3.14 7.34 2.94C7.07 2.11 6.62 1.12 5.81 0.56C5.77 0.53 5.71 0.51 5.66 0.52L5.61 0.52Z";
+const WINGC=["#FF9F43","#FF5FA2","#7B61FF","#17AFC4","#2BB673"];
 function mirrorTask(){
-  const R=6,C=8,half=4,left=new Set();let r=rnd(1,4),c=rnd(1,3);left.add(r+","+c);
+  const R=6,C=8,half=4,left=new Set(),col=pickOne(WINGC);let r=rnd(1,4),c=rnd(1,3);left.add(r+","+c);
   const N=rnd(5,8);let g=0;while(left.size<N&&g++<200){const[rr,cc]=pickOne([...left]).split(",").map(Number),[dr,dc]=pickOne([[1,0],[-1,0],[0,1],[0,-1]]),nr=rr+dr,nc=cc+dc;if(nr>=0&&nr<R&&nc>=0&&nc<half)left.add(nr+","+nc);}
   const want=new Set([...left].map(k=>{const[a,b]=k.split(",").map(Number);return a+","+(C-1-b);}));
-  const grid=(state,mark)=>{let h=`<div class="mgrid" style="grid-template-columns:repeat(${C},auto)">`;
+  const grid=(state,mark)=>{let h=`<div class="mgrid fj" style="grid-template-columns:repeat(${C},auto);--wing:${col}">`;
     for(let a=0;a<R;a++)for(let b=0;b<C;b++){const k=a+","+b;let cls="";
       if(b<half)cls=left.has(k)?"f":"";else{cls="tap";if(mark){if(want.has(k)&&state.has(k))cls="okc";else if(want.has(k))cls="miss";else if(state.has(k))cls="extra";}else if(state.has(k))cls+=" f";}
       h+=`<i class="${cls}" data-k="${k}"></i>`;}
-    return h+`<span class="ml" style="left:calc(50% - 2px)"></span></div>`;};
-  return{kind:"grid",instr:"Spegla figuren. Tryck på rutorna på andra sidan linjen.",speak:"Spegla figuren i den röda linjen. Tryck på rutorna på andra sidan linjen. Tryck sedan på Klar.",
-    grid,want,help:(st)=>({vis:grid(st,true),tip:"En spegelbild är lika långt från linjen på andra sidan. En ruta som ligger precis intill linjen hamnar också precis intill linjen. Gröna rutor är rätt, rödmarkerade saknades och röda var fel."})};
+    return h+`<span class="fbody"></span></div>`;};
+  return{kind:"grid",instr:"Måla fjärilens andra vinge.",speak:"Fjärilen har bara fått färg på ena vingen. Tryck på rutorna på andra sidan kroppen, så att vingarna blir spegelbilder. Tryck sedan på Klar.",
+    grid,want,help:(st)=>({vis:grid(st,true),tip:"Vingarna ska vara spegelbilder. En ruta som ligger precis intill kroppen hamnar också precis intill kroppen på andra sidan. Gröna rutor är rätt, rödmarkerade saknades och röda var fel."})};
+}
+/* Är fjärilen eller nyckelpigan symmetrisk? Ibland saknas, flyttas eller byter en prick färg på ena sidan. */
+function creatureTask(){
+  const lady=Math.random()<.45,yes=Math.random()<.5,mx=lady?100:14.93,r=lady?6.5:.8;
+  const L=lady?[[34,44],[29,63],[38,80],[23,51]]:[[3.2,4.3],[4.9,5.9],[2.4,6.4],[4.0,11.6],[5.3,12.4]];
+  const used=shuffle(L.map((_,i)=>i)),nl=rnd(2,3),left=used.slice(0,nl).map(i=>L[i]),spare=used.slice(nl).map(i=>L[i]);
+  const dc=lady?"#1D2B53":pickOne(["#FFFFFF","#FFE58A"]),wing=pickOne(WINGC);
+  const dots=[...left.map(([x,y])=>({x,y,c:dc})),...left.map(([x,y])=>({x:mx-x,y,c:dc}))];let odd=null;
+  if(!yes){const j=nl+rnd(0,nl-1),v=rnd(0,lady?1:2);odd={x:dots[j].x,y:dots[j].y};
+    if(v===1&&spare.length){const[sx,sy]=pickOne(spare);dots[j].x=mx-sx;dots[j].y=sy;odd={x:dots[j].x,y:dots[j].y};}
+    else if(v===2)dots[j].c=dc==="#FFFFFF"?"#1D2B53":"#FFFFFF";
+    else dots[j].gone=true;}
+  const draw=mark=>{let h;
+    if(lady)h=`<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M44 12 Q38 2 30 4 M56 12 Q62 2 70 4" stroke="#1D2B53" stroke-width="2.5" fill="none" stroke-linecap="round"/><circle cx="50" cy="24" r="15" fill="#1D2B53"/><circle cx="44" cy="20" r="3" fill="#fff"/><circle cx="56" cy="20" r="3" fill="#fff"/><circle cx="50" cy="60" r="36" fill="#E5484D" stroke="#1D2B53" stroke-width="3"/><line x1="50" y1="25" x2="50" y2="96" stroke="#1D2B53" stroke-width="3"/>`;
+    else h=`<svg viewBox="-.5 -.5 16 16" aria-hidden="true"><path d="${BFLY}" fill="${wing}" stroke="#1D2B53" stroke-width=".3" stroke-linejoin="round"/><ellipse cx="7.465" cy="7.8" rx=".6" ry="4.6" fill="#1D2B53"/>`;
+    dots.forEach(d=>{if(!d.gone)h+=`<circle cx="${d.x}" cy="${d.y}" r="${r}" fill="${d.c}" stroke="#1D2B53" stroke-width="${lady?0:.15}"/>`;});
+    if(mark){h+=`<line x1="${mx/2}" y1="${lady?0:-.5}" x2="${mx/2}" y2="${lady?100:15.5}" stroke="#3D5AFE" stroke-width="${lady?2.5:.25}" stroke-dasharray="${lady?"6 5":".8 .6"}"/>`;
+      if(odd)h+=`<circle cx="${odd.x}" cy="${odd.y}" r="${r*1.9}" fill="none" stroke="#FF9F43" stroke-width="${lady?3.5:.4}"/>`;}
+    return h+"</svg>";};
+  const vem=lady?"nyckelpigan":"fjärilen";
+  return{kind:"opts",instr:`Är ${vem} symmetrisk?`,speak:`Är ${vem} symmetrisk? Blir båda sidorna likadana om man viker längs mitten?`,html:draw(false),options:["Ja","Nej"],answer:yes?"Ja":"Nej",
+    help:()=>({vis:draw(true),tip:yes?`Ja! Om du viker ${vem} längs den blå linjen hamnar prickarna exakt på varandra.`:"Nej. Titta på den orange ringen. Där är det inte likadant på båda sidorna."})};
 }
 function symYesNo(){
   const R=5,C=6,left=new Set();let g=0;while(left.size<6&&g++<200)left.add(rnd(0,R-1)+","+rnd(0,2));
@@ -461,52 +565,67 @@ function symYesNo(){
   return{kind:"opts",instr:"Är den röda linjen en symmetrilinje?",speak:"Är den röda linjen en symmetrilinje? Blir båda sidorna likadana om man viker längs linjen?",html:grid(),options:["Ja","Nej"],answer:isSym?"Ja":"Nej",
     help:()=>({vis:grid(),tip:isSym?"Ja! Om du viker längs linjen hamnar alla blå rutor exakt på varandra. Båda sidorna är spegelbilder.":"Nej. Om du viker längs linjen hamnar inte alla blå rutor på varandra. Jämför rad för rad, så hittar du skillnaden."})};
 }
-const genSym=()=>Math.random()<.6?mirrorTask():symYesNo();
+const genSym=()=>{const r=Math.random();return r<.5?mirrorTask():r<.85?creatureTask():symYesNo();};
 
-/* ---------- Omkrets och area ---------- */
-function gridFig(cells,C,R,o={}){
-  const s=30;let h=`<svg viewBox="-4 -4 ${C*s+8} ${R*s+8}" aria-hidden="true">`;
-  for(let a=0;a<=R;a++)h+=`<line x1="0" y1="${a*s}" x2="${C*s}" y2="${a*s}" stroke="#C6D6F2" stroke-width="1"/>`;
-  for(let b=0;b<=C;b++)h+=`<line x1="${b*s}" y1="0" x2="${b*s}" y2="${R*s}" stroke="#C6D6F2" stroke-width="1"/>`;
-  let n=0;cells.forEach(k=>{const[a,b]=k.split(",").map(Number);h+=`<rect x="${b*s}" y="${a*s}" width="${s}" height="${s}" fill="#9CC3FF"/>`;if(o.num)h+=`<text x="${b*s+s/2}" y="${a*s+s/2+5}" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">${++n}</text>`;});
-  cells.forEach(k=>{const[a,b]=k.split(",").map(Number),has=(x,y)=>cells.has(x+","+y);const col=o.edge?"#FF9F43":"#1D2B53",w=o.edge?5:3.5;
-    if(!has(a-1,b))h+=`<line x1="${b*s}" y1="${a*s}" x2="${b*s+s}" y2="${a*s}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
-    if(!has(a+1,b))h+=`<line x1="${b*s}" y1="${a*s+s}" x2="${b*s+s}" y2="${a*s+s}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
-    if(!has(a,b-1))h+=`<line x1="${b*s}" y1="${a*s}" x2="${b*s}" y2="${a*s+s}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;
-    if(!has(a,b+1))h+=`<line x1="${b*s+s}" y1="${a*s}" x2="${b*s+s}" y2="${a*s+s}" stroke="${col}" stroke-width="${w}" stroke-linecap="round"/>`;});
-  if(o.labels){const{x0,y0,w,hh}=o.labels;h+=`<text x="${(x0+w/2)*s}" y="${y0*s-6}" text-anchor="middle" font-size="15" font-weight="800" fill="#C96A0C">${w} cm</text><text x="${(x0+w)*s+6}" y="${(y0+hh/2)*s+5}" font-size="15" font-weight="800" fill="#C96A0C">${hh} cm</text>`;}
-  return h+"</svg>";
+/* ---------- Omkrets och area: djurhagen och odlingen ---------- */
+const VEG=[["🥕","morötter"],["🥬","sallad"],["🍓","jordgubbar"],["🌻","solrosor"]];
+const SQ=30;
+function gridLines(C,R){let h="";
+  for(let a=0;a<=R;a++)h+=`<line x1="0" y1="${a*SQ}" x2="${C*SQ}" y2="${a*SQ}" stroke="#C6D6F2" stroke-width="1"/>`;
+  for(let b=0;b<=C;b++)h+=`<line x1="${b*SQ}" y1="0" x2="${b*SQ}" y2="${R*SQ}" stroke="#C6D6F2" stroke-width="1"/>`;return h;}
+/* Hagen: gräs innanför, ett staket med en stolpe i varje rutas hörn. help = staketet orange och sidornas längd utskriven. */
+function penHTML(C,R,x0,y0,w,hh,help){
+  const W=C*SQ+16,H=R*SQ+16,X=x0*SQ,Y=y0*SQ,PW=w*SQ,PH=hh*SQ,col=help?"#FF9F43":"#8B5A2B";
+  let h=`<svg viewBox="-8 -8 ${W} ${H}" aria-hidden="true">${gridLines(C,R)}<rect x="${X}" y="${Y}" width="${PW}" height="${PH}" fill="#CDEFC0"/>`;
+  h+=`<rect x="${X}" y="${Y}" width="${PW}" height="${PH}" fill="none" stroke="${col}" stroke-width="${help?5:4}"/>`;
+  for(let a=0;a<=hh;a++)for(let b=0;b<=w;b++)if(a===0||b===0||a===hh||b===w)h+=`<rect x="${X+b*SQ-3.5}" y="${Y+a*SQ-3.5}" width="7" height="7" rx="1.5" fill="#6B4423"/>`;
+  if(help){const ty=y0>0?Y-9:Y+PH+20,right=x0+w<C;
+    h+=`<text x="${X+PW/2}" y="${ty}" text-anchor="middle" font-size="15" font-weight="800" fill="#C96A0C" paint-order="stroke" stroke="#fff" stroke-width="4">${w} m</text><text x="${right?X+PW+9:X-9}" y="${Y+PH/2+5}" text-anchor="${right?"start":"end"}" font-size="15" font-weight="800" fill="#C96A0C" paint-order="stroke" stroke="#fff" stroke-width="4">${hh} m</text>`;}
+  h+="</svg>";
+  /* djuret står i hagen om det får plats, annars visas det uppe vid frågan */
+  if(w>=2&&hh>=2){const pw=Math.min(w,2)*SQ*.8;h+=`<div class="pet pov" style="left:${(X+8+(PW-pw)/2)/W*100}%;width:${pw/W*100}%;bottom:${(H-(Y+8+PH-2))/H*100}%">${owlSVG(pet)}</div>`;}
+  return`<div class="pen">${h}</div>`;
+}
+function plotHTML(cells,C,R,veg,num){
+  let h=`<svg viewBox="-4 -4 ${C*SQ+8} ${R*SQ+8}" aria-hidden="true">${gridLines(C,R)}`;let n=0;
+  cells.forEach(k=>{const[a,b]=k.split(",").map(Number);h+=`<rect x="${b*SQ}" y="${a*SQ}" width="${SQ}" height="${SQ}" fill="#D9B48F" stroke="#B08560" stroke-width="1"/><text x="${b*SQ+SQ/2}" y="${a*SQ+SQ/2+7}" text-anchor="middle" font-size="19">${veg}</text>`;
+    if(num)h+=`<circle cx="${b*SQ+8}" cy="${a*SQ+8}" r="7" fill="#FFC93C" stroke="#1D2B53" stroke-width="1"/><text x="${b*SQ+8}" y="${a*SQ+11.5}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#1D2B53">${++n}</text>`;});
+  return`<div class="pen">${h}</svg></div>`;
 }
 function genMatt(){
   const C=7,R=5;
   if(Math.random()<.5){
     const cells=new Set();let a=rnd(1,3),b=rnd(1,5);cells.add(a+","+b);const N=rnd(4,11);let g=0;
     while(cells.size<N&&g++<300){const[x,y]=pickOne([...cells]).split(",").map(Number),[dx,dy]=pickOne([[1,0],[-1,0],[0,1],[0,-1]]);if(x+dx>=0&&x+dx<R&&y+dy>=0&&y+dy<C)cells.add((x+dx)+","+(y+dy));}
-    return{kind:"keys",instr:"Hur stor är arean? Hur många rutor täcker figuren?",speak:"Hur stor är arean? Räkna hur många rutor figuren täcker.",html:gridFig(cells,C,R),answer:cells.size,unit:"rutor",
-      help:()=>({vis:gridFig(cells,C,R,{num:true}),tip:`Arean är hur mycket yta figuren täcker. Räkna rutorna en i taget. Figuren täcker ${cells.size} rutor.`})};
+    const[veg,vn]=pickOne(VEG);
+    return{kind:"keys",instr:"Hur stor är odlingens area? Räkna rutorna.",speak:`${petName} har planterat ${vn}. Hur stor är arean? Räkna hur många rutor odlingen täcker.`,
+      html:plotHTML(cells,C,R,veg)+`<div class="cap">${petName}s odling</div>`,answer:cells.size,unit:"rutor",
+      help:()=>({vis:plotHTML(cells,C,R,veg,true),tip:`Arean är hur mycket yta odlingen täcker. Räkna rutorna en i taget. Odlingen täcker ${cells.size} rutor.`})};
   }
-  const w=rnd(1,5),hh=rnd(1,4),x0=rnd(0,C-w),y0=rnd(0,R-hh),cells=new Set();if(w===1&&hh===1)return genMatt();
-  for(let a=y0;a<y0+hh;a++)for(let b=x0;b<x0+w;b++)cells.add(a+","+b);
+  const w=rnd(1,5),hh=rnd(1,4),x0=rnd(0,C-w),y0=rnd(0,R-hh);if(w===1&&hh===1)return genMatt();
   const P=2*(w+hh);
-  return{kind:"keys",instr:"Hur lång är omkretsen? Varje ruta är 1 cm.",speak:"Hur lång är omkretsen, alltså sträckan runt hela figuren? Varje ruta är en centimeter.",html:gridFig(cells,C,R),answer:P,unit:"cm",
-    help:()=>({vis:gridFig(cells,C,R,{edge:true,labels:{x0,y0,w,hh}}),tip:`Omkretsen är sträckan runt hela figuren, det orange. Gå runt och lägg ihop alla sidor: ${w} + ${hh} + ${w} + ${hh} = ${P} cm.`})};
+  return{kind:"keys",instr:"Hur långt är staketet runt hagen? Varje ruta är 1 m.",speak:`${petName} ska få en hage. Hur långt är staketet runt hela hagen? Varje ruta är en meter.`,
+    html:penHTML(C,R,x0,y0,w,hh,false)+`<div class="cap">${petName}s hage</div>`,answer:P,unit:"m",
+    help:()=>({vis:penHTML(C,R,x0,y0,w,hh,true),tip:`Staketet går runt hela hagen. Det är omkretsen. Lägg ihop alla sidor: ${w} + ${hh} + ${w} + ${hh} = ${P} m.`})};
 }
 
 /* ---------- Områden ---------- */
 const ICON={
-  former:svg(shape2D("triangel","#FF6B6B",{s:.8})),kroppar:solid("kub","#3D8BFD"),horn:`<img src="bilder/Sweden_road_sign_B2.svg" alt="" style="width:100%;height:100%;object-fit:contain">`,
-  monster:svg(`<circle cx="18" cy="50" r="14" fill="#FF6B6B"/><rect x="38" y="36" width="26" height="26" fill="#F7C531"/><circle cx="84" cy="50" r="14" fill="#FF6B6B"/>`),
-  stracka:svg(`<line x1="18" y1="76" x2="82" y2="22" stroke="#1D2B53" stroke-width="4" stroke-linecap="round"/><circle cx="18" cy="76" r="6" fill="#1D2B53"/><circle cx="82" cy="22" r="6" fill="#1D2B53"/><text x="10" y="92" font-size="15" font-weight="800" fill="#1D2B53">A</text><text x="84" y="16" font-size="15" font-weight="800" fill="#1D2B53">B</text>`),symmetri:svg(`<path d="M50 20 C20 5 5 45 50 85 C95 45 80 5 50 20Z" fill="#FF5FA2" stroke="#1D2B53" stroke-width="3"/><line x1="50" y1="8" x2="50" y2="94" stroke="#E5484D" stroke-width="3" stroke-dasharray="6 5"/>`),
-  matt:svg(`<rect x="14" y="26" width="72" height="48" fill="#9CC3FF" stroke="#1D2B53" stroke-width="3"/><path d="M38 26V74M62 26V74M14 50H86" stroke="#1D2B53" stroke-width="1.5"/>`)
+  former:svg(`<rect x="22" y="50" width="56" height="40" fill="#FFE58A" stroke="#1D2B53" stroke-width="3"/><polygon points="14,50 86,50 50,16" fill="#FF6B6B" stroke="#1D2B53" stroke-width="3" stroke-linejoin="round"/><rect x="44" y="64" width="13" height="26" fill="#3D8BFD" stroke="#1D2B53" stroke-width="2.5"/><circle cx="84" cy="18" r="9" fill="#FFC93C" stroke="#1D2B53" stroke-width="2.5"/>`),
+  kroppar:solid("kub","#3D8BFD"),horn:`<img src="bilder/Sweden_road_sign_B2.svg" alt="" style="width:100%;height:100%;object-fit:contain">`,
+  monster:svg(`<path d="M2 22 Q50 92 98 22" stroke="#56668F" stroke-width="2.5" fill="none"/>${[0,1,2].map(i=>{const t=.2+i*.3,x=(1-t)**2*2+2*(1-t)*t*50+t*t*98,y=(1-t)**2*22+2*(1-t)*t*92+t*t*22;return beadEl([2,3,2][i],x.toFixed(1),y.toFixed(1),14);}).join("")}`),
+  stracka:svg(`<line x1="18" y1="76" x2="82" y2="22" stroke="#1D2B53" stroke-width="4" stroke-linecap="round"/><circle cx="18" cy="76" r="6" fill="#1D2B53"/><circle cx="82" cy="22" r="6" fill="#1D2B53"/><text x="10" y="92" font-size="15" font-weight="800" fill="#1D2B53">A</text><text x="84" y="16" font-size="15" font-weight="800" fill="#1D2B53">B</text>`),
+  symmetri:svg(`<g transform="translate(8 8) scale(5.6)"><path d="${BFLY}" fill="#FF5FA2" stroke="#1D2B53" stroke-width=".4" stroke-linejoin="round"/></g><line x1="49.8" y1="2" x2="49.8" y2="98" stroke="#3D5AFE" stroke-width="3" stroke-dasharray="6 5"/>`),
+  matt:svg(`<rect x="8" y="44" width="84" height="7" fill="#B07A45"/><rect x="8" y="66" width="84" height="7" fill="#B07A45"/>${[12,34,56,78].map(x=>`<path d="M${x} 90 V34 L${x+5} 26 L${x+10} 34 V90Z" fill="#D9A066" stroke="#7A4F26" stroke-width="2.5" stroke-linejoin="round"/>`).join("")}`)
 };
 const AREAS=[
-  {id:"former",name:"Former",desc:"Cirkel, triangel, kvadrat och rektangel.",ak:"Åk 1",c:"#FF6B6B",gen:genFormer},
+  {id:"former",name:"Former",desc:"Hitta formerna i bilden.",ak:"Åk 1",c:"#FF6B6B",gen:genFormer},
   {id:"kroppar",name:"Kroppar",desc:"Kub, klot, cylinder, kon …",ak:"Åk 1–2",c:"#3D8BFD",gen:genKroppar},
   {id:"horn",name:"Hörn och sidor",desc:"Räkna hörn och sidor på skyltar.",ak:"Åk 1–2",c:"#2BB673",gen:genHorn},
   {id:"stracka",name:"Punkt, linje och sträcka",desc:"Namnge figurerna och rita sträckor.",ak:"Åk 3",c:"#7B61FF",gen:genStracka},
-  {id:"monster",name:"Mönster",desc:"Vad kommer sedan?",ak:"Åk 1",c:"#FF9F43",gen:genMonster},
-  {id:"symmetri",name:"Symmetri",desc:"Spegla och hitta symmetrilinjer.",ak:"Åk 2–3",c:"#FF5FA2",gen:genSym},
-  {id:"matt",name:"Omkrets och area",desc:"Räkna rutor och sträckan runt om.",ak:"Åk 3",c:"#17AFC4",gen:genMatt}
+  {id:"monster",name:"Mönster",desc:"Pärlhalsband: vad kommer sedan?",ak:"Åk 1",c:"#FF9F43",gen:genMonster},
+  {id:"symmetri",name:"Symmetri",desc:"Fjärilar och nyckelpigor.",ak:"Åk 2–3",c:"#FF5FA2",gen:genSym},
+  {id:"matt",name:"Omkrets och area",desc:"Staket runt hagen och odlingens area.",ak:"Åk 3",c:"#17AFC4",gen:genMatt}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
@@ -531,7 +650,7 @@ function next(){
   G.i++;if(G.i>=G.n)return finish();
   let t=null;if(G.pending.length&&G.pending[0].at<=G.i)t=G.pending.shift().t;
   if(!t){for(let k=0;k<6;k++){t=G.area.gen();if(t.instr+t.answer!==G.lastKey)break;}}
-  G.lastKey=t.instr+t.answer;G.t=t;G.first=true;G.input="";G.busy=false;
+  G.lastKey=t.instr+t.answer;G.t=t;$("hpet").innerHTML=owlSVG(pet);G.first=true;G.input="";G.busy=false;
   if("speechSynthesis" in window)speechSynthesis.cancel();
   $("info").textContent=`${G.i+1} av ${G.n}`;$("prog").style.width=(G.i/G.n*100)+"%";
   $("instr").textContent=t.instr;$("feedback").textContent="";$("task").className="task";$("help").hidden=true;$("task").hidden=false;
@@ -549,6 +668,11 @@ function render(){
     c.querySelectorAll(".tapit").forEach(b=>b.onclick=()=>{if(!G.busy)b.classList.toggle("sel");});
     $("done").onclick=()=>{if(G.busy)return;const sel=[...c.querySelectorAll(".tapit.sel")].map(b=>+b.dataset.i);
       const ok=sel.length===t.correct.length&&t.correct.every(i=>sel.includes(i));ok?done():wrong(sel.length?`${sel.length} former`:"ingen form");};
+  }else if(t.kind==="hunt"){
+    c.innerHTML=t.html+`<button class="go" id="done">Klar</button>`;
+    c.querySelectorAll(".hs").forEach(el=>el.addEventListener("click",()=>{if(!G.busy)el.classList.toggle("sel");}));
+    $("done").onclick=()=>{if(G.busy)return;const sel=[...c.querySelectorAll(".hs.sel")].map(e=>+e.dataset.i);
+      const ok=sel.length===t.correct.length&&t.correct.every(i=>sel.includes(i));ok?done():wrong(sel.length?`${sel.length} ${sel.length===1?"form":"former"}`:"ingen form");};
   }else if(t.kind==="draw"){
     G.sel=[];const draw=()=>{c.innerHTML=t.fig(G.sel)+`<button class="go" id="done">Klar</button>`;
       c.querySelectorAll(".ptw").forEach(el=>el.onclick=()=>{if(G.busy)return;const l=el.dataset.l,i=G.sel.indexOf(l);
@@ -562,14 +686,15 @@ function render(){
       $("done").onclick=()=>{if(G.busy)return;const ok=G.state.size===t.want.size&&[...t.want].every(k=>G.state.has(k));ok?done():wrong("din spegling");};};
     draw();
   }
+  $("hpet").hidden=!!c.querySelector(".pet");
 }
 function press(k){if(!G||G.busy||G.t.kind!=="keys")return;if(k==="del")G.input=G.input.slice(0,-1);else if(k==="ok"){if(G.input!==""){+G.input===G.t.answer?done():wrong(G.input);}return;}else if(G.input.length<3)G.input+=k;$("box").textContent=G.input||"?";}
 document.querySelectorAll("#pad button").forEach(b=>b.onclick=()=>press(b.dataset.k));
 document.addEventListener("keydown",e=>{if($("game").hidden||!G)return;if(!$("help").hidden){if(e.key==="Enter"){e.preventDefault();$("helpGo").click();}return;}
   if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==="Backspace"){e.preventDefault();press("del");}else if(e.key==="Enter"){e.preventDefault();press("ok");}});
 const PRAISE=["Rätt!","Snyggt!","Bra!","Toppen!","Klockrent!"];
-const petFx=c=>{const p=$("content").querySelector(".pet");if(p){p.classList.remove("hop","hmm");void p.offsetWidth;p.classList.add(c);}};
-function done(){G.busy=true;window.Ljud&&Ljud.ok();petFx("hop");$("task").className="task ok";$("feedback").textContent=G.first?pickOne(PRAISE):"Nu blev det rätt!";setTimeout(next,900);}
+const petFx=c=>{const p=$("content").querySelector(".pet")||$("hpet");if(p){p.classList.remove("hop","hmm");void p.offsetWidth;p.classList.add(c);}};
+function done(){G.busy=true;window.Ljud&&Ljud.ok();if(G.t.onDone)G.t.onDone();petFx("hop");$("task").className="task ok";$("feedback").textContent=G.first?pickOne(PRAISE):"Nu blev det rätt!";setTimeout(next,G.t.doneDelay||900);}
 function wrong(given,givenHTML){
   G.busy=true;window.Ljud&&Ljud.bad();petFx("hmm");if(G.first)G.missed++;G.first=false;
   const hp=G.t.help(G.state);
