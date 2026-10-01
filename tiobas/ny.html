@@ -73,15 +73,12 @@ h1{font-size:1.5rem;margin:0 6px 0 2px;font-weight:800;line-height:1}
 
 .hide-digits .digit,.hide-digits .total{visibility:hidden}
 
-/* Stående mobil: be om att vrida */
-.rotate{position:fixed;inset:0;background:rgba(29,43,83,.55);display:grid;place-items:center;z-index:20;padding:20px}
-.rotate .card{background:var(--card);border-radius:22px;padding:18px 20px;text-align:center;max-width:320px;box-shadow:0 6px 0 var(--line)}
-.rotate .phone{font-size:3.4rem;display:inline-block;animation:turn 2.2s ease-in-out infinite}
-@keyframes turn{0%,30%{transform:rotate(0)}60%,100%{transform:rotate(-90deg)}}
-@media (prefers-reduced-motion:reduce){.rotate .phone{animation:none}}
-.rotate p{margin:8px 0 12px;font-weight:700;font-size:1.1rem}
-.go{display:block;width:100%;padding:11px;border-radius:16px;background:var(--good);color:#fff;font-size:1.15rem;font-weight:800;box-shadow:0 5px 0 var(--good-dark)}
-.later{margin-top:10px;color:var(--muted);font-weight:700;text-decoration:underline}
+/* Stående mobil: ett litet tips, inte i vägen */
+.tip{display:flex;align-items:center;gap:8px;background:#FFF4CC;border-radius:12px;padding:4px 6px 4px 10px;font-weight:700;font-size:.92rem;line-height:1.2}
+.tip .phone{font-size:1.3rem;display:inline-block;animation:turn 2.4s ease-in-out infinite}
+@keyframes turn{0%,35%{transform:rotate(0)}65%,100%{transform:rotate(-90deg)}}
+@media (prefers-reduced-motion:reduce){.tip .phone{animation:none}}
+.tip .x{margin-left:auto;flex:none;width:36px;height:36px;border-radius:10px;font-weight:800;color:var(--muted)}
 
 /* Stående läge (om man stängt rutan): mindre text */
 @media (orientation:portrait) and (max-width:600px){
@@ -101,20 +98,13 @@ h1{font-size:1.5rem;margin:0 6px 0 2px;font-weight:800;line-height:1}
       <button class="tbtn" id="clear">Töm bordet</button>
       <button class="tbtn" id="digits" aria-pressed="false">Dölj siffror</button>
       <button class="tbtn" id="thBtn" aria-pressed="false">Tusental</button>
-      <button class="tbtn" id="fs" hidden>⛶ Helskärm</button>
     </div>
   </div>
+  <div class="tip" id="rotTip" hidden><span class="phone" aria-hidden="true">📱</span><span>Tips: vrid mobilen till liggande läge för bättre översikt.</span><button class="x" id="rotX" aria-label="Stäng tipset">✕</button></div>
   <div class="msg" id="msg" aria-live="polite">Tryck på en låda för att ta en kloss. Tryck på en kloss för att lägga tillbaka den.</div>
   <div class="boardwrap" id="boardwrap">
     <div class="board" id="board"></div>
     <div id="stage"></div>
-  </div>
-</div>
-<div class="rotate" id="rotate" hidden>
-  <div class="card"><span class="phone" aria-hidden="true">📱</span>
-    <p>Vrid mobilen så får du mer plats för klossarna.</p>
-    <button class="go" id="rotOk">Okej</button>
-    <button class="later" id="rotNo">Fortsätt utan att vrida</button>
   </div>
 </div>
 <script src="../ljud.js"></script>
@@ -256,18 +246,14 @@ $("clear").onclick=()=>{if(busy)return;if(K.some(k=>S.n[k]))snap();setAll({th:0,
 $("digits").onclick=()=>{S.hide=!S.hide;$("app").classList.toggle("hide-digits",S.hide);$("digits").setAttribute("aria-pressed",S.hide);$("digits").textContent=S.hide?"Visa siffror":"Dölj siffror";};
 $("thBtn").onclick=()=>{if(S.n.th>0)return;S.showTh=!S.showTh;setAll({...S.n});};
 
-/* ---------- Liggande läge ---------- */
+/* ---------- Liggande läge: tips på stående mobil, går att stänga ---------- */
 const isPhonePortrait=()=>matchMedia("(orientation: portrait) and (max-width: 600px)").matches;
-let rotDismissed=false;try{rotDismissed=sessionStorage.getItem("mp-tiobas-rot")==="1";}catch(e){}
-function checkRotate(){$("rotate").hidden=rotDismissed||!isPhonePortrait();}
-$("rotOk").onclick=()=>{$("rotate").hidden=true;};
-$("rotNo").onclick=()=>{rotDismissed=true;try{sessionStorage.setItem("mp-tiobas-rot","1");}catch(e){}checkRotate();};
-/* Helskärm och låst liggande läge: bara där webbläsaren klarar det (inte iPhone) */
-const canLock=!!(document.documentElement.requestFullscreen&&screen.orientation&&screen.orientation.lock)&&("ontouchstart" in window);
-if(canLock){$("fs").hidden=false;$("fs").onclick=async()=>{try{if(!document.fullscreenElement){await document.documentElement.requestFullscreen();await screen.orientation.lock("landscape");}else await document.exitFullscreen();}catch(e){}};}
+let tipClosed=false;try{tipClosed=sessionStorage.getItem("mp-tiobas-tip")==="1";}catch(e){}
+function checkRotate(){$("rotTip").hidden=tipClosed||!isPhonePortrait();}
+$("rotX").onclick=()=>{tipClosed=true;try{sessionStorage.setItem("mp-tiobas-tip","1");}catch(e){}checkRotate();layout();};
 let rz;addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(()=>{checkRotate();layout();},120);});
 
-buildBoard();layout();refresh();checkRotate();
+checkRotate();buildBoard();layout();refresh();
 </script>
 </body>
 </html>

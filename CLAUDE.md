@@ -48,7 +48,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 - Upp till **9 999**. Tusentalskolumnen visas först när den behövs.
 - Ordning som i klassrummet: tusental, hundratal, tiotal, ental (entalen till höger).
 - **Addition:** bygg första talet, lägg sedan till det andra kloss för kloss, växla när det behövs. **Subtraktion:** bygg första talet, ta bort det andra, växla ner när det behövs.
-- **Liggande läge först** på mobil. Stående: vänlig ruta "Vrid mobilen" som går att stänga. Fullskärm + låst liggande läge bara där det fungerar (inte iPhone).
+- **Liggande läge först** på mobil. Stående: vänlig ruta "Vrid mobilen" som går att stänga. Ingen helskärmsknapp (fungerade inte), bara ett litet tips på stående mobil som går att stänga.
 
 ## Gemensam design
 
@@ -92,6 +92,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
 - **Tiobasmaterialet** ska byggas om.
+- **Dra klossar i Tiobas**: bara om eleverna själva försöker dra (tryck räcker för nu).
 - **Små tryckytor i Formjakten** (Geometri): flaggan och trädstammen är små i mobilstorlek. Åtgärdas bara om det visar sig vara ett problem för eleverna.
 - Kort kod utan server (sammanfattning i 8–30 tecken) diskuterades men byggdes inte.
 - På sikt: riktiga konton för **privat bruk** (kräver server), och senare en skolversion med lärarvy. Elevdata på en server behöver stämmas av med dataskyddsombudet (GDPR), och slumpade användarnamn räcker inte för att undgå GDPR helt.
