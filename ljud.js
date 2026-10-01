@@ -92,7 +92,35 @@
         Object.assign(this,{g,nodes:[n,l]});this.timer=setTimeout(bub,900);},
       stop(){if(!this.g)return;clearTimeout(this.timer);const c=ac(),t=c.currentTime;this.g.gain.setTargetAtTime(0.0001,t,.25);this.nodes.forEach(x=>{try{x.stop(t+1.2)}catch(e){}});this.g=null;}
     },
-    stopLoops(){this.engine.stop();this.space.stop();this.water.stop();}
+    /* Bakgrundsljud för Skattjakten: start('tradgarden' | 'grottan' | 'vintern'), stop() */
+    ambient:{
+      start(kind){if(!isOn())return;this.stop(true);const c=ac();if(!c)return;
+        const g=c.createGain();g.gain.setValueAtTime(0.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(1,c.currentTime+2);g.connect(c.destination);
+        const nodes=[],self=this;this.g=g;this.nodes=nodes;this.kind=kind;
+        const later=(fn,min,max)=>{self.timer=setTimeout(()=>{if(self.g!==g)return;fn();later(fn,min,max);},min+Math.random()*(max-min));};
+        /* brus genom ett filter, med en långsam svängning: vind */
+        const wind=(type,freq,q,vol,lfoHz,lfoAmt)=>{const n=c.createBufferSource();n.buffer=noiseBuf(c);n.loop=true;const f=c.createBiquadFilter();f.type=type;f.frequency.value=freq;f.Q.value=q;
+          const wg=c.createGain();wg.gain.value=vol;const l=c.createOscillator(),lg=c.createGain();l.frequency.value=lfoHz;lg.gain.value=lfoAmt;l.connect(lg);lg.connect(f.frequency);
+          const l2=c.createOscillator(),lg2=c.createGain();l2.frequency.value=lfoHz*.7;lg2.gain.value=vol*.6;l2.connect(lg2);lg2.connect(wg.gain);
+          n.connect(f).connect(wg).connect(g);n.start();l.start();l2.start();nodes.push(n,l,l2);};
+        const blip=(fr,t0,dur,vol,to,dest)=>{const t=c.currentTime+t0,o=c.createOscillator(),bg=c.createGain();o.type='sine';o.frequency.setValueAtTime(fr,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+dur);
+          bg.gain.setValueAtTime(0.0001,t);bg.gain.exponentialRampToValueAtTime(vol,t+.012);bg.gain.exponentialRampToValueAtTime(0.0001,t+dur);o.connect(bg).connect(dest||g);o.start(t);o.stop(t+dur+.05);};
+        if(kind==='tradgarden'){
+          wind('lowpass',500,.7,.025,.08,180);
+          later(()=>{const b=2300+Math.random()*1400,n=2+Math.floor(Math.random()*4);for(let i=0;i<n;i++)blip(b*(1+Math.random()*.12),i*.11,.08,.035,b*1.4);},1800,5200);
+        }else if(kind==='grottan'){
+          [55,82.4].forEach((fr,i)=>{const o=c.createOscillator(),og=c.createGain();o.type='sine';o.frequency.value=fr;og.gain.value=i?.012:.02;o.connect(og).connect(g);o.start();nodes.push(o);});
+          wind('lowpass',260,.5,.02,.05,80);
+          /* droppar med eko */
+          const d=c.createDelay(1.5),fb=c.createGain(),eg=c.createGain();d.delayTime.value=.42;fb.gain.value=.38;eg.gain.value=.6;d.connect(fb).connect(d);d.connect(eg).connect(g);
+          later(()=>{const fr=1300+Math.random()*900;blip(fr,0,.09,.06,fr*.45);blip(fr,0,.09,.05,fr*.45,d);},1400,4200);
+        }else{
+          wind('bandpass',700,.8,.05,.11,450);
+          later(()=>{const fr=2800+Math.random()*1600;blip(fr,0,.5,.012);blip(fr*1.5,.07,.45,.008);},4000,9000);
+        }},
+      stop(quick){clearTimeout(this.timer);if(!this.g)return;const c=ac(),t=c.currentTime,g=this.g;g.gain.setTargetAtTime(0.0001,t,quick?.05:.4);this.nodes.forEach(x=>{try{x.stop(t+(quick?.3:2))}catch(e){}});this.g=null;}
+    },
+    stopLoops(){this.engine.stop();this.space.stop();this.water.stop();this.ambient.stop(true);}
   };
   function croakPulse(c,start){
     const t=c.currentTime+start,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain(),am=c.createOscillator(),ag=c.createGain();

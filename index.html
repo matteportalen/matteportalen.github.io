@@ -199,7 +199,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   </div>
 
   <nav class="cards" aria-label="Övningar">
-    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Nio spel! Flyg, kör, hoppa, bygg, handla och leta skatter i labyrinten medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
+    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Åtta spel! Leta skatter i labyrinten, kör, hoppa, bygg och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="lillaplus/"><span class="tile sm" style="--c:#2BB673">+ −</span><span class="txt"><b>Lilla plus &amp; minus</b><small>Huvudräkning med tal upp till 10.</small><span class="badge" id="bLilla" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="tiotal/"><span class="tile" style="--c:#3D8BFD">10</span><span class="txt"><b>Tiotalsövergång</b><small>Räkna via tiotalet med tioruta och tallinje.</small><span class="badge" id="bTiotal" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="hundraruta/"><span class="tile" style="--c:#17AFC4"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="21" y="12" width="7.5" height="7.5" rx="1.5" fill="#FFC93C" opacity="1"/><rect x="30" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="3" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="30" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/></svg></span><span class="txt"><b>Hundrarutan</b><small>Steg åt sidan är ett, steg upp och ner är tio. Laga den trasiga hundrarutan!</small><span class="badge" id="bHundra" hidden></span></span><span class="chev">›</span></a>
@@ -437,7 +437,7 @@ const STICKERS=[
   ["hundra","🌌","Stjärnhimmel","Samla 100 stjärnor.",()=>S.stars>=100],
   ["tre","🔥","Tre i rad","Träna tre dagar i rad.",()=>S.bestStreak>=3],
   ["vecka","🚀","En hel vecka","Träna sju dagar i rad.",()=>S.bestStreak>=7],
-  ["flygare","🦉","Flygaren","Spela Ugglans flygtur i Spelhörnan.",()=>(S.spel.played||0)>0],
+  ["flygare","🎮","Spelglad","Spela ett spel i Spelhörnan.",()=>(S.spel.played||0)>0||["mem","car","space","frog","tower","skatt","kiosk"].some(k=>Object.keys(S.spel[k]||{}).length)||Object.keys(S.sj.stars||{}).length>0],
   ["molnkung","☁️","Molnkungen","Klara Ugglans flygtur utan att tappa ett hjärta.",()=>!!S.spel.perfect],
   ["ratt","🏎️","Rattkungen","Kör i mål på Racerbanan i Spelhörnan.",()=>!!S.spel.carWon],
   ["fulltos","🏁","Fullt ös","Kör i mål på Racerbanan utan att tappa ett däck.",()=>!!S.spel.carPerfect],
@@ -482,7 +482,7 @@ const STICKERS=[
   ["prov","📝","Provtränaren","Rätta ett delprov i Nationella prov.",()=>S.np.length>0],
   ["fullpott","🎯","Fullpott","Få alla rätt på ett delprov i Nationella prov.",()=>S.np.some(r=>r.r===r.t&&r.t>0)],
   ["skattjagare","🗝️","Skattjägaren","Hitta utgången i Skattjakten.",()=>Object.values(S.sj.stars||{}).some(v=>v>=1)],
-  ["kronjuvel","👑","Kronjuvelen","Hitta en krona i Skattjakten.",()=>((S.sj.chamber||{}).crown||0)>0],
+  ["kristallkula","🔮","Kristallkulan","Hitta den sällsynta kristallkulan i Skattjakten.",()=>((S.sj.chamber||{}).orb||0)>0],
   ["skattmastare","🏴‍☠️","Skattmästaren","Hitta alla skatter på nivå 3 i Skattjakten.",()=>((S.sj.stars||{})[3]||0)>=3]
 ];
 const got=STICKERS.filter(x=>x[4]()).map(x=>x[0]);

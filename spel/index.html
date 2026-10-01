@@ -82,6 +82,11 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gamecard.skatt{background:linear-gradient(135deg,#17AFC4,#1D2B53);box-shadow:0 6px 0 #0E1735;margin-top:14px}
 .gamecard.kiosk{background:linear-gradient(135deg,#FF5FA2,#7B61FF);box-shadow:0 6px 0 #4B3AA8;margin-top:14px}
 .gamecard.jakt{background:linear-gradient(135deg,#2BB673,#1D2B53);box-shadow:0 6px 0 #0E1735;margin-top:14px;text-decoration:none}
+/* paradspelet högst upp */
+.gamecard.hero{margin-top:6px;padding:20px 16px;background:linear-gradient(135deg,#FFC93C 0%,#FF9F43 35%,#1D2B53 100%);box-shadow:0 7px 0 #0E1735}
+.gamecard.hero .pic{font-size:4.4rem}
+.gamecard.hero b{font-size:2rem}
+.gamecard .new{display:inline-block;background:#fff;color:#C96A0C;border-radius:999px;padding:0 10px;font-size:.85rem;font-weight:800;transform:rotate(-3deg);margin-bottom:4px}
 .gamecard.jakt:active{transform:translateY(3px)}
 .gamecard.skatt:active,.gamecard.kiosk:active{transform:translateY(3px)}
 .q{flex-wrap:wrap}
@@ -139,14 +144,13 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Spelhörnan</h1>
   <p class="lead">Spela och räkna samtidigt!</p>
-  <button class="gamecard" id="btnFly"><span class="pic" id="flyPic"></span><span><b>Ugglans flygtur</b><small>Flyg genom molnet med rätt svar. Hur långt kommer du?</small></span></button>
+  <a class="gamecard jakt hero" href="skattjakten/"><span class="pic cards3">🗝️</span><span><span class="new">Nytt!</span><b>Skattjakten</b><small>Utforska labyrinten, lös hindrens textuppgifter och fyll skattkammaren!</small></span></a>
   <button class="gamecard mem" id="btnMem"><span class="pic cards3">🃏</span><span><b>Memory</b><small>Vänd korten och hitta paren: uppgiften och svaret.</small></span></button>
   <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Kör i filen med rätt svar och ta dig i mål!</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
   <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Varje rätt svar bygger tornet högre. Kommer du ända upp till månen?</small></span></button>
   <button class="gamecard skatt" id="btnSkatt"><span class="pic cards3">🏴‍☠️</span><span><b>Skattkartan</b><small>Svara rätt, gräv fram kistor och samla så många poäng du kan!</small></span></button>
-  <a class="gamecard jakt" href="skattjakten/"><span class="pic cards3">🗝️</span><span><b>Skattjakten</b><small>Gå runt i labyrinten, lös hindrens textuppgifter och hitta skatterna!</small></span></a>
   <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Kiosken</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
   <div class="soon">Fler spel kommer!</div>
 </div>
@@ -198,13 +202,9 @@ const put=(k,v)=>{try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}};
 const frac=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
 
 const owlCfg=Object.assign({animal:"uggla",color:"lila",glasses:"runda",hat:"ingen",neck:"ingen"},get("matteportalen-uggla")||{});
-// Ugglan (flygturen) bär elevens kläder. Avataren är elevens valda djur och används i de andra spelen.
-const flyCfg=Object.assign({},owlCfg,{animal:"uggla",color:owlCfg.animal==="uggla"?owlCfg.color:"lila"});
-const owlSrc="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(flyCfg,"",true));
-const owlImg=new Image();owlImg.src=owlSrc;
+// Avataren är elevens valda djur och används i spelen.
 const avSrc="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(owlCfg,"",true));
 const avImg=new Image();avImg.src=avSrc;
-$("flyPic").innerHTML=`<img src="${owlSrc}" alt="" style="width:100%;display:block">`;
 $("rOwl").innerHTML=`<img src="${avSrc}" alt="" style="width:100%;display:block">`;
 
 /* ---------- Lagring ---------- */
@@ -222,7 +222,7 @@ const CATS=[
   {id:"div",name:"Division",t:"÷",c:"#FF5FA2",desc:"Välj vilka tal att dela med",tables:true},
   {id:"klocka",name:"Klockan",t:"🕒",c:"#F7C531",desc:"Klocka och klockslag",memOnly:true}
 ];
-let game="fly"; // "fly" eller "mem"
+let game="mem";
 let cat=data.cat||"plus10",tables=new Set(data.tables||[]);
 let OPTN=3; // antal svar per uppgift (3, eller 4 på racerbanan med fyra filer)
 function mk(q,a,cands){
@@ -248,7 +248,6 @@ function gen(){
 
 /* ---------- Menyer ---------- */
 function showOnly(id){["menu","choose","game","mem","result"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);}
-$("btnFly").onclick=()=>{game="fly";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
 $("btnSkatt").onclick=()=>{game="skatt";renderChoose();showOnly("choose");};
 $("btnKiosk").onclick=()=>{game="kiosk";renderChoose();showOnly("choose");};
@@ -280,7 +279,7 @@ function renderChoose(){
 }
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;if(cat!==b.dataset.c)tables.clear();cat=b.dataset.c;renderChoose();};
 $("chips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;if(!t)tables.clear();else tables.has(t)?tables.delete(t):tables.add(t);renderChoose();};
-const startCurrent=()=>game==="fly"?startGame():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();
+const startCurrent=()=>game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();
 $("btnStart").onclick=()=>{data.cat=cat;data.tables=[...tables];save();startCurrent();};
 
 /* ---------- Spelet ---------- */
@@ -289,120 +288,7 @@ const GOAL=20;
 let W=0,H=0,G=null,raf=0;
 function resize(){const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 window.addEventListener("resize",()=>{if(G)resize();});
-const laneY=i=>H*(0.2+i*0.3);
-const owlX=()=>W*0.2,owlS=()=>Math.min(H*0.26,120);
-const gateW=()=>Math.min(W*0.24,130),gateH=()=>H*0.2;
 
-function startGame(){
-  OPTN=3;C=null;cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();window.Ljud&&Ljud.stopLoops();$("carBtns").hidden=true;$("hint").textContent="Tryck högt, i mitten eller lågt för att flyga dit.";
-  showOnly("game");resize();
-  G={hearts:3,score:0,lane:1,y:laneY(1),vy:0,t:0,col:null,nextAt:0,shake:0,parts:[],bg:0,clouds:Array.from({length:6},()=>({x:Math.random()*W,y:Math.random()*H*.9,s:.5+Math.random()*.8})),over:false,running:false,last:0};
-  hud();$("q").innerHTML="";$("q").className="q";
-  const c=$("count"),steps=["3","2","1","Flyg!"];let i=0;c.hidden=false;
-  (function tick(){if(!G||G.over){c.hidden=true;return;}if(i<steps.length){c.textContent=steps[i++];setTimeout(tick,600);}else{c.hidden=true;G.running=true;G.last=performance.now();spawn();}})();
-  cancelAnimationFrame(raf);G.last=performance.now();raf=requestAnimationFrame(frame);
-}
-function hud(){
-  $("hearts").textContent="❤️".repeat(G.hearts)+"🤍".repeat(3-G.hearts);
-  if(!G)return;
-  $("score").textContent=`${G.score} / ${GOAL}`;$("progFill").style.width=(G.score/GOAL*100)+"%";
-}
-function spawn(){
-  const task=gen();G.task=task;$("q").innerHTML=task.q+"<span>= ?</span>";$("q").className="q";
-  const travel=Math.max(3.1,6.2-G.score*.15);
-  G.col={x:W+gateW(),vals:task.opts,ans:task.a,resolved:false,hit:-1,ok:false,speed:(W+gateW()-owlX())/travel};
-}
-function setLane(i){if(!G||G.over)return;const n=Math.max(0,Math.min(2,i));if(n!==G.lane)window.Ljud&&Ljud.flap();G.lane=n;}
-cv.addEventListener("pointerdown",e=>{if(C||A||F||T||SK||KI)return;const r=cv.getBoundingClientRect(),y=e.clientY-r.top;setLane(y<r.height/3?0:y<r.height*2/3?1:2);});
-document.addEventListener("keydown",e=>{if($("game").hidden||!G||C||A||F||T||SK||KI)return;
-  if(e.key==="ArrowUp"){e.preventDefault();setLane(G.lane-1);}else if(e.key==="ArrowDown"){e.preventDefault();setLane(G.lane+1);}
-  else if(["1","2","3"].includes(e.key))setLane(+e.key-1);});
-$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();showOnly("choose");renderChoose();};
-
-function resolve(){
-  const c=G.col;c.resolved=true;c.hit=G.lane;c.ok=c.vals[G.lane]===c.ans;
-  const gy=laneY(G.lane);
-  if(c.ok){
-    G.score++;window.Ljud&&Ljud.ok();$("q").className="q ok";
-    for(let i=0;i<22;i++)G.parts.push({x:owlX()+20,y:gy,vx:(Math.random()-.3)*260,vy:(Math.random()-.5)*260,life:.8,c:pickOne(["#FFC93C","#FF9F43","#fff","#7CF0B1"])});
-    G.nextAt=G.t+.6;
-    if(G.score>=GOAL){G.over=true;setTimeout(()=>finish(true),900);}
-  }else{
-    G.hearts--;window.Ljud&&Ljud.bad();G.shake=.45;
-    $("q").innerHTML=G.task.q+`<span>= ${c.ans}</span>`;$("q").className="q bad";
-    G.nextAt=G.t+1.5;
-    if(G.hearts<=0){G.over=true;setTimeout(()=>finish(false),1300);}
-  }
-  hud();
-}
-function frame(now){
-  if(!G)return;
-  const dt=Math.min(.05,(now-G.last)/1000);G.last=now;
-  if(G.running&&!document.hidden){
-    G.t+=dt;G.bg+=dt*(60+G.score*4);
-    const ty=laneY(G.lane),py=G.y;G.y+=(ty-G.y)*Math.min(1,dt*12);G.vy=(G.y-py)/Math.max(dt,.001);
-    const c=G.col;
-    if(c){c.x-=c.speed*dt;if(!c.resolved&&!G.over&&c.x-gateW()/2<=owlX()+owlS()*.2)resolve();}
-    if(c&&c.resolved&&!G.over&&G.t>=G.nextAt)spawn();
-    G.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;});G.parts=G.parts.filter(p=>p.life>0);
-    G.shake=Math.max(0,G.shake-dt);
-  }
-  draw();
-  raf=requestAnimationFrame(frame);
-}
-function cloud(x,y,w,h,fill,stroke){
-  const r=h*.42,parts=[[-w*.28,h*.06,r*.9],[0,-h*.12,r*1.1],[w*.28,h*.04,r*.95],[-w*.1,h*.18,r],[w*.14,h*.2,r*.9]];
-  const shape=(grow,col)=>{ctx.fillStyle=col;ctx.beginPath();parts.forEach(([dx,dy,rr])=>{ctx.moveTo(x+dx+rr+grow,y+dy);ctx.arc(x+dx,y+dy,rr+grow,0,Math.PI*2);});ctx.fill();};
-  if(stroke)shape(4,stroke);   // kant: samma form lite större, bakom
-  shape(0,fill);
-}
-function draw(){
-  if(!W)return;
-  ctx.save();
-  if(G.shake>0)ctx.translate((Math.random()-.5)*14*G.shake,(Math.random()-.5)*10*G.shake);
-  const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,"#5EB8FF");sky.addColorStop(1,"#CDEBFF");
-  ctx.fillStyle=sky;ctx.fillRect(-20,-20,W+40,H+40);
-  ctx.fillStyle="#FFE58A";ctx.beginPath();ctx.arc(W*.86,H*.14,H*.08,0,Math.PI*2);ctx.fill();
-  // bakgrundsmoln
-  G.clouds.forEach(c=>{const x=((c.x-G.bg*.25*c.s)%(W+160)+W+160)%(W+160)-80;cloud(x,c.y,70*c.s,40*c.s,"rgba(255,255,255,.55)");});
-  // kullar
-  const hill=(base,amp,len,speed,col)=>{ctx.fillStyle=col;ctx.beginPath();ctx.moveTo(0,H);
-    for(let x=0;x<=W+10;x+=10)ctx.lineTo(x,base+Math.sin((x+G.bg*speed)/len)*amp);ctx.lineTo(W,H);ctx.closePath();ctx.fill();};
-  hill(H*.9,H*.05,90,.5,"#8ED99B");hill(H*.96,H*.035,60,.9,"#5CC274");
-  // svarsmolnen
-  const c=G.col;
-  if(c){
-    const gw=gateW(),gh=gateH();
-    c.vals.forEach((v,i)=>{
-      const y=laneY(i);let fill="#fff",stroke="#C6D6F2";
-      if(c.resolved){if(v===c.ans){fill="#DDF5E7";stroke="#1E9E5E";}else if(i===c.hit){fill="#FDE4E4";stroke="#E5484D";}else{fill="rgba(255,255,255,.6)";}}
-      cloud(c.x,y,gw,gh,fill,stroke);
-      ctx.fillStyle="#1D2B53";ctx.font=`800 ${Math.round(gh*.42)}px "Baloo 2", system-ui, sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
-      ctx.fillText(String(v),c.x,y+gh*.06);
-    });
-  }
-  // ugglan
-  const S=owlS(),ox=owlX(),bob=Math.sin(G.t*6)*3;
-  ctx.save();ctx.translate(ox,G.y+bob);ctx.rotate(Math.max(-.35,Math.min(.35,G.vy/900)));
-  if(owlImg.complete)ctx.drawImage(owlImg,-S/2,-S*.62,S,S*1.167);
-  ctx.restore();
-  // gnistor
-  G.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.8);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;
-  ctx.restore();
-}
-
-/* ---------- Resultat ---------- */
-function finish(won){
-  cancelAnimationFrame(raf);window.Ljud&&Ljud.stopLoops();
-  const s=G.score,st=won?(G.hearts===3?3:2):(s>=10?1:0);
-  const r=data.fly[cat]||{best:0,stars:0},rec=s>r.best;
-  data.fly[cat]={best:Math.max(r.best,s),stars:Math.max(r.stars,st)};data.played=(data.played||0)+1;if(st===3)data.perfect=true;save();
-  $("rTitle").textContent=won?(st===3?"Perfekt flygtur!":"Du klarade flygturen!"):"Ugglan behöver vila";
-  $("rBig").innerHTML=st?starHtml(st):`${s} rätt`;
-  $("rSub").textContent=(won?`${s} rätt på vägen.`:`Du fick ${s} rätt.`)+(rec?" Nytt rekord!":data.fly[cat].best?` Ditt rekord är ${data.fly[cat].best} rätt.`:"")+(!won&&s<10?" Med 10 rätt får du en stjärna.":"");
-  showOnly("result");
-  if(won||rec){window.Ljud&&Ljud.fanfare();confetti();}
-}
 $("rAgain").onclick=()=>startCurrent();
 $("rChoose").onclick=()=>{renderChoose();showOnly("choose");};
 

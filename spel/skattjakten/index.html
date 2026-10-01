@@ -100,6 +100,27 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
 .big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
 .toast{position:fixed;left:50%;bottom:calc(140px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#FFF4CC;color:var(--ink);padding:8px 16px;border-radius:14px;font-weight:800;z-index:12;max-width:90vw;text-align:center;box-shadow:0 4px 0 #E2C252}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:20}
+/* skatterna: rutor ur skatter.png (Kenney, CC0), 24 px per ruta */
+.spr{display:inline-block;width:var(--s,32px);height:var(--s,32px);background:url(bilder/skatter.png) no-repeat;background-size:calc(13*var(--s,32px)) var(--s,32px);background-position:calc(-1*var(--i)*var(--s,32px)) 0;image-rendering:pixelated;vertical-align:middle}
+.snd{width:38px;height:38px;border-radius:50%;background:rgba(255,255,255,.12);font-size:1.15rem}
+.lootbar{display:flex;align-items:center;gap:10px;padding:6px 12px;background:#0E1735;color:#C6D6F2;min-height:52px;overflow-x:auto}
+.lootbar .lbl{font-weight:800;font-size:.85rem;flex:none}
+.slots{display:flex;gap:6px;align-items:center}
+.slot{display:flex;align-items:center;gap:2px;background:rgba(255,255,255,.1);border-radius:12px;padding:2px 8px 2px 4px;font-weight:800;color:#fff;--s:36px}
+.slot.bump{animation:bump .4s ease-out}
+@keyframes bump{40%{transform:scale(1.3);background:#FFC93C}}
+.slots .empty{font-size:.85rem;font-weight:700;opacity:.7}
+@media (min-width:900px){.lootbar{min-height:78px;justify-content:center;gap:14px}.lootbar .lbl{font-size:1rem}.slot{--s:54px;font-size:1.3rem;padding:4px 12px 4px 6px}}
+/* skatt som flyger ur kistan, svävar och landar i skattraden */
+.flyer{position:fixed;left:0;top:0;z-index:15;pointer-events:none;--s:48px;transition:transform .7s cubic-bezier(.4,.1,.3,1),opacity .3s;filter:drop-shadow(0 4px 6px rgba(0,0,0,.45))}
+.flyer .shine{position:absolute;inset:-30%;background:radial-gradient(circle,rgba(255,236,150,.85),rgba(255,236,150,0) 65%);animation:shine 1s ease-in-out infinite alternate;z-index:-1}
+@keyframes shine{from{transform:scale(.8);opacity:.6}to{transform:scale(1.15);opacity:1}}
+@keyframes hover{0%,100%{translate:0 0}50%{translate:0 -10px}}
+.flyer.hov .spr{animation:hover .9s ease-in-out infinite}
+.flyer .cap{position:absolute;left:50%;top:100%;transform:translateX(-50%);white-space:nowrap;background:#FFF4CC;color:var(--ink);font-weight:800;border-radius:10px;padding:1px 8px;font-size:.85rem;margin-top:6px}
+.chest-loot{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:8px}
+.chest-loot span{display:flex;align-items:center;gap:2px;font-weight:800;font-size:1.25rem;--s:40px}
+
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>
 </head>
@@ -118,8 +139,9 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
 
 <section id="game" hidden>
   <div class="hud"><button class="quit" id="quit">← Avsluta</button><span class="lv" id="hudLv"></span>
-    <span class="hl"><span id="hudChest"></span><span>💰 <span id="hCoin">0</span></span><span>💎 <span id="hGem">0</span></span><span>👑 <span id="hCrown">0</span></span></span></div>
+    <span class="hl"><span id="hudChest"></span><button class="snd" id="snd" aria-label="Ljud av eller på">🔊</button></span></div>
   <div class="stage" id="stage"><canvas id="cv"></canvas><div class="hint" id="hint"></div></div>
+  <div class="lootbar" id="lootbar" aria-label="Skatter du har hittat"><span class="lbl">Skattraden</span><span class="slots" id="slots"></span></div>
   <div class="pad" id="pad" aria-label="Pilknappar">
     <button class="u" data-d="0,-1" aria-label="Upp">▲</button><button class="l" data-d="-1,0" aria-label="Vänster">◀</button>
     <button class="d" data-d="0,1" aria-label="Ner">▼</button><button class="r" data-d="1,0" aria-label="Höger">▶</button>
@@ -146,7 +168,7 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
   <h1 id="wTitle">Du hittade utgången!</h1>
   <div class="rbig" id="wStars"></div>
   <p class="rsub" id="wSub"></p>
-  <div class="loot" id="wLoot"></div>
+  <div class="chest-loot" id="wLoot"></div>
   <button class="go" id="wAgain">Ny labyrint</button>
   <button class="big" id="wHome">Välj tema och nivå</button>
 </div>
@@ -163,7 +185,7 @@ function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random
 
 /* ---------- Lagring ---------- */
 const KEY="mattespel-skattjakten-v1";
-const data=(()=>{const std={theme:"tradgarden",level:1,stars:{},chamber:{coin:0,gem:0,crown:0},runs:0};
+const data=(()=>{const std={theme:"tradgarden",level:1,stars:{},chamber:{},runs:0};
   try{const d=JSON.parse(localStorage.getItem(KEY)||"null");return d?Object.assign(std,d,{chamber:Object.assign(std.chamber,d.chamber||{})}):std;}catch(e){return std;}})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
 
@@ -179,6 +201,16 @@ const THEMES={
           {s:"v",i:69,name:"Snögubben",say:"Jag smälter bort om du svarar rätt!"}]}
 };
 const CHEST={s:"g",i:89};
+/* Skatterna. cells = rutor i skatter.png, w = hur vanlig, amt = hur många mynt. Kristallkulan är den sällsynta. */
+const TREASURE=[
+  {k:"coin",one:"guldmynt",many:"guldmynt",cells:[0],w:30,amt:[2,6]},{k:"gold",one:"guldklimp",many:"guldklimpar",cells:[1],w:16},
+  {k:"gem",one:"diamant",many:"diamanter",cells:[2],w:11},{k:"crystal",one:"kristall",many:"kristaller",cells:[3,4,5],w:11},
+  {k:"potion",one:"trolldryck",many:"trolldrycker",cells:[6,7,8],w:10},{k:"key",one:"guldnyckel",many:"guldnycklar",cells:[9],w:7},
+  {k:"heart",one:"rubinhjärta",many:"rubinhjärtan",cells:[10],w:6},{k:"sword",one:"riddarsvärd",many:"riddarsvärd",cells:[11],w:4},
+  {k:"orb",one:"kristallkula",many:"kristallkulor",cells:[12],w:2}];
+const TBY=Object.fromEntries(TREASURE.map(t=>[t.k,t]));
+const spr=(cell,s)=>`<span class="spr" style="--i:${cell}${s?`;--s:${s}px`:""}"></span>`;
+function rollTreasure(){let r=Math.random()*TREASURE.reduce((a,t)=>a+t.w,0);for(const t of TREASURE){r-=t.w;if(r<=0)return t;}return TREASURE[0];}
 const IMG={};
 function loadImg(k,src){return new Promise(r=>{const im=new Image();im.onload=()=>{IMG[k]=im;r();};im.onerror=()=>r();im.src=src;});}
 const ready=Promise.all([loadImg("t",THEMES.tradgarden.img),loadImg("g",THEMES.grottan.img),loadImg("v",THEMES.vintern.img)]);
@@ -235,7 +267,7 @@ function problem(lv){
 }
 
 /* ---------- Labyrinten: slumpas varje gång, med extra öppningar så att det finns många vägar ---------- */
-const LV={1:{n:15,foes:5,onPath:2,chests:5,c:"#2BB673",desc:"Tal upp till 20. Ett steg."},2:{n:19,foes:7,onPath:3,chests:7,c:"#3D8BFD",desc:"Tal upp till 100. Två steg och grupper."},3:{n:23,foes:9,onPath:4,chests:9,c:"#7B61FF",desc:"Tal upp till 1000. Pengar, gånger och delat."}};
+const LV={1:{n:21,foes:7,onPath:3,chests:8,c:"#2BB673",desc:"Tal upp till 20. Ett steg."},2:{n:27,foes:10,onPath:4,chests:11,c:"#3D8BFD",desc:"Tal upp till 100. Två steg och grupper."},3:{n:33,foes:13,onPath:5,chests:14,c:"#7B61FF",desc:"Tal upp till 1000. Pengar, gånger och delat."}};
 function makeMaze(n){
   const g=Array.from({length:n},()=>Array(n).fill(1));
   const st=[[1,1]];g[1][1]=0;
@@ -279,21 +311,23 @@ function newGame(){
   /* varje ruta får en egen variant av golv och vägg, som inte ändras */
   const look=Array.from({length:n},()=>Array.from({length:n},()=>Math.random()));
   G={n,g,objs,look,th,sheet:sheetOf(data.theme),px:1,py:1,ax:1,ay:1,seen:Array.from({length:n},()=>Array(n).fill(false)),
-     chests:Object.values(objs).filter(o=>o.t==="chest").length,found:0,loot:{coin:0,gem:0,crown:0},solved:0,firstTry:0,busy:false,over:false,anim:null,sparks:[]};
+     chests:Object.values(objs).filter(o=>o.t==="chest").length,found:0,loot:{},solved:0,firstTry:0,busy:false,over:false,anim:null,sparks:[]};
   reveal();
   $("hudLv").textContent=`${th.name} · Nivå ${data.level}`;updHud();
   $("home").hidden=true;$("win").hidden=true;$("game").hidden=false;
+  renderSlots();if(window.Ljud&&Ljud.ambient)Ljud.ambient.start(data.theme);sndIcon();
   resize();hint(`Hitta utgången: ${th.exit.name.toLowerCase()}! Skatter finns ofta i återvändsgränder.`,4500);
 }
 const R=3.2;
 function reveal(){for(let y=0;y<G.n;y++)for(let x=0;x<G.n;x++)if(Math.hypot(x-G.px,y-G.py)<=R+.4)G.seen[y][x]=true;}
-function updHud(){$("hCoin").textContent=G.loot.coin;$("hGem").textContent=G.loot.gem;$("hCrown").textContent=G.loot.crown;$("hudChest").innerHTML=`<small>Kistor</small> ${G.found}/${G.chests}`;}
+function updHud(){$("hudChest").innerHTML=`<small>Kistor</small> ${G.found}/${G.chests}`;}
 let hintT;function hint(t,ms){const h=$("hint");h.textContent=t;h.style.opacity=1;clearTimeout(hintT);hintT=setTimeout(()=>h.style.opacity=0,ms||2600);}
 
 /* ---------- Ritning ---------- */
 const cv=$("cv"),ctx=cv.getContext("2d");let TS=48,W=0,H=0,dpr=1;
 function resize(){const r=$("stage").getBoundingClientRect();dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);
-  TS=Math.max(34,Math.min(64,Math.floor(Math.min(W,H)/7.2)));draw();}
+  /* rutorna är alltid en hel multipel av 16 pixlar, så att pixelgrafiken förblir skarp */
+  TS=16*Math.max(2,Math.min(6,Math.floor(Math.min(W,H)/7.2/16)));draw();}
 addEventListener("resize",()=>{if(G&&!$("game").hidden)resize();});
 function draw(){
   if(!G)return;ctx.setTransform(dpr,0,0,dpr,0,0);ctx.imageSmoothingEnabled=false;
@@ -334,14 +368,41 @@ function move(dx,dy){
 }
 function arrive(){
   const k=G.px+","+G.py,o=G.objs[k];if(!o)return;
-  if(o.t==="chest"){delete G.objs[k];G.found++;const r=Math.random();let txt,e;
-    if(r<.08){G.loot.crown++;txt="En krona! 👑 Det är den finaste skatten.";e="👑";}
-    else if(r<.33){G.loot.gem++;txt="En ädelsten! 💎";e="💎";}
-    else{const c=rnd(2,6);G.loot.coin+=c;txt=`${c} guldmynt! 💰`;e="💰";}
-    for(let i=0;i<6;i++)G.sparks.push({x:G.px*TS+TS/2+rnd(-18,18),y:G.py*TS+rnd(-4,10),l:1,e:i%2?"✨":e});
-    window.Ljud&&(Ljud.kaching?Ljud.kaching():Ljud.ok());toast("Skattkista: "+txt);updHud();kick();}
+  if(o.t==="chest"){delete G.objs[k];G.found++;openChest(G.px,G.py);updHud();kick();}
   else if(o.t==="exit")win();
 }
+/* En kista innehåller en till tre blandade skatter. De hoppar ur kistan, svävar en stund och flyger till skattraden. */
+function openChest(cx,cy){
+  const n=Math.random()<.45?1:Math.random()<.73?2:3,got=[];
+  for(let i=0;i<n;i++){const t=rollTreasure(),cell=pick(t.cells),q=t.amt?rnd(t.amt[0],t.amt[1]):1;G.loot[t.k]=(G.loot[t.k]||0)+q;got.push({t,cell,q});}
+  window.Ljud&&(Ljud.kaching?Ljud.kaching():Ljud.ok());
+  for(let i=0;i<5;i++)G.sparks.push({x:cx*TS+TS/2+rnd(-18,18),y:cy*TS+rnd(-4,10),l:1,e:"✨"});
+  const r=cv.getBoundingClientRect(),sx=r.left+W/2+(cx-G.ax)*TS+TS/2,sy=r.top+H/2+(cy-G.ay)*TS+TS/2;
+  const big=innerWidth>=900?96:64;
+  got.forEach((x,i)=>setTimeout(()=>flyTreasure(x,sx,sy,big,i,got.length),i*420));
+  setTimeout(renderSlots,got.length*420+1500);
+}
+function flyTreasure(x,sx,sy,big,i,n){
+  const el=document.createElement("div");el.className="flyer";el.style.setProperty("--s",big+"px");
+  el.innerHTML=`<span class="shine"></span>${spr(x.cell,big)}<span class="cap">${x.q>1?x.q+" "+x.t.many:"en "+x.t.one}</span>`;
+  document.body.appendChild(el);const half=big/2;
+  el.style.transform=`translate(${sx-half}px,${sy-half}px) scale(.2)`;el.style.opacity="0";
+  if(reduced()){el.remove();bumpSlot(x.t.k);return;}
+  /* 1: hoppar upp ur kistan och blir stor */
+  const mid=(n-1)/2,up=Math.max(big,sy-big*1.8)-(n>1&&i!==Math.round(mid)?0:big*.55),spread=(i-mid)*Math.max(big*1.9,110);
+  requestAnimationFrame(()=>{el.style.opacity="1";el.style.transform=`translate(${sx-half+spread}px,${up-half}px) scale(1)`;});
+  /* 2: svävar en stund, 3: flyger ner till sin plats i skattraden */
+  setTimeout(()=>el.classList.add("hov"),700);
+  setTimeout(()=>{renderSlots(x.t.k);const slot=document.querySelector(`.slot[data-k="${x.t.k}"]`),sr=slot?slot.getBoundingClientRect():{left:innerWidth/2,top:innerHeight-40,width:0,height:0};
+    el.classList.remove("hov");el.querySelector(".cap").remove();
+    const s=Math.max(.3,(sr.height||36)/big);el.style.transform=`translate(${sr.left+18-half}px,${sr.top+sr.height/2-half}px) scale(${s})`;
+    setTimeout(()=>{el.remove();bumpSlot(x.t.k);},720);},1700);
+}
+function renderSlots(extra){
+  const ks=TREASURE.map(t=>t.k).filter(k=>G.loot[k]||k===extra);
+  $("slots").innerHTML=ks.length?ks.map(k=>`<span class="slot" data-k="${k}" title="${TBY[k].many}">${spr(TBY[k].cells[0])}<span>${G.loot[k]||0}</span></span>`).join(""):'<span class="empty">Inga skatter än. Leta i återvändsgränderna!</span>';
+}
+function bumpSlot(k){renderSlots();const s=document.querySelector(`.slot[data-k="${k}"]`);if(s){s.classList.remove("bump");void s.offsetWidth;s.classList.add("bump");}window.Ljud&&Ljud.ok&&Ljud.ok();}
 const DIRS={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
 document.addEventListener("keydown",e=>{
   if(!$("dlg").hidden){if(/^[0-9]$/.test(e.key))key(e.key);else if(e.key==="Backspace"){e.preventDefault();key("del");}else if(e.key==="Enter"){e.preventDefault();key("ok");}else if(e.key==="Escape")closeFoe();return;}
@@ -388,15 +449,19 @@ $("dlg").addEventListener("click",e=>{if(e.target.id==="dlg")closeFoe();});
 function win(){
   G.over=true;const half=G.found>=Math.ceil(G.chests/2),all=G.found===G.chests,st=1+(half?1:0)+(all?1:0);
   if(st>(data.stars[data.level]||0))data.stars[data.level]=st;
-  ["coin","gem","crown"].forEach(k=>data.chamber[k]+=G.loot[k]);data.runs++;save();
+  Object.entries(G.loot).forEach(([k,v])=>data.chamber[k]=(data.chamber[k]||0)+v);data.runs++;save();window.Ljud&&Ljud.ambient&&Ljud.ambient.stop();
   $("wTitle").textContent=all?"Alla skatter och utgången!":"Du hittade utgången!";
   $("wStars").innerHTML=[1,2,3].map(i=>i<=st?"★":'<span class="off">★</span>').join("");
   $("wSub").textContent=`${G.found} av ${G.chests} skattkistor. ${G.solved} ${G.solved===1?"hinder":"hinder"} löst${G.firstTry?`, ${G.firstTry} rätt direkt`:""}.`+(st<3?(half?" Hitta alla kistor för tre stjärnor.":" Hitta minst hälften av kistorna för två stjärnor."):"");
-  $("wLoot").innerHTML=`<span>💰 ${G.loot.coin}</span><span>💎 ${G.loot.gem}</span><span>👑 ${G.loot.crown}</span>`;
+  $("wLoot").innerHTML=lootHTML(G.loot)||"<span>Inga skatter den här gången.</span>";
   $("game").hidden=true;$("win").hidden=false;window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
 }
 $("wAgain").onclick=newGame;$("wHome").onclick=openHome;
-$("quit").onclick=()=>{if(G)G.over=true;closeFoe();openHome();};
+$("quit").onclick=()=>{if(G)G.over=true;closeFoe();window.Ljud&&Ljud.ambient&&Ljud.ambient.stop();document.querySelectorAll(".flyer").forEach(e=>e.remove());openHome();};
+const lootHTML=L=>TREASURE.filter(t=>L[t.k]).map(t=>`<span title="${t.many}">${spr(t.cells[0],40)}${L[t.k]}</span>`).join("");
+/* ljudknappen i spelet: samma inställning som på startsidan */
+const sndIcon=()=>{$("snd").textContent=window.Ljud&&Ljud.on?"🔊":"🔇";};
+$("snd").onclick=()=>{if(!window.Ljud)return;const on=!Ljud.on;Ljud.set(on);if(on&&G&&!G.over)Ljud.ambient.start(data.theme);sndIcon();};
 function confetti(){
   if(reduced())return;const c=$("fx"),x=c.getContext("2d"),r=devicePixelRatio||1,w=innerWidth,h=innerHeight;c.width=w*r;c.height=h*r;x.setTransform(r,0,0,r,0,0);c.hidden=false;
   const C=["#FF6B6B","#FF9F43","#F7C531","#2BB673","#17AFC4","#3D8BFD","#7B61FF","#FF5FA2"];
@@ -418,7 +483,7 @@ function openHome(){
   $("levels").innerHTML=[1,2,3].map(l=>`<button class="lvl" data-l="${l}" aria-pressed="${data.level===l}" style="--c:${LV[l].c}"><span class="num">${l}</span><span><b>Nivå ${l}</b><small>${LV[l].desc}</small></span><span class="st">${stars(data.stars[l]||0)}</span></button>`).join("");
   document.querySelectorAll(".lvl").forEach(b=>b.onclick=()=>{data.level=+b.dataset.l;save();openHome();});
   const ch=data.chamber;
-  $("chamber").innerHTML=`<b>🏰 ${petName}s skattkammare</b><div class="loot"><span>💰 ${ch.coin}</span><span>💎 ${ch.gem}</span><span>👑 ${ch.crown}</span></div>`+
+  $("chamber").innerHTML=`<b>🏰 ${petName}s skattkammare</b><div class="chest-loot">${lootHTML(ch)||"<span style='font-size:1rem'>Tom än så länge. Hitta skatter i labyrinten!</span>"}</div>`+
     `<small>${data.runs?`${data.runs} ${data.runs===1?"skattjakt":"skattjakter"} klara. `:""}Ett stjärnmärke per nivå: hitta utgången ★, minst hälften av kistorna ★★, alla kistor ★★★.</small>`;
 }
 $("start").onclick=()=>{ready.then(newGame);};
