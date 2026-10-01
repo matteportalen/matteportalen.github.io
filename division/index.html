@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Division – Matte-Portalen</title>
+<title>Division: Kalaset – Matte-Portalen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
@@ -135,6 +135,50 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+/* ---------- Kalaset ---------- */
+.party{display:flex;align-items:center;gap:10px;margin-top:6px}
+.ppet{width:86px;flex:none}
+.world{display:inline-block;font-size:.95rem;vertical-align:middle;background:#FF5FA2;color:#fff;border-radius:999px;padding:2px 10px;margin-left:4px;transform:rotate(-3deg)}
+.pet svg{width:100%;height:auto;display:block;transform-origin:50% 90%}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-18px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}}
+@keyframes hmm{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-9deg)}}
+.pet.hop svg{animation:hop .55s ease-out 2}
+.pet.hmm svg{animation:hmm .9s ease-in-out}
+.gright{display:flex;align-items:center;gap:8px}
+.hpet{width:46px}
+.bowl{margin-top:14px;background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:10px 12px;text-align:center}
+.bowl b{display:block;font-size:1.05rem}
+.bowl small{display:block;color:var(--muted);font-size:.85rem;line-height:1.25;margin-top:2px}
+.bowl .sorts{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.bowl .sorts span{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:1.5rem;background:#FFF0F6}
+.bowl .sorts span.no{background:#EEF2FA;color:#B7C3DA;font-size:1rem;font-weight:800}
+.car svg{height:42px;width:auto;display:block}
+.car.ghost svg{filter:grayscale(1)}
+.tcard .candy{position:absolute;left:-7px;top:-9px;font-size:1.35rem;line-height:1;filter:drop-shadow(0 2px 0 rgba(29,43,83,.2))}
+.scene{display:flex;align-items:center;justify-content:center;gap:12px;margin:2px 0 8px;flex-wrap:wrap}
+.pile{max-width:190px;font-size:15px;line-height:1.15;letter-spacing:1px;background:#FFF0F6;border-radius:16px;padding:6px 8px}
+.pile.big{font-size:1.5rem;font-weight:800;letter-spacing:0}
+.bags{display:flex;flex-wrap:wrap;gap:5px;max-width:200px;justify-content:center}
+.bag{width:30px;height:36px;border-radius:4px 4px 9px 9px;background:linear-gradient(180deg,#FF8FB8 0 30%,#fff 30% 42%,#FF5FA2 42%);box-shadow:inset 0 -3px 0 rgba(0,0,0,.12);position:relative}
+.bag::before{content:"";position:absolute;left:50%;top:-6px;width:12px;height:8px;margin-left:-6px;border:3px solid #7B61FF;border-bottom:0;border-radius:8px 8px 0 0}
+.bags.many .bag{width:24px;height:29px}
+.scap{width:100%;color:var(--muted);font-weight:700;font-size:.95rem}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 2px}
+.tf button{background:var(--bg);border-radius:14px;padding:12px 6px;font-weight:800;font-size:1.25rem;box-shadow:0 3px 0 var(--line);min-height:58px}
+.tf button.right{background:#DDF5E7;color:var(--good-dark)}.tf button.bad{background:#FDE4E4;color:var(--bad)}
+.question .q{color:var(--muted)}
+.jar{position:relative;margin:10px auto 0;width:min(320px,90%);min-height:64px;border:4px solid #C6D6F2;border-top-width:8px;border-radius:12px 12px 26px 26px;background:rgba(255,255,255,.7);padding:16px 8px 6px}
+.jarlbl{position:absolute;top:-4px;left:50%;transform:translate(-50%,-50%);background:#7B61FF;color:#fff;font-weight:800;font-size:.8rem;border-radius:999px;padding:0 10px}
+.jarin{display:flex;flex-wrap:wrap-reverse;gap:1px;justify-content:center;font-size:1.15rem;line-height:1}
+.jarin span{animation:drop .35s ease-in}
+@keyframes drop{from{transform:translateY(-30px);opacity:0}}
+.groups .grp.bagg{background:#FFF0F6;border:2px solid #FF8FB8;border-radius:6px 6px 14px 14px;position:relative;padding-top:12px;font-size:var(--d);line-height:1.05;gap:1px}
+.groups .grp.bagg::before{content:"";position:absolute;left:50%;top:-8px;width:14px;height:9px;margin-left:-7px;border:3px solid #7B61FF;border-bottom:0;border-radius:8px 8px 0 0}
+.groups .grp.over.bagg{background:#FFF4CC;border-color:#F2C230;padding-top:22px}
+.groups .grp.over.bagg::before{display:none}
+.groups .grp.over .opet{width:34px;margin:0 auto}
+@media (prefers-reduced-motion:reduce){.pet svg,.jarin span{animation:none !important}}
+
 
 /* Division */
 .segd{display:flex;gap:8px;margin:0 0 16px}
@@ -172,10 +216,11 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <!-- Startsida -->
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
-  <h1>Division</h1>
-  <p class="lead" id="homeLead">Välj vilket tal du vill dela med.</p>
+  <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
+    <div><h1>Division <span class="world">🎉 Kalaset</span></h1><p class="lead" id="homeLead">Välj vilket tal du vill dela med.</p></div></div>
   <div class="segd" id="segRest"><button data-v="0">Utan rest</button><button data-v="1">Med rest</button></div>
   <div id="tableGrid" class="tables"></div>
+  <div class="bowl" id="bowl"></div>
   <div class="actions">
     <button class="big" id="btnMix"><span class="ic">🎨</span><span><b>Blanda egen tabell</b><small>Välj flera tal att dela med och träna dem tillsammans.</small></span></button>
     <button class="big" id="btnHard"><span class="ic">🎯</span><span><b>Mina svåra</b><small>Tränar de uppgifter du oftast svarar fel på.</small></span></button>
@@ -210,18 +255,21 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Spel -->
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="gright"><span class="info" id="info"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></span></div>
   <div id="raceBox" hidden>
     <div class="track">
-      <div class="lane"><span class="who">Du</span><span class="flag">🏁</span><div class="car" id="carMe"></div></div>
+      <div class="lane"><span class="who">Du</span><span class="flag" title="Kalaset">🎂</span><div class="car" id="carMe"></div></div>
       <div class="lane"><span class="who" id="ghostWho">Spöket</span><div class="car ghost" id="carGhost"></div></div>
     </div>
     <div class="racestatus" id="raceStatus"></div>
   </div>
   <div class="tbar" id="blitzBar" hidden><i id="blitzFill"></i></div>
+  <div class="jar" id="jar" hidden><span class="jarlbl">Godisburken</span><div class="jarin" id="jarIn"></div></div>
   <div class="ladder" id="ladder" hidden></div>
   <div class="qbox" id="qbox">
+    <div class="scene" id="scene" hidden></div>
     <div class="question" id="question"></div>
+    <div class="tf" id="tf" hidden><button data-tf="1">Stämmer</button><button data-tf="0">Stämmer inte</button></div>
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
   <div class="pad" id="pad">
@@ -272,6 +320,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <div class="toast" id="toast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -305,6 +354,13 @@ const REST=()=>!!data.rest;
 const tablesAvail=()=>REST()?range(2,10):range(1,10);
 function tableFacts(T,rest){return rest?range(1,10).flatMap(q=>range(1,T-1).map(r=>F(T,q,r))):range(1,10).map(q=>F(T,q));}
 
+/* ---------- Kalaset: elevens djur med partyhatt och en godissort per tabell ---------- */
+const pet=Object.assign(lasDjur(),{hat:'party'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
+const CANDY=['🍬','🍭','🍫','🍩','🧁','🍪','🍓','🍒','🍦','🍰'];
+const candyOf=d=>CANDY[(d-1)%10];
+const petFx=c=>{const p=$('#hpet');if(p){p.classList.remove('hop','hmm');void p.offsetWidth;p.classList.add(c);}};
+$('#homePet').innerHTML=owlSVG(pet);$('#hpet').innerHTML=owlSVG(pet);
+
 /* ---------- Navigering ---------- */
 let sel={tables:[],facts:null,label:''};
 let G=null;
@@ -319,7 +375,7 @@ function goHome(){if(location.search)history.replaceState(null,'',location.pathn
 function renderHome(){
   const rest=REST();
   $$('#segRest button').forEach(b=>b.setAttribute('aria-pressed',(b.dataset.v==='1')===rest));
-  $('#homeLead').textContent=rest?'Dela och se vad som blir över. Välj vilket tal du vill dela med.':'Välj vilket tal du vill dela med.';
+  $('#homeLead').textContent=rest?`Dela godsakerna rättvist. Det som blir över får ${lc}! Välj vilket tal du vill dela med.`:`Hjälp ${lc} att dela ut godsaker rättvist på kalaset. Välj vilket tal du vill dela med.`;
   $('#btnBoard').hidden=rest;
   $('#homeNote').textContent=rest?'Med rest: svara med hur många det blir i varje grupp och hur många som blir över.':'Brons: rätt minst en gång på alla uppgifter. Silver: rätt två gånger i rad. Guld: rätt två gånger i rad på under 3 sekunder.';
   const g=$('#tableGrid');g.innerHTML='';
@@ -328,10 +384,13 @@ function renderHome(){
     const b=document.createElement('button');
     b.className='tcard'+(T===3?' dark':'');b.style.setProperty('--c',tcolor(T));
     b.setAttribute('aria-label',`Delat med ${T}${m?', '+MEDALS[m]:''}`);
-    b.innerHTML=`<span class="num dnum"><small>delat med</small>${T}</span><span class="bar"><i style="width:${Math.round(known/fs.length*100)}%"></i></span>${m?`<span class="medal" style="background:${MCOL[m]}">★</span>`:''}`;
+    b.innerHTML=`<span class="num dnum"><small>delat med</small>${T}</span><span class="bar"><i style="width:${Math.round(known/fs.length*100)}%"></i></span>${m?`<span class="medal" style="background:${MCOL[m]}">★</span>`:''}${medal(T)>=1?`<span class="candy">${candyOf(T)}</span>`:''}`;
     b.onclick=()=>{sel={tables:[T],facts:null};openModes();};
     g.appendChild(b);
   });
+  /* Godisskålen: en ny godissort för varje tabell med brons */
+  const got=range(1,10).filter(T=>medal(T)>=1).length;
+  $('#bowl').innerHTML=`<b>Godisskålen: ${got} av 10 sorter</b><div class="sorts">${range(1,10).map(T=>medal(T)>=1?`<span title="Delat med ${T}">${candyOf(T)}</span>`:`<span class="no" title="Delat med ${T}">${T}</span>`).join('')}</div><small>Få brons i en tabell (utan rest), så får ${lc} en ny godsak till kalaset.</small>`;
 }
 $$('#segRest button').forEach(b=>b.onclick=()=>{data.rest=b.dataset.v==='1';save();mixSet.clear();renderHome();});
 
@@ -416,12 +475,13 @@ function startGame(mode,custom){
   $('#help').hidden=true;$('#pad').hidden=false;$('#qbox').hidden=false;
   if(mode==='race'){
     const col=sel.tables.length===1&&!custom&&!sel.facts?tcolor(sel.tables[0]):'#3D5AFE';
-    $('#carMe').innerHTML=carSvg(col);$('#carGhost').innerHTML=carSvg('#8E9AB5');
+    $('#carMe').innerHTML=owlSVG(pet);$('#carGhost').innerHTML=owlSVG(pet);
     setPos($('#carMe'),0);setPos($('#carGhost'),0);
     $('#carGhost').hidden=!G.best;$('#ghostWho').textContent=G.best?'Spöket (ditt rekord)':'Inget spöke än. Nu sätter du rekordet!';
     $('#raceStatus').textContent='';
   }
   if(mode==='blitz')$('#blitzFill').style.width='100%';
+  $('#jar').hidden=mode!=='blitz';$('#jarIn').innerHTML='';
   $('#question').innerHTML='';$('#feedback').textContent='';$('#qbox').className='qbox';$('#info').textContent='';
   if(document.activeElement)document.activeElement.blur();
   show('game');
@@ -453,22 +513,36 @@ function nextQ(){
   if(!G||G.over)return;G.retry=false;
   if(G.mode==='blitz'){let f;do{f=G.pool[Math.floor(Math.random()*G.pool.length)];}while(G.pool.length>1&&G.cur&&fk(f)===fk(G.cur));G.cur=f;}
   else{if(!G.queue.length)return finish();G.cur=G.queue.shift();}
+  /* I Öva blandas ibland andra sorters uppgifter in: saknat tal (__ / 4 = 6 och 24 / __ = 6) och "Stämmer det?" */
+  G.kind='q';
+  if(G.mode==='practice'&&!G.rest&&G.cur.d>1){const r=Math.random();G.kind=r<.14?'n':r<.26?'dv':r<.38?'tf':'q';}
+  if(G.kind==='tf'){const q=G.cur.q,w=[q+1,q-1,q+2,q-2].filter(v=>v>=0);G.tfv=Math.random()<.5?q:w[Math.floor(Math.random()*w.length)];}
   G.qStart=performance.now();showQ();
 }
 function showQ(){
-  G.inputs=['',''];G.slot=0;G.busy=false;
+  G.inputs=['',''];G.slot=0;G.busy=false;$$('#tf button').forEach(b=>b.className='');
   $('#feedback').textContent='';$('#qbox').className='qbox';renderQ();updateInfo();
 }
+function sceneHTML(f){
+  const n=nOf(f),c=candyOf(f.d);
+  return`<div class="pile${n>40?' big':''}">${n>40?`${n} ${c}`:c.repeat(n)}</div><div class="bags${f.d>6?' many':''}">${'<span class="bag"></span>'.repeat(f.d)}</div>`+
+    `<div class="scap">${n} godsaker ska delas i ${f.d} ${f.d===1?'påse':'påsar'}${f.r?'. Det som blir över får '+lc+'.':'.'}</div>`;
+}
 function renderQ(){
-  const f=G.cur,withRest=G.rest;
+  const f=G.cur,withRest=G.rest,kind=G.kind||'q';
   const box=i=>{const v=G.inputs[i];return`<span class="ans${G.slot===i&&!G.busy?' act':''}${v?' filled':''}" data-slot="${i}">${v||'?'}</span>`;};
   $('#question').className='question'+(withRest?' rest':'');
-  $('#question').innerHTML=frac(nOf(f),f.d)+'<span>=</span>'+box(0)+(withRest?'<span class="restw">rest</span>'+box(1):'');
+  const sc=$('#scene'),showScene=kind==='q'&&(G.mode==='practice'||G.mode==='order');sc.hidden=!showScene;if(showScene&&sc.dataset.k!==fk(f)){sc.innerHTML=sceneHTML(f);sc.dataset.k=fk(f);}
+  $('#tf').hidden=kind!=='tf';$('#pad').hidden=kind==='tf'||!$('#help').hidden;
+  if(kind==='n')$('#question').innerHTML=frac(box(0),f.d)+'<span>=</span><span>'+f.q+'</span>';
+  else if(kind==='dv')$('#question').innerHTML=frac(nOf(f),box(0))+'<span>=</span><span>'+f.q+'</span>';
+  else if(kind==='tf')$('#question').innerHTML=frac(nOf(f),f.d)+'<span>=</span><span>'+G.tfv+'</span><span class="q">?</span>';
+  else $('#question').innerHTML=frac(nOf(f),f.d)+'<span>=</span>'+box(0)+(withRest?'<span class="restw">rest</span>'+box(1):'');
   $('#okBtn').textContent=withRest&&G.slot===0?'Nästa':'OK';
 }
 $('#question').addEventListener('click',e=>{const a=e.target.closest('.ans');if(!a||!G||G.busy)return;G.slot=+a.dataset.slot;renderQ();});
 function press(k){
-  if(!G||G.busy||G.over)return;
+  if(!G||G.busy||G.over||G.kind==='tf')return;
   if(k==='del'){if(!G.inputs[G.slot]&&G.slot===1)G.slot=0;else G.inputs[G.slot]=G.inputs[G.slot].slice(0,-1);}
   else if(k==='ok'){
     if(G.rest&&G.slot===0){if(G.inputs[0]!==''){G.slot=1;}renderQ();return;}
@@ -484,21 +558,30 @@ const ansTxt=f=>`${f.q}${f.r?` rest ${f.r}`:''}`;
 const miniHTML=(f,withAns=true)=>`<span class="mini">${frac(nOf(f),f.d)} = ${withAns?ansTxt(f):''}</span>`;
 function submit(){
   if(!G||G.busy||G.over)return;
-  const f=G.cur,gq=+G.inputs[0],gr=G.rest?+G.inputs[1]:0,ok=gq===f.q&&gr===f.r,ms=performance.now()-G.qStart,key=fk(f);
-  if(!G.retry){record(f,ok,ms);save();const w=ok?ms:ms+8000,s=G.slow[key];if(!s||w>s.w)G.slow[key]={f,w};if(!ok)G.missed.add(key);}
-  G.busy=true;renderQ();
+  const f=G.cur,gq=+G.inputs[0],gr=G.rest?+G.inputs[1]:0,kind=G.kind||'q';
+  const ok=kind==='n'?gq===nOf(f):kind==='dv'?gq===f.d:gq===f.q&&gr===f.r;
+  resolve(ok,G.rest&&kind==='q'?`${gq} rest ${gr}`:String(gq));
+}
+$$('#tf button').forEach(b=>b.onclick=()=>{if(!G||G.busy||G.over||G.kind!=='tf')return;const yes=b.dataset.tf==='1',ok=yes===(G.tfv===G.cur.q);
+  b.classList.add(ok?'right':'bad');resolve(ok,yes?'Stämmer':'Stämmer inte');});
+function resolve(ok,given){
+  const f=G.cur,ms=performance.now()-G.qStart,key=fk(f);
+  /* bara vanliga uppgifter räknas till medaljerna; de inblandade sorterna är extra träning */
+  if(!G.retry){if((G.kind||'q')==='q'){record(f,ok,ms);save();const w=ok?ms:ms+8000,s=G.slow[key];if(!s||w>s.w)G.slow[key]={f,w};}if(!ok)G.missed.add(key);}
+  G.busy=true;renderQ();petFx(ok?'hop':'hmm');
   if(ok){
     G.correct++;G.streak++;$('#qbox').classList.add('ok');window.Ljud&&Ljud.ok();
     $('#feedback').textContent=G.streak>=5?`${G.streak} rätt i rad!`:PRAISE[Math.floor(Math.random()*PRAISE.length)];
     if(G.mode==='order'){const s=document.createElement('span');s.innerHTML=miniHTML(f);s.style.setProperty('--c',tcolor(f.d));$('#ladder').classList.toggle('dark',f.d===3);$('#ladder').appendChild(s);}
     if(G.mode==='race'){G.times.push(elapsed());setPos($('#carMe'),G.correct/20);updateInfo();if(G.correct>=20){setTimeout(finish,500);return;}}
+    if(G.mode==='blitz'&&G.correct<=90)$('#jarIn').insertAdjacentHTML('beforeend',`<span>${candyOf(f.d)}</span>`);
     setTimeout(nextQ,G.mode==='blitz'?200:450);
   }else{
     G.streak=0;$('#qbox').classList.add('bad');window.Ljud&&Ljud.bad();
     if(G.mode==='blitz'){$('#feedback').innerHTML=`Rätt svar: ${ansTxt(f)}`;setTimeout(nextQ,1300);}
     else if(G.mode==='race'){$('#feedback').textContent='Försök igen!';G.retry=true;
       setTimeout(()=>{if(G&&!G.over){G.inputs=['',''];G.slot=0;G.busy=false;$('#qbox').className='qbox';$('#feedback').textContent='';renderQ();}},600);}
-    else showHelp(f,G.rest?`${gq} rest ${gr}`:String(gq));
+    else showHelp(f,given);
   }
 }
 
@@ -518,13 +601,15 @@ function showHelp(f,given){
   $('#pad').hidden=true;$('#qbox').hidden=true;
   $('#helpSaid').textContent=`Du svarade ${given}. Så här blir det:`;
   $('#helpFact').innerHTML=frac(nOf(f),f.d)+`<span>= ${ansTxt(f)}</span>`;
-  const size=Math.max(9,Math.min(16,Math.floor(220/Math.max(10,f.q*f.d/2)*1.6)));
-  const cols=Math.min(5,Math.max(1,f.q));
-  let h='';for(let i=0;i<f.d;i++)h+=`<div class="grp" style="--cols:${cols}">${'<i></i>'.repeat(f.q)}</div>`;
-  if(f.r)h+=`<div class="grp over" style="--cols:${Math.min(5,f.r)}"><small>över</small>${'<i></i>'.repeat(f.r)}</div>`;
+  const size=Math.max(12,Math.min(18,Math.floor(220/Math.max(10,f.q*f.d/2)*1.6)));
+  const cols=Math.min(5,Math.max(1,f.q)),c=candyOf(f.d),sp=`<span>${c}</span>`;
+  let h='';for(let i=0;i<f.d;i++)h+=`<div class="grp bagg" style="--cols:${cols}">${sp.repeat(f.q)}</div>`;
+  if(f.r)h+=`<div class="grp over bagg" style="--cols:${Math.min(5,f.r)}"><small>till ${lc}</small>${sp.repeat(f.r)}</div>`;
   const g=$('#groups');g.innerHTML=h;g.style.setProperty('--d',size+'px');g.style.setProperty('--c',tcolor(f.d));
-  $('#helpCap').textContent=f.r?`${nOf(f)} delat i ${f.d} lika stora grupper: ${f.q} i varje och ${f.r} över.`:`${nOf(f)} delat i ${f.d} lika stora grupper blir ${f.q} i varje.`;
-  $('#helpTip').textContent='Tips: '+tipFor(f);
+  $('#helpCap').textContent=f.r?`${nOf(f)} godsaker i ${f.d} påsar: ${f.q} i varje och ${f.r} över till ${lc}.`:`${nOf(f)} godsaker i ${f.d} påsar blir ${f.q} i varje påse.`;
+  const k=G.kind||'q',pre=k==='tf'?(G.tfv===f.q?`Det stämmer: ${nOf(f)} delat med ${f.d} är ${f.q}. `:`${nOf(f)} delat med ${f.d} är ${f.q}, inte ${G.tfv}. `)
+    :k==='n'?`Talet som saknas är ${nOf(f)}, för ${f.d} · ${f.q} = ${nOf(f)}. `:k==='dv'?`Talet som saknas är ${f.d}: ${nOf(f)} delat i ${f.d} påsar blir ${f.q} i varje. `:'';
+  $('#helpTip').textContent='Tips: '+pre+tipFor(f);
   $('#help').hidden=false;$('#helpGo').focus({preventScroll:true});
 }
 function contHelp(){
@@ -552,14 +637,14 @@ function finish(){
   if(G.mode==='race'){
     const best=G.best,rec=!!k&&(!best||t<best.time);
     if(rec){data.race[k]={time:Math.round(t),pace:G.times.map(Math.round)};save();}
-    title=rec?(best?'Nytt rekord!':'Första racet klart!'):'I mål!';big=fmt(t);
+    title=rec?(best?'Nytt rekord!':'Första racet klart!'):'Framme på kalaset!';big=fmt(t);
     if(k)sub=rec&&best?`Du slog ditt gamla rekord med ${fmt(best.time-t)}.`:rec?'Nästa gång kör du mot ditt spöke.':`Ditt rekord är ${fmt(best.time)}. Bara ${fmt(t-best.time)} ifrån!`;
     party=rec;
   }else if(G.mode==='blitz'){
     const best=G.bestBlitz,rec=!!k&&G.correct>best;
     if(rec){data.blitz[k]=G.correct;save();}
     title=rec?'Nytt rekord!':'Tiden är slut!';big=G.correct;
-    sub='rätt på 60 sekunder.'+(rec&&best?` Förra rekordet var ${best}.`:!rec&&best?` Ditt rekord är ${best}.`:'');party=rec;
+    sub='godsaker i burken på 60 sekunder.'+(rec&&best?` Förra rekordet var ${best}.`:!rec&&best?` Ditt rekord är ${best}.`:'');party=rec;
   }else{
     const right=G.total-G.missed.size;title=right===G.total?'Alla rätt direkt!':'Klart!';
     big=`${right}/${G.total}`;sub='rätt på första försöket.';party=right===G.total;
