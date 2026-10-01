@@ -99,6 +99,8 @@ function owlSVG(cfg,cls,standalone){
   if(cfg.hat==="troll")s+=`<path d="M40 30 L66 -18 L80 30 Z" fill="#3D5AFE"/><ellipse cx="60" cy="31" rx="32" ry="6" fill="#2A44C9"/><path d="M58 6l1.5 3 3.3.4-2.4 2.3.6 3.3-3-1.6-3 1.6.6-3.3-2.4-2.3 3.3-.4z M68 18l1.2 2.4 2.6.3-1.9 1.8.5 2.6-2.4-1.3-2.4 1.3.5-2.6-1.9-1.8 2.6-.3z" fill="#FFC93C"/>`;
   /* kockmössa: bara för Bageriet i Multiplikation, går inte att välja i Garderoben */
   if(cfg.hat==="kock")s+=`<rect x="34" y="22" width="52" height="13" rx="3" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><circle cx="42" cy="12" r="12" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><circle cx="78" cy="12" r="12" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><circle cx="60" cy="4" r="15" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><rect x="36" y="14" width="48" height="12" fill="#fff"/><path d="M48 24 V31 M60 24 V31 M72 24 V31" stroke="#E6ECF7" stroke-width="2"/>`;
+  /* konduktörsmössa: bara för Stationen i Klockan, går inte att välja i Garderoben */
+  if(cfg.hat==="konduktor")s+=`<path d="M36 31 L37 13 Q60 5 83 13 L84 31 Z" fill="#1D2B53"/><rect x="36" y="24" width="48" height="6" fill="#F2B707"/><path d="M30 31 Q60 26 90 31 Q88 39 60 37 Q32 39 30 31 Z" fill="#0E1735"/><circle cx="60" cy="17" r="5" fill="#F2B707" stroke="#C99A0A" stroke-width="1.5"/>`;
   if(cfg.hat==="krona")s+=`<path d="M38 33 L38 12 L49 22 L60 4 L71 22 L82 12 L82 33 Z" fill="#F2C230" stroke="#C99A0A" stroke-width="2.5" stroke-linejoin="round"/><circle cx="60" cy="26" r="4" fill="#E5484D"/><circle cx="47" cy="27" r="3" fill="#3D8BFD"/><circle cx="73" cy="27" r="3" fill="#2BB673"/>`;
   return s+"</svg>";
 }
