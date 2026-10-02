@@ -93,6 +93,8 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 ## Idéer som väntar
 
+- **Gemensamt sidhuvud och rätt bakåtknapp (TEST pågår):** `huvud.js` i roten (`MPHuvud`, `MPNav`), provas i `test/` (kopia av startsidan) och `klockan/test/` (kopia av Klockan). Sidhuvudet: logga (hem), sidans namn, elevens djur med stjärnor (till garderoben), ljudknapp; krymper till bara ✕ under spel. `MPNav` lägger varje skärm i webbläsarens historik så att mobilens bakåt går ett steg tillbaka i stället för ut ur övningen. Testsidan sparar stjärnorna i `matteportalen-stjarnor` åt sidhuvudet. Ska läraren välja det byggs det in på alla sidor och testmapparna tas bort.
+
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
 - **Blandade uppgifter med saknat tal** (`__ · 5 = 15`, `__ + 7 = 12`) och "Stämmer det?" i fler övningar (addition, multiplikation osv.). Prövas först i Division (Kalaset); läraren gillar idén.
 - **Egen värld per övning**: klart i Division (Kalaset), Multiplikation (Bageriet), Lilla plus (Hönsgården) och Tiotal (Bussen). Kvar att fundera på: övriga övningar.
