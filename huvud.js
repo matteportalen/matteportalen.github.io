@@ -12,7 +12,7 @@
 .mph button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation}
 .mph-logo{display:flex;align-items:center;gap:6px;font-weight:800;font-size:1.2rem;line-height:1;letter-spacing:-.3px;white-space:nowrap;min-height:44px}
 .mph-logo b{color:#FFC93C}
-.mph-mark{width:30px;height:30px;border-radius:9px;background:#fff;color:#3D5AFE;display:grid;place-items:center;font-size:1.1rem;box-shadow:0 2px 0 rgba(29,43,83,.25)}
+.mph-mark{width:34px;height:34px;display:block;flex:none;filter:drop-shadow(0 2px 0 rgba(29,43,83,.25))}
 .mph-x{display:none;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.95)!important;color:#1D2B53!important;font-weight:800;font-size:1.2rem;box-shadow:0 3px 0 rgba(29,43,83,.25)}
 .mph-title{flex:1;min-width:0;font-weight:800;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
 .mph-sep{opacity:.6;margin:0 2px}
@@ -26,6 +26,9 @@
 @media (max-width:520px){.mph.has-title .mph-logo span.t{display:none}}
 @media (max-width:340px){.mph-logo span.t{display:none}}
 @media print{.mph{display:none}}`;
+  /* Loggan: Mattenyckeln, fyra räknesätt i färgade rutor */
+  const LOGO='<svg class="mph-mark" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#FF6B6B"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><g stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M29.5 21v17M21 29.5h17M62 29.5h17M23.5 64.5l12 12M35.5 64.5l-12 12M62 70.5h17"/></g><circle cx="70.5" cy="62" r="3.6" fill="#fff"/><circle cx="70.5" cy="79" r="3.6" fill="#fff"/></svg>';
+  window.MPLogo=LOGO;
   const stars=()=>{try{const n=+localStorage.getItem('matteportalen-stjarnor');return isFinite(n)?n:0}catch(e){return 0}};
   window.MPHuvud=function(o){
     o=o||{};
@@ -33,7 +36,7 @@
     const h=document.createElement('header');h.className='mph'+(o.titel?' has-title':'');
     const pet=window.lasDjur&&window.owlSVG?owlSVG(lasDjur()):'';
     h.innerHTML=`<button class="mph-x" aria-label="Avsluta">✕</button>
-      <a class="mph-logo" href="${o.hem||'./'}" aria-label="Till startsidan"><span class="mph-mark">＋</span><span class="t">Matte-<b>Portalen</b></span></a>
+      <a class="mph-logo" href="${o.hem||'./'}" aria-label="Till startsidan">${LOGO}<span class="t">Matte-<b>Portalen</b></span></a>
       <span class="mph-title">${o.titel?`<span class="mph-sep">›</span> ${o.ikon?o.ikon+' ':''}${o.titel}`:''}</span>
       <span class="mph-right"><a class="mph-pet" href="${(o.hem||'./')+'#garderob'}" aria-label="Ditt djur och dina stjärnor">${pet}<span>⭐ <span class="mph-n">${stars()}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
     document.body.prepend(h);
