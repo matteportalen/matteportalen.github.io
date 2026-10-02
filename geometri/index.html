@@ -124,6 +124,12 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .mgrid .fbody::before{left:2px;transform:rotate(-28deg)}
 .mgrid .fbody::after{right:2px;transform:rotate(28deg)}
 /* Spegelmåla */
+.pbanner{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:22px;padding:14px 16px;margin:4px 0 14px;color:#fff;background:linear-gradient(135deg,#7B61FF,#FF5FA2);box-shadow:0 6px 0 #5A3FD6}
+.pbanner:active{transform:translateY(3px);box-shadow:0 3px 0 #5A3FD6}
+.pbanner .pbi{width:84px;height:72px;flex:none;background:#fff;border-radius:16px;padding:4px}
+.pbanner .pbi svg{width:100%;height:100%}
+.pbanner b{display:block;font-size:1.5rem;line-height:1.1}.pbanner small{display:block;font-size:1rem;opacity:.95}
+.pbanner .pnew{display:inline-block;background:#fff;color:#7B61FF;border-radius:999px;padding:0 10px;font-size:.8rem;font-weight:800;transform:rotate(-3deg);margin-bottom:2px}
 .pmirror{display:flex;gap:6px}
 .pmirror button,.pbrush button,.pact button{background:var(--card);border-radius:12px;padding:6px 10px;font-weight:800;font-size:.95rem;box-shadow:0 3px 0 var(--line);min-height:42px}
 .pmirror button[aria-pressed="true"],.pbrush button[aria-pressed="true"]{background:var(--ink);color:#fff}
@@ -152,6 +158,18 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gbtn{display:flex;gap:6px;justify-content:center;margin-top:4px}
 .gbtn button{background:var(--card);border-radius:10px;padding:4px 10px;font-weight:800;box-shadow:0 2px 0 var(--line);min-height:36px}
 .gbtn button.sure{background:var(--bad);color:#fff}
+/* På dator: duken så stor som skärmen tillåter, verktygen i en spalt bredvid */
+@media (min-width:900px) and (min-height:540px){
+  .wrap:has(#paint:not([hidden])){max-width:1280px;padding-bottom:12px}
+  #paint:not([hidden]){display:grid;grid-template-columns:auto 290px;grid-template-areas:"top top" "board tools";gap:10px 22px;align-items:start;justify-content:center}
+  #paint .gtop{grid-area:top}
+  #paint .pwrap{grid-area:board;width:min(calc(100vh - 176px),calc(100vw - 380px),940px);margin:0}
+  #paint #ptools,#paint #ptestBar{grid-area:tools;padding-top:4px}
+  #paint .pbrush,#paint .pact,#paint .pcolors{justify-content:flex-start;margin-top:12px}
+  #paint .pbrush button,#paint .pact button{font-size:1.05rem;min-height:48px;padding:6px 12px}
+  #paint .pcolors button{width:44px;height:44px}
+  #paint .ppet{width:84px;right:-28px}
+}
 .gempty,.gnote{color:var(--muted);font-weight:700;text-align:center}.gnote{font-size:.85rem;margin:10px 0 0}
 @media (prefers-reduced-motion:reduce){.pet svg{animation:none !important}}
 </style>
@@ -161,6 +179,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <section id="home" class="screen">
   <h1>Geometri</h1>
   <p class="lead">Former, kroppar, mönster, symmetri och mycket mer.</p>
+  <button class="pbanner" id="pBanner"><span class="pbi" aria-hidden="true"></span><span><span class="pnew">Nytt!</span><b>🎨 Spegelmåla</b><small>Rita med en magisk spegel. Allt du ritar blir symmetriskt!</small></span></button>
   <div class="areas" id="areas"></div>
   <p class="note">Tre stjärnor får du om alla tio uppgifter blir rätt direkt.</p>
 </section>
@@ -568,17 +587,17 @@ const AREAS=[
   {id:"kroppar",name:"Kroppar",desc:"Kub, klot, cylinder, kon …",ak:"Åk 1–2",c:"#3D8BFD",gen:genKroppar},
   {id:"horn",name:"Hörn och sidor",desc:"Räkna hörn och sidor på skyltar.",ak:"Åk 1–2",c:"#2BB673",gen:genHorn},
   {id:"stracka",name:"Punkt, linje och sträcka",desc:"Namnge figurerna och rita sträckor.",ak:"Åk 3",c:"#7B61FF",gen:genStracka},
-  {id:"symmetri",name:"Symmetri",desc:"Fjärilar och nyckelpigor.",ak:"Åk 2–3",c:"#FF5FA2",gen:genSym},
-  {id:"spegel",name:"Spegelmåla",desc:"Rita, och spegeln ritar andra halvan.",ak:"Åk 1–3",c:"#7B61FF",tool:true},
   {id:"monster",name:"Mönster",desc:"Pärlhalsband: vad kommer sedan?",ak:"Åk 1",c:"#FF9F43",gen:genMonster},
+  {id:"symmetri",name:"Symmetri",desc:"Fjärilar och nyckelpigor.",ak:"Åk 2–3",c:"#FF5FA2",gen:genSym},
   {id:"matt",name:"Omkrets och area",desc:"Staket runt hagen och odlingens area.",ak:"Åk 3",c:"#17AFC4",gen:genMatt}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
-function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
+function openHome(){G=null;$("pBanner").querySelector(".pbi").innerHTML=ICON.spegel;if("speechSynthesis" in window)speechSynthesis.cancel();
   $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${ICON[a.id]}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${a.tool?'<small class="free">🎨 Fritt verktyg</small>':starHtml(data.stars[a.id]||0)}</button>`).join("");
   show("home");}
-$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;if(b.dataset.a==="spegel")return openPaint();start(AREAS.find(a=>a.id===b.dataset.a));};
+$("pBanner").onclick=()=>openPaint();
+$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;start(AREAS.find(a=>a.id===b.dataset.a));};
 
 /* ---------- Uppläsning ---------- */
 let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
