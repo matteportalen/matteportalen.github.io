@@ -101,6 +101,8 @@ function owlSVG(cfg,cls,standalone){
   if(cfg.hat==="kock")s+=`<rect x="34" y="22" width="52" height="13" rx="3" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><circle cx="42" cy="12" r="12" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><circle cx="78" cy="12" r="12" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><circle cx="60" cy="4" r="15" fill="#fff" stroke="#C6D6F2" stroke-width="2"/><rect x="36" y="14" width="48" height="12" fill="#fff"/><path d="M48 24 V31 M60 24 V31 M72 24 V31" stroke="#E6ECF7" stroke-width="2"/>`;
   /* konduktörsmössa: bara för Stationen i Klockan, går inte att välja i Garderoben */
   if(cfg.hat==="konduktor")s+=`<path d="M36 31 L37 13 Q60 5 83 13 L84 31 Z" fill="#1D2B53"/><rect x="36" y="24" width="48" height="6" fill="#F2B707"/><path d="M30 31 Q60 26 90 31 Q88 39 60 37 Q32 39 30 31 Z" fill="#0E1735"/><circle cx="60" cy="17" r="5" fill="#F2B707" stroke="#C99A0A" stroke-width="1.5"/>`;
+  /* bygghjälm: bara för kranföraren i Tornbygget, går inte att välja i Garderoben */
+  if(cfg.hat==="bygg")s+=`<path d="M37 31 Q37 7 60 7 Q83 7 83 31 Z" fill="#FFC93C"/><rect x="31" y="27" width="58" height="7" rx="3.5" fill="#F2B707"/><rect x="56.5" y="7" width="7" height="22" rx="3.5" fill="#FFE07A"/><path d="M45 12 Q41 20 41 29 M75 12 Q79 20 79 29" stroke="#E0A800" stroke-width="2" fill="none"/>`;
   if(cfg.hat==="krona")s+=`<path d="M38 33 L38 12 L49 22 L60 4 L71 22 L82 12 L82 33 Z" fill="#F2C230" stroke="#C99A0A" stroke-width="2.5" stroke-linejoin="round"/><circle cx="60" cy="26" r="4" fill="#E5484D"/><circle cx="47" cy="27" r="3" fill="#3D8BFD"/><circle cx="73" cy="27" r="3" fill="#2BB673"/>`;
   return s+"</svg>";
 }

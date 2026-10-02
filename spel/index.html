@@ -77,6 +77,10 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .towerpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:620px;margin:8px auto 0;padding:0 12px}
 .towerpad button{height:50px;border-radius:14px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.6rem;font-weight:800}
 .towerpad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.towerpad{position:relative}
+.towerpad .dropbtn{height:auto;position:absolute;inset:0 12px;border-radius:20px;background:linear-gradient(180deg,#FFC93C,#FF9F43);color:#1D2B53;font-size:2.2rem;font-weight:800;box-shadow:0 6px 0 #C96A0C;animation:dpulse 1s ease-in-out infinite}
+.towerpad .dropbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #C96A0C}
+@keyframes dpulse{50%{filter:brightness(1.08)}}
 .towerpad .okb{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.3rem}
 .tans{display:inline-block;min-width:1.6em;padding:0 .15em;border-radius:12px;border:3px solid var(--accent);color:var(--accent);background:#EEF1FF;line-height:1.1}
 .gamecard.kiosk{background:linear-gradient(135deg,#FF5FA2,#7B61FF);box-shadow:0 6px 0 #4B3AA8;margin-top:14px}
@@ -184,7 +188,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Kör i filen med rätt svar och ta dig i mål!</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
-  <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Varje rätt svar bygger tornet högre. Kommer du ända upp till månen?</small></span></button>
+  <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Svara rätt, släpp balken från lyftkranen och bygg ända till månen. Prick rakt, annars rasar tornet!</small></span></button>
   <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Kiosken</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
   <div class="soon">Fler spel kommer!</div>
 </div>
@@ -207,7 +211,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="stage"><canvas id="cv" aria-label="Spelplan"></canvas><div class="overlay" id="count" hidden></div></div>
   <div class="carbtns" id="carBtns" hidden><button id="carL" aria-label="Byt fil åt vänster">◀</button><button class="turbo" id="carTurbo">🚀 Turbo</button><button id="carR" aria-label="Byt fil åt höger">▶</button></div>
   <div class="spacebtns" id="spaceBtns" hidden><button id="aimL" aria-label="Vrid kanonen åt vänster">↺</button><button class="fire" id="fireBtn">Skjut!</button><button id="aimR" aria-label="Vrid kanonen åt höger">↻</button></div>
-  <div class="towerpad" id="towerPad" hidden><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okb">OK</button></div>
+  <div class="towerpad" id="towerPad" hidden><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okb">OK</button><button class="dropbtn" id="dropBtn" hidden>Släpp! 🏗️</button></div>
   <p class="hint" id="hint">Tryck högt, i mitten eller lågt för att flyga dit.</p>
 </div>
 
@@ -319,7 +323,7 @@ function renderChoose(){
   let list=CATS.filter(c=>(game==="mem"||!c.memOnly)&&!(rush&&c.noRush));
   if(game==="kiosk")list=[{id:"tiotal",name:"Priser upp till 20 kr",t:"20",c:"#FF9F43",desc:"Handla och räkna växel med små pengar"},{id:"hundra",name:"Priser upp till 100 kr",t:"100",c:"#17AFC4",desc:"Större summor och växel upp till 100 kr"}];
   if(!list.find(c=>c.id===cat))cat=list[0].id;
-  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&!["tower","kiosk"].includes(game)?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="bub"?"poäng":"rätt"}</small>`:""}${game==="bub"&&r&&r.bana?`<small>Klarat bana ${r.bana}</small>`:""}</button>`;}).join("");
+  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&game!=="kiosk"?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="bub"?"poäng":game==="tower"?"våningar":"rätt"}</small>`:""}${game==="bub"&&r&&r.bana?`<small>Klarat bana ${r.bana}</small>`:""}</button>`;}).join("");
   const C=CATS.find(c=>c.id===cat);$("tables").hidden=!C.tables;
   const bs=game==="bub"&&store[cat];$("bubOpt").hidden=!(bs&&bs.bana);
   if(bs&&bs.bana){const f=data.bubFrom==="cont"?"cont":"1";$("bubChips").innerHTML=`<button data-f="1" aria-pressed="${f==="1"}">Bana 1</button><button data-f="cont" aria-pressed="${f==="cont"}">Fortsätt på bana ${bs.bana+1}</button>`;}
@@ -749,138 +753,272 @@ function finishFrog(won){
   showOnly("result");if(won||rec){window.Ljud&&Ljud.fanfare();confetti();}
 }
 
-/* ---------- Tornbygget ---------- */
+/* ---------- Tornbygget ----------
+   Rätt svar: lyftkranen hämtar en stålbalk (fackverk) som gungar i kroken. Eleven trycker Släpp! i rätt ögonblick.
+   Fysiken sköts av Matter.js (cdnjs, MIT): den fallande balken kan glida, tippa och ramla av på riktigt.
+   En balk som landat låses fast (höga staplar skakar annars sönder i fysikmotorn). Efter varje balk kollas balansen:
+   tyngdpunkten av allt ovanför en balk måste ligga över den balken, annars släpps allt ovanför loss och rasar.
+   Tre liv: en balk som ramlar av kostar ett liv. Rasar tornet är spelet slut. Målet är månen på 20 våningar. */
 let T=null,traf=0;
 const TGOAL=20;
 const ZONES=[{from:0,name:"🌳 Marken"},{from:5,name:"☁️ Molnen"},{from:10,name:"✈️ Högt upp"},{from:15,name:"🚀 Rymden"}];
 const zoneOf=n=>ZONES.filter(z=>n>=z.from).pop();
-const BLOCKCOL=["#FF6B6B","#FF9F43","#F7C531","#2BB673","#17AFC4","#3D8BFD","#7B61FF","#FF5FA2"];
-function stopTower(){if(T)T.over=true;cancelAnimationFrame(traf);T=null;$("towerPad").hidden=true;$("game").classList.remove("tower");window.Ljud&&Ljud.space.stop();clearTimeout(chirpT);}
+const BLOCKCOL=["#FF6B6B","#FFC93C","#3D8BFD","#2BB673","#FF9F43","#7B61FF","#17AFC4","#FF5FA2"]; // två balkar i rad har aldrig samma färg
+const TW=360,BW=120,BH=40,FH=24; // världens bredd, balkens bredd och höjd, grundens höjd (världsenheter)
+const MATTER_URL="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter.min.js";
+const MATTER_SRI="sha512-6+7rTBmR6pRFe9fa0vCFjFaHZj/XYa7774bEBzRtxgdpIJOS++R3cKd6Prg/eJmxtsJotd8KAg4g57uuVQsZKA==";
+const crewImg=new Image();crewImg.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(Object.assign({},owlCfg,{hat:"bygg"}),"",true));
+function loadMatter(){return new Promise((ok,no)=>{if(window.Matter)return ok();const s=document.createElement("script");s.src=MATTER_URL;s.integrity=MATTER_SRI;s.crossOrigin="anonymous";s.referrerPolicy="no-referrer";s.onload=()=>ok();s.onerror=no;document.head.appendChild(s);});}
+function stopTower(){if(T)T.over=true;cancelAnimationFrame(traf);clearTimeout(chirpT);if(T&&T.tm)T.tm.forEach(clearTimeout);T=null;$("towerPad").hidden=true;$("dropBtn").hidden=true;$("game").classList.remove("tower");window.Ljud&&Ljud.space.stop();}
 let chirpT=0;
 function chirpLoop(){clearTimeout(chirpT);if(!T||T.over)return;const z=T.n;if(z>=5&&z<=11&&!document.hidden)window.Ljud&&Ljud.chirp();chirpT=setTimeout(chirpLoop,1800+Math.random()*2500);}
-function towerGeom(){const bh=Math.min(H*.085,44),bw=Math.min(W*.36,150),ground=H*.9,moonR=Math.min(W*.3,130);return{bh,bw,ground,moonR};}
-function startTower(){
+const tLater=(f,ms)=>{const g=T;const id=setTimeout(()=>{if(T===g&&!g.over)f();},ms);g.tm.push(id);};
+// Kranen gungar snabbare och bredare ju högre tornet blir
+const swingAmp=n=>.2+n*.012,swingW=n=>1.9+n*.07;
+const topW=n=>-FH-n*BH; // världens y för tornets topp med n balkar
+
+async function startTower(){
   if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
   OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=false;$("game").classList.add("tower");
-  $("hint").textContent="Skriv svaret och tryck OK. Varje rätt svar bygger tornet högre!";
+  $("hint").textContent="Svara rätt, så hämtar kranen en balk. Tryck Släpp! när balken är rakt ovanför tornet.";
   showOnly("game");resize();
-  T={n:0,miss:0,first:true,input:"",task:null,blocks:[],drop:null,fall:null,cam:0,wob:0,parts:[],t:0,over:false,done:false,owlY:0,owlHop:0,zoneMsg:null,
+  const me={};T=me;
+  $("q").textContent="Kranen startar …";$("q").className="q";$("hearts").textContent="";$("score").textContent="";
+  try{await loadMatter();}catch(e){if(T===me){$("q").innerHTML='Tornbygget behöver internet för att starta. <span class="qnote">Kontrollera uppkopplingen och försök igen.</span>';}return;}
+  if(T!==me)return;
+  const M=Matter,engine=M.Engine.create({enableSleeping:true,positionIterations:30,velocityIterations:14});
+  const ground=M.Bodies.rectangle(TW/2,40,4000,80,{isStatic:true,friction:1,collisionFilter:{category:1,mask:7}});
+  const base=M.Bodies.rectangle(TW/2,-FH/2,BW+30,FH,{isStatic:true,friction:1,slop:.01,collisionFilter:{category:2,mask:7}});
+  M.Composite.add(engine.world,[ground,base]);
+  Object.assign(me,{M,engine,n:0,lives:3,lost:0,miss:0,input:"",task:null,state:"ask",placed:[],cur:null,beam:null,cam:null,parts:[],t:0,over:false,done:false,
+     acc:0,lamp:null,shake:0,hop:0,lean:0,leanDir:1,zoneMsg:null,tm:[],swingT:0,
      birds:Array.from({length:5},()=>({x:Math.random(),lvl:6.5+Math.random()*4.5,v:.04+Math.random()*.05,ph:Math.random()*6})),
      clouds:Array.from({length:9},()=>({x:Math.random(),lvl:6+Math.random()*6,s:.6+Math.random()*.8})),
      stars:Array.from({length:90},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.5,tw:Math.random()*6})),
-     ship:{x:-.2},last:performance.now()};
+     ship:{x:-.2},last:performance.now()});
   towerHud();towerTask();traf=requestAnimationFrame(towerFrame);chirpLoop();
 }
-function towerHud(){$("hearts").textContent=zoneOf(T.n).name;$("score").textContent=`${T.n} / ${TGOAL}`;$("progFill").style.width=(T.n/TGOAL*100)+"%";}
-function towerTask(){T.task=gen();T.input="";T.first=true;T.busy=false;towerQ();}
+function towerHud(){$("hearts").textContent="❤️".repeat(T.lives)+"🤍".repeat(3-T.lives);$("score").textContent=`${T.n} / ${TGOAL}`;$("progFill").style.width=(T.n/TGOAL*100)+"%";}
+function towerTask(){T.task=gen();T.input="";T.state="ask";$("dropBtn").hidden=true;towerQ();}
 function towerQ(state){$("q").innerHTML=T.task.q+`<span>=</span><span class="tans${state?" "+state:""}">${T.input||"?"}</span>`;$("q").className="q"+(state==="ok"?" ok":state==="bad"?" bad":"");}
 function towerKey(k){
-  if(!T||T.busy||T.over)return;
+  if(!T||T.over||T.state!=="ask"||k==null)return;
   if(k==="del")T.input=T.input.slice(0,-1);
   else if(k==="ok"){if(T.input!=="")towerSubmit();return;}
   else if(T.input.length<3)T.input+=k;
   towerQ();
 }
 const padGame=()=>T?towerKey:KI?kioskKey:null;
-$("towerPad").onclick=e=>{const b=e.target.closest("button"),f=padGame();if(b&&f)f(b.dataset.k);};
-document.addEventListener("keydown",e=>{const f=padGame();if(!f||$("game").hidden)return;if(/^\d$/.test(e.key))f(e.key);else if(e.key==="Backspace"){e.preventDefault();f("del");}else if(e.key==="Enter"){e.preventDefault();f("ok");}});
+$("towerPad").onclick=e=>{const b=e.target.closest("button[data-k]"),f=padGame();if(b&&f)f(b.dataset.k);};
+document.addEventListener("keydown",e=>{
+  if($("game").hidden)return;
+  if(T&&T.state==="swing"&&(e.key===" "||e.key==="Enter")){e.preventDefault();towerDrop();return;}
+  const f=padGame();if(!f)return;if(/^\d$/.test(e.key))f(e.key);else if(e.key==="Backspace"){e.preventDefault();f("del");}else if(e.key==="Enter"){e.preventDefault();f("ok");}});
 function towerSubmit(){
-  const g=towerGeom(),ok=+T.input===T.task.a;T.busy=true;
-  const col=BLOCKCOL[T.n%BLOCKCOL.length],x=W/2+(Math.random()-.5)*14,topY=g.ground-T.n*g.bh;
+  const ok=+T.input===T.task.a;T.state="wait";
   if(ok){
-    towerQ("ok");
-    T.drop={x,col,y:topY-H*.7,ty:topY-g.bh,t:0};
+    // grön lampa, kranen hämtar en balk som börjar gunga
+    towerQ("ok");window.Ljud&&Ljud.ok();T.lamp={c:"g",t:1.2};T.beam={col:BLOCKCOL[T.n%BLOCKCOL.length],bring:0};
+    tLater(()=>{T.state="swing";T.swingT=0;$("q").innerHTML='Släpp balken! <span class="qnote">när den är rakt ovanför tornet</span>';$("q").className="q";$("dropBtn").hidden=false;},700);
   }else{
-    if(T.first)T.miss++;T.first=false;window.Ljud&&Ljud.bad();towerQ("bad");
-    T.fall={x,col,y:topY-H*.5,vy:0,vx:(Math.random()<.5?-1:1)*140,rot:0,land:topY-g.bh,phase:0};
-    setTimeout(()=>{if(!T)return;$("q").innerHTML=T.task.q+`<span>= ${T.task.a}</span>`;$("q").className="q bad";},500);
-    setTimeout(()=>{if(!T||T.over)return;towerTask();},2100);
+    // röd lampa, kranföraren skakar på huvudet och ingen balk kommer
+    T.miss++;window.Ljud&&Ljud.bad();towerQ("bad");T.lamp={c:"r",t:1.8};T.shake=1.2;
+    tLater(()=>{$("q").innerHTML=T.task.q+`<span>= ${T.task.a}</span><span class="qnote">Ingen balk den här gången.</span>`;$("q").className="q bad";},500);
+    tLater(towerTask,2300);
   }
 }
-function towerLanded(){
-  const g=towerGeom();T.blocks.push({x:T.drop.x,col:T.drop.col});T.drop=null;T.n++;T.wob=.5;T.owlHop=1;window.Ljud&&Ljud.clonk();
-  for(let i=0;i<14;i++)T.parts.push({x:W/2,y:g.ground-T.n*g.bh+T.cam,vx:(Math.random()-.5)*260,vy:-Math.random()*160,life:.6,c:"#fff"});
+/* Var balken hänger i skärmkoordinater (kranen sitter fast högst upp på skärmen) */
+function craneGeom(){
+  const s=W/TW,jibY=Math.max(26,H*.08),topSY=H*.68,bw=BW*s,bh=BH*s,beamY=topSY-bh*2.4,px=W/2,L=beamY-jibY;
+  return{s,jibY,topSY,bw,bh,beamY,px,L};
+}
+function beamPos(){
+  const c=craneGeom(),th=swingAmp(T.n)*Math.sin(T.swingT*swingW(T.n)),bring=T.beam?Math.min(1,T.beam.bring/.6):1;
+  const L=c.L*(.25+.75*bring),x=c.px+Math.sin(th)*L,y=c.jibY+Math.cos(th)*L,vx=Math.cos(th)*L*swingW(T.n)*swingAmp(T.n)*Math.cos(T.swingT*swingW(T.n));
+  return{x,y,th,vx,c};
+}
+function towerDrop(){
+  if(!T||T.state!=="swing")return;
+  const M=T.M,b=beamPos(),s=b.c.s,wx=b.x/s,wy=b.y/s+T.cam;
+  const body=M.Bodies.rectangle(wx,wy,BW,BH,{friction:.9,frictionStatic:1.4,restitution:0,density:.001,slop:.01,collisionFilter:{category:2,mask:7}});
+  M.Body.setVelocity(body,{x:b.vx/s/60,y:0});
+  M.Composite.add(T.engine.world,body);
+  T.cur={body,col:T.beam.col,t:0,calm:0};T.beam=null;T.state="drop";$("dropBtn").hidden=true;window.Ljud&&Ljud.whoosh();
+}
+function towerSettle(){
+  const c=T.cur,b=c.body,M=T.M,expect=topW(T.n)-BH/2;T.cur=null;
+  if(b.position.y>expect+BH*.55||Math.abs(b.angle)>.5){
+    // balken ramlade av: ett liv mindre, den får bara krocka med marken nu
+    b.collisionFilter={category:4,mask:1};T.lives--;T.lost++;towerHud();window.Ljud&&Ljud.fall();
+    T.lostBodies=(T.lostBodies||[]).concat([{body:b,col:c.col,t:0}]);
+    if(T.lives<=0){T.state="end";$("q").innerHTML="Balkarna tog slut! 😮";$("q").className="q bad";tLater(()=>finishTower(false,"lives"),1800);return;}
+    $("q").innerHTML=`Balken ramlade av! <span class="qnote">${T.lives===1?"Ett liv kvar":"Två liv kvar"}. Försök släppa den rakt ovanför tornet.</span>`;$("q").className="q bad";
+    tLater(towerTask,1700);return;
+  }
+  M.Body.setStatic(b,true);T.placed.push({body:b,col:c.col});T.n++;T.hop=1;window.Ljud&&Ljud.clonk();
+  const fall=towerBalance();if(fall>=0){towerCrash(fall);return;}
+  const sx=b.position.x*craneGeom().s,sy=(b.position.y-BH/2-T.cam)*craneGeom().s;
+  for(let i=0;i<14;i++)T.parts.push({x:sx,y:sy,vx:(Math.random()-.5)*260,vy:-Math.random()*160,life:.6,c:"#fff"});
   const z=zoneOf(T.n);if(z.from===T.n&&T.n>0){T.zoneMsg={txt:z.name,t:2.2};if(T.n===15&&window.Ljud)Ljud.space.start();}
   towerHud();
-  if(T.n>=TGOAL){T.over=true;setTimeout(moonLanding,500);return;}
-  setTimeout(()=>{if(T&&!T.over)towerTask();},450);
+  if(T.n>=TGOAL){T.state="end";tLater(moonLanding,500);return;}
+  tLater(towerTask,450);
 }
-function moonLanding(){if(!T)return;T.done=true;T.doneT=0;$("q").innerHTML="Du når månen! 🌙";$("q").className="q ok";window.Ljud&&Ljud.fanfare();
-  setTimeout(()=>finishTower(),2600);}
+/* Balans: för varje balk (och grunden) måste tyngdpunkten av balkarna ovanför ligga över den.
+   Svarar med index för första balken som rasar, eller -1. T.lean (0–1) visar hur nära ras tornet är. */
+function towerBalance(){
+  const P=T.placed;let worst=0;
+  for(let k=-1;k<P.length-1;k++){
+    const sup=k<0?TW/2:P[k].body.position.x,half=k<0?(BW+30)/2:BW/2,above=P.slice(k+1),cx=above.reduce((a,p)=>a+p.body.position.x,0)/above.length,d=(cx-sup)/half;
+    if(Math.abs(d)>1)return k+1;
+    worst=Math.max(worst,Math.abs(d));T.leanDir=Math.sign(cx-sup)||1;
+  }
+  T.lean=worst;return -1;
+}
+function towerCrash(from){
+  if(T.state==="crash"||T.state==="end"&&T.won)return;T.state="crash";$("dropBtn").hidden=true;
+  // allt ovanför den svaga punkten släpps loss och får rasa på riktigt
+  T.placed.slice(from).forEach((p,i)=>{T.M.Body.setStatic(p.body,false);T.M.Body.setAngularVelocity(p.body,.025*T.leanDir);T.M.Body.setVelocity(p.body,{x:(.6+i*.35)*T.leanDir,y:0});});T.lean=0;
+  window.Ljud&&Ljud.fall();setTimeout(()=>window.Ljud&&Ljud.clonk(),300);
+  $("q").innerHTML="Oj! Tornet rasade! 💥";$("q").className="q bad";tLater(()=>finishTower(false,"crash"),2800);
+}
+function moonLanding(){if(!T)return;T.done=true;T.won=true;T.doneT=0;$("q").innerHTML="Du når månen! 🌙";$("q").className="q ok";window.Ljud&&Ljud.fanfare();tLater(()=>finishTower(true),2600);}
 function towerFrame(now){
-  if(!T)return;const dt=Math.min(.05,(now-T.last)/1000);T.last=now;const g=towerGeom();
-  if(!document.hidden){
-    T.t+=dt;T.wob=Math.max(0,T.wob-dt);T.owlHop=Math.max(0,T.owlHop-dt*3);if(T.zoneMsg){T.zoneMsg.t-=dt;if(T.zoneMsg.t<=0)T.zoneMsg=null;}
-    const target=Math.max(0,H*.52-(g.ground-T.n*g.bh))+(T.done?g.moonR*.8:0);T.cam+=(target-T.cam)*Math.min(1,dt*3);
-    if(T.drop){T.drop.t+=dt;const p=Math.min(1,T.drop.t/.45);T.drop.cy=T.drop.y+(T.drop.ty-T.drop.y)*p*p;if(p>=1)towerLanded();}
-    if(T.fall){const f=T.fall;f.phase+=dt;if(f.phase<.4){f.cy=f.y+(f.land-f.y)*(f.phase/.4)**2;}else{if(!f.tipped){f.tipped=true;window.Ljud&&Ljud.fall();}f.vy+=900*dt;f.x+=f.vx*dt;f.cy+=f.vy*dt;f.rot+=dt*4*Math.sign(f.vx);}
-      if(f.cy+T.cam>H+80)T.fall=null;}
+  if(!T)return;const dt=Math.min(.05,(now-T.last)/1000);T.last=now;
+  if(!document.hidden&&T.engine){
+    T.t+=dt;T.swingT+=dt;T.hop=Math.max(0,T.hop-dt*3);T.shake=Math.max(0,T.shake-dt);if(T.lamp){T.lamp.t-=dt;if(T.lamp.t<=0)T.lamp=null;}
+    if(T.zoneMsg){T.zoneMsg.t-=dt;if(T.zoneMsg.t<=0)T.zoneMsg=null;}
+    if(T.beam)T.beam.bring+=dt;
+    // fysiken i fasta steg
+    T.acc+=dt*1000;let k=0;while(T.acc>=1000/60&&k<4){T.M.Engine.update(T.engine,1000/60);T.acc-=1000/60;k++;}if(k===4)T.acc=0;
+    if(T.cur){const c=T.cur,b=c.body;c.t+=dt;
+      if(b.speed<.08&&Math.abs(b.angularSpeed)<.003)c.calm+=dt;else c.calm=0;
+      if(c.calm>.35||b.isSleeping||c.t>3.5||b.position.y>60)towerSettle();}
+    if(T.lostBodies){T.lostBodies.forEach(l=>l.t+=dt);T.lostBodies=T.lostBodies.filter(l=>{if(l.t>4){T.M.Composite.remove(T.engine.world,l.body);return false;}return true;});}
+    // kameran följer tornets topp
+    const c=craneGeom(),target=Math.min(0,topW(T.n))-c.topSY/c.s+(T.done?-120:0);
+    if(T.cam==null)T.cam=target;else if(T.state!=="crash")T.cam+=(target-T.cam)*Math.min(1,dt*2.5);
     T.birds.forEach(b=>{b.x+=b.v*dt;if(b.x>1.15)b.x=-.15;});T.ship.x+=dt*.18;if(T.ship.x>1.3)T.ship.x=-.3;
     if(T.done)T.doneT+=dt;
     T.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=300*dt;p.life-=dt;});T.parts=T.parts.filter(p=>p.life>0);
   }
-  drawTower();traf=requestAnimationFrame(towerFrame);
+  if(T.engine)drawTower();traf=requestAnimationFrame(towerFrame);
 }
+$("dropBtn").onclick=e=>{e.stopPropagation();towerDrop();};
+cv.addEventListener("pointerdown",e=>{if(T&&T.state==="swing"){e.preventDefault();towerDrop();}});
+
+/* ---------- Ritning ---------- */
 function lerpCol(a,b,t){const h=x=>[1,3,5].map(i=>parseInt(x.slice(i,i+2),16)),A=h(a),B=h(b);return`rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*t)).join(",")})`;}
+// En stålbalk som fackverk: ram med sicksack i mitten, i balkens egen färg
+function drawTruss(cx,cy,w,h,ang,col){
+  ctx.save();ctx.translate(cx,cy);ctx.rotate(ang);
+  const x=-w/2,y=-h/2,t=Math.max(3,h*.15),n=4;
+  ctx.lineJoin="round";ctx.lineCap="round";
+  ctx.strokeStyle="#1D2B53";ctx.lineWidth=Math.max(2,h*.16)+3;
+  ctx.beginPath();for(let i=0;i<=n;i++){const px=x+t/2+(w-t)*i/n,py=i%2?y+h-t/2:y+t/2;i?ctx.lineTo(px,py):ctx.moveTo(px,py);}ctx.stroke();
+  ctx.strokeStyle=col;ctx.lineWidth=Math.max(2,h*.16);ctx.stroke();
+  ctx.fillStyle="#1D2B53";ctx.fillRect(x-1.5,y-1.5,w+3,t+3);ctx.fillRect(x-1.5,y+h-t-1.5,w+3,t+3);ctx.fillRect(x-1.5,y-1.5,t+3,h+3);ctx.fillRect(x+w-t-1.5,y-1.5,t+3,h+3);
+  ctx.fillStyle=col;ctx.fillRect(x,y,w,t);ctx.fillRect(x,y+h-t,w,t);ctx.fillRect(x,y,t,h);ctx.fillRect(x+w-t,y,t,h);
+  ctx.fillStyle="rgba(255,255,255,.35)";ctx.fillRect(x,y,w,t*.35);
+  ctx.fillStyle="rgba(29,43,83,.55)";for(let i=0;i<=n;i++){const px=x+t/2+(w-t)*i/n;[y+t/2,y+h-t/2].forEach(py=>{ctx.beginPath();ctx.arc(px,py,Math.max(1.2,t*.22),0,7);ctx.fill();});}
+  ctx.restore();
+}
+function drawCrane(c){
+  const mx=W*.09,jy=c.jibY,lat="#F2B707",dark="#1D2B53";
+  // masten (följer med uppåt, som en klätterkran)
+  ctx.strokeStyle=dark;ctx.lineWidth=2;ctx.fillStyle=lat;
+  const mw=Math.max(14,W*.04);
+  ctx.fillRect(mx-mw/2,jy,3,H);ctx.fillRect(mx+mw/2-3,jy,3,H);
+  ctx.strokeStyle=lat;ctx.lineWidth=2;ctx.beginPath();for(let y=jy,i=0;y<H+mw;y+=mw,i++){ctx.moveTo(mx-mw/2,y);ctx.lineTo(mx+mw/2,y+mw);ctx.moveTo(mx-mw/2,y+mw);ctx.lineTo(mx+mw/2,y+mw);}ctx.stroke();
+  // armen och motvikten
+  const ah=Math.max(10,H*.025);
+  ctx.fillStyle=lat;ctx.fillRect(4,jy-ah,W-8,3);ctx.fillRect(4,jy,W-8,3);
+  ctx.strokeStyle=lat;ctx.lineWidth=2;ctx.beginPath();for(let x=4;x<W-8;x+=ah){ctx.moveTo(x,jy+1.5);ctx.lineTo(x+ah/2,jy-ah+1.5);ctx.lineTo(x+ah,jy+1.5);}ctx.stroke();
+  ctx.fillStyle="#56668F";ctx.fillRect(6,jy+2,Math.max(26,W*.06),ah*1.4);
+  // topp med stag
+  ctx.strokeStyle=dark;ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(mx,jy-ah*3);ctx.lineTo(W*.6,jy-ah);ctx.moveTo(mx,jy-ah*3);ctx.lineTo(10,jy-ah);ctx.stroke();
+  ctx.fillStyle=lat;ctx.beginPath();ctx.moveTo(mx-5,jy-ah);ctx.lineTo(mx,jy-ah*3.2);ctx.lineTo(mx+5,jy-ah);ctx.fill();
+  // förarhytten med kranföraren (elevens djur i bygghjälm)
+  const cw=Math.max(54,W*.15),ch=cw*.8,cx=mx+mw/2+2,cy=jy+4;
+  ctx.fillStyle="#FFC93C";ctx.fillRect(cx,cy,cw,ch);ctx.strokeStyle=dark;ctx.lineWidth=2.5;ctx.strokeRect(cx,cy,cw,ch);
+  ctx.fillStyle="#CFE6FF";ctx.fillRect(cx+5,cy+5,cw-10,ch*.62);
+  if(crewImg.complete){const pw=cw*.62,sh=T.shake>0?Math.sin(T.t*22)*.28*Math.min(1,T.shake*2):0,hop=Math.sin(T.hop*Math.PI)*6;
+    ctx.save();ctx.beginPath();ctx.rect(cx+5,cy+5,cw-10,ch*.62);ctx.clip();ctx.translate(cx+cw/2,cy+ch*.62-hop);ctx.rotate(sh);ctx.drawImage(crewImg,-pw/2,-pw*.62,pw,pw*1.167);ctx.restore();}
+  ctx.strokeStyle=dark;ctx.lineWidth=2;ctx.strokeRect(cx+5,cy+5,cw-10,ch*.62);
+  // lampor: grön vid rätt svar, röd och blinkande vid fel
+  const lx=cx+cw-9,ly=cy-7,on=T.lamp&&(T.lamp.c==="g"||Math.floor(T.t*6)%2===0);
+  [["r","#E5484D",lx-14],["g","#2BB673",lx]].forEach(([k,col,x])=>{ctx.fillStyle=on&&T.lamp.c===k?col:"#9AA7BF";ctx.beginPath();ctx.arc(x,ly,5.5,0,7);ctx.fill();ctx.strokeStyle=dark;ctx.lineWidth=1.5;ctx.stroke();
+    if(on&&T.lamp.c===k){ctx.fillStyle=col+"55";ctx.beginPath();ctx.arc(x,ly,11,0,7);ctx.fill();}});
+  // vagnen, vajern, kroken och balken
+  const bp=T.beam?beamPos():null,tx=c.px;
+  ctx.fillStyle=dark;ctx.fillRect(tx-12,jy+2,24,8);
+  const hx=bp?bp.x:tx+Math.sin(T.t*1.3)*6,hy=bp?bp.y-c.bh*.9:jy+c.L*.35;
+  ctx.strokeStyle="#3B4A6B";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(tx,jy+10);ctx.lineTo(hx,hy);ctx.stroke();
+  ctx.strokeStyle=dark;ctx.lineWidth=3;ctx.beginPath();ctx.arc(hx,hy+5,5,-.3,Math.PI+.9);ctx.stroke();
+  if(bp){ctx.strokeStyle="#3B4A6B";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(hx,hy+8);ctx.lineTo(bp.x-c.bw*.4,bp.y-c.bh/2);ctx.moveTo(hx,hy+8);ctx.lineTo(bp.x+c.bw*.4,bp.y-c.bh/2);ctx.stroke();
+    drawTruss(bp.x,bp.y,c.bw,c.bh,0,T.beam.col);
+    // en svag linje rakt ner hjälper att sikta
+    if(T.state==="swing"){ctx.strokeStyle="rgba(255,255,255,.5)";ctx.setLineDash([4,6]);ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(bp.x,bp.y+c.bh/2+4);ctx.lineTo(bp.x,bp.y+c.bh*2);ctx.stroke();ctx.setLineDash([]);}}
+}
 function drawTower(){
-  if(!W)return;const g=towerGeom(),cam=T.cam,Y=wy=>wy+cam,lvlY=l=>g.ground-l*g.bh;
-  const alt=Math.min(1,Math.max(0,(g.ground-H*.52+cam-g.ground+H*.52)/(TGOAL*g.bh)));const a=Math.min(1,cam/(TGOAL*g.bh));
+  if(!W)return;const c=craneGeom(),s=c.s,cam=T.cam,SY=wy=>(wy-cam)*s,lvlY=l=>topW(l),Y=SY,moonR=Math.min(W*.3,130);
+  const a=Math.min(1,Math.max(0,-cam/(TGOAL*BH)));
   const top=a<.5?lerpCol("#8FD3FF","#3D8BFD",a*2):lerpCol("#3D8BFD","#0B1026",Math.min(1,(a-.5)*2.2));
   const bot=a<.5?lerpCol("#D6F0FF","#8FD3FF",a*2):lerpCol("#8FD3FF","#1B1F4A",Math.min(1,(a-.5)*2.2));
   const sky=ctx.createLinearGradient(0,0,0,H);sky.addColorStop(0,top);sky.addColorStop(1,bot);ctx.fillStyle=sky;ctx.fillRect(0,0,W,H);
-  // stjärnor syns mer ju högre upp
-  const sa=Math.max(0,(a-.55)*2.5);if(sa>0){T.stars.forEach(s=>{ctx.globalAlpha=sa*(.5+.5*Math.sin(T.t*2+s.tw));ctx.fillStyle="#fff";ctx.fillRect(s.x*W,s.y*H,s.s,s.s);});ctx.globalAlpha=1;}
-  // månen
-  const moonY=Y(lvlY(TGOAL)-g.moonR*.92);
-  if(moonY>-g.moonR*1.2){ctx.fillStyle="#E8EDF7";ctx.beginPath();ctx.arc(W/2,moonY,g.moonR,0,7);ctx.fill();ctx.fillStyle="rgba(150,160,190,.45)";
-    [[-.35,-.2,.18],[.3,.1,.14],[-.05,.35,.11],[.4,-.4,.08]].forEach(([x,y,r])=>{ctx.beginPath();ctx.arc(W/2+x*g.moonR,moonY+y*g.moonR,r*g.moonR,0,7);ctx.fill();});}
-  // planeter och rymdfarkost
-  const pl=(l,x,r,c,ring)=>{const y=Y(lvlY(l));if(y<-60||y>H+60)return;ctx.fillStyle=c;ctx.beginPath();ctx.arc(x*W,y,r,0,7);ctx.fill();if(ring){ctx.strokeStyle="rgba(255,201,60,.8)";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x*W,y,r*1.7,r*.4,-.3,0,7);ctx.stroke();}};
-  pl(16,.15,22,"#FF9F43",true);pl(18.5,.85,16,"#7B61FF",false);
+  const sa=Math.max(0,(a-.55)*2.5);if(sa>0){T.stars.forEach(st=>{ctx.globalAlpha=sa*(.5+.5*Math.sin(T.t*2+st.tw));ctx.fillStyle="#fff";ctx.fillRect(st.x*W,st.y*H,st.s,st.s);});ctx.globalAlpha=1;}
+  // månen ovanför våning 20
+  const moonY=Y(lvlY(TGOAL))-moonR*.92;
+  if(moonY>-moonR*1.2){ctx.fillStyle="#E8EDF7";ctx.beginPath();ctx.arc(W/2,moonY,moonR,0,7);ctx.fill();ctx.fillStyle="rgba(150,160,190,.45)";
+    [[-.35,-.2,.18],[.3,.1,.14],[-.05,.35,.11],[.4,-.4,.08]].forEach(([x,y,r])=>{ctx.beginPath();ctx.arc(W/2+x*moonR,moonY+y*moonR,r*moonR,0,7);ctx.fill();});}
+  const pl=(l,x,r,col,ring)=>{const y=Y(lvlY(l));if(y<-60||y>H+60)return;ctx.fillStyle=col;ctx.beginPath();ctx.arc(x*W,y,r,0,7);ctx.fill();if(ring){ctx.strokeStyle="rgba(255,201,60,.8)";ctx.lineWidth=3;ctx.beginPath();ctx.ellipse(x*W,y,r*1.7,r*.4,-.3,0,7);ctx.stroke();}};
+  pl(16,.85,22,"#FF9F43",true);pl(18.5,.88,16,"#7B61FF",false);
   {const y=Y(lvlY(17.3)),x=T.ship.x*W;if(y>-40&&y<H+40){ctx.fillStyle="#C6D6F2";ctx.beginPath();ctx.ellipse(x,y,30,9,0,0,7);ctx.fill();ctx.fillStyle="rgba(170,220,255,.8)";ctx.beginPath();ctx.arc(x,y-5,11,Math.PI,0);ctx.fill();ctx.fillStyle="#FFC93C";[-16,0,16].forEach(d=>{ctx.beginPath();ctx.arc(x+d,y+3,3,0,7);ctx.fill();});}}
-  // flygplan och luftballong
   {const y=Y(lvlY(12)),x=((T.t*.06)%1.4-.2)*W;if(y>-40&&y<H+40){ctx.fillStyle="#fff";ctx.beginPath();ctx.ellipse(x,y,26,6,0,0,7);ctx.fill();ctx.fillRect(x-6,y-16,8,32);ctx.fillRect(x-24,y-10,5,12);ctx.fillStyle="#3D8BFD";ctx.fillRect(x+10,y-2,8,3);}}
-  {const y=Y(lvlY(13.6))+Math.sin(T.t)*6,x=W*.8;if(y>-60&&y<H+60){ctx.fillStyle="#FF6B6B";ctx.beginPath();ctx.arc(x,y,20,0,7);ctx.fill();ctx.fillStyle="#FFC93C";ctx.fillRect(x-4,y-20,8,40);ctx.strokeStyle="#8A5A00";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-12,y+14);ctx.lineTo(x-6,y+30);ctx.moveTo(x+12,y+14);ctx.lineTo(x+6,y+30);ctx.stroke();ctx.fillStyle="#C99A6B";ctx.fillRect(x-7,y+28,14,9);}}
-  // moln och fåglar
-  T.clouds.forEach(c=>{const y=Y(lvlY(c.lvl)),x=((c.x+T.t*.01*c.s)%1.3-.15)*W;if(y<-40||y>H+40)return;ctx.fillStyle="rgba(255,255,255,.85)";
-    [[-22,4,16],[0,-6,20],[22,3,15]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(x+dx*c.s,y+dy*c.s,r*c.s,0,7);ctx.fill();});});
+  {const y=Y(lvlY(13.6))+Math.sin(T.t)*6,x=W*.84;if(y>-60&&y<H+60){ctx.fillStyle="#FF6B6B";ctx.beginPath();ctx.arc(x,y,20,0,7);ctx.fill();ctx.fillStyle="#FFC93C";ctx.fillRect(x-4,y-20,8,40);ctx.strokeStyle="#8A5A00";ctx.lineWidth=1.5;ctx.beginPath();ctx.moveTo(x-12,y+14);ctx.lineTo(x-6,y+30);ctx.moveTo(x+12,y+14);ctx.lineTo(x+6,y+30);ctx.stroke();ctx.fillStyle="#C99A6B";ctx.fillRect(x-7,y+28,14,9);}}
+  T.clouds.forEach(cl=>{const y=Y(lvlY(cl.lvl)),x=((cl.x+T.t*.01*cl.s)%1.3-.15)*W;if(y<-40||y>H+40)return;ctx.fillStyle="rgba(255,255,255,.85)";
+    [[-22,4,16],[0,-6,20],[22,3,15]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(x+dx*cl.s,y+dy*cl.s,r*cl.s,0,7);ctx.fill();});});
   T.birds.forEach(b=>{const y=Y(lvlY(b.lvl))+Math.sin(T.t*2+b.ph)*8,x=b.x*W,f=Math.sin(T.t*10+b.ph)*5;if(y<-20||y>H+20)return;
     ctx.strokeStyle="#1D2B53";ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(x-10,y-f);ctx.quadraticCurveTo(x-4,y-6,x,y);ctx.quadraticCurveTo(x+4,y-6,x+10,y-f);ctx.stroke();});
-  // marken
-  const gy=Y(g.ground);
+  // marken med hus och träd
+  const gy=Y(0);
   if(gy<H+10){ctx.fillStyle="#6BCB77";ctx.fillRect(0,gy,W,H-gy+20);ctx.fillStyle="#4FAF5E";ctx.fillRect(0,gy,W,6);
-    [[.12,"#FF6B6B"],[.86,"#3D8BFD"]].forEach(([hx,rc])=>{const x=hx*W;ctx.fillStyle="#FFF4CC";ctx.fillRect(x-18,gy-30,36,30);ctx.fillStyle=rc;ctx.beginPath();ctx.moveTo(x-24,gy-30);ctx.lineTo(x,gy-50);ctx.lineTo(x+24,gy-30);ctx.fill();ctx.fillStyle="#8A5A00";ctx.fillRect(x-5,gy-14,10,14);});
-    [.3,.7].forEach(tx=>{const x=tx*W;ctx.fillStyle="#8A5A00";ctx.fillRect(x-4,gy-22,8,22);ctx.fillStyle="#2BB673";ctx.beginPath();ctx.arc(x,gy-30,16,0,7);ctx.fill();});}
-  // tornet
-  const wob=Math.sin(T.t*30)*T.wob*.02;
-  ctx.save();ctx.translate(W/2,gy);ctx.rotate(wob);ctx.translate(-W/2,-gy);
-  T.blocks.forEach((b,i)=>{const y=Y(lvlY(i+1));if(y>H+10||y<-g.bh-10)return;drawBlock(b.x,y,g,b.col);});
-  const topY=Y(lvlY(T.n));
-  // ugglan högst upp (eller på månen)
-  if(avImg.complete){const ow=g.bw*.55;let ox=W/2,oy=topY-ow*1.1-T.owlHop*14;
-    if(T.done){const p=Math.min(1,T.doneT/.6);oy=topY-ow*1.1-Math.sin(p*Math.PI)*40-(moonY-g.moonR+ow*.15-(topY-ow*1.1))*-p;ox=W/2-g.moonR*.18*p;}
-    ctx.drawImage(avImg,ox-ow/2,oy,ow,ow*1.167);
-    if(T.done&&T.doneT>.7){const fx=ox+ow*.55,fy=moonY-g.moonR+4,wave=Math.sin(T.t*6)*3;ctx.strokeStyle="#1D2B53";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx,fy-48);ctx.stroke();
-      ctx.fillStyle="#FF5FA2";ctx.beginPath();ctx.moveTo(fx,fy-48);ctx.lineTo(fx+30,fy-40+wave);ctx.lineTo(fx,fy-30);ctx.fill();}}
+    [[.86,"#3D8BFD"]].forEach(([hx,rc])=>{const x=hx*W;ctx.fillStyle="#FFF4CC";ctx.fillRect(x-18,gy-30,36,30);ctx.fillStyle=rc;ctx.beginPath();ctx.moveTo(x-24,gy-30);ctx.lineTo(x,gy-50);ctx.lineTo(x+24,gy-30);ctx.fill();ctx.fillStyle="#8A5A00";ctx.fillRect(x-5,gy-14,10,14);});
+    [.24,.72].forEach(tx=>{const x=tx*W;ctx.fillStyle="#8A5A00";ctx.fillRect(x-4,gy-22,8,22);ctx.fillStyle="#2BB673";ctx.beginPath();ctx.arc(x,gy-30,16,0,7);ctx.fill();});
+    // grunden av betong
+    ctx.fillStyle="#9AA7BF";ctx.fillRect(W/2-(BW+30)*s/2,Y(-FH),(BW+30)*s,FH*s);ctx.strokeStyle="#56668F";ctx.lineWidth=2;ctx.strokeRect(W/2-(BW+30)*s/2,Y(-FH),(BW+30)*s,FH*s);}
+  // balkarna i tornet och de som ramlat
+  // ju snedare tornet är, desto mer gungar det (en varning innan det rasar)
+  const sway=T.state!=="crash"&&T.lean>.35?Math.sin(T.t*3.2)*.012*(T.lean-.35)/.65*Math.min(1,T.n/4):0;
+  ctx.save();if(sway){ctx.translate(W/2,Y(-FH));ctx.rotate(sway);ctx.translate(-W/2,-Y(-FH));}
+  T.placed.forEach(p=>{const b=p.body,y=Y(b.position.y);if(y<-BH*s*2||y>H+BH*s*2)return;drawTruss(b.position.x*s,y,BW*s,BH*s,b.angle,p.col);});
   ctx.restore();
-  if(T.drop)drawBlock(T.drop.x,Y(T.drop.cy),g,T.drop.col);
-  if(T.fall){ctx.save();const f=T.fall;ctx.translate(f.x,Y(f.cy)+g.bh/2);ctx.rotate(f.rot);ctx.translate(-f.x,-(Y(f.cy)+g.bh/2));drawBlock(f.x,Y(f.cy),g,f.col);ctx.restore();}
+  (T.lostBodies||[]).forEach(l=>{const b=l.body;ctx.globalAlpha=Math.max(0,1-l.t/4);drawTruss(b.position.x*s,Y(b.position.y),BW*s,BH*s,b.angle,l.col);ctx.globalAlpha=1;});
+  if(T.cur){const b=T.cur.body;drawTruss(b.position.x*s,Y(b.position.y),BW*s,BH*s,b.angle,T.cur.col);}
+  // på månen: kranföraren kliver ut och sätter upp en flagga
+  if(T.done&&T.doneT>.5){const fx=W/2+moonR*.2,fy=moonY-moonR+4,wave=Math.sin(T.t*6)*3,ow=Math.min(70,moonR*.5);
+    if(crewImg.complete)ctx.drawImage(crewImg,W/2-moonR*.25-ow/2,fy-ow*1.1,ow,ow*1.167);
+    ctx.strokeStyle="#1D2B53";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(fx,fy-48);ctx.stroke();
+    ctx.fillStyle="#FF5FA2";ctx.beginPath();ctx.moveTo(fx,fy-48);ctx.lineTo(fx+30,fy-40+wave);ctx.lineTo(fx,fy-30);ctx.fill();}
+  drawCrane(c);
   T.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.6);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,3,0,7);ctx.fill();});ctx.globalAlpha=1;
-  if(T.zoneMsg){ctx.globalAlpha=Math.min(1,T.zoneMsg.t);ctx.fillStyle="rgba(29,43,83,.75)";const tw=200;ctx.beginPath();ctx.roundRect?ctx.roundRect(W/2-tw/2,18,tw,40,20):ctx.rect(W/2-tw/2,18,tw,40);ctx.fill();
-    ctx.fillStyle="#fff";ctx.font='800 20px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(T.zoneMsg.txt,W/2,39);ctx.globalAlpha=1;}
+  if(T.zoneMsg){ctx.globalAlpha=Math.min(1,T.zoneMsg.t);ctx.fillStyle="rgba(29,43,83,.75)";const tw=200,zy=c.jibY+Math.max(54,W*.15)*.8+18;ctx.beginPath();ctx.roundRect?ctx.roundRect(W/2-tw/2,zy,tw,40,20):ctx.rect(W/2-tw/2,zy,tw,40);ctx.fill();
+    ctx.fillStyle="#fff";ctx.font='800 20px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(T.zoneMsg.txt,W/2,zy+21);ctx.globalAlpha=1;}
 }
-function drawBlock(cx,y,g,col){const x=cx-g.bw/2;ctx.fillStyle=col;ctx.fillRect(x,y,g.bw,g.bh);ctx.fillStyle="rgba(255,255,255,.3)";ctx.fillRect(x,y,g.bw,g.bh*.22);
-  ctx.fillStyle="rgba(0,0,0,.15)";ctx.fillRect(x,y+g.bh*.8,g.bw,g.bh*.2);ctx.strokeStyle="#1D2B53";ctx.lineWidth=2.5;ctx.strokeRect(x,y,g.bw,g.bh);
-  ctx.fillStyle="rgba(255,255,255,.55)";[.25,.5,.75].forEach(k=>{ctx.beginPath();ctx.arc(x+g.bw*k,y+g.bh*.5,g.bh*.12,0,7);ctx.fill();});}
-function finishTower(){
+function finishTower(won,why){
   cancelAnimationFrame(traf);window.Ljud&&Ljud.space.stop();clearTimeout(chirpT);
-  const st=T.miss===0?3:T.miss<=3?2:1,mi=T.miss;
-  data.tower=data.tower||{};const r=data.tower[cat]||{stars:0};data.tower[cat]={stars:Math.max(r.stars||0,st)};data.towerPlayed=(data.towerPlayed||0)+1;data.towerWon=true;if(st===3)data.towerPerfect=true;save();
-  stopTower();stopKiosk();
-  $("rTitle").textContent=st===3?"Ända till månen, utan ett enda fel!":"Du är på månen!";
-  $("rBig").innerHTML=starHtml(st);
-  $("rSub").textContent=`Tornet blev ${TGOAL} klossar högt.`+(mi?` ${mi} ${mi===1?"kloss":"klossar"} ramlade ner på vägen.`:"")+(st<3?" Utan några fel får du tre stjärnor.":"");
-  showOnly("result");confetti();
+  const n=T.n,err=T.miss+T.lost,st=won?(err===0?3:err<=3?2:1):0;
+  data.tower=data.tower||{};const r=data.tower[cat]||{stars:0,best:0},rec=n>(r.best||0);
+  data.tower[cat]={stars:Math.max(r.stars||0,st),best:Math.max(r.best||0,n)};data.towerPlayed=(data.towerPlayed||0)+1;if(won)data.towerWon=true;if(st===3)data.towerPerfect=true;save();
+  const miss=T.miss,lost=T.lost;stopTower();stopKiosk();
+  if(won){
+    $("rTitle").textContent=st===3?"Ända till månen, utan ett enda fel!":"Du är på månen!";$("rBig").innerHTML=starHtml(st);
+    $("rSub").textContent=`Tornet blev ${TGOAL} våningar högt.`+(miss?` ${miss} fel svar.`:"")+(lost?` ${lost} ${lost===1?"balk":"balkar"} ramlade av.`:"")+(st<3?" Utan fel och utan att tappa en balk får du tre stjärnor.":"");
+  }else{
+    $("rTitle").textContent=why==="crash"?"Tornet rasade!":"Balkarna tog slut!";$("rBig").textContent=`${n} ${n===1?"våning":"våningar"}`;
+    $("rSub").textContent=(rec&&n?"Nytt rekord! ":r.best?`Ditt rekord är ${Math.max(r.best,n)} våningar. `:"")+"Släpp balken när den är rakt ovanför tornet, så står det stadigt. Når du månen på 20 våningar får du stjärnor.";
+  }
+  showOnly("result");if(won||rec&&n)confetti();
 }
 
 /* ========== Gemensamt för spelen med sifferknappar ========== */
