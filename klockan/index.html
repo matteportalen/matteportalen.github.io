@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Klockan – Matte-Portalen</title>
+<title>Klockan: Stationen – Matte-Portalen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
@@ -34,7 +34,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .lcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .lcard .ico{width:74px;height:74px;display:grid;place-items:center}
 .lcard .ico svg{width:74px;height:74px}
-.lcard .dig{font-weight:800;font-size:1.55rem;background:var(--ink);color:#7CF0B1;border-radius:12px;padding:4px 10px;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.lcard .dig{font-weight:800;font-size:1.55rem;background:#141D3D;color:#FFD23F;border-radius:12px;padding:4px 10px;letter-spacing:1px;font-variant-numeric:tabular-nums}
 .lcard b{font-size:1.1rem;line-height:1.15}
 .lcard small{color:var(--muted);font-size:.85rem;line-height:1.2}
 .lcard .rec{font-size:.8rem;color:var(--muted);font-weight:700}
@@ -63,11 +63,12 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .task.bad .feedback{color:var(--bad)}
 .clock{width:min(78vw,300px);height:auto;display:block;margin:0 auto;touch-action:none;user-select:none}
 .clock text{font-family:var(--font)}
+.clock g.grab{filter:drop-shadow(0 0 3px #FFC93C) drop-shadow(0 0 3px #FFC93C)}
 .clock.small{width:min(40vw,170px)}
 .clocks{display:flex;justify-content:center;gap:10px;flex-wrap:wrap}
 .clocks figure{margin:0;text-align:center}
 .clocks figcaption{font-weight:800;color:var(--muted)}
-.digital{display:inline-block;font-weight:800;font-size:clamp(2.6rem,13vw,3.8rem);background:var(--ink);color:#7CF0B1;border-radius:16px;padding:4px 18px;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:6px 0}
+.digital{display:inline-block;font-weight:800;font-size:clamp(2.6rem,13vw,3.8rem);background:#141D3D;color:#FFD23F;box-shadow:inset 0 0 0 3px #2A3866;border-radius:16px;padding:4px 18px;letter-spacing:2px;font-variant-numeric:tabular-nums;margin:6px 0}
 .pod{display:block;font-weight:800;color:var(--muted);font-size:1.05rem}
 .story{font-size:1.15rem;font-weight:700;text-align:left;margin:4px 0 8px}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
@@ -94,7 +95,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .help .fact{font-size:1.7rem;font-weight:800;line-height:1.15;margin:2px 0 8px}
 .help .tip{background:#FFF4CC;border-radius:12px;padding:8px 12px;margin:8px 0 0;font-size:1rem;text-align:left}
 .hops{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px;margin:8px 0;font-weight:800}
-.hops .t{background:var(--ink);color:#7CF0B1;border-radius:10px;padding:2px 10px;font-size:1.2rem}
+.hops .t{background:#141D3D;color:#FFD23F;border-radius:10px;padding:2px 10px;font-size:1.2rem}
 .hops .j{color:#C96A0C;font-size:.95rem}
 
 .track{background:var(--card);border-radius:18px;padding:4px 12px;margin-top:12px;box-shadow:0 4px 0 var(--line)}
@@ -116,6 +117,48 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .count{position:fixed;inset:0;display:grid;place-items:center;background:rgba(234,243,255,.85);font-size:6rem;font-weight:800;z-index:5}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;
   padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
+/* ---------- Stationen ---------- */
+.station{display:flex;align-items:center;gap:10px;margin-top:6px}
+.ppet{width:86px;flex:none}
+.world{display:inline-block;font-size:.95rem;vertical-align:middle;background:#1D2B53;color:#FFD23F;border-radius:999px;padding:2px 10px;margin-left:4px;transform:rotate(-3deg)}
+.pet svg{width:100%;height:auto;display:block;transform-origin:50% 90%}
+@keyframes hop{0%,100%{transform:translateY(0)}35%{transform:translateY(-18px) rotate(-4deg)}70%{transform:translateY(0) rotate(3deg)}}
+@keyframes hmm{0%,100%{transform:rotate(0)}30%,70%{transform:rotate(-9deg)}}
+.pet.hop svg{animation:hop .55s ease-out 2}
+.pet.hmm svg{animation:hmm .9s ease-in-out}
+.gright{display:flex;align-items:center;gap:8px}
+.hpet{width:46px}
+.lcard{position:relative}
+.lcard .lok{position:absolute;right:6px;top:4px;font-size:1.5rem;line-height:1}
+.stall{margin-top:14px;background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:10px 12px;text-align:center}
+.stall b{display:block;font-size:1.05rem}
+.stall small{display:block;color:var(--muted);font-size:.85rem;line-height:1.25;margin-top:2px}
+.stall .locs{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin-top:6px}
+.stall .locs span{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:1.6rem;background:#FFF4CC;box-shadow:inset 0 -4px 0 #8C6239}
+.stall .locs span.no{background:#EEF2FA;color:#B7C3DA;font-size:.8rem;font-weight:800;box-shadow:inset 0 -4px 0 #C6D6F2}
+.platform{position:relative;height:58px;margin-top:8px;border-radius:14px;overflow:hidden;background:linear-gradient(180deg,#CFE6FF 0 62%,#8C9BB8 62% 66%,#5A6B8F 66% 72%,#C6D6F2 72%)}
+.platform .sign{position:absolute;right:8px;top:4px;background:#1D2B53;color:#FFD23F;font-weight:800;font-size:.8rem;border-radius:6px;padding:0 8px}
+.ptrain{position:absolute;left:18%;bottom:14px;font-size:2.2rem;line-height:1;white-space:nowrap;transition:transform .9s ease-in;letter-spacing:-6px}
+.ptrain.go{transform:translateX(-140vw)}
+.ptrain.in{transition:none;transform:translateX(120vw)}
+.wagons{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;justify-content:center;min-height:44px}
+.wagon{display:flex;flex-wrap:wrap;width:136px;min-height:44px;padding:4px 6px 8px;border-radius:10px 10px 6px 6px;background:#3D8BFD;box-shadow:inset 0 -6px 0 #1D2B53;font-size:1.05rem;line-height:1.1;align-content:flex-start;gap:1px}
+.wagon.loc{width:auto;background:none;box-shadow:none;font-size:2rem;padding:0}
+.car .trn{display:inline-block;transform:scaleX(-1);font-size:32px;line-height:1}
+.car.ghost .trn{filter:grayscale(1)}
+.cpick{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px}
+.cpick button{background:var(--bg);border-radius:16px;padding:6px;box-shadow:0 3px 0 var(--line)}
+.cpick button .clock{width:100%}
+.cpick button:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - 5px)}
+.cpick button.bad{background:#FDE4E4;box-shadow:0 3px 0 #F3B5B7;opacity:.6}
+.cpick button.right{background:#DDF5E7;box-shadow:0 3px 0 #9FE0BC}
+.tf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:10px 0 2px}
+.tf button{background:var(--bg);border-radius:14px;padding:12px 6px;font-weight:800;font-size:1.25rem;box-shadow:0 3px 0 var(--line);min-height:58px}
+.tf button.right{background:#DDF5E7;color:var(--good-dark)}.tf button.bad{background:#FDE4E4;color:var(--bad)}
+.board{display:inline-grid;grid-template-columns:auto auto auto;gap:2px 16px;background:#141D3D;color:#FFD23F;border-radius:14px;padding:8px 16px;margin:4px 0 8px;font-weight:800;text-align:left;box-shadow:inset 0 0 0 3px #2A3866}
+.board span{color:#9AA7BF;font-size:.8rem;text-transform:uppercase;letter-spacing:1px}
+.board b{font-size:1.4rem;font-variant-numeric:tabular-nums}
+.newlok{font-weight:800;font-size:1.15rem;background:#FFF4CC;border-radius:14px;padding:8px 12px;margin:0 0 12px}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
 @media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
 </style>
@@ -125,9 +168,10 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <section id="home" class="screen">
   <a class="back" href="../">← Till huvudmenyn</a>
-  <h1>Klockan</h1>
-  <p class="lead">Välj vad du vill träna på.</p>
+  <div class="station"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
+    <div><h1>Klockan <span class="world">🚂 Stationen</span></h1><p class="lead" id="homeLead">Välj vad du vill träna på.</p></div></div>
   <div class="levels" id="levels"></div>
+  <div class="stall" id="stall"></div>
   <p class="note">Tre stjärnor får du om alla uppgifter blir rätt direkt.</p>
 </section>
 
@@ -143,15 +187,17 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 </section>
 
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="gright"><span class="info" id="info"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></span></div>
+  <div class="platform" id="plat" hidden><span class="sign">Spår 1</span><div class="ptrain" id="ptrain">🚂🚃🚃</div></div>
   <div id="raceBox" hidden>
     <div class="track">
-      <div class="lane"><span class="who">Du</span><span class="flag">🏁</span><div class="car" id="carMe"></div></div>
+      <div class="lane"><span class="who">Du</span><span class="flag" title="Stationen">🚉</span><div class="car" id="carMe"></div></div>
       <div class="lane"><span class="who" id="ghostWho">Spöket</span><div class="car ghost" id="carGhost"></div></div>
     </div>
     <div class="racestatus" id="raceStatus"></div>
   </div>
   <div class="tbar" id="blitzBar" hidden><i id="blitzFill"></i></div>
+  <div class="wagons" id="wagons" hidden></div>
   <div class="task" id="task">
     <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
     <div class="content" id="content"></div>
@@ -173,9 +219,11 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 </section>
 
 <section id="result" class="screen result" hidden>
+  <div class="pet" id="rPet" style="width:110px;margin:0 auto" aria-hidden="true"></div>
   <h2 id="rTitle"></h2>
   <div class="rbig" id="rBig"></div>
   <p class="rsub" id="rSub"></p>
+  <div id="rLok"></div>
   <button class="big" id="rAgain">Spela igen</button>
   <button class="big" id="rModes">Välj något annat</button>
 </section>
@@ -186,6 +234,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -216,7 +265,7 @@ function fmtDur(min){const h=Math.floor(min/60),m=min%60;const hs=h?`${h} ${h===
 
 /* ---------- Klockan (SVG) ---------- */
 function clockSVG(h,m,o={}){
-  const ah=((h%12)+m/60)*30,am=m*6;
+  const ah=o.hourAngle!=null?o.hourAngle:((h%12)+m/60)*30,am=o.minAngle!=null?o.minAngle:m*6;
   let s=`<svg class="clock${o.small?' small':''}" viewBox="-22 -22 244 244" role="img" aria-label="Analog klocka">`;
   s+=`<circle cx="100" cy="100" r="96" fill="#fff" stroke="#1D2B53" stroke-width="6"/>`;
   if(o.halves){
@@ -250,6 +299,14 @@ const LEVELS=[
 ];
 const EARLIER=lv=>LEVELS.slice(0,LEVELS.indexOf(lv)).filter(l=>l.mins&&!l.mix).flatMap(l=>l.mins);
 
+/* ---------- Stationen: elevens djur är konduktör, ett lok per nivå i Lokstallet ---------- */
+const pet=Object.assign(lasDjur(),{hat:'konduktor'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
+const LOKS={hel:['🚂','Ångloket'],halv:['🚋','Spårvagnen'],kvart:['🚃','Rälsbussen'],fem:['🚞','Fjälltåget'],runthalv:['🚆','Pendeltåget'],dig:['🚇','Tunnelbanan'],mata:['🚄','Snabbtåget'],mix:['🚅','Expresståget']};
+const hasLok=id=>(data.stars[id]||0)>=2; // ett lok när nivån har minst två stjärnor (högst två fel i Öva)
+const petFx=c=>{const p=$('#hpet');if(p){p.classList.remove('hop','hmm');void p.offsetWidth;p.classList.add(c);}};
+$('#homePet').innerHTML=owlSVG(pet);$('#hpet').innerHTML=owlSVG(pet);$('#rPet').innerHTML=owlSVG(pet);
+$('#homeLead').textContent=`Hjälp ${lc} att få tågen att gå i tid. Välj vad du vill träna på.`;
+
 /* ---------- Uppgifter ---------- */
 function analogDistractors(h,m,pool){
   const cands=new Map();
@@ -264,7 +321,11 @@ function genAnalog(lv,forRace){
   const pool=lv.mins,early=EARLIER(lv);
   const m=early.length&&!lv.mix&&Math.random()<.2?pickOne(early):pickOne(pool),h=rnd(1,12);
   const p=phrase(h,m);
-  if(!forRace&&Math.random()<.4)return{kind:'set',instr:`Ställ klockan på ${p}.`,speak:`Ställ klockan på ${p}.`,target:(h%12)*60+m,h,m,help:helpAnalog(h,m)};
+  const r=Math.random();
+  // Öva: mest "ställ klockan" (går inte att gissa), sedan välj rätt klocka, "Stämmer det?" och flerval.
+  if(!forRace&&r<.4)return{kind:'set',instr:`Ställ klockan på ${p}.`,speak:`Ställ klockan på ${p}.`,target:(h%12)*60+m,h,m,help:helpAnalog(h,m)};
+  if(forRace?r<.4:r<.62)return pickTask(h,m,p);
+  if(!forRace&&r<.78)return ynTask(h,m,p);
   return{kind:'opts',instr:'Vad är klockan?',speak:'Vad är klockan?',vis:clockSVG(h,m),options:optsTask(cap(p),analogDistractors(h,m,pool).map(cap)),answer:cap(p),help:helpAnalog(h,m)};
 }
 function explain(h,m){
@@ -275,6 +336,27 @@ function explain(h,m){
     return`Den långa visaren är på högra sidan, där står det "över". Den har gått ${m} minuter efter hel. Den korta visaren har precis gått förbi ${h%12||12}. Alltså ${phrase(h,m)}.`;}
   if(m===35)return`Den långa visaren har gått förbi 6, alltså förbi halv. Den har gått 5 minuter till. Alltså fem över halv ${b}.`;
   return`Den långa visaren är på vänstra sidan, där står det "i". Det fattas ${60-m} minuter tills klockan blir ${b}. Alltså ${phrase(h,m)}.`;
+}
+/* Felaktiga klockor: det vanligaste felet är timvisaren (rakt på nästa siffra vid halv, en timme fel annars),
+   sedan att visarna byter plats eller att minutvisaren står spegelvänt. */
+function wrongClocks(h,m){
+  const okH=((h%12)+m/60)*30,okM=m*6,c=[];
+  c.push(m===30?{hourAngle:((h+1)%12)*30,minAngle:okM}:m?{hourAngle:(okH+30)%360,minAngle:okM}:{hourAngle:((h+1)%12)*30,minAngle:0});
+  if(m===30)c.push({hourAngle:(h%12)*30,minAngle:okM});
+  c.push({hourAngle:okM,minAngle:okH});
+  if(m%30)c.push({hourAngle:((h%12)+(60-m)/60)*30,minAngle:(60-m)*6});
+  c.push({hourAngle:(okH+330)%360,minAngle:okM});
+  const same=(a,b)=>Math.abs(a-b)%360<4||Math.abs(a-b)%360>356;
+  return c.filter(o=>!(same(o.hourAngle,okH)&&same(o.minAngle,okM)));
+}
+function pickTask(h,m,p){
+  const w=wrongClocks(h,m).slice(0,2),opts=shuffle([{ok:true,svg:clockSVG(h,m)},...w.map(o=>({ok:false,svg:clockSVG(0,0,o)}))]);
+  return{kind:'clocks',instr:`Vilken klocka visar ${p}?`,speak:`Vilken klocka visar ${p}?`,options:opts,answer:cap(p),help:helpAnalog(h,m)};
+}
+function ynTask(h,m,p){
+  const truth=Math.random()<.5,o=truth?null:pickOne(wrongClocks(h,m).slice(0,2));
+  return{kind:'yn',instr:`${petName} har ställt stationsklockan på ${p}. Stämmer det?`,speak:`${petName} har ställt stationsklockan på ${p}. Stämmer det?`,
+    vis:truth?clockSVG(h,m):clockSVG(0,0,o),truth,answer:truth?'Ja':'Nej',help:helpAnalog(h,m)};
 }
 const helpAnalog=(h,m)=>()=>({fact:cap(phrase(h,m)),vis:clockSVG(h,m,{halves:true,ring:true}),tip:explain(h,m)});
 
@@ -288,12 +370,14 @@ function genDigital(forRace){
     vis:clockSVG(H,m)+`<span class="pod">${cap(pod)}</span>`,boxes:[H,m],answer:dig(H,m),help:helpD};
   return{kind:'set',instr:`Ställ klockan på ${dig(H,m)}.`,speak:`Ställ klockan på ${H} och ${m}.`,topVis:`<div class="digital">${dig(H,m)}</div>`,target:(H%12)*60+m,h:H,m,help:helpD};
 }
+const TOWNS=['Kiruna','Ystad','Malmö','Göteborg','Umeå','Falun','Gävle','Luleå','Karlstad','Örebro','Kalmar','Östersund'];
 const STORIES=[
+  ['Tåget till {t} går {s}. Resan tar {d}.','När är tåget framme?'],
+  ['Tåget till {t} går {s}. Resan tar {d}.','När är tåget framme?'],
   ['Filmen börjar {s} och är {d} lång.','När slutar filmen?'],
-  ['Fotbollsträningen börjar {s} och håller på i {d}.','När slutar träningen?'],
-  ['Bussen går {s}. Resan tar {d}.','När kommer bussen fram?'],
-  ['Kalaset börjar {s} och håller på i {d}.','När slutar kalaset?']
+  ['Fotbollsträningen börjar {s} och håller på i {d}.','När slutar träningen?']
 ];
+const boardHTML=(town,a,b)=>`<div class="board"><span>Till</span><span>Avgår</span><span>Framme</span><b>${town}</b><b>${a}</b><b>${b}</b></div>`;
 function hopsHTML(s,d){
   let t=s,h=`<span class="t">${dig(Math.floor(t/60)%24,t%60)}</span>`;
   const H=Math.floor(d/60),M=d%60;
@@ -312,14 +396,20 @@ function genMeasure(forRace){
              :`Det orange visar hur långt den långa visaren har gått: från ${two(sm)} till ${two(em)}. Varje litet streck är en minut, och varje siffra är 5 minuter.`});
   const r=Math.random();
   // Två analoga klockor utan digital text
-  if(forRace||r<.45){
+  // Tidtabellen: hur lång tid tar resan?
+  if(!forRace&&r>=.85||forRace&&r<.35){
+    const town=pickOne(TOWNS),opts=new Set([d]);[d-5,d+5,d-15,d+15,d+60,d-60,d+10].filter(x=>x>0).sort(()=>Math.random()-.5).forEach(x=>{if(opts.size<4)opts.add(x);});
+    return{kind:'opts',instr:'Hur lång tid tar resan?',speak:`Tåget till ${town} går ${sh} och ${sm}. Det är framme ${eh} och ${em}. Hur lång tid tar resan?`,
+      vis:boardHTML(town,dig(sh,sm),dig(eh,em)),options:shuffle([...opts].map(fmtDur)),answer:fmtDur(d),help};
+  }
+  if(forRace||r<.35){
     const opts=new Set([d]);[d-5,d+5,d-15,d+15,d+60,d-60,d+30].filter(x=>x>0).sort(()=>Math.random()-.5).forEach(x=>{if(opts.size<4)opts.add(x);});
     return{kind:'opts',instr:'Hur lång tid har gått?',speak:'Titta på klockorna. Hur lång tid har gått från start till slut?',
       vis:`<div class="clocks"><figure>${clockSVG(sh,sm,{small:true})}<figcaption>Start</figcaption></figure><figure>${clockSVG(eh,em,{small:true})}<figcaption>Slut</figcaption></figure></div>`,
       options:shuffle([...opts].map(fmtDur)),answer:fmtDur(d),help};
   }
   // Ställ slutklockan
-  if(r<.75){
+  if(r<.6){
     const ev=pickOne([['Rasten','är'],['Lektionen','är'],['Filmen','är'],['Promenaden','tar']]);
     const txt=`${ev[0]} börjar när klockan är som på den lilla klockan. ${ev[0]} ${ev[1]} ${fmtDur(d)}. Ställ den stora klockan på när ${ev[0].toLowerCase()} slutar.`;
     return{kind:'set',instr:`${ev[0]} ${ev[1]} ${fmtDur(d)}. När slutar ${ev[0].toLowerCase()}?`,speak:txt,
@@ -327,7 +417,7 @@ function genMeasure(forRace){
       target:(eh%12)*60+em,startT:(sh%12)*60+sm,h:eh,m:em,answer:cap(phrase(eh,em)),help};
   }
   // Berättelse med digital tid
-  const st=pickOne(STORIES),txt=st[0].replace('{s}',dig(sh,sm)).replace('{d}',fmtDur(d));
+  const st=pickOne(STORIES),txt=st[0].replace('{t}',pickOne(TOWNS)).replace('{s}',dig(sh,sm)).replace('{d}',fmtDur(d));
   return{kind:'keys',instr:st[1],speak:`${txt} ${st[1]}`,vis:`<p class="story">${txt}</p>`,boxes:[eh,em],answer:dig(eh,em),help};
 }
 function genTask(lv,forRace){if(lv.digital)return genDigital(forRace);if(lv.measure)return genMeasure(forRace);return genAnalog(lv,forRace);}
@@ -355,9 +445,11 @@ function openHome(){
   LEVELS.forEach(lv=>{
     const b=document.createElement('button');b.className='lcard'+(lv.mix?' mix':'');
     const ico=lv.digital?'<span class="dig">15.45</span>':lv.measure?'<span style="font-size:3rem">⏱️</span>':clockSVG(lv.ex[0],lv.ex[1],{small:true});
-    b.innerHTML=`<span class="ico">${ico}</span><span><b>${lv.name}</b><br><small>${lv.desc}</small><br>${starHtml(data.stars[lv.id]||0)}</span>`;
+    b.innerHTML=(hasLok(lv.id)?`<span class="lok" title="${LOKS[lv.id][1]}">${LOKS[lv.id][0]}</span>`:'')+`<span class="ico">${ico}</span><span><b>${lv.name}</b><br><small>${lv.desc}</small><br>${starHtml(data.stars[lv.id]||0)}</span>`;
     b.onclick=()=>{cur=lv;openModes();};L.appendChild(b);
   });
+  const got=LEVELS.filter(l=>hasLok(l.id)).length;
+  $('#stall').innerHTML=`<b>🛤️ Lokstallet: ${got} av ${LEVELS.length} lok</b><div class="locs">${LEVELS.map(l=>hasLok(l.id)?`<span title="${LOKS[l.id][1]}: ${l.name}">${LOKS[l.id][0]}</span>`:`<span class="no" title="${l.name}">?</span>`).join('')}</div><small>Få minst två stjärnor på en nivå, så rullar ett nytt lok in i ${lc}s lokstall.</small>`;
   show('home');
 }
 function openModes(){
@@ -376,7 +468,10 @@ function startGame(mode){
   $('#raceBox').hidden=mode!=='race';$('#blitzBar').hidden=mode!=='blitz';$('#help').hidden=true;$('#task').hidden=false;
   if(mode==='race'){$('#carMe').innerHTML=carSvg('#3D5AFE');$('#carGhost').innerHTML=carSvg('#8E9AB5');setPos($('#carMe'),0);setPos($('#carGhost'),0);
     $('#carGhost').hidden=!G.best;$('#ghostWho').textContent=G.best?'Spöket (ditt rekord)':'Inget spöke än. Nu sätter du rekordet!';$('#raceStatus').textContent='';}
-  if(mode==='blitz')$('#blitzFill').style.width='100%';
+  if(mode==='blitz'){$('#blitzFill').style.width='100%';G.pax=0;renderWagons();}
+  $('#plat').hidden=mode!=='practice';$('#wagons').hidden=mode!=='blitz';
+  if(mode==='race'){$('#carMe').innerHTML='<span class="trn">🚂</span>';$('#carGhost').innerHTML='<span class="trn">🚂</span>';}
+  if(mode==='practice')window.Ljud&&Ljud.chime();
   $('#content').innerHTML='';$('#instr').textContent='';$('#feedback').textContent='';$('#pad').hidden=true;$('#info').textContent='';
   show('game');
   if(mode==='practice')nextTask();else countdown(()=>{G.start=performance.now();nextTask();loop();});
@@ -415,12 +510,26 @@ function render(){
   if(t.kind==='opts'){
     c.innerHTML=t.vis+`<div class="opts">${t.options.map(o=>`<button data-o="${o}">${o}</button>`).join('')}</div>`;
     c.querySelectorAll('.opts button').forEach(b=>b.onclick=()=>answerOpt(b));
+  }else if(t.kind==='clocks'){
+    c.innerHTML=`<div class="cpick">${t.options.map((o,i)=>`<button data-i="${i}" aria-label="Klocka ${i+1}">${o.svg}</button>`).join('')}</div>`;
+    c.querySelectorAll('.cpick button').forEach(b=>b.onclick=()=>{
+      if(G.busy||G.over)return;const o=t.options[+b.dataset.i];
+      if(o.ok){b.classList.add('right');return correct();}
+      b.classList.add('bad');b.disabled=true;
+      if(G.mode==='blitz')c.querySelectorAll('.cpick button').forEach((x,i)=>{if(t.options[i].ok)x.classList.add('right');});
+      wrong('en annan klocka',()=>{});});
+  }else if(t.kind==='yn'){
+    c.innerHTML=t.vis+`<div class="tf"><button data-v="1">👍 Ja, det stämmer</button><button data-v="0">👎 Nej</button></div>`;
+    c.querySelectorAll('.tf button').forEach(b=>b.onclick=()=>{
+      if(G.busy||G.over)return;const ok=(b.dataset.v==='1')===t.truth;
+      if(ok){b.classList.add('right');return correct();}
+      b.classList.add('bad');b.disabled=true;wrong(b.dataset.v==='1'?'Ja':'Nej',()=>{});});
   }else if(t.kind==='keys'){
     G.inputs=['',''];G.slot=0;
     c.innerHTML=t.vis+`<div class="tbox" id="tbox"></div>`;renderBoxes();
   }else{
     G.T=t.startT!=null?t.startT%720:0;
-    c.innerHTML=(t.topVis||'')+clockSVG(0,0)+`<div class="adj"><button data-d="-60">−1 tim</button><button data-d="-5">−5 min</button><button data-d="5">+5 min</button><button data-d="60">+1 tim</button></div><p class="hint">Dra i visarna eller använd knapparna.</p><button class="go" id="setDone">Klar</button>`;
+    c.innerHTML=(t.topVis||'')+clockSVG(0,0)+`<div class="adj"><button data-d="-60">−1 tim</button><button data-d="-5">−5 min</button><button data-d="5">+5 min</button><button data-d="60">+1 tim</button></div><p class="hint">Ta tag i en visare och dra. Eller använd knapparna.</p><button class="go" id="setDone">Klar</button>`;
     mountSet(c);
   }
 }
@@ -454,18 +563,21 @@ function submitKeys(){
 }
 /* Ställ klockan */
 function mountSet(c){
-  const svg=c.querySelector('svg'),hh=svg.querySelector('.hh'),mh=svg.querySelector('.mh');
+  const all=c.querySelectorAll('svg.clock'),svg=all[all.length-1],/* den stora klockan, inte startklockan i Mäta tid */hh=svg.querySelector('.hh'),mh=svg.querySelector('.mh');
   const draw=()=>{const h=Math.floor(G.T/60),m=G.T%60;hh.setAttribute('transform',`rotate(${(h+m/60)*30} 100 100)`);mh.setAttribute('transform',`rotate(${m*6} 100 100)`);};
   const pt=e=>{const r=svg.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*244-22,y=(e.clientY-r.top)/r.height*244-22;
-    const dx=x-100,dy=y-100;return{a:(Math.atan2(dx,-dy)*180/Math.PI+360)%360,r:Math.hypot(dx,dy)};};
+    const dx=x-100,dy=y-100;return{a:(Math.atan2(dx,-dy)*180/Math.PI+360)%360,r:Math.hypot(dx,dy),dx,dy};};
+  // Man tar tag i den visare man trycker närmast (avståndet till visaren, inte hur långt ut man trycker)
+  const segDist=(p,ang,len)=>{const a=ang*Math.PI/180,ux=Math.sin(a),uy=-Math.cos(a),t=Math.max(0,Math.min(len,p.dx*ux+p.dy*uy));return Math.hypot(p.dx-ux*t,p.dy-uy*t);};
+  const nearest=p=>{const h=Math.floor(G.T/60),m=G.T%60;return segDist(p,(h+m/60)*30,50)<=segDist(p,m*6,78)?'h':'m';};
   let hand=null;
   const moveTo=p=>{const m=G.T%60,h=Math.floor(G.T/60);
     if(hand==='m'){const nm=Math.round(p.a/30)*5%60;let d=((nm-m)%60+90)%60-30;G.T=((G.T+d)%720+720)%720;}
     else{const nh=((Math.round((p.a-m/2)/30))%12+12)%12;G.T=nh*60+m;}
     draw();$('#task').className='task';$('#feedback').textContent='';};
-  svg.addEventListener('pointerdown',e=>{if(G.busy)return;const p=pt(e);hand=p.r>=58?'m':'h';svg.setPointerCapture(e.pointerId);moveTo(p);});
+  svg.addEventListener('pointerdown',e=>{if(G.busy)return;const p=pt(e);hand=nearest(p);(hand==='h'?hh:mh).classList.add('grab');svg.setPointerCapture(e.pointerId);moveTo(p);});
   svg.addEventListener('pointermove',e=>{if(hand)moveTo(pt(e));});
-  const end=()=>{hand=null;};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+  const end=()=>{hand=null;hh.classList.remove('grab');mh.classList.remove('grab');};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
   c.querySelectorAll('.adj button').forEach(b=>b.onclick=()=>{if(G.busy)return;G.T=((G.T+ +b.dataset.d)%720+720)%720;draw();$('#task').className='task';$('#feedback').textContent='';});
   $('#setDone').onclick=()=>{if(G.busy)return;
     if(G.T===G.t.target)return correct();
@@ -475,18 +587,27 @@ function mountSet(c){
   draw();
 }
 /* Rätt och fel */
-const PRAISE=['Rätt!','Snyggt!','Bra!','Toppen!','Klockrent!'];
+const PRAISE=['Rätt!','Snyggt!','Bra!','Toppen!','Klockrent!','Tåget går i tid!'];
+const PAX=['🧒','👧','👦','🧑','👩','👨','👵','👴','🧓','👱'];
+function renderWagons(){const n=G.pax||0,w=Math.max(1,Math.ceil(n/8));let h='<div class="wagon loc">🚂</div>';
+  for(let i=0;i<w;i++){const k=Math.min(8,n-i*8);h+=`<div class="wagon">${Array.from({length:Math.max(0,k)},(_,j)=>PAX[(i*8+j)%PAX.length]).join('')}</div>`;}
+  $('#wagons').innerHTML=h;}
+// Öva: tåget tutar och går, ett nytt rullar in
+function trainGo(){const t=$('#ptrain');if(!t||$('#plat').hidden)return;window.Ljud&&Ljud.toot();t.classList.remove('in');t.classList.add('go');
+  setTimeout(()=>{t.classList.remove('go');t.classList.add('in');void t.offsetWidth;t.classList.remove('in');},950);}
 function correct(){window.Ljud&&Ljud.ok();
-  G.busy=true;G.correct++;
+  G.busy=true;G.correct++;petFx('hop');
+  if(G.mode==='practice')trainGo();
+  if(G.mode==='blitz'){G.pax=(G.pax||0)+1;renderWagons();}
   $('#task').className='task ok';$('#feedback').textContent=G.first?pickOne(PRAISE):'Nu blev det rätt!';
   if(G.mode==='race'){G.times.push(elapsed());setPos($('#carMe'),G.correct/RACE_LEN);$('#info').textContent=`${G.correct} / ${RACE_LEN}`;
-    if(G.correct>=RACE_LEN){setTimeout(finish,500);return;}}
-  setTimeout(nextTask,G.mode==='blitz'?250:900);
+    if(G.correct>=RACE_LEN){const g=G;setTimeout(()=>{if(G===g)finish();},500);return;}}
+  const g=G;setTimeout(()=>{if(G===g)nextTask();},G.mode==='blitz'?250:900); // gäller bara den här rundan
 }
-function wrong(given,reset){window.Ljud&&Ljud.bad();
+function wrong(given,reset){window.Ljud&&Ljud.bad();petFx('hmm');
   if(G.first&&G.mode==='practice')G.missed++;
   G.first=false;
-  if(G.mode==='blitz'){G.busy=true;$('#task').className='task bad';$('#feedback').textContent=`Rätt svar: ${G.t.answer||cap(phrase(G.t.h,G.t.m))}`;setTimeout(nextTask,1300);return;}
+  if(G.mode==='blitz'){G.busy=true;$('#task').className='task bad';$('#feedback').textContent=G.t.kind==='clocks'?'Rätt klocka är den gröna.':`Rätt svar: ${G.t.answer||cap(phrase(G.t.h,G.t.m))}`;const g=G;setTimeout(()=>{if(G===g)nextTask();},1300);return;}
   if(G.mode==='race'){$('#task').className='task bad';$('#feedback').textContent='Försök igen!';reset();return;}
   showHelp(given);reset();
 }
@@ -512,7 +633,7 @@ $('#quit').onclick=()=>{if(G){G.over=true;cancelAnimationFrame(G.raf);}$('#count
 /* ---------- Resultat ---------- */
 function finish(){
   if(!G||G.over)return;G.over=true;cancelAnimationFrame(G.raf);
-  const t=elapsed(),id=G.lv.id;let party=false;
+  const t=elapsed(),id=G.lv.id,hadLok=hasLok(id);let party=false;$('#rLok').innerHTML='';
   if(G.mode==='practice'){
     const right=Math.max(0,ROUND-G.missed),st=right===ROUND?3:right>=ROUND-2?2:1; // G.missed räknar varje uppgift högst en gång
     if(st>(data.stars[id]||0)){data.stars[id]=st;save();}
@@ -528,6 +649,7 @@ function finish(){
     $('#rTitle').textContent=rec?'Nytt rekord!':'Tiden är slut!';$('#rBig').textContent=G.correct;
     $('#rSub').textContent='rätt på 60 sekunder.'+(rec&&best?` Förra rekordet var ${best}.`:!rec&&best?` Ditt rekord är ${best}.`:'');party=rec;
   }
+  if(!hadLok&&hasLok(id)){party=true;$('#rLok').innerHTML=`<p class="newlok">Nytt lok i Lokstallet: ${LOKS[id][0]} ${LOKS[id][1]}!</p>`;}
   show('result');if(party)confetti();
 }
 $('#rAgain').onclick=()=>startGame(G.mode);
