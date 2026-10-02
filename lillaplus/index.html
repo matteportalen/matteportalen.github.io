@@ -148,7 +148,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Start -->
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
     <div><h1>Lilla plus &amp; minus <span class="world">🐔 Hönsgården</span></h1><p class="lead" id="homeLead">Huvudräkning med tal upp till 10. Välj räknesätt och sedan hur du vill träna.</p></div></div>
   <div class="ops" id="ops">
@@ -211,6 +210,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Lilla plus & minus" data-ikon="➕"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -265,7 +265,7 @@ function renderFarm(){
 /* ---------- Startsida ---------- */
 let op=data.op||'plus';
 let G=null;
-function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 let toastT;
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
 const fmt=ms=>(ms/1000).toFixed(1).replace('.',',')+' s';

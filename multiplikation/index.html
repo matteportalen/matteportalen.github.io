@@ -184,7 +184,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Startsida -->
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
     <div><h1>Multiplikation <span class="world">🧁 Bageriet</span></h1><p class="lead" id="homeLead">Välj en tabell att träna på.</p></div></div>
   <div id="tableGrid" class="tables"></div>
@@ -291,6 +290,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Multiplikation" data-ikon="✖️"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -327,7 +327,7 @@ $('#homeLead').textContent=`Hjälp ${lc} att baka! Varje plåt har rader med kak
 /* ---------- Navigering ---------- */
 let sel={tables:[],facts:null,label:''};
 let G=null;
-function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 function joinSv(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' och '+a[a.length-1];}
 function tname(t){if(t.length===1)return t[0]+':ans tabell';if(t.length===10)return 'Alla tabeller';return 'Blandat: '+joinSv(t);}
 let toastT;

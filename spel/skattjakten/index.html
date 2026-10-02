@@ -177,6 +177,7 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../../ljud.js"></script>
 <script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Skattjakten" data-ikon="🗝️" data-hem="../../" data-helskarm="game"></script>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -328,7 +329,7 @@ function newGame(){
      chests:Object.values(objs).filter(o=>o.t==="chest").length,found:0,loot:{},solved:0,firstTry:0,busy:false,over:false,anim:null,sparks:[]};
   reveal();
   $("hudLv").textContent=`${th.name} · Nivå ${data.level}`;updHud();
-  $("home").hidden=true;$("win").hidden=true;$("game").hidden=false;
+  $("home").hidden=true;$("win").hidden=true;$("game").hidden=false;if(window.MPS)MPS.visa("game");
   renderSlots();if(window.Ljud&&Ljud.ambient)Ljud.ambient.start(data.theme);sndIcon();
   resize();hint(`Hitta utgången: ${th.exit.name.toLowerCase()}! Skatter finns ofta i återvändsgränder.`,4500);
 }
@@ -469,7 +470,7 @@ function win(){
   $("wStars").innerHTML=[1,2,3].map(i=>i<=st?"★":'<span class="off">★</span>').join("");
   $("wSub").textContent=`${pts} poäng${rec&&pts?" – nytt rekord!":data.best[data.level]?` (rekord ${data.best[data.level]}).`:"."} ${G.found} av ${G.chests} skattkistor. ${G.solved} ${G.solved===1?"hinder":"hinder"} löst${G.firstTry?`, ${G.firstTry} rätt direkt`:""}.`+(st<3?(half?" Hitta alla kistor för tre stjärnor.":" Hitta minst hälften av kistorna för två stjärnor."):"");
   $("wLoot").innerHTML=lootHTML(G.loot)||"<span>Inga skatter den här gången.</span>";
-  $("game").hidden=true;$("win").hidden=false;window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
+  $("game").hidden=true;$("win").hidden=false;if(window.MPS)MPS.visa("win");window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
 }
 $("wAgain").onclick=newGame;$("wHome").onclick=openHome;
 $("quit").onclick=()=>{if(G)G.over=true;closeFoe();window.Ljud&&Ljud.ambient&&Ljud.ambient.stop();document.querySelectorAll(".flyer").forEach(e=>e.remove());openHome();};
@@ -490,7 +491,7 @@ function preview(cvEl,key){const th=THEMES[key],s=sheetOf(key),c=cvEl.getContext
   const m=[[1,1,1],[0,2,3],[1,0,1]];for(let y=0;y<3;y++)for(let x=0;x<3;x++){c.fillStyle=th.bg;c.fillRect(x*32,y*32,32,32);tile(c,s,th.floor[0],x*32,y*32,32);
     const v=m[y][x];if(v===1)tile(c,s,th.walls[(x+y)%th.walls.length],x*32,y*32,32);if(v===2)tile(c,th.foes[0].s,th.foes[0].i,x*32,y*32,32);if(v===3)tile(c,CHEST.s,CHEST.i,x*32,y*32,32);}}
 function openHome(){
-  $("game").hidden=true;$("win").hidden=true;$("home").hidden=false;window.scrollTo(0,0);
+  $("game").hidden=true;$("win").hidden=true;$("home").hidden=false;window.scrollTo(0,0);if(window.MPS)MPS.visa("home");
   $("themes").innerHTML=Object.entries(THEMES).map(([k,t])=>`<button class="theme" data-t="${k}" aria-pressed="${data.theme===k}"><canvas width="96" height="96" data-p="${k}"></canvas>${t.name}</button>`).join("");
   document.querySelectorAll("[data-p]").forEach(c=>preview(c,c.dataset.p));
   document.querySelectorAll(".theme").forEach(b=>b.onclick=()=>{data.theme=b.dataset.t;save();openHome();});

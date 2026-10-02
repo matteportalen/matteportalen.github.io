@@ -152,7 +152,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <body>
 <div class="wrap">
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Uppställning</h1>
   <div id="howtoHome"></div>
   <div class="opts"><p>Hur stora tal?</p><div class="chips" id="rangeChips"><button data-r="100">Upp till 100</button><button data-r="1000">Upp till 1000</button></div></div>
@@ -193,6 +192,8 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <div class="toast" id="toast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Uppställning" data-ikon="🧮"></script>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -334,7 +335,7 @@ const LEVELS=[
 ];
 const starKey=(lv,r)=>`${lv}-${r}`;
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 let homeHow=null,modalHow=null;
 function openHome(){G=null;if(!homeHow)homeHow=mountHowto($("howtoHome"),"+");if("speechSynthesis" in window)speechSynthesis.cancel();
   $("rangeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.r===data.range));

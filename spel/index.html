@@ -179,7 +179,6 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <body>
 
 <div class="wrap" id="menu">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Spelhörnan</h1>
   <p class="lead">Spela och räkna samtidigt!</p>
   <button class="gamecard bub" id="btnBub"><span class="pic cards3">🫧</span><span><span class="new">Nytt!</span><b>Bubbeljakten</b><small>Sikta och skjut uppgiften mot bubblan med rätt svar. Poppa hela planen!</small></span></button>
@@ -241,6 +240,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Spelhörnan" data-ikon="🎮" data-helskarm="game mem bub"></script>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -296,7 +296,7 @@ function gen(){
 }
 
 /* ---------- Menyer ---------- */
-function showOnly(id){["menu","choose","game","mem","result","bub"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);}
+function showOnly(id){["menu","choose","game","mem","result","bub"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 $("btnBub").onclick=()=>{game="bub";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("memChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.memMode=b.dataset.m;save();renderChoose();};
 $("bubChips").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.bubFrom=b.dataset.f;save();renderChoose();};

@@ -215,7 +215,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Startsida -->
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
     <div><h1>Division <span class="world">🎉 Kalaset</span></h1><p class="lead" id="homeLead">Välj vilket tal du vill dela med.</p></div></div>
   <div class="segd" id="segRest"><button data-v="0">Utan rest</button><button data-v="1">Med rest</button></div>
@@ -321,6 +320,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Division" data-ikon="➗"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -364,7 +364,7 @@ $('#homePet').innerHTML=owlSVG(pet);$('#hpet').innerHTML=owlSVG(pet);
 /* ---------- Navigering ---------- */
 let sel={tables:[],facts:null,label:''};
 let G=null;
-function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 function joinSv(a){return a.length<2?a.join(''):a.slice(0,-1).join(', ')+' och '+a[a.length-1];}
 function tname(t){const base=t.length===1?`Delat med ${t[0]}`:t.length>=9?'Alla tabeller':'Delat med '+joinSv(t);return base+(REST()?', med rest':'');}
 let toastT;

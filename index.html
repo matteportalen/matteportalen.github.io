@@ -323,6 +323,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 <script src="ljud.js"></script>
 <script src="djur.js"></script>
+<script src="huvud.js" data-hem="./" data-nav="av"></script>
 <script>
 const $=id=>document.getElementById(id);
 const get=k=>{try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}};
@@ -512,7 +513,11 @@ document.addEventListener("keydown",e=>{if(e.key==="Escape")document.querySelect
 
 /* ---------- Ljud ---------- */
 function soundLabel(){$("soundBtn").textContent=window.Ljud&&Ljud.on?"🔊 Ljud: på":"🔇 Ljud: av";}
-$("soundBtn").onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);soundLabel();Ljud.ok();};
+$("soundBtn").onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);soundLabel();Ljud.ok();document.dispatchEvent(new Event("mp-ljud-andrat"));};
+document.addEventListener("mp-ljud",soundLabel);
+/* Djuret i sidhuvudet öppnar garderoben, och övningssidornas sidhuvud leder hit med #garderob */
+if(window.MPS)MPS.huvud.querySelector(".mph-pet").onclick=e=>{e.preventDefault();$("owlBtn").click();};
+if(location.hash==="#garderob"){history.replaceState(null,"",location.pathname);setTimeout(()=>$("owlBtn").click(),50);}
 soundLabel();
 
 /* ---------- Ugglan hälsar ---------- */

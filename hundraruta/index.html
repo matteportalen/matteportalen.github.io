@@ -127,7 +127,6 @@ h2.sub{font-size:1.4rem;margin:18px 0 8px}
 <body>
 <div class="wrap">
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Hundrarutan</h1>
   <p class="lead">Ett steg åt sidan är ett mer eller mindre. Ett steg upp eller ner är tio.</p>
   <button class="toolcard" id="openTool"><span class="tico" id="toolIco"></span><span><b>Hela hundrarutan</b><small>Ha den framme som hjälp när du räknar i boken. Tryck på talen för att markera dem.</small></span><span class="chev">›</span></button>
@@ -176,6 +175,8 @@ h2.sub{font-size:1.4rem;margin:18px 0 8px}
 <div class="toast" id="toast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Hundrarutan" data-ikon="💯"></script>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -250,7 +251,7 @@ const AREAS=[
   {id:"trasig",name:"Trasig hundraruta",desc:"Fyll i talen som fattas",ak:"Åk 2",c:"#FF9F43",gen:genTrasig,helper:true,ico:mini((r,c)=>r===1&&c===2?"#3D8BFD":(r===0&&c===2)||(r===2&&c===2)||(r===1&&c===1)||(r===1&&c===3)?"#FFF4CC":"")}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 function openHome(){G=null;$("game").classList.remove("withhelp");document.body.classList.remove("wide");if("speechSynthesis" in window)speechSynthesis.cancel();
   $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${a.ico}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${starHtml(data.stars[a.id]||0)}</button>`).join("");
   show("home");}

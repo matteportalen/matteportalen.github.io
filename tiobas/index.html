@@ -21,7 +21,8 @@ body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17p
 button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
 button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 [hidden]{display:none !important}
-.app{height:100%;display:flex;flex-direction:column;padding:6px 10px 8px;gap:6px;max-width:1200px;margin:0 auto}
+body{display:flex;flex-direction:column}
+.app{flex:1;min-height:0;width:100%;height:auto;display:flex;flex-direction:column;padding:6px 10px 8px;gap:6px;max-width:1200px;margin:0 auto}
 
 /* Överst: tillbaka, rubrik, verktyg */
 .top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
@@ -116,7 +117,6 @@ h1{font-size:1.5rem;margin:0 6px 0 2px;font-weight:800;line-height:1}
 <body>
 <div class="app" id="app">
   <div class="top">
-    <a class="back" href="../">← Matte-Portalen</a>
     <h1>Tiobas</h1>
     <span class="total" id="total" aria-live="polite"></span>
     <div class="tools">
@@ -147,6 +147,8 @@ h1{font-size:1.5rem;margin:0 6px 0 2px;font-weight:800;line-height:1}
   </div>
 </div>
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-nav="av" data-liggande="ja"></script>
 <script>
 const $=id=>document.getElementById(id);
 /* ---------- Klossarna: trä med spår, ritade i kod ---------- */

@@ -9,6 +9,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 - All data sparas i **localStorage** i elevens webbläsare. Ingen server, inga konton på nätet.
 - Typsnitt: **Baloo 2** från Google Fonts (vikt 500/700/800), med `"Trebuchet MS", system-ui, sans-serif` som reserv.
 - Delat ljud: `ljud.js` i roten. Alla sidor laddar den med `<script src="../ljud.js">` (startsidan med `ljud.js`).
+- **Gemensamt sidhuvud och bakåtknapp: `huvud.js`** i roten, på alla sidor (laddas efter ljud.js och djur.js, före sidans skript, med `data-titel`/`data-ikon`, och `data-nav="av"`, `data-helskarm`, `data-liggande`, `data-hem` vid behov). Sidhuvudet: loggan **Mattenyckeln** (＋ − × ÷ i grön, röd, lila och orange ruta; även flikikon), sidans namn, profilens namn + elevens djur + stjärnor (leder till garderoben), ljudknapp. Krymper till ✕ + namn på skärmen `game` (sidans egen `#quit` göms då); göms helt i helskärmsspel (Spelhörnans spel, Skattjakten, Bubbeljakten, Tiobas i liggande mobil). Sidorna har inte längre egna länkar "← Till huvudmenyn". Stjärnorna räknas i `MPStjarnor()` med **samma regler som startsidan**: ändras reglerna på startsidan måste de ändras här också. **Bakåtknappen:** sidornas `show(id)` anropar `MPS.visa(id)`; hem 0, val/lägen 1, spel/resultat 2 blir steg i webbläsarens historik, och bakåt trycker på skärmens egen tillbaka-knapp (`#quit`, `[data-home]`, `#toolBack`, `#rModes`, `#rHome`, `#rChoose`, `#backMenu`, `#memQuit`, `#bubQuit`, `#wHome`, `.back`). Ny sida: lägg in skriptet och anropa `MPS.visa` i skärmbytet.
 - Delat djur: `djur.js` i roten (`WARD`, `NATUR`, `itemOf`, `owlSVG`, `PETNAME`, `lasDjur()`). Laddas av startsidan, Spelhörnan, Skattjakten och alla övningar med elevens djur (Geometri, Bråk, Division, Multiplikation, Lilla plus, Tiotal, Klockan). **Inga kopior** av djurmallen i sidorna, ändra bara i `djur.js`.
 - Externa skript laddas bara när de behövs: `qrcodejs 1.0.0` från cdnjs (QR-koder), `jsqr 1.4.0` från jsdelivr (läsa QR med kameran, om webbläsaren saknar `BarcodeDetector`) och `matter-js 0.20.0` från cdnjs (fysiken i Tornbygget, med SRI).
 
@@ -93,7 +94,6 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 ## Idéer som väntar
 
-- **Gemensamt sidhuvud och rätt bakåtknapp (TEST pågår):** `huvud.js` i roten (`MPHuvud`, `MPNav`), provas i `test/` (kopia av startsidan) och `klockan/test/` (kopia av Klockan). Sidhuvudet: logga (hem), sidans namn, elevens djur med stjärnor (till garderoben), ljudknapp; krymper till bara ✕ under spel. `MPNav` lägger varje skärm i webbläsarens historik så att mobilens bakåt går ett steg tillbaka i stället för ut ur övningen. Testsidan sparar stjärnorna i `matteportalen-stjarnor` åt sidhuvudet. Ska läraren välja det byggs det in på alla sidor och testmapparna tas bort.
 
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
 - **Blandade uppgifter med saknat tal** (`__ · 5 = 15`, `__ + 7 = 12`) och "Stämmer det?" i fler övningar (addition, multiplikation osv.). Prövas först i Division (Kalaset); läraren gillar idén.

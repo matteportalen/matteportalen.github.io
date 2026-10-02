@@ -150,7 +150,6 @@ button.item.right{border-color:var(--good);background:#DDF5E7}
 
 <!-- Start -->
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Taluppfattning</h1>
   <p class="lead">Välj årskurs och tryck på det du vill träna.</p>
   <div class="seg" id="segGrade"><button data-v="1">Åk 1</button><button data-v="2">Åk 2</button></div>
@@ -190,6 +189,8 @@ button.item.right{border-color:var(--good);background:#DDF5E7}
 <canvas id="fx" hidden></canvas>
 
 <script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Taluppfattning" data-ikon="🔢"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -399,7 +400,7 @@ const AREAS={
 
 /* ---------- Startsida ---------- */
 let G=null,toastT;
-function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?'★':'<span class="off">★</span>').join('')}</span>`;
 function openHome(){

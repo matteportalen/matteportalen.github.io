@@ -167,7 +167,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <div class="wrap">
 
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <div class="station"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
     <div><h1>Klockan <span class="world">🚂 Stationen</span></h1><p class="lead" id="homeLead">Välj vad du vill träna på.</p></div></div>
   <div class="levels" id="levels"></div>
@@ -235,6 +234,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Klockan" data-ikon="🕒"></script>
 <script>
 const $=s=>document.querySelector(s);
 const $$=s=>document.querySelectorAll(s);
@@ -434,7 +434,7 @@ function speak(text){
 
 /* ---------- Startsida och lägen ---------- */
 let G=null,cur=null,toastT;
-function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){$$('.screen').forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?'★':'<span class="off">★</span>').join('')}</span>`;
 const fmt=ms=>(ms/1000).toFixed(1).replace('.',',')+' s';

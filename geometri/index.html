@@ -129,7 +129,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <body>
 <div class="wrap">
 <section id="home" class="screen">
-  <a class="back" href="../">← Till huvudmenyn</a>
   <h1>Geometri</h1>
   <p class="lead">Former, kroppar, mönster, symmetri och mycket mer.</p>
   <div class="areas" id="areas"></div>
@@ -168,6 +167,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Geometri" data-ikon="🔺"></script>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -528,7 +528,7 @@ const AREAS=[
   {id:"matt",name:"Omkrets och area",desc:"Staket runt hagen och odlingens area.",ak:"Åk 3",c:"#17AFC4",gen:genMatt}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
   $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${ICON[a.id]}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${starHtml(data.stars[a.id]||0)}</button>`).join("");
   show("home");}
