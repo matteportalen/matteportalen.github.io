@@ -438,7 +438,6 @@ const STICKERS=[
   ["tre","🔥","Tre i rad","Träna tre dagar i rad.",()=>S.bestStreak>=3],
   ["vecka","🚀","En hel vecka","Träna sju dagar i rad.",()=>S.bestStreak>=7],
   ["flygare","🎮","Spelglad","Spela ett spel i Spelhörnan.",()=>(S.spel.played||0)>0||["mem","car","space","frog","tower","skatt","kiosk","bubbel"].some(k=>Object.keys(S.spel[k]||{}).length)||(S.spel.memVs||0)>0||Object.keys(S.sj.stars||{}).length>0],
-  ["molnkung","☁️","Molnkungen","Klara Ugglans flygtur utan att tappa ett hjärta.",()=>!!S.spel.perfect],
   ["ratt","🏎️","Rattkungen","Kör i mål på Racerbanan i Spelhörnan.",()=>!!S.spel.carWon],
   ["fulltos","🏁","Fullt ös","Kör i mål på Racerbanan utan att tappa ett däck.",()=>!!S.spel.carPerfect],
   ["rymd","🚀","Rymdkadetten","Rädda rymden i Asteroidjakten.",()=>!!S.spel.spaceWon],
