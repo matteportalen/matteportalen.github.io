@@ -55,6 +55,18 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gamecard .pic.cards3{font-size:3.4rem;text-align:center}
 .gamecard.car{background:linear-gradient(135deg,#1D2B53,#3D5AFE);box-shadow:0 6px 0 #0E1735;margin-top:14px}
 .gamecard.car:active{box-shadow:0 3px 0 #0E1735}
+/* Racerbanan: garaget och banval */
+.garage{margin:16px 0 0;background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line)}
+.garage .ghead{display:flex;align-items:center;gap:12px;margin-bottom:8px}
+.garage .ghead img{height:64px;width:auto}
+.garage .ghead b{display:block;font-size:1.2rem}.garage .ghead small{color:var(--muted);font-weight:700}
+.gveh{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.gveh button{background:var(--bg);border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:.85rem;line-height:1.1}
+.gveh button img{height:46px;width:auto}
+.gveh button small{color:var(--muted);font-size:.8rem}
+.gveh button[aria-pressed="true"]{outline:3px solid var(--ink);background:#FFF4CC}
+.gveh button.locked img{filter:grayscale(1) brightness(.8);opacity:.6}
+.spelToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:30;max-width:90vw;text-align:center}
 .laneopt{margin:16px 0 0;background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line)}
 .laneopt p{margin:0 0 8px;font-weight:800}
 .carbtns{display:flex;gap:12px;max-width:620px;margin:8px auto 0;padding:0 12px}
@@ -185,7 +197,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Svara rätt, släpp balken från lyftkranen och bygg ända till månen. Prick rakt, annars rasar tornet!</small></span></button>
   <a class="gamecard jakt hero" href="skattjakten/"><span class="pic cards3">🗝️</span><span><span class="new">Nytt!</span><b>Skattjakten</b><small>Utforska labyrinten, lös hindrens textuppgifter och fyll skattkammaren!</small></span></a>
   <button class="gamecard mem" id="btnMem"><span class="pic cards3">🃏</span><span><b>Memory</b><small>Vänd korten och hitta paren: uppgiften och svaret.</small></span></button>
-  <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Kör i filen med rätt svar och ta dig i mål!</small></span></button>
+  <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Tävla mot tre bilar! Kör under bågen med rätt svar, undvik hinder och plocka mynt till garaget.</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
   <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Kiosken</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
@@ -198,6 +210,8 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="cats" id="cats"></div>
   <div class="tables" id="tables" hidden><p id="tablesTitle">Vilka tabeller?</p><div class="chips" id="chips"></div></div>
   <div class="laneopt" id="frogOpt" hidden><p>Hur är vattnet?</p><div class="chips" id="frogChips"><button data-m="lugnt">Lugnt vatten</button><button data-m="strom">Strömt vatten (svårare)</button></div></div>
+  <div class="laneopt" id="trackOpt" hidden><p>Vilken bana?</p><div class="chips" id="trackChips"></div></div>
+  <div class="garage" id="garage" hidden></div>
   <div class="laneopt" id="laneOpt" hidden><p>Hur många filer?</p><div class="chips" id="laneChips"><button data-l="3">3 filer</button><button data-l="4">4 filer (svårare)</button></div></div>
   <div class="laneopt" id="memOpt" hidden><p>Vem spelar?</p><div class="chips" id="memChips"><button data-m="solo">Själv</button><button data-m="vs">Mot en vän</button></div></div>
   <div class="laneopt" id="bubOpt" hidden><p>Var vill du börja?</p><div class="chips" id="bubChips"></div></div>
@@ -237,6 +251,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="go" id="rAgain">Spela igen</button>
   <button class="rowbtn" id="rChoose">Räkna med något annat</button>
 </div>
+<div class="spelToast" id="spelToast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
@@ -317,13 +332,13 @@ function renderChoose(){
   $("memOpt").hidden=game!=="mem";
   $("memChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.memMode||"solo")));
   $("frogChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.frogMode||"lugnt")));
-  $("laneOpt").hidden=game!=="car";
+  $("laneOpt").hidden=game!=="car";renderTrackOpt();renderGarage();
   $("laneChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.l===(data.lanes||3)));
   const rush=game==="fly"||game==="car";
   let list=CATS.filter(c=>(game==="mem"||!c.memOnly)&&!(rush&&c.noRush));
   if(game==="kiosk")list=[{id:"tiotal",name:"Priser upp till 20 kr",t:"20",c:"#FF9F43",desc:"Handla och räkna växel med små pengar"},{id:"hundra",name:"Priser upp till 100 kr",t:"100",c:"#17AFC4",desc:"Större summor och växel upp till 100 kr"}];
   if(!list.find(c=>c.id===cat))cat=list[0].id;
-  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&game!=="kiosk"?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="bub"?"poäng":game==="tower"?"våningar":"rätt"}</small>`:""}${game==="bub"&&r&&r.bana?`<small>Klarat bana ${r.bana}</small>`:""}</button>`;}).join("");
+  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${game==="car"?(r&&r.time?`<small>Rekord: ${fmtT(r.time)}</small>`:""):r&&r.best&&game!=="kiosk"?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="bub"?"poäng":game==="tower"?"våningar":"rätt"}</small>`:""}${game==="bub"&&r&&r.bana?`<small>Klarat bana ${r.bana}</small>`:""}</button>`;}).join("");
   const C=CATS.find(c=>c.id===cat);$("tables").hidden=!C.tables;
   const bs=game==="bub"&&store[cat];$("bubOpt").hidden=!(bs&&bs.bana);
   if(bs&&bs.bana){const f=data.bubFrom==="cont"?"cont":"1";$("bubChips").innerHTML=`<button data-f="1" aria-pressed="${f==="1"}">Bana 1</button><button data-f="cont" aria-pressed="${f==="cont"}">Fortsätt på bana ${bs.bana+1}</button>`;}
@@ -349,135 +364,235 @@ $("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.
 $("rAgain").onclick=()=>startCurrent();
 $("rChoose").onclick=()=>{renderChoose();showOnly("choose");};
 
-/* ---------- Racerbanan ---------- */
+/* ---------- Racerbanan ----------
+   Grafik: "Racing Pack" av Kenney (CC0) i spel/bilder/racing/.
+   Man tävlar mot tre datorbilar (den långsammaste byts mot ditt rekordspöke när du har ett rekord).
+   Svaren står på bågar över filerna. Rätt svar ger fart, fel svar gör att bilen sladdar och tappar.
+   Mellan uppgifterna: hinder att svänga undan (saktar bara ner) och mynt att plocka. Mynten köper bilar i Garaget.
+   Placering 1–4 ger 3, 2, 1 eller 0 stjärnor. Fyra banor: Racingbanan, Skogen, Öknen, Vintervägen. */
 let C=null,craf=0;
-const tire=on=>`<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="13" cy="13" r="11" fill="${on?"#1D2B53":"#C6D6F2"}"/><circle cx="13" cy="13" r="5" fill="${on?"#9AA7BF":"#E8EDF7"}"/><circle cx="13" cy="13" r="2" fill="${on?"#1D2B53":"#C6D6F2"}"/></svg>`;
-const ENV=[
-  {name:"stad",side:"#9AA7BF",edge:"#C6D6F2",road:"#4A5578",line:"#fff"},
-  {name:"skog",side:"#5CC274",edge:"#8ED99B",road:"#4A5578",line:"#fff"},
-  {name:"öken",side:"#F2D48A",edge:"#FBE7B0",road:"#6B5B4A",line:"#FFF4CC"}
+const RIMG={},rImg=n=>{if(!RIMG[n]){const i=new Image();i.src="bilder/racing/"+n+".png";RIMG[n]=i;}return RIMG[n];};
+const rOk=i=>i&&i.complete&&i.naturalWidth>0;
+const RGATES=20,RGS=1.05,RCARY=.8; // antal svarsbågar, avstånd mellan dem och bilens plats (i skärmhöjder)
+const TRACKS={
+  race:{name:"Racingbanan",ic:"🏁",ground:"land_grass04",deco:["tribune_full","tent_red","tent_blue","tires_red","tires_white","barrier_red_race","tires_red"],edge:"kerb"},
+  skog:{name:"Skogen",ic:"🌲",ground:"land_grass11",deco:["tree_large","tree_small","tree_large","rock1","tree_small","rock2"],edge:"line"},
+  oken:{name:"Öknen",ic:"🏜️",ground:"land_sand12",deco:["rock1","rock2","rock3","barrel_red","barrel_blue","rock3"],edge:"sand"},
+  vinter:{name:"Vintervägen",ic:"❄️",ground:null,deco:["tree_small","tree_large","rock2","tree_small","rock3"],edge:"snow"}
+};
+const VEH=[
+  {id:"1",name:"Sportbilen",price:0},{id:"2",name:"Rallybilen",price:20},{id:"3",name:"Klassikern",price:40},
+  {id:"4",name:"Pickupen",price:60},{id:"5",name:"Racern",price:80},{id:"mc",name:"Motorcykeln",price:120}
 ];
-const envOf=s=>s<7?0:s<14?1:2;
-function carHud(){
-  $("hearts").innerHTML=[0,1,2].map(i=>tire(i<C.tires)).join("");
-  $("score").textContent=`${C.score} / ${GOAL}`;$("progFill").style.width=(C.score/GOAL*100)+"%";
+const VCOL=[["red","Orange"],["blue","Blå"],["green","Grön"],["yellow","Gul"],["black","Svart"]];
+const vSprite=(v,c)=>v==="mc"?`motorcycle_${c}`:`car_${c}_${v}`;
+const fmtT=s=>{const m=Math.floor(s/60),r=(s-m*60).toFixed(1).replace(".",",");return m?`${m}:${r.padStart(4,"0")}`:`${r} s`;};
+function garageData(){data.carOwned=data.carOwned||["1"];data.carSel=data.carSel||{v:"1",c:"red"};data.carCoins=data.carCoins||0;}
+
+/* Garaget på valskärmen: välj fordon och färg, köp nya fordon för mynt */
+function renderGarage(){
+  garageData();const g=$("garage");if(game!=="car"){g.hidden=true;return;}g.hidden=false;
+  const sel=data.carSel;
+  g.innerHTML=`<div class="ghead"><img src="bilder/racing/${vSprite(sel.v,sel.c)}.png" alt=""><div><b>Garaget</b><small>${VEH.find(v=>v.id===sel.v).name} · du har 🪙 ${data.carCoins} mynt</small></div></div>
+    <div class="gveh">${VEH.map(v=>{const own=data.carOwned.includes(v.id);return`<button data-v="${v.id}" aria-pressed="${sel.v===v.id}" class="${own?"":"locked"}"><img src="bilder/racing/${vSprite(v.id,sel.c)}.png" alt=""><span>${v.name}</span><small>${own?(sel.v===v.id?"Vald":"Din"):`🪙 ${v.price}`}</small></button>`;}).join("")}</div>
+    <div class="chips gcol">${VCOL.map(([c,n])=>`<button data-c="${c}" aria-pressed="${sel.c===c}">${n}</button>`).join("")}</div>`;
 }
-function roadGeom(){const x0=W*.1,rw=W*.8,lw=rw/C.L;return{x0,rw,lw,cx:i=>x0+lw*(i+.5),carY:H*.8,carW:Math.min(lw*.7,74),signH:Math.min(H*.1,58)};}
+$("garage").onclick=e=>{
+  garageData();const vb=e.target.closest("[data-v]"),cb=e.target.closest("[data-c]");
+  if(vb){const v=VEH.find(x=>x.id===vb.dataset.v);
+    if(!data.carOwned.includes(v.id)){
+      if(data.carCoins<v.price){toastSpel(`${v.name} kostar 🪙 ${v.price}. Du har ${data.carCoins}. Plocka fler mynt på banan!`);return;}
+      data.carCoins-=v.price;data.carOwned.push(v.id);window.Ljud&&Ljud.kaching&&Ljud.kaching();toastSpel(`Du köpte ${v.name.toLowerCase()}! 🎉`);}
+    data.carSel.v=v.id;save();renderGarage();return;}
+  if(cb){data.carSel.c=cb.dataset.c;save();renderGarage();}
+};
+$("trackChips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;data.carTrack=b.dataset.t;save();renderChoose();};
+function renderTrackOpt(){$("trackOpt").hidden=game!=="car";$("trackChips").innerHTML=Object.entries(TRACKS).map(([k,t])=>`<button data-t="${k}" aria-pressed="${(data.carTrack||"race")===k}">${t.ic} ${t.name}</button>`).join("");}
+let toastSpelT=0;function toastSpel(m){const t=$("spelToast");t.textContent=m;t.hidden=false;clearTimeout(toastSpelT);toastSpelT=setTimeout(()=>t.hidden=true,2600);}
+
+/* Geometri: vägen i mitten, filerna, bilens plats. Avstånd räknas i skärmhöjder (u). */
+function roadGeom(){const side=Math.max(W*.14,36),x0=side,rw=W-side*2,lw=rw/C.L;return{x0,rw,lw,cx:i=>x0+lw*(i+.5),carY:H*RCARY,carW:Math.min(lw*.42,52),signH:Math.min(H*.085,48)};}
+const gateD=k=>1+k*RGS,finishD=()=>gateD(RGATES-1)+.75;
+// grundfart: lugnt i början, lite snabbare mot slutet (u per sekund)
+const baseSpd=d=>1/(5.2-1.7*Math.min(1,d/finishD()));
 function startCar(){
   if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();stopFrog();stopTower();stopKiosk();
-  OPTN=data.lanes||3;
-  $("carBtns").hidden=false;$("hint").textContent="Byt fil med pilarna. Vet du svaret? Tryck på 🚀 Turbo!";
+  OPTN=data.lanes||3;garageData();
+  $("carBtns").hidden=false;$("hint").textContent="Byt fil med pilarna eller tryck på filen. Vet du svaret? Tryck på 🚀 Turbo!";
   showOnly("game");resize();
-  C={L:OPTN,lane:Math.floor(OPTN/2),x:0,tires:3,score:0,t:0,off:0,gate:null,nextAt:0,shake:0,boost:0,slow:0,parts:[],deco:[],finish:null,over:false,running:false,last:performance.now()};
+  const track=TRACKS[data.carTrack]?data.carTrack:"race",rec=(data.car&&data.car[cat])||{};
+  // motståndarna; har du ett rekord byts den långsammaste mot ditt spöke
+  const opp=[{m:1.13,col:"blue",v:"5",name:"Blå"},{m:1.04,col:"green",v:"2",name:"Grön"},{m:.95,col:"yellow",v:"3",name:"Gul"}];
+  if(rec.time&&rec.pace&&rec.pace.length===RGATES)opp[2]={ghost:true,col:"black",v:data.carSel.v==="mc"?"1":data.carSel.v,name:"Spöket"};
+  opp.forEach((o,i)=>{if(o.col===data.carSel.c)o.col=["black","blue","green","yellow","red"].find(c=>c!==data.carSel.c&&!opp.some(x=>x.col===c));if(!o.ghost)o.name=Object.fromEntries(VCOL)[o.col];o.d=-.02*(i+1);o.lane=(i+1)%OPTN;o.x=null;o.next=2+Math.random()*3;o.fin=null;o.ph=Math.random()*6;});
+  C={L:OPTN,lane:Math.floor(OPTN/2),x:0,d:0,t:0,score:0,miss:0,coins:0,gi:0,gate:null,shake:0,boost:0,slow:0,turbo:false,parts:[],skids:[],deco:[],obst:[],coinsOn:[],
+     opp,track,ghostPace:rec.pace||null,pace:[],over:false,running:false,fin:null,last:performance.now()};
   C.x=roadGeom().cx(C.lane);
-  for(let i=0;i<10;i++)C.deco.push(newDeco(Math.random()*H));
+  // dekor längs vägen, hinder och mynt mellan bågarna
+  const T=TRACKS[track];for(let d=-.3;d<finishD()+1.5;d+=.18+Math.random()*.22)C.deco.push({d,left:Math.random()<.5,k:pickOne(T.deco),r:Math.random(),o:Math.random()});
+  for(let k=0;k<RGATES-1;k++){const mid=gateD(k)+RGS/2;
+    let ob=-1;if(k>=1&&Math.random()<.6){ob=rnd(0,OPTN-1);C.obst.push({d:mid,lane:ob,k:pickOne(track==="vinter"?["oil","cone","barrel"]:["oil","cone","barrel","puddle"]),hit:false});}
+    if(Math.random()<.75){const ln=pickOne([...Array(OPTN).keys()].filter(i=>i!==ob));for(let j=0;j<3;j++)C.coinsOn.push({d:gateD(k)+RGS*(.22+j*.09),lane:ln,got:false});}}
   carHud();$("q").innerHTML="";$("q").className="q";
   const c=$("count"),steps=["3","2","1","Kör!"];let i=0;c.hidden=false;
-  (function tick(){if(!C||C.over){c.hidden=true;return;}if(i<steps.length){c.textContent=steps[i++];setTimeout(tick,600);}else{c.hidden=true;C.running=true;C.last=performance.now();carSpawn();}})();
+  (function tick(){if(!C||C.over){c.hidden=true;return;}if(i<steps.length){c.textContent=steps[i++];if(window.Ljud){if(i<4)Ljud.ok();else Ljud.whoosh();}setTimeout(tick,600);}else{c.hidden=true;C.running=true;C.last=performance.now();carTask();}})();
   cancelAnimationFrame(craf);craf=requestAnimationFrame(carFrame);
 }
-function newDeco(y){const left=Math.random()<.5;return{y,left,k:Math.random(),env:envOf(C?C.score:0)};}
-function carSpawn(){
-  const task=gen();C.task=task;$("q").innerHTML=task.q+"<span>= ?</span>";$("q").className="q";
-  const g=roadGeom(),travel=Math.max(3,5.6-C.score*.13);
-  C.gate={y:-g.signH,vals:task.opts,ans:task.a,resolved:false,hit:-1,v:(g.carY-g.carW*.9+g.signH)/travel};
+// placering: hur många som ligger före (i mål före dig, eller längre fram på vägen)
+function carPlace(){return 1+C.opp.filter(o=>o.fin!=null?(C.fin==null||o.fin<C.fin):(C.fin==null&&o.d>C.d)).length;}
+function carHud(){
+  $("hearts").textContent=`🪙 ${C.coins}`;$("score").textContent=`Plats ${carPlace()} av 4`;
+  $("progFill").style.width=Math.min(100,C.d/finishD()*100)+"%";
 }
-function carLane(i){if(!C||C.over)return;C.lane=Math.max(0,Math.min(C.L-1,i));}
+function carTask(){
+  if(C.gi>=RGATES){C.gate=null;$("q").innerHTML="Kör i mål! 🏁";$("q").className="q ok";return;}
+  const task=gen();C.task=task;$("q").innerHTML=task.q+"<span>= ?</span>";$("q").className="q";
+  C.gate={k:C.gi,d:gateD(C.gi),vals:task.opts,ans:task.a,resolved:false,hit:-1};C.turbo=false;
+}
+function carLane(i){if(!C||C.over||C.fin!=null)return;const n=Math.max(0,Math.min(C.L-1,i));if(n!==C.lane&&window.Ljud&&Ljud.hop)Ljud.hop();C.lane=n;}
 cv.addEventListener("pointerdown",e=>{if(!C||A||F)return;const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,g=roadGeom();carLane(Math.floor((x-g.x0)/g.lw));});
 $("carL").onclick=()=>carLane(C.lane-1);$("carR").onclick=()=>carLane(C.lane+1);
-// Turbo: när man redan vet svaret och står i rätt fil kan man skynda sig fram till skyltarna
-function carTurbo(){if(!C||!C.running||C.over||!C.gate||C.gate.resolved||C.gate.turbo)return;C.gate.turbo=true;C.boost=1.2;window.Ljud&&Ljud.whoosh();}
+// Turbo: när man vet svaret och står i rätt fil kan man skynda fram till bågen
+function carTurbo(){if(!C||!C.running||C.over||!C.gate||C.gate.resolved||C.turbo)return;C.turbo=true;window.Ljud&&Ljud.whoosh();}
 $("carTurbo").onclick=carTurbo;
 document.addEventListener("keydown",e=>{if($("game").hidden||!C)return;
   if(e.key==="ArrowLeft"){e.preventDefault();carLane(C.lane-1);}else if(e.key==="ArrowRight"){e.preventDefault();carLane(C.lane+1);}
   else if(e.key==="ArrowUp"||e.key===" "){e.preventDefault();carTurbo();}
   else if(/^[1-4]$/.test(e.key))carLane(+e.key-1);});
 function carResolve(){
-  const gt=C.gate,g=roadGeom();gt.resolved=true;gt.hit=C.lane;const ok=gt.vals[C.lane]===gt.ans;
+  const gt=C.gate,g=roadGeom();gt.resolved=true;gt.hit=C.lane;C.turbo=false;const ok=gt.vals[C.lane]===gt.ans;
+  C.pace.push(Math.round(C.t*10)/10);
   if(ok){
-    C.score++;window.Ljud&&Ljud.ok();$("q").className="q ok";C.boost=.7;
-    for(let i=0;i<24;i++)C.parts.push({x:C.x,y:g.carY-g.carW,vx:(Math.random()-.5)*300,vy:-Math.random()*260,life:.8,c:pickOne(["#FFC93C","#FF9F43","#fff","#7CF0B1"]),sq:false});
-    C.nextAt=C.t+.55;
-    if(C.score>=GOAL){C.finish={y:-40};}
+    C.score++;window.Ljud&&Ljud.ok();$("q").className="q ok";C.boost=.9;
+    for(let i=0;i<22;i++)C.parts.push({x:C.x,y:g.carY-g.carW*1.2,vx:(Math.random()-.5)*300,vy:-Math.random()*260,life:.8,c:pickOne(["#FFC93C","#FF9F43","#fff","#7CF0B1"])});
   }else{
-    C.tires--;window.Ljud&&Ljud.bad();C.shake=.45;C.slow=.9;
-    for(let i=0;i<14;i++)C.parts.push({x:C.x,y:g.carY-g.carW,vx:(Math.random()-.5)*340,vy:-Math.random()*300,life:.9,c:pickOne(["#FF9F43","#fff"]),sq:true});
+    C.miss++;window.Ljud&&Ljud.bad();C.shake=.45;C.slow=1.1;C.skids.push({d:C.d,x:C.x});
     $("q").innerHTML=C.task.q+`<span>= ${gt.ans}</span>`;$("q").className="q bad";
-    C.nextAt=C.t+1.5;
-    if(C.tires<=0){C.over=true;setTimeout(()=>finishCar(false),1300);}
   }
+  C.gi++;setTimeout(()=>{if(C&&!C.over&&C.running)carTask();},ok?350:1100);
   carHud();
+}
+function oppStep(o,dt){
+  if(o.fin!=null)return;
+  if(o.ghost){ // spöket följer ditt rekord: tiden vid varje båge
+    const P=C.ghostPace,t=C.t;let k=0;while(k<P.length&&P[k]<=t)k++;
+    if(k>=P.length){const t0=P[P.length-1],tf=data.car[cat].time;o.d=gateD(RGATES-1)+(finishD()-gateD(RGATES-1))*Math.min(1,(t-t0)/Math.max(.1,tf-t0));}
+    else{const t0=k?P[k-1]:0,d0=k?gateD(k-1):0;o.d=d0+(gateD(k)-d0)*Math.min(1,(t-t0)/Math.max(.1,P[k]-t0));}
+  }else o.d+=baseSpd(o.d)*o.m*(1+Math.sin(C.t*.7+o.ph)*.05)*dt;
+  if(o.d>=finishD())o.fin=C.t;
+  // byter fil ibland, och kör aldrig ovanpå din bil eller en annan motståndare
+  const near=(a,b)=>Math.abs(a-b)<.32,busy=l=>(near(o.d,C.d)&&l===C.lane)||C.opp.some(x=>x!==o&&x.fin==null&&near(x.d,o.d)&&x.lane===l);
+  o.next-=dt;if(o.next<=0||busy(o.lane)){o.next=2.5+Math.random()*3;const free=[...Array(C.L).keys()].filter(l=>!busy(l));if(free.length)o.lane=pickOne(free);}
 }
 function carFrame(now){
   if(!C)return;
   const dt=Math.min(.05,(now-C.last)/1000);C.last=now;const g=roadGeom();
   if(C.running&&!document.hidden){
     C.t+=dt;C.boost=Math.max(0,C.boost-dt);C.slow=Math.max(0,C.slow-dt);C.shake=Math.max(0,C.shake-dt);
-    const turbo=C.gate&&C.gate.turbo&&!C.gate.resolved,base=g.carY/Math.max(3,5.6-C.score*.13),mult=(turbo?3.2:C.boost?1.5:1)*(C.slow?.5:1),v=base*mult;
-    if(window.Ljud){Ljud.engine.start();Ljud.engine.set(Math.min(1,(turbo?.95:C.boost?.6:.25)+C.score*.012));}
-    $("carTurbo").disabled=!C.gate||C.gate.resolved;
-    C.off+=v*dt;
+    const mult=(C.turbo?3:C.boost?1.45:1)*(C.slow?.5:1)*(C.fin!=null?.6:1),v=baseSpd(C.d)*mult;
+    if(window.Ljud&&Ljud.engine){Ljud.engine.start();Ljud.engine.set(Math.min(1,(C.turbo?.95:C.boost?.6:.25)+C.d/finishD()*.3));}
+    $("carTurbo").disabled=!C.gate||C.gate.resolved||C.fin!=null;
+    const d0=C.d;C.d+=v*dt;
     C.x+=(g.cx(C.lane)-C.x)*Math.min(1,dt*12);
-    C.deco.forEach(d=>d.y+=v*dt*1.05);C.deco=C.deco.filter(d=>d.y<H+60);while(C.deco.length<10)C.deco.push(newDeco(-40-Math.random()*H*.4));
-    const gt=C.gate;
-    if(gt){gt.y+=gt.v*dt*(C.slow?.6:1)*(gt.turbo&&!gt.resolved?4:1);if(!gt.resolved&&!C.over&&gt.y+g.signH/2>=g.carY-g.carW*.9)carResolve();}
-    if(gt&&gt.resolved&&!C.over&&!C.finish&&C.t>=C.nextAt)carSpawn();
-    if(C.finish){C.finish.y+=v*dt;if(C.finish.y>g.carY-g.carW&&!C.over){C.over=true;setTimeout(()=>finishCar(true),700);}}
+    // svarsbågen nås
+    if(C.gate&&!C.gate.resolved&&C.d>=C.gate.d)carResolve();
+    // hinder och mynt
+    C.obst.forEach(o=>{if(!o.hit&&d0<o.d&&C.d>=o.d&&o.lane===C.lane){o.hit=true;C.slow=.75;C.shake=.35;C.skids.push({d:C.d,x:C.x});window.Ljud&&Ljud.clonk&&Ljud.clonk();}});
+    C.coinsOn.forEach(c=>{if(!c.got&&d0<c.d&&C.d>=c.d&&c.lane===C.lane){c.got=true;C.coins++;window.Ljud&&Ljud.kaching&&Ljud.kaching();
+      for(let i=0;i<8;i++)C.parts.push({x:g.cx(c.lane),y:g.carY-g.carW,vx:(Math.random()-.5)*160,vy:-Math.random()*200,life:.5,c:"#FFC93C"});carHud();}});
+    C.opp.forEach(o=>oppStep(o,dt));
+    if(C.fin==null&&C.d>=finishD()){C.fin=C.t;carHud();window.Ljud&&Ljud.fanfare&&Ljud.fanfare();setTimeout(()=>{if(C&&!C.over)finishCar();},1400);}
     C.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=420*dt;p.life-=dt;});C.parts=C.parts.filter(p=>p.life>0);
+    if(Math.floor(C.t*4)!==Math.floor((C.t-dt)*4))carHud();
   }
   drawCar();craf=requestAnimationFrame(carFrame);
 }
 function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
-function drawDeco(d,g){
-  const x=d.left?g.x0*.5:g.x0+g.rw+g.x0*.5,y=d.y,s=Math.min(g.x0*.8,34);
-  if(d.env===0){ctx.fillStyle=["#FF9F43","#3D8BFD","#FF6B6B","#7B61FF"][Math.floor(d.k*4)];rr(x-s/2,y-s/2,s,s,4);ctx.fill();ctx.fillStyle="rgba(255,255,255,.8)";ctx.fillRect(x-s*.3,y-s*.3,s*.22,s*.22);ctx.fillRect(x+s*.08,y-s*.3,s*.22,s*.22);}
-  else if(d.env===1){ctx.fillStyle="#258A58";ctx.beginPath();ctx.arc(x,y,s*.55,0,7);ctx.fill();ctx.fillStyle="#3FBF7F";ctx.beginPath();ctx.arc(x-s*.12,y-s*.12,s*.35,0,7);ctx.fill();}
-  else{ctx.fillStyle="#3FA560";rr(x-s*.12,y-s*.5,s*.24,s,s*.12);ctx.fill();rr(x-s*.42,y-s*.15,s*.2,s*.4,s*.1);ctx.fill();rr(x+s*.22,y-s*.3,s*.2,s*.4,s*.1);ctx.fill();}
-}
+const RPAT={};function rPattern(n,size){const k=n+size;if(RPAT[k])return RPAT[k];const im=rImg(n);if(!rOk(im))return null;const c=document.createElement("canvas");c.width=c.height=Math.max(8,Math.round(size));c.getContext("2d").drawImage(im,0,0,c.width,c.height);return RPAT[k]=ctx.createPattern(c,"repeat");}
+function drawSprite(n,x,y,w,rot){const im=rImg(n);if(!rOk(im))return;const h=w*im.naturalHeight/im.naturalWidth;ctx.save();ctx.translate(x,y);if(rot)ctx.rotate(rot);ctx.drawImage(im,-w/2,-h/2,w,h);ctx.restore();}
 function drawCar(){
-  if(!W)return;const g=roadGeom(),E=ENV[envOf(C.score)];
+  if(!W)return;const g=roadGeom(),T=TRACKS[C.track],sy=d=>g.carY-(d-C.d)*H,ts=Math.round(W*.16);
   ctx.save();if(C.shake>0)ctx.translate((Math.random()-.5)*14*C.shake,(Math.random()-.5)*8*C.shake);
-  ctx.fillStyle=E.side;ctx.fillRect(-20,-20,W+40,H+40);
-  ctx.fillStyle=E.edge;ctx.fillRect(g.x0-8,-20,8,H+40);ctx.fillRect(g.x0+g.rw,-20,8,H+40);
-  C.deco.forEach(d=>drawDeco(d,g));
-  ctx.fillStyle=E.road;ctx.fillRect(g.x0,-20,g.rw,H+40);
+  // marken på sidorna
+  const off=(C.d*H)%ts;
+  const gp=T.ground?rPattern(T.ground,ts):null;
+  ctx.save();ctx.translate(0,off);ctx.fillStyle=gp||(C.track==="vinter"?"#D9E7F8":"#5CC274");ctx.fillRect(-20,-ts-20,W+40,H+ts+40);ctx.restore();
+  if(C.track==="vinter"){ctx.fillStyle="#fff";for(let i=0;i<16;i++){const y=((i*97+C.d*H)%(H+40))-20;ctx.beginPath();ctx.ellipse((i*53)%W,y,20,8,0,0,7);ctx.fill();}
+    ctx.fillStyle="rgba(255,255,255,.85)";for(let i=0;i<30;i++){const x=(i*71+Math.sin(C.t+i)*20)%W,y=((i*43+C.t*60)%(H+20))-10;ctx.beginPath();ctx.arc(x,y,2,0,7);ctx.fill();}}
+  // vägen: asfalt från Kenney, kanter efter bana
+  const ap=rPattern("road_asphalt22",ts);
+  ctx.save();ctx.translate(0,off);ctx.fillStyle=ap||"#A9BFC6";ctx.fillRect(g.x0,-ts-20,g.rw,H+ts+40);ctx.restore();
+  const seg=26,so=(C.d*H)%(seg*2);
+  if(T.edge==="kerb"){for(let y=-seg*2+so;y<H+seg;y+=seg){const odd=Math.round((y-so)/seg)%2;ctx.fillStyle=odd?"#fff":"#F26B21";ctx.fillRect(g.x0-8,y,8,seg);ctx.fillRect(g.x0+g.rw,y,8,seg);}}
+  else if(T.edge==="line"){ctx.fillStyle="#fff";ctx.fillRect(g.x0+4,-20,4,H+40);ctx.fillRect(g.x0+g.rw-8,-20,4,H+40);}
+  else if(T.edge==="sand"){ctx.fillStyle="#E9D3A1";ctx.fillRect(g.x0-6,-20,8,H+40);ctx.fillRect(g.x0+g.rw-2,-20,8,H+40);}
+  else{ctx.fillStyle="#fff";for(let y=-30+((C.d*H)%30);y<H+30;y+=30){ctx.beginPath();ctx.arc(g.x0,y,9,0,7);ctx.arc(g.x0+g.rw,y+15,9,0,7);ctx.fill();}}
   // filstreck
-  ctx.strokeStyle=E.line;ctx.lineWidth=4;ctx.setLineDash([26,22]);ctx.lineDashOffset=-C.off;
+  ctx.strokeStyle="rgba(255,255,255,.85)";ctx.lineWidth=4;ctx.setLineDash([26,22]);ctx.lineDashOffset=-C.d*H;
   for(let i=1;i<C.L;i++){const x=g.x0+g.lw*i;ctx.beginPath();ctx.moveTo(x,-20);ctx.lineTo(x,H+20);ctx.stroke();}
   ctx.setLineDash([]);
-  // mållinje
-  if(C.finish){const s=12;for(let r=0;r<3;r++)for(let c=0;c*s<g.rw;c++){ctx.fillStyle=(r+c)%2?"#fff":"#1D2B53";ctx.fillRect(g.x0+c*s,C.finish.y+r*s,s,s);}}
-  // skyltar med svar
+  // sladdspår
+  C.skids.forEach(s=>{const y=sy(s.d);if(y<-60||y>H+60)return;drawSprite("skidmark_short_1",s.x-8,y+20,10);drawSprite("skidmark_short_1",s.x+8,y+20,10);});
+  // dekor
+  const side=g.x0;
+  C.deco.forEach(o=>{const y=sy(o.d);if(y<-80||y>H+80)return;const x=o.left?side*(.25+o.r*.5):W-side*(.25+o.r*.5),big=o.k==="tribune_full"||o.k.startsWith("tent");
+    const w=o.k==="tribune_full"?side*1.6:big?side*.85:o.k.startsWith("tree")?side*(o.k==="tree_large"?.95:.75):side*.55;
+    drawSprite(o.k,x,y,w,o.k==="tribune_full"?(o.left?Math.PI/2:-Math.PI/2):o.k.startsWith("barrel")?o.o*6:0);
+    if(C.track==="vinter"&&o.k.startsWith("tree")){ctx.fillStyle="rgba(255,255,255,.75)";[[-.15,-.1,.22],[.12,.05,.18],[0,.2,.15]].forEach(([dx,dy,r])=>{ctx.beginPath();ctx.arc(x+dx*w,y+dy*w,r*w,0,7);ctx.fill();});}});
+  // mål
+  const fy=sy(finishD());
+  if(fy>-40&&fy<H+40){const s=12;for(let r=0;r<3;r++)for(let c=0;c*s<g.rw;c++){ctx.fillStyle=(r+c)%2?"#fff":"#1D2B53";ctx.fillRect(g.x0+c*s,fy+r*s,s,s);}
+    ctx.fillStyle="#1D2B53";rr(W/2-40,fy-42,80,30,8);ctx.fill();ctx.fillStyle="#FFC93C";ctx.font='800 20px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("MÅL",W/2,fy-26);}
+  // hinder
+  C.obst.forEach(o=>{const y=sy(o.d);if(y<-60||y>H+60)return;const x=g.cx(o.lane),w=g.lw*.5;
+    if(o.k==="oil")drawSprite("oil",x,y,w*1.1);
+    else if(o.k==="puddle"){ctx.fillStyle="rgba(61,139,253,.55)";ctx.beginPath();ctx.ellipse(x,y,w*.6,w*.38,0,0,7);ctx.fill();ctx.fillStyle="rgba(255,255,255,.5)";ctx.beginPath();ctx.ellipse(x-w*.2,y-w*.1,w*.18,w*.07,0,0,7);ctx.fill();}
+    else if(o.k==="cone")[-1,0,1].forEach(i=>drawSprite(o.hit?"cone_down":"cone_straight",x+i*w*.42,y,w*.42));
+    else drawSprite(o.hit?"barrel_red_down":"barrel_red",x,y,w*.6);});
+  // mynt
+  C.coinsOn.forEach(c=>{if(c.got)return;const y=sy(c.d);if(y<-20||y>H+20)return;const x=g.cx(c.lane),r=Math.min(12,g.lw*.12),sq=Math.abs(Math.sin(C.t*4+c.d*9));
+    ctx.fillStyle="#C99A0A";ctx.beginPath();ctx.ellipse(x,y,r*sq+1.5,r,0,0,7);ctx.fill();ctx.fillStyle="#FFC93C";ctx.beginPath();ctx.ellipse(x,y,Math.max(.5,r*sq-1),r-2,0,0,7);ctx.fill();});
+  // svarsbågen: en båge över varje fil
   const gt=C.gate;
-  if(gt){gt.vals.forEach((v,i)=>{const w=g.lw*.8,x=g.cx(i)-w/2,y=gt.y-g.signH/2;let f="#fff",st="#C6D6F2";
-    if(gt.resolved){if(v===gt.ans){f="#DDF5E7";st="#1E9E5E";}else if(i===gt.hit){f="#FDE4E4";st="#E5484D";}else f="rgba(255,255,255,.55)";}
-    ctx.fillStyle=st;rr(x-3,y-3,w+6,g.signH+6,14);ctx.fill();ctx.fillStyle=f;rr(x,y,w,g.signH,12);ctx.fill();
-    ctx.fillStyle="#1D2B53";ctx.font=`800 ${Math.round(g.signH*.6)}px "Baloo 2", system-ui, sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(v),g.cx(i),gt.y+2);});}
-  // bilen med ugglan
-  const cw=g.carW,ch=cw*1.75,cx=C.x,cy=g.carY,tilt=(g.cx(C.lane)-C.x)/300;
-  ctx.save();ctx.translate(cx,cy);ctx.rotate(Math.max(-.25,Math.min(.25,tilt)));
-  ctx.fillStyle="#1D2B53";[[-.58,-.55],[.42,-.55],[-.58,.28],[.42,.28]].forEach(([dx,dy])=>{rr(dx*cw,dy*ch,cw*.16,ch*.24,4);ctx.fill();});
-  ctx.fillStyle="#E5484D";rr(-cw/2,-ch/2,cw,ch,cw*.3);ctx.fill();
-  ctx.fillStyle="#B8323A";rr(-cw*.36,-ch*.46,cw*.72,ch*.16,6);ctx.fill();
-  ctx.fillStyle="#fff";rr(-cw*.1,-ch/2,cw*.2,ch,3);ctx.fill();
-  if(avImg.complete){const ow=cw*1.05;ctx.drawImage(avImg,-ow/2,-ch*.18,ow,ow*1.167);}
-  if(C.boost){ctx.fillStyle="rgba(255,201,60,.9)";ctx.beginPath();ctx.moveTo(-cw*.25,ch/2);ctx.lineTo(0,ch/2+ch*.35+Math.random()*10);ctx.lineTo(cw*.25,ch/2);ctx.fill();}
+  if(gt){const y=sy(gt.d),bh=g.signH;if(y>-bh*2&&y<H+bh)gt.vals.forEach((v,i)=>{const x=g.x0+g.lw*i,w=g.lw;let f="#fff",st="#1D2B53",tx="#1D2B53";
+      if(gt.resolved){if(v===gt.ans){f="#DDF5E7";st="#1E9E5E";}else if(i===gt.hit){f="#FDE4E4";st="#E5484D";}else{f="rgba(255,255,255,.6)";}}
+      ctx.fillStyle="#56668F";ctx.fillRect(x+4,y-bh*.2,6,bh*1.1);ctx.fillRect(x+w-10,y-bh*.2,6,bh*1.1);
+      ctx.fillStyle=st;rr(x+2,y-bh,w-4,bh,10);ctx.fill();ctx.fillStyle=f;rr(x+5,y-bh+3,w-10,bh-6,8);ctx.fill();
+      const cs=6;for(let c=0;c*cs<w-14;c++){ctx.fillStyle=c%2?"#1D2B53":"#FFC93C";ctx.fillRect(x+7+c*cs,y-bh+5,cs,4);}
+      ctx.fillStyle=tx;ctx.font=`800 ${Math.round(bh*.55)}px "Baloo 2", system-ui, sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText(String(v),x+w/2,y-bh/2+3);});}
+  // motståndarna
+  C.opp.forEach(o=>{const y=sy(o.d);if(y<-g.carW*2.5||y>H+g.carW*2.5)return;const tx=g.cx(o.lane);if(o.x==null)o.x=tx;o.x+=(tx-o.x)*.04;
+    ctx.save();if(o.ghost)ctx.globalAlpha=.5;drawSprite(vSprite(o.v,o.col),o.x,y,g.carW);ctx.restore();
+    ctx.fillStyle="rgba(29,43,83,.75)";ctx.font='800 11px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.fillText(o.name,o.x,y+g.carW*1.15);});
+  // fartstreck vid turbo
+  if(C.turbo||C.boost>.4){ctx.strokeStyle="rgba(255,255,255,.7)";ctx.lineWidth=2;for(let i=0;i<10;i++){const x=(i*61+C.t*13)%W,y=((i*137+C.t*1500)%(H+80))-40;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y+40);ctx.stroke();}}
+  // din bil med djuret som förare
+  const v=data.carSel.v,cw=v==="mc"?g.carW*.7:g.carW,tilt=(g.cx(C.lane)-C.x)/300,spin=C.slow>.6&&C.miss?Math.sin(C.t*25)*.15:0;
+  ctx.save();ctx.translate(C.x,g.carY);ctx.rotate(Math.max(-.25,Math.min(.25,tilt))+spin);
+  if(C.turbo){ctx.fillStyle="rgba(255,201,60,.9)";ctx.beginPath();ctx.moveTo(-cw*.25,cw*.9);ctx.lineTo(0,cw*.9+cw*.8+Math.random()*12);ctx.lineTo(cw*.25,cw*.9);ctx.fill();}
+  drawSprite(vSprite(v,data.carSel.c),0,0,cw);
+  if(avImg.complete){const ow=cw*(v==="mc"?1.05:.8);ctx.drawImage(avImg,-ow/2,-ow*.55,ow,ow*1.167);}
   ctx.restore();
-  C.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.8);ctx.fillStyle=p.c;if(p.sq){ctx.beginPath();ctx.moveTo(p.x,p.y-6);ctx.lineTo(p.x+5,p.y+5);ctx.lineTo(p.x-5,p.y+5);ctx.fill();}else{ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fill();}});ctx.globalAlpha=1;
+  C.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/.8);ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fill();});ctx.globalAlpha=1;
+  // placering
+  ctx.fillStyle="rgba(29,43,83,.8)";rr(8,8,92,30,15);ctx.fill();ctx.fillStyle="#FFC93C";ctx.font='800 17px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.textBaseline="middle";
+  ctx.fillText(`${["🥇","🥈","🥉","🏁"][carPlace()-1]} Plats ${carPlace()}`,54,24);
   ctx.restore();
 }
-function finishCar(won){
-  cancelAnimationFrame(craf);window.Ljud&&Ljud.engine.stop();
-  const s=C.score,st=won?(C.tires===3?3:2):(s>=10?1:0);
-  data.car=data.car||{};const r=data.car[cat]||{best:0,stars:0},rec=s>r.best;
-  data.car[cat]={best:Math.max(r.best,s),stars:Math.max(r.stars,st)};data.carPlayed=(data.carPlayed||0)+1;if(won)data.carWon=true;if(st===3)data.carPerfect=true;save();
-  $("rTitle").textContent=won?(st===3?"Fullt ös hela vägen!":"I mål!"):"Bilen behöver däckbyte";
-  $("rBig").innerHTML=st?starHtml(st):`${s} rätt`;
-  $("rSub").textContent=(won?`${s} rätt på vägen.`:`Du fick ${s} rätt.`)+(rec?" Nytt rekord!":data.car[cat].best?` Ditt rekord är ${data.car[cat].best} rätt.`:"")+(!won&&s<10?" Med 10 rätt får du en stjärna.":"");
+function finishCar(){
+  if(!C||C.over)return;C.over=true;cancelAnimationFrame(craf);window.Ljud&&Ljud.engine.stop();
+  // de som inte kommit i mål än får en uppskattad tid
+  C.opp.forEach(o=>{if(o.fin==null){const rest=finishD()-o.d;o.fin=C.t+rest/(baseSpd(o.d)*(o.m||1));}});
+  const tme=C.fin,place=1+C.opp.filter(o=>o.fin<tme).length,st=[3,2,1,0][place-1];
+  data.car=data.car||{};const r=data.car[cat]||{stars:0},rec=!r.time||tme<r.time;
+  data.car[cat]={stars:Math.max(r.stars||0,st),time:rec?Math.round(tme*10)/10:r.time,pace:rec?C.pace:r.pace,best:r.best};
+  garageData();data.carCoins+=C.coins;data.carPlayed=(data.carPlayed||0)+1;data.carWon=true;if(place===1&&C.miss===0)data.carPerfect=true;save();
+  $("rTitle").textContent=place===1?"Du vann! 🏆":place===2?"Andra plats!":place===3?"Tredje plats!":"I mål!";
+  $("rBig").innerHTML=`${["🥇","🥈","🥉","🏁"][place-1]} ${st?starHtml(st):""}`;
+  $("rSub").textContent=`Tid ${fmtT(tme)} · ${C.score} av ${RGATES} rätt · 🪙 ${C.coins} mynt.`+(rec&&r.time?" Nytt rekord!":r.time?` Ditt rekord är ${fmtT(r.time)}.`:" Nästa gång kör du mot ditt spöke.")+` Du har ${data.carCoins} mynt i garaget.`;
   showOnly("result");
-  if(won||rec){window.Ljud&&Ljud.fanfare();confetti();}
+  if(place<=2||rec){window.Ljud&&Ljud.fanfare();confetti();}
 }
-
 /* ---------- Asteroidjakten ---------- */
 let A=null,araf=0;
 const shield=on=>`<svg viewBox="0 0 26 26" aria-hidden="true"><path d="M13 2 L23 6 V12 C23 18 18 22 13 24 C8 22 3 18 3 12 V6 Z" fill="${on?"#3D8BFD":"#C6D6F2"}" stroke="${on?"#1D2B53":"#C6D6F2"}" stroke-width="1.5"/><path d="M9 12 l3 3 5-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${on?1:0}"/></svg>`;
