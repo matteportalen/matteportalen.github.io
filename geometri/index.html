@@ -123,6 +123,36 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .mgrid .fbody::before,.mgrid .fbody::after{content:"";position:absolute;top:-16px;width:3px;height:19px;background:#4A3428;border-radius:2px;transform-origin:50% 100%}
 .mgrid .fbody::before{left:2px;transform:rotate(-28deg)}
 .mgrid .fbody::after{right:2px;transform:rotate(28deg)}
+/* Spegelmåla */
+.pmirror{display:flex;gap:6px}
+.pmirror button,.pbrush button,.pact button{background:var(--card);border-radius:12px;padding:6px 10px;font-weight:800;font-size:.95rem;box-shadow:0 3px 0 var(--line);min-height:42px}
+.pmirror button[aria-pressed="true"],.pbrush button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.pwrap{position:relative;margin:8px auto 0;width:min(100%,58vh,560px)}
+.pboard{position:relative;width:100%;aspect-ratio:1;border-radius:16px;overflow:hidden;box-shadow:0 4px 0 var(--line);background:#fff}
+.pboard canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+#pov{touch-action:none;cursor:crosshair}
+.ppet{position:absolute;right:-8px;bottom:-14px;width:62px;pointer-events:none}
+.pbub{position:absolute;right:40px;bottom:46px;max-width:70%;background:var(--card);border-radius:14px;padding:6px 10px;font-weight:700;font-size:.92rem;box-shadow:0 3px 0 var(--line);pointer-events:none}
+.pbrush,.pact{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:10px}
+.pcolors{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
+.pcolors button{width:38px;height:38px;border-radius:50%;background:var(--c);box-shadow:0 3px 0 rgba(29,43,83,.25)}
+.pcolors button[aria-pressed="true"]{outline:4px solid var(--ink);outline-offset:2px}
+.pact .ptest{background:#FFF4CC}
+.pact .pgo{background:var(--good);color:#fff;box-shadow:0 3px 0 var(--good-dark)}
+.pact button:disabled{opacity:.45}
+.pres{text-align:center;font-weight:800;font-size:1.25rem;margin:10px 0 0;min-height:1.3em}
+.pgal{position:fixed;inset:0;z-index:30;background:rgba(29,43,83,.45);display:grid;place-items:center;padding:12px}
+.pgal .box{background:var(--card);border-radius:20px;padding:12px;width:min(560px,100%);max-height:88vh;overflow:auto}
+.pgal .ptop{display:flex;align-items:center;justify-content:space-between}.pgal h3{margin:0}
+.pgal .ptop button{width:40px;height:40px;border-radius:50%;background:var(--bg);font-weight:800}
+.glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-top:8px}
+.glist figure{margin:0;background:var(--bg);border-radius:12px;padding:6px;text-align:center}
+.glist img{width:100%;border-radius:8px;display:block;background:#fff}
+.glist figcaption{font-size:.8rem;color:var(--muted);font-weight:700}
+.gbtn{display:flex;gap:6px;justify-content:center;margin-top:4px}
+.gbtn button{background:var(--card);border-radius:10px;padding:4px 10px;font-weight:800;box-shadow:0 2px 0 var(--line);min-height:36px}
+.gbtn button.sure{background:var(--bad);color:#fff}
+.gempty,.gnote{color:var(--muted);font-weight:700;text-align:center}.gnote{font-size:.85rem;margin:10px 0 0}
 @media (prefers-reduced-motion:reduce){.pet svg{animation:none !important}}
 </style>
 </head>
@@ -133,6 +163,20 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <p class="lead">Former, kroppar, mönster, symmetri och mycket mer.</p>
   <div class="areas" id="areas"></div>
   <p class="note">Tre stjärnor får du om alla tio uppgifter blir rätt direkt.</p>
+</section>
+<section id="paint" class="screen" hidden>
+  <div class="gtop"><button class="back" id="pBack">← Tillbaka</button><div class="pmirror" id="pMirror"><button data-m="v">┃ Lodrät</button><button data-m="h">━ Vågrät</button><button data-m="b">✚ Båda</button></div></div>
+  <div class="pwrap"><div class="pboard"><canvas id="pcv"></canvas><canvas id="pov" aria-label="Rityta. Rita med fingret eller musen."></canvas></div><div class="pbub" id="pbub" hidden></div><div class="ppet pet" id="ppet" aria-hidden="true"></div></div>
+  <div id="ptools">
+    <div class="pbrush" id="pBrush"><button data-t="thin">✏️ Tunn</button><button data-t="mid">🖍️ Mellan</button><button data-t="thick">🖌️ Tjock</button><button data-t="rain" aria-label="Regnbåge">🌈</button><button data-t="stamp" aria-label="Stämpel">⭐</button><button data-t="erase">🧽 Sudd</button></div>
+    <div class="pcolors" id="pColors"></div>
+    <div class="pact"><button id="pUndo">↶ Ångra</button><button id="pClear">🗑️ Börja om</button><button id="pSave">💾 Spara</button><button id="pGalBtn">🖼️ Galleri</button><button id="pTest" class="ptest">🎯 Testa mig</button></div>
+  </div>
+  <div id="ptestBar" hidden>
+    <p class="pres" id="pTestRes"></p>
+    <div class="pact"><button id="pTestDone" class="pgo">✔ Klar, visa spegeln</button><button id="pTestNew" class="pgo" hidden>🎯 Ny figur</button><button id="pUndoT">↶ Ångra</button><button id="pTestEnd">🎨 Tillbaka till målningen</button></div>
+  </div>
+  <div class="pgal" id="pGal" hidden><div class="box"><div class="ptop"><h3>🖼️ Mitt galleri</h3><button id="pGalClose" aria-label="Stäng">✕</button></div><div class="glist" id="pGalList"></div><p class="gnote">Bilderna sparas bara i den här webbläsaren. ⬇️ laddar ner bilden, 🗑️ tar bort den.</p></div></div>
 </section>
 <section id="game" class="screen" hidden>
   <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
@@ -516,6 +560,7 @@ const ICON={
   monster:svg(`<path d="M2 22 Q50 92 98 22" stroke="#56668F" stroke-width="2.5" fill="none"/>${[0,1,2].map(i=>{const t=.2+i*.3,x=(1-t)**2*2+2*(1-t)*t*50+t*t*98,y=(1-t)**2*22+2*(1-t)*t*92+t*t*22;return beadEl([2,3,2][i],x.toFixed(1),y.toFixed(1),14);}).join("")}`),
   stracka:svg(`<line x1="18" y1="76" x2="82" y2="22" stroke="#1D2B53" stroke-width="4" stroke-linecap="round"/><circle cx="18" cy="76" r="6" fill="#1D2B53"/><circle cx="82" cy="22" r="6" fill="#1D2B53"/><text x="10" y="92" font-size="15" font-weight="800" fill="#1D2B53">A</text><text x="84" y="16" font-size="15" font-weight="800" fill="#1D2B53">B</text>`),
   symmetri:svg(`<g transform="translate(8 8) scale(5.6)"><path d="${BFLY}" fill="#FF5FA2" stroke="#1D2B53" stroke-width=".4" stroke-linejoin="round"/></g><line x1="49.8" y1="2" x2="49.8" y2="98" stroke="#3D5AFE" stroke-width="3" stroke-dasharray="6 5"/>`),
+  spegel:svg(`<line x1="50" y1="4" x2="50" y2="96" stroke="#3D5AFE" stroke-width="3" stroke-dasharray="6 5"/><path d="M44 22 Q14 18 18 48 Q22 74 44 80" stroke="#FF5FA2" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M56 22 Q86 18 82 48 Q78 74 56 80" stroke="#FF5FA2" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="30" cy="44" r="6" fill="#F2B707"/><circle cx="70" cy="44" r="6" fill="#F2B707"/>`),
   matt:svg(`<rect x="8" y="44" width="84" height="7" fill="#B07A45"/><rect x="8" y="66" width="84" height="7" fill="#B07A45"/>${[12,34,56,78].map(x=>`<path d="M${x} 90 V34 L${x+5} 26 L${x+10} 34 V90Z" fill="#D9A066" stroke="#7A4F26" stroke-width="2.5" stroke-linejoin="round"/>`).join("")}`)
 };
 const AREAS=[
@@ -523,16 +568,17 @@ const AREAS=[
   {id:"kroppar",name:"Kroppar",desc:"Kub, klot, cylinder, kon …",ak:"Åk 1–2",c:"#3D8BFD",gen:genKroppar},
   {id:"horn",name:"Hörn och sidor",desc:"Räkna hörn och sidor på skyltar.",ak:"Åk 1–2",c:"#2BB673",gen:genHorn},
   {id:"stracka",name:"Punkt, linje och sträcka",desc:"Namnge figurerna och rita sträckor.",ak:"Åk 3",c:"#7B61FF",gen:genStracka},
-  {id:"monster",name:"Mönster",desc:"Pärlhalsband: vad kommer sedan?",ak:"Åk 1",c:"#FF9F43",gen:genMonster},
   {id:"symmetri",name:"Symmetri",desc:"Fjärilar och nyckelpigor.",ak:"Åk 2–3",c:"#FF5FA2",gen:genSym},
+  {id:"spegel",name:"Spegelmåla",desc:"Rita, och spegeln ritar andra halvan.",ak:"Åk 1–3",c:"#7B61FF",tool:true},
+  {id:"monster",name:"Mönster",desc:"Pärlhalsband: vad kommer sedan?",ak:"Åk 1",c:"#FF9F43",gen:genMonster},
   {id:"matt",name:"Omkrets och area",desc:"Staket runt hagen och odlingens area.",ak:"Åk 3",c:"#17AFC4",gen:genMatt}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
-  $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${ICON[a.id]}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${starHtml(data.stars[a.id]||0)}</button>`).join("");
+  $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${ICON[a.id]}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${a.tool?'<small class="free">🎨 Fritt verktyg</small>':starHtml(data.stars[a.id]||0)}</button>`).join("");
   show("home");}
-$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(b)start(AREAS.find(a=>a.id===b.dataset.a));};
+$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;if(b.dataset.a==="spegel")return openPaint();start(AREAS.find(a=>a.id===b.dataset.a));};
 
 /* ---------- Uppläsning ---------- */
 let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
@@ -620,6 +666,151 @@ function confetti(){
   const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
     if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);
 }
+/* ---------- Spegelmåla ----------
+   Fritt verktyg (inga stjärnor). Allt man ritar speglas i symmetrilinjen: lodrät, vågrät eller båda (kalejdoskop).
+   Penslar: tunn, mellan, tjock, regnbåge, stämpel (stjärna, hjärta, prick) och sudd. Ångra, Börja om (går att ångra), Spara.
+   Galleriet sparas i den här webbläsaren per profil (matteportalen-galleri, inte i profilernas flyttkod), max 12 bilder.
+   "Testa mig": djuret ritar en halv figur, eleven ritar andra halvan utan spegel, sedan visas spegelbilden och hur nära man kom. */
+const PS=600,PCOL=["#1D2B53","#E5484D","#FF9F43","#F2B707","#2BB673","#17AFC4","#3D5AFE","#7B61FF","#FF5FA2","#A0673C"];
+const GKEY="matteportalen-galleri";
+const PT={mirror:"v",tool:"mid",color:"#3D5AFE",stamp:0,strokes:[],cleared:null,cur:null,test:null,saved:null};
+const pcv=$("pcv"),pctx=pcv.getContext("2d"),pov=$("pov"),povx=pov.getContext("2d");
+pcv.width=pcv.height=pov.width=pov.height=PS;
+const PSIZE={thin:6,mid:14,thick:30,rain:16,erase:34};
+const STAMPS=["⭐","❤️","●"];
+const pOwner=()=>{try{return sessionStorage.getItem("mp-active")||"gast";}catch(e){return"gast";}};
+const gGet=()=>{try{return JSON.parse(localStorage.getItem(GKEY)||"[]")}catch(e){return[]}};
+const gPut=l=>{try{localStorage.setItem(GKEY,JSON.stringify(l));return true;}catch(e){return false;}};
+function pSay(t){const b=$("pbub");b.textContent=t;b.hidden=false;clearTimeout(pSay.t);pSay.t=setTimeout(()=>b.hidden=true,3200);}
+function pHop(){const p=$("ppet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");}
+function openPaint(){
+  $("ppet").innerHTML=owlSVG(pet);if(PT.test&&PT.saved){PT.strokes=PT.saved.strokes;PT.mirror=PT.saved.mirror;PT.saved=null;}PT.test=null;$("ptestBar").hidden=true;$("ptools").hidden=false;$("pMirror").hidden=false;
+  renderPaintUI();pRedraw();show("paint");pSay("Rita på ena sidan. Spegeln ritar den andra!");
+}
+function renderPaintUI(){
+  $("pMirror").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===PT.mirror));
+  $("pBrush").querySelectorAll("button").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.t===PT.tool);if(b.dataset.t==="stamp")b.textContent=STAMPS[PT.stamp];});
+  $("pColors").innerHTML=PCOL.map(c=>`<button data-c="${c}" style="--c:${c}" aria-label="Färg" aria-pressed="${PT.color===c}"></button>`).join("");
+  $("pUndo").disabled=!PT.strokes.length&&!PT.cleared;
+}
+/* Spegelbilder av en punkt */
+function mirrors(x,y,m){const a=[[x,y]];if(m==="v"||m==="b")a.push([PS-x,y]);if(m==="h"||m==="b")a.push([x,PS-y]);if(m==="b")a.push([PS-x,PS-y]);return a;}
+function drawStamp(c,s,x,y,col,size){
+  c.save();c.translate(x,y);c.fillStyle=col;
+  if(s===2){c.beginPath();c.arc(0,0,size*.55,0,7);c.fill();}
+  else if(s===0){c.beginPath();for(let i=0;i<10;i++){const r=i%2?size*.42:size,a=-Math.PI/2+i*Math.PI/5;c.lineTo(Math.cos(a)*r,Math.sin(a)*r);}c.closePath();c.fill();}
+  else{const r=size*.55;c.beginPath();c.moveTo(0,r*.9);c.bezierCurveTo(-r*1.6,-r*.2,-r*.7,-r*1.5,0,-r*.5);c.bezierCurveTo(r*.7,-r*1.5,r*1.6,-r*.2,0,r*.9);c.fill();}
+  c.restore();
+}
+function drawStroke(c,s){
+  const m=s.mirror,pts=s.pts;
+  if(s.tool==="stamp"){pts.forEach(([x,y])=>mirrors(x,y,m).forEach(([a,b],k)=>drawStamp(c,s.stamp,a,b,s.color,26)));return;}
+  c.lineCap="round";c.lineJoin="round";c.lineWidth=PSIZE[s.tool];
+  const copies=mirrors(0,0,m).length;
+  for(let k=0;k<copies;k++){
+    const tr=([x,y])=>mirrors(x,y,m)[k];
+    if(pts.length===1){const [x,y]=tr(pts[0]);c.fillStyle=s.tool==="erase"?"#fff":s.tool==="rain"?`hsl(${s.h0%360},90%,55%)`:s.color;c.beginPath();c.arc(x,y,PSIZE[s.tool]/2,0,7);c.fill();continue;}
+    if(s.tool==="rain"){for(let i=1;i<pts.length;i++){const [x0,y0]=tr(pts[i-1]),[x1,y1]=tr(pts[i]);c.strokeStyle=`hsl(${(s.h0+i*6)%360},90%,55%)`;c.beginPath();c.moveTo(x0,y0);c.lineTo(x1,y1);c.stroke();}}
+    else{c.strokeStyle=s.tool==="erase"?"#fff":s.color;c.beginPath();pts.forEach((p,i)=>{const [x,y]=tr(p);i?c.lineTo(x,y):c.moveTo(x,y);});c.stroke();}
+  }
+}
+function pRedraw(){
+  pctx.fillStyle="#fff";pctx.fillRect(0,0,PS,PS);
+  if(PT.test)drawTestFigure(pctx);
+  PT.strokes.forEach(s=>drawStroke(pctx,s));if(PT.cur)drawStroke(pctx,PT.cur);
+  // symmetrilinjerna i ett eget lager (följer inte med när bilden sparas)
+  povx.clearRect(0,0,PS,PS);povx.strokeStyle="rgba(61,90,254,.55)";povx.lineWidth=3;povx.setLineDash([14,10]);
+  const m=PT.test?"v":PT.mirror;
+  if(m==="v"||m==="b"){povx.beginPath();povx.moveTo(PS/2,0);povx.lineTo(PS/2,PS);povx.stroke();}
+  if(m==="h"||m==="b"){povx.beginPath();povx.moveTo(0,PS/2);povx.lineTo(PS,PS/2);povx.stroke();}
+  povx.setLineDash([]);
+  if(PT.test&&PT.test.shown)drawTestAnswer(povx);
+  renderPaintUI();
+}
+function pPos(e){const r=pcv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*PS,(e.clientY-r.top)/r.height*PS];}
+pov.addEventListener("pointerdown",e=>{
+  e.preventDefault();try{pov.setPointerCapture(e.pointerId);}catch(_){}
+  const p=pPos(e);if(PT.test&&PT.test.shown)return;
+  const tool=PT.test?"mid":PT.tool;
+  PT.cur={tool,color:PT.test?"#3D5AFE":PT.color,mirror:PT.test?"n":PT.mirror,stamp:PT.stamp,pts:[p],h0:Math.floor(Math.random()*360)};
+  if(tool==="stamp"){window.Ljud&&Ljud.pop&&Ljud.pop(PT.stamp*3);}
+  pRedraw();
+});
+pov.addEventListener("pointermove",e=>{
+  if(!PT.cur)return;const p=pPos(e),l=PT.cur.pts[PT.cur.pts.length-1];
+  if(PT.cur.tool==="stamp"){if(Math.hypot(p[0]-l[0],p[1]-l[1])>46)PT.cur.pts.push(p);}else if(Math.hypot(p[0]-l[0],p[1]-l[1])>2)PT.cur.pts.push(p);
+  pRedraw();
+});
+const pEnd=()=>{if(!PT.cur)return;PT.strokes.push(PT.cur);PT.cur=null;PT.cleared=null;pRedraw();
+  if(!PT.test&&PT.strokes.length===3)pSay(pickOne(["Titta, båda sidorna blir likadana!","Snyggt! Det blir symmetriskt.","Spegeln hänger med!"]));};
+pov.addEventListener("pointerup",pEnd);pov.addEventListener("pointercancel",pEnd);
+$("pMirror").onclick=e=>{const b=e.target.closest("[data-m]");if(!b||PT.test)return;PT.mirror=b.dataset.m;pRedraw();
+  pSay(PT.mirror==="v"?"Lodrät spegel, som en fjäril.":PT.mirror==="h"?"Vågrät spegel, som en spegling i vatten.":"Två speglar: ett kalejdoskop!");};
+$("pBrush").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;if(b.dataset.t==="stamp"&&PT.tool==="stamp")PT.stamp=(PT.stamp+1)%STAMPS.length;PT.tool=b.dataset.t;renderPaintUI();};
+$("pColors").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;PT.color=b.dataset.c;if(PT.tool==="erase")PT.tool="mid";renderPaintUI();};
+$("pUndoT").onclick=()=>$("pUndo").onclick();
+$("pUndo").onclick=()=>{if(PT.strokes.length)PT.strokes.pop();else if(PT.cleared){PT.strokes=PT.cleared;PT.cleared=null;}pRedraw();};
+$("pClear").onclick=()=>{if(!PT.strokes.length)return;PT.cleared=PT.strokes;PT.strokes=[];pRedraw();pSay("Ny duk! Ångra om du ångrar dig.");};
+$("pBack").onclick=()=>openHome();
+
+/* ---------- Galleriet ---------- */
+function pThumb(){const c=document.createElement("canvas");c.width=c.height=PS;const x=c.getContext("2d");x.drawImage(pcv,0,0);return c.toDataURL("image/jpeg",.85);}
+$("pSave").onclick=()=>{
+  if(!PT.strokes.length){pSay("Rita något först!");return;}
+  const l=gGet(),mine=l.filter(g=>g.o===pOwner());
+  if(mine.length>=12){pSay("Galleriet är fullt (12 bilder). Ta bort en bild först.");openGallery();return;}
+  l.unshift({o:pOwner(),t:Date.now(),img:pThumb()});
+  if(!gPut(l)){pSay("Det fanns inte plats att spara. Ta bort en gammal bild.");return;}
+  window.Ljud&&Ljud.magic&&Ljud.magic();pHop();pSay("Sparad i galleriet! 🖼️");
+};
+function openGallery(){
+  const mine=gGet().filter(g=>g.o===pOwner());
+  $("pGalList").innerHTML=mine.length?mine.map(g=>`<figure data-t="${g.t}"><img src="${g.img}" alt="Spegelbild"><figcaption>${new Date(g.t).toLocaleDateString("sv-SE",{day:"numeric",month:"short"})}</figcaption><div class="gbtn"><button data-act="dl" aria-label="Ladda ner">⬇️</button><button data-act="del" aria-label="Ta bort">🗑️</button></div></figure>`).join(""):`<p class="gempty">Inga sparade bilder än. Tryck på 💾 Spara när du ritat något fint!</p>`;
+  $("pGal").hidden=false;
+}
+$("pGalBtn").onclick=openGallery;
+$("pGalClose").onclick=()=>$("pGal").hidden=true;
+$("pGalList").onclick=e=>{
+  const b=e.target.closest("[data-act]"),f=e.target.closest("figure");if(!b||!f)return;const t=+f.dataset.t;
+  if(b.dataset.act==="dl"){const g=gGet().find(x=>x.t===t);if(!g)return;const a=document.createElement("a");a.href=g.img;a.download=`spegelbild-${new Date(t).toISOString().slice(0,10)}.jpg`;document.body.appendChild(a);a.click();a.remove();return;}
+  // ta bort i två steg, så att man inte råkar radera
+  if(!b.classList.contains("sure")){b.classList.add("sure");b.textContent="Ta bort?";setTimeout(()=>{if(b.isConnected){b.classList.remove("sure");b.textContent="🗑️";}},3000);return;}
+  gPut(gGet().filter(x=>x.t!==t));openGallery();
+};
+
+/* ---------- Testa mig ---------- */
+// Halva figurer på vänstra sidan (x < 300). Eleven ritar högra halvan själv.
+const PFIG=[
+  {name:"ett hjärta",pts:[[300,520],[210,450],[140,370],[110,280],[125,200],[180,150],[245,155],[285,190],[300,225]]},
+  {name:"en gran",pts:[[300,110],[220,240],[260,240],[175,350],[235,350],[150,465],[275,465],[275,540],[300,540]]},
+  {name:"ett hus",pts:[[300,130],[150,260],[185,260],[185,500],[300,500]]},
+  {name:"en fjärilsvinge",pts:[[300,210],[230,120],[140,110],[100,190],[150,280],[110,380],[160,470],[250,430],[300,360]]},
+  {name:"en raket",pts:[[300,80],[255,150],[240,390],[180,470],[245,455],[260,500],[300,500]]},
+  {name:"en stjärna",pts:[[300,90],[255,235],[110,235],[225,325],[180,470],[300,385]]}
+];
+function drawTestFigure(c){const f=PT.test.fig;c.strokeStyle="#FF5FA2";c.lineWidth=12;c.lineCap="round";c.lineJoin="round";c.beginPath();f.pts.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.stroke();}
+function drawTestAnswer(c){const f=PT.test.fig;c.strokeStyle="rgba(30,158,94,.75)";c.lineWidth=8;c.setLineDash([16,10]);c.lineCap="round";c.beginPath();f.pts.forEach(([x,y],i)=>i?c.lineTo(PS-x,y):c.moveTo(PS-x,y));c.stroke();c.setLineDash([]);}
+$("pTest").onclick=()=>{
+  if(!PT.test)PT.saved={strokes:PT.strokes,mirror:PT.mirror};PT.strokes=[];PT.cleared=null;
+  let f;do f=pickOne(PFIG);while(PT.test&&f===PT.test.fig&&PFIG.length>1);
+  PT.test={fig:f,shown:false};$("ptools").hidden=true;$("pMirror").hidden=true;$("ptestBar").hidden=false;$("pTestDone").hidden=false;$("pTestNew").hidden=true;$("pTestRes").textContent="";
+  pRedraw();pSay(`Jag ritade halva ${f.name}. Kan du rita andra halvan på högra sidan?`);
+};
+$("pTestDone").onclick=()=>{
+  if(!PT.strokes.length){pSay("Rita andra halvan först!");return;}
+  PT.test.shown=true;
+  // hur nära: andel punkter längs spegelbilden som har något ritat i närheten
+  const f=PT.test.fig,samples=[];for(let i=1;i<f.pts.length;i++){const [x0,y0]=f.pts[i-1],[x1,y1]=f.pts[i],n=Math.max(1,Math.round(Math.hypot(x1-x0,y1-y0)/10));for(let k=0;k<n;k++){const t=k/n;samples.push([PS-(x0+(x1-x0)*t),y0+(y1-y0)*t]);}}
+  const drawn=PT.strokes.flatMap(s=>s.pts);
+  const hits=samples.filter(([x,y])=>drawn.some(([a,b])=>Math.hypot(a-x,b-y)<26)).length,pct=Math.round(hits/samples.length*100);
+  $("pTestRes").textContent=pct>=85?`Jättenära! ${pct} % 🎉`:pct>=60?`Bra! ${pct} % stämmer.`:`${pct} % stämmer. Det gröna visar hur det skulle bli.`;
+  if(pct>=60){pHop();window.Ljud&&Ljud.ok&&Ljud.ok();}else window.Ljud&&Ljud.bad&&Ljud.bad();
+  pSay(pct>=85?"Wow, nästan exakt spegelvänt!":"Det gröna är spegelbilden. Jämför med din!");
+  $("pTestDone").hidden=true;$("pTestNew").hidden=false;pRedraw();
+};
+$("pTestNew").onclick=()=>$("pTest").onclick.call(null);
+$("pTestEnd").onclick=()=>{PT.test=null;if(PT.saved){PT.strokes=PT.saved.strokes;PT.mirror=PT.saved.mirror;}PT.saved=null;$("ptools").hidden=false;$("pMirror").hidden=false;$("ptestBar").hidden=true;pRedraw();pSay("Tillbaka till spegelmålningen!");};
+
 openHome();
 </script>
 </body>
