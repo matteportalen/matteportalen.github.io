@@ -1514,9 +1514,11 @@ const bFont=fs=>`800 ${fs}px "Baloo 2", system-ui, sans-serif`;
 const bCount=r=>r%2?BCOLS-1:BCOLS;
 // Färg per tal. Skjutbubblan är alltid vit, så färgen avslöjar aldrig svaret.
 function bColor(o){const m=B.colMap;if(!m.has(o.v))m.set(o.v,m.size%BPAL.length);return BPAL[m.get(o.v)];}
-function bLevel(l){return{rows:Math.min(8,l+3),shots:[0,20,24,24,26,30][Math.min(l,5)],drop:l<3?0:l===3?10:l===4?8:Math.max(5,12-l),kinds:[0,7,8,9,10,12][Math.min(l,5)]};}
+// Bara fel kostar: rätt skott drar inget, "missar kvar" minskar när ett skott fastnar.
+// Bana 5 är bara lite svårare än 4; studsmönster och 12 tal först från bana 6.
+function bLevel(l){return{rows:Math.min(8,l+3),miss:l<=3?8:l<=5?7:6,drop:l<3?0:l===3?10:l<=5?8:Math.max(5,13-l),kinds:l>=6?12:[0,7,8,9,10,10][l]};}
 /* Mönster från bana 3, så att banorna ser olika ut. Breda fästen i taket, inga tunna trådar som rasar för lätt.
-   x är bubblans plats i bredd (0–9), r raden, n antal rader. Fönster och galler (kräver studs) först från bana 5. */
+   x är bubblans plats i bredd (0–9), r raden, n antal rader. Fönster och galler (kräver studs) först från bana 6. */
 const BSHAPES=[
   (r,x,n)=>x%3.4<2.3||r<2,                               // pelare
   (r,x,n)=>r<n-Math.abs(x-4.5)*n/5.5,                     // kupol, djupast i mitten
@@ -1562,7 +1564,7 @@ function bBuild(l){
     g[r][c]={v:o.v,t:o.t};
   }
   if(l>=3){
-    const sh=pickOne(l>=5?BSHAPES.concat(BSHAPES_HARD):BSHAPES);
+    const sh=pickOne(l>=6?BSHAPES.concat(BSHAPES_HARD):BSHAPES);
     for(let r=0;r<P.rows;r++)for(let c=0;c<bCount(r);c++)if(!sh(r,c+(r%2?.5:0),P.rows))g[r][c]=null;
     // bara bubblor som sitter fast i taket får vara kvar
     const S=new Set(),q=[];for(let c=0;c<bCount(0);c++)if(g[0][c])q.push([0,c]);
@@ -1618,17 +1620,26 @@ function bHittable(){
       if(o){hit.set(k,o);continue;}if(!seen.has(k)){seen.add(k);q.push([a,b]);}}}
   return [...hit.values()];
 }
-function bPick(avoid,avoidTxt){
-  const H=bHittable();if(!H.length)return null;
+/* Svar som ett riktigt skott kan nå: provskjut i alla vinklar (rakt och med studs) och se vilka tal
+   som finns bredvid där bubblan landar. Tal som nås från flera vinklar föredras, så att man inte måste sikta på millimetern. */
+function bReach(){
+  const cnt=new Map();
+  for(let a=.13;a<Math.PI-.13;a+=.012){const tr=bTrace(a);if(!tr.cell)continue;const seen=new Set();
+    bNbrs(tr.cell[0],tr.cell[1]).forEach(([r,c])=>{const o=B.g[r][c];if(o&&!seen.has(o)){seen.add(o);cnt.set(o,(cnt.get(o)||0)+1);}});}
+  const easy=[...cnt].filter(([o,n])=>n>=3).map(([o])=>o);
+  return easy.length?easy:[...cnt.keys()];
+}
+function bPick(avoid,avoidTxt,H){
+  H=H||bReach();if(!H.length)H=bHittable();if(!H.length)return null;
   let c=H.filter(o=>o.v!==avoid);if(!c.length)c=H;
   const v=pickOne([...new Set(c.map(o=>o.v))]);let t=bTask(pickOne(c.filter(o=>o.v===v)));
   for(let i=0;i<4&&t.txt===avoidTxt;i++)t=bTask(pickOne(c.filter(o=>o.v===v)));
   return t;
 }
 function bFix(){
-  const H=new Set(bHittable().map(o=>o.v));
-  if(!B.cur||!H.has(B.cur.a))B.cur=bPick(B.next&&B.next.a,B.last&&B.last.txt);
-  if(!B.next||!H.has(B.next.a))B.next=bPick(B.cur&&B.cur.a,B.cur&&B.cur.txt);
+  let R=bReach();if(!R.length)R=bHittable();const H=new Set(R.map(o=>o.v));
+  if(!B.cur||!H.has(B.cur.a))B.cur=bPick(B.next&&B.next.a,B.last&&B.last.txt,R);
+  if(!B.next||!H.has(B.next.a))B.next=bPick(B.cur&&B.cur.a,B.cur&&B.cur.txt,R);
 }
 function bFlood(starts,v){
   const S=new Set(),q=[...starts];
@@ -1658,10 +1669,10 @@ function startBub(){
 }
 function bLevelStart(l){
   const P=bLevel(l);
-  B.colMap=new Map();Object.assign(B,{lvl:l,P,g:bBuild(l),shots:P.shots,drop:0,dropA:0,since:0,added:0,state:"aim",fly:null,pops:[],falls:[],parts:[],labels:[],cur:null,next:null,last:null});
+  B.colMap=new Map();Object.assign(B,{lvl:l,P,g:bBuild(l),shots:P.miss,drop:0,dropA:0,since:0,added:0,state:"aim",fly:null,pops:[],falls:[],parts:[],labels:[],cur:null,next:null,last:null});
   B.init=bAll().length;bFix();bHud();$("bubMsg").hidden=true;
   const tip=BL.W>BL.H&&BL.H<520?"<small>Håll mobilen upprätt så blir bubblorna större.</small>":"";
-  bBanner(`Bana ${l}`+(P.drop?`<small>Taket sjunker var ${P.drop}:e skott!</small>`:"<small>Poppa alla bubblor!</small>")+tip,P.drop?2600:1800);
+  bBanner(`Bana ${l}`+(P.drop?`<small>Taket sjunker var ${P.drop}:e skott!</small>`:"<small>Poppa alla bubblor! Bara fel skott kostar en miss.</small>")+tip,P.drop?2600:1800);
 }
 function bSwap(){if(!B||B.state!=="aim"||!B.next)return;[B.cur,B.next]=[B.next,B.cur];B.swapA=1;window.Ljud&&Ljud.slurp();}
 function bFire(){
@@ -1675,7 +1686,7 @@ function bAt(pts,s){
   return pts[pts.length-1];
 }
 function bLand(){
-  const f=B.fly,[r,c]=f.cell,task=f.task,[x,y]=bXY(r,c);B.fly=null;B.state="busy";B.shots--;B.since++;
+  const f=B.fly,[r,c]=f.cell,task=f.task,[x,y]=bXY(r,c);B.fly=null;B.state="busy";B.since++;
   const near=bNbrs(r,c).filter(([a,b])=>B.g[a][b]&&B.g[a][b].v===task.a);
   if(near.length){
     const grp=bFlood(near,task.a);let got=grp.length*10;
@@ -1691,7 +1702,7 @@ function bLand(){
     bT=setTimeout(bAfter,520);
   }else{
     // Fel svar: bubblan fastnar och visar sitt svar, så att eleven ser rätt svar direkt.
-    B.g[r][c]={v:task.a,t:task.t,fresh:1};B.added++;B.wrong++;B.shake=.35;
+    B.g[r][c]={v:task.a,t:task.t,fresh:1};B.added++;B.wrong++;B.shots--;B.shake=.35;
     B.labels.push({kind:"fact",task,x,y,t:0});
     window.Ljud&&Ljud.bad();
     bT=setTimeout(bAfter,900);
@@ -1703,26 +1714,26 @@ function bAfter(){
   if(!bAll().length)return bClear();
   if(B.P.drop&&B.since>=B.P.drop){B.drop++;B.since=0;window.Ljud&&Ljud.clonk();}
   if(bLowest()+B.drop>BLIM-1)return bEnd("ner");
-  if(B.shots<=0)return bEnd("skott");
+  if(B.shots<=0)return bEnd("missar");
   B.cur=B.next;B.next=null;bFix();
   if(!B.cur)return bEnd("skott");
   B.state="aim";bHud();
 }
 function bSaveBest(){const r=bRec(),rec=B.pts>(r.best||0);if(rec)r.best=B.pts;save();return rec;}
 function bClear(){
-  B.state="msg";const bonus=B.shots*10;B.pts+=bonus;
+  B.state="msg";const bonus=B.shots*20;B.pts+=bonus;
   const r=bRec(),before=r.stars||0;r.bana=Math.max(r.bana||0,B.lvl);r.stars=Math.max(before,bStarsFor(r.bana));bSaveBest();bHud();
   $("bmT").textContent=`Bana ${B.lvl} klar!`;
-  $("bmP").innerHTML=(B.shots?`${B.shots} skott kvar: +${bonus} bonuspoäng.`:"Planen är tom!")+(r.stars>before?`<br>Du fick en ny stjärna! ${starHtml(r.stars)}`:"");
+  $("bmP").innerHTML=(B.shots?`${B.shots} ${B.shots===1?"miss":"missar"} kvar: +${bonus} bonuspoäng.`:"Planen är tom!")+(r.stars>before?`<br>Du fick en ny stjärna! ${starHtml(r.stars)}`:"");
   $("bubMsg").hidden=false;window.Ljud&&Ljud.fanfare();confetti();
 }
 $("bmGo").onclick=()=>{if(B)bLevelStart(B.lvl+1);};
 function bEnd(why){
   bSaveBest();B.state="over";const rec=B.pts>B.prevBest,r=bRec(),pts=B.pts,lvl=B.lvl;
-  bBanner(why==="ner"?"Bubblorna nådde strecket!":"Skotten tog slut!",1400);
+  bBanner(why==="ner"?"Bubblorna nådde strecket!":why==="missar"?"Missarna tog slut!":"Skotten tog slut!",1400);
   bT=setTimeout(()=>{
     stopBub();
-    $("rTitle").textContent=why==="ner"?"Bubblorna nådde strecket":"Skotten tog slut";
+    $("rTitle").textContent=why==="ner"?"Bubblorna nådde strecket":why==="missar"?"Missarna tog slut":"Inga fler uppgifter";
     $("rBig").innerHTML=r.stars?starHtml(r.stars):`${pts} poäng`;
     $("rSub").textContent=`Du kom till bana ${lvl} och fick ${pts} poäng.`+(rec&&pts?" Nytt rekord!":r.best?` Ditt rekord är ${r.best} poäng.`:"")+
       (r.stars<3?` Klara bana ${r.stars<1?1:r.stars<2?3:5} för ${r.stars<1?"en stjärna":r.stars<2?"två stjärnor":"tre stjärnor"}.`:"");
@@ -1843,7 +1854,7 @@ function bDraw(){
   const cx=shX-Rs-D*1.5,cw=Math.max(44,D*1.25),ch=Math.max(40,D*1.05);
   bx.fillStyle="#1D2B53";bRR(cx-cw/2,shY-ch/2,cw,ch,12);bx.fill();
   bText(String(B.shots),cx,shY-ch*.1,cw-6,ch*.55,false);
-  bx.fillStyle="rgba(255,255,255,.8)";bx.font=bFont(Math.max(11,ch*.24));bx.textAlign="center";bx.fillText("skott",cx,shY+ch*.3);
+  bx.fillStyle="rgba(255,255,255,.8)";bx.font=bFont(Math.max(11,ch*.24));bx.textAlign="center";bx.fillText("missar",cx,shY+ch*.3);
   if(B.P.drop&&B.state!=="over"){const n=B.P.drop-B.since;bx.fillStyle=n<=1?"#E5484D":"#56668F";bx.font=bFont(Math.max(12,D*.36));bx.fillText(`tak ↓ ${Math.max(0,n)}`,cx,shY+ch/2+Math.max(12,D*.36)*.9);}
   bx.fillStyle="rgba(255,255,255,.6)";bx.beginPath();bx.arc(shX,shY,Rs+6,0,7);bx.fill();
   bx.strokeStyle="rgba(29,43,83,.2)";bx.lineWidth=2;bx.stroke();
