@@ -143,6 +143,28 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .pcolors{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:10px}
 .pcolors button{width:38px;height:38px;border-radius:50%;background:var(--c);box-shadow:0 3px 0 rgba(29,43,83,.25)}
 .pcolors button[aria-pressed="true"]{outline:4px solid var(--ink);outline-offset:2px}
+.pcolors button[data-c="#FFFFFF"]{box-shadow:inset 0 0 0 2px #C6D6F2,0 3px 0 rgba(29,43,83,.25)}
+.pcustom{width:38px;height:38px;border-radius:50%;background:var(--c);box-shadow:0 3px 0 rgba(29,43,83,.25);position:relative;overflow:hidden;cursor:pointer}
+.pcustom input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer}
+.prow{display:flex;gap:6px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.pbagbtn{display:flex;align-items:center;gap:8px;background:linear-gradient(135deg,#FFF4CC,#FFE0EC);border-radius:14px;padding:4px 12px 4px 6px;box-shadow:0 3px 0 var(--line);text-align:left;min-height:48px}
+.pbagbtn .pbic{width:58px;height:30px;display:grid;place-items:center;font-size:1.4rem;background:#fff;border-radius:8px}
+.pbagbtn .pbic img{width:58px;height:27px}
+.pbagbtn b{display:block;font-size:.95rem;line-height:1.1}.pbagbtn small{display:block;color:var(--muted);font-weight:700;font-size:.8rem}
+.pq{background:var(--card);border-radius:12px;padding:6px 10px;font-weight:800;font-size:.95rem;box-shadow:0 3px 0 var(--line);min-height:48px}
+.pq[aria-pressed="true"],.players button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.players{display:flex;gap:6px;justify-content:center;margin-top:10px}
+.players button{background:var(--card);border-radius:12px;padding:6px 8px 6px 12px;font-weight:800;font-size:.95rem;box-shadow:0 3px 0 var(--line);min-height:44px;display:flex;align-items:center;gap:6px}
+.players .eye{background:rgba(255,255,255,.85);border-radius:8px;padding:2px 5px;font-size:1rem}
+.pbag{position:fixed;inset:0;z-index:30;background:rgba(29,43,83,.35);display:grid;place-items:center;padding:12px}
+.pbag .box{background:var(--card);border-radius:20px;padding:12px 14px;width:min(520px,100%);max-height:86vh;overflow:auto;box-shadow:0 6px 0 rgba(29,43,83,.3)}
+.pbag h4{margin:6px 0;font-size:1.05rem}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pgrid.stamps{grid-template-columns:repeat(6,1fr)}
+.pgrid button{background:var(--bg);border-radius:12px;padding:6px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:.8rem;min-height:48px}
+.pgrid button img{width:86px;max-width:100%;height:auto}
+.pgrid.stamps button img{width:64px}
+.pgrid button[aria-pressed="true"]{outline:3px solid var(--ink);background:#FFF4CC}
 .pact .ptest{background:#FFF4CC}
 .pact .pgo{background:var(--good);color:#fff;box-shadow:0 3px 0 var(--good-dark)}
 .pact button:disabled{opacity:.45}
@@ -165,8 +187,8 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   #paint .gtop{grid-area:top}
   #paint .pwrap{grid-area:board;width:min(calc(100vh - 176px),calc(100vw - 380px),940px);margin:0}
   #paint #ptools,#paint #ptestBar{grid-area:tools;padding-top:4px}
-  #paint .pbrush,#paint .pact,#paint .pcolors{justify-content:flex-start;margin-top:12px}
-  #paint .pbrush button,#paint .pact button{font-size:1.05rem;min-height:48px;padding:6px 12px}
+  #paint .prow,#paint .players,#paint .pact,#paint .pcolors{justify-content:flex-start;margin-top:12px}
+  #paint .pq,#paint .players button,#paint .pact button{font-size:1.05rem;min-height:48px;padding:6px 12px}
   #paint .pcolors button{width:44px;height:44px}
   #paint .ppet{width:84px;right:-28px}
 }
@@ -187,10 +209,12 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="gtop"><button class="back" id="pBack">← Tillbaka</button><div class="pmirror" id="pMirror"><button data-m="v">┃ Lodrät</button><button data-m="h">━ Vågrät</button><button data-m="b">✚ Båda</button></div></div>
   <div class="pwrap"><div class="pboard"><canvas id="pcv"></canvas><canvas id="pov" aria-label="Rityta. Rita med fingret eller musen."></canvas></div><div class="pbub" id="pbub" hidden></div><div class="ppet pet" id="ppet" aria-hidden="true"></div></div>
   <div id="ptools">
-    <div class="pbrush" id="pBrush"><button data-t="thin">✏️ Tunn</button><button data-t="mid">🖍️ Mellan</button><button data-t="thick">🖌️ Tjock</button><button data-t="rain" aria-label="Regnbåge">🌈</button><button data-t="stamp" aria-label="Stämpel">⭐</button><button data-t="erase">🧽 Sudd</button></div>
+    <div class="prow"><button class="pbagbtn" id="pBagBtn"></button><button class="pq" data-t="erase">🧽 Sudd</button><button class="pq" data-t="fill">🪣 Fyll</button></div>
+    <div class="players" id="pLayers"><button data-l="bg">🖼️ Bakgrund <span class="eye" role="button" aria-label="Visa eller dölj bakgrunden">👁️</span></button><button data-l="fg">✏️ Förgrund <span class="eye" role="button" aria-label="Visa eller dölj förgrunden">👁️</span></button></div>
     <div class="pcolors" id="pColors"></div>
     <div class="pact"><button id="pUndo">↶ Ångra</button><button id="pClear">🗑️ Börja om</button><button id="pSave">💾 Spara</button><button id="pGalBtn">🖼️ Galleri</button><button id="pTest" class="ptest">🎯 Testa mig</button></div>
   </div>
+  <div class="pbag" id="pBag" hidden><div class="box"><h4>🖌️ Penslar</h4><div class="pgrid" id="pBrushes"></div><h4>📐 Former</h4><div class="pgrid" id="pShapes"></div><h4>⭐ Stämplar</h4><div class="pgrid stamps" id="pStamps"></div></div></div>
   <div id="ptestBar" hidden>
     <p class="pres" id="pTestRes"></p>
     <div class="pact"><button id="pTestDone" class="pgo">✔ Klar, visa spegeln</button><button id="pTestNew" class="pgo" hidden>🎯 Ny figur</button><button id="pUndoT">↶ Ångra</button><button id="pTestEnd">🎨 Tillbaka till målningen</button></div>
@@ -691,86 +715,187 @@ function confetti(){
 }
 /* ---------- Spegelmåla ----------
    Fritt verktyg (inga stjärnor). Allt man ritar speglas i symmetrilinjen: lodrät, vågrät eller båda (kalejdoskop).
-   Penslar: tunn, mellan, tjock, regnbåge, stämpel (stjärna, hjärta, prick) och sudd. Ångra, Börja om (går att ångra), Spara.
+   Två lager: Bakgrund och Förgrund (med öga för att visa/dölja). Suddet tar bara i det lager man står i.
+   Penselväskan: pennor (tunn, mellan, tjock), regnbåge, spray, krita, överstrykning, glitter, neon; former (linje, cirkel,
+   fyrkant); stämplar (stjärna, hjärta, prick och emojis). Snabbknappar: sudd och fyllhink (fyller spegelvänt).
+   24 färger + egen färg. Ångra, Börja om (går att ångra), Spara.
+   Lagren ritas färdigt i egna dukar, så bara strecket man håller på med ritas om när fingret rör sig.
    Galleriet sparas i den här webbläsaren per profil (matteportalen-galleri, inte i profilernas flyttkod), max 12 bilder.
    "Testa mig": djuret ritar en halv figur, eleven ritar andra halvan utan spegel, sedan visas spegelbilden och hur nära man kom. */
-const PS=600,PCOL=["#1D2B53","#E5484D","#FF9F43","#F2B707","#2BB673","#17AFC4","#3D5AFE","#7B61FF","#FF5FA2","#A0673C"];
+const PS=600;
+const PCOL=["#E5484D","#FF9F43","#F2B707","#2BB673","#17AFC4","#3D5AFE","#7B61FF","#FF5FA2","#A0673C","#1D2B53","#000000",
+            "#FFB3B3","#FFD8A8","#FFF1A8","#B8F0C8","#B3ECF5","#B8C4FF","#D7CCFF","#FFC4E1","#E6CBAE","#9AA7BF","#FFFFFF"];
 const GKEY="matteportalen-galleri";
-const PT={mirror:"v",tool:"mid",color:"#3D5AFE",stamp:0,strokes:[],cleared:null,cur:null,test:null,saved:null};
+const PBR=[{t:"thin",n:"Tunn penna"},{t:"mid",n:"Mellanpenna"},{t:"thick",n:"Tjock pensel"},{t:"rain",n:"Regnbåge"},{t:"spray",n:"Spray"},
+           {t:"chalk",n:"Krita"},{t:"hl",n:"Överstrykning"},{t:"glitter",n:"Glitter"},{t:"neon",n:"Neon"}];
+const PSH=[{t:"line",n:"Linjal"},{t:"circle",n:"Cirkel"},{t:"rect",n:"Fyrkant"}];
+const PSTAMP=["star","heart","dot","🌸","🦋","🍀","🌟","❄️","🍓","🐞","🎈","🐟"];
+const PSIZE={thin:6,mid:14,thick:30,rain:16,erase:34,hl:28,neon:10,chalk:12,shape:10};
+const PT={mirror:"v",tool:"mid",color:"#3D5AFE",stamp:"star",layer:"fg",vis:{bg:true,fg:true},strokes:[],cleared:null,cur:null,test:null,saved:null};
 const pcv=$("pcv"),pctx=pcv.getContext("2d"),pov=$("pov"),povx=pov.getContext("2d");
 pcv.width=pcv.height=pov.width=pov.height=PS;
-const PSIZE={thin:6,mid:14,thick:30,rain:16,erase:34};
-const STAMPS=["⭐","❤️","●"];
+const mkC=()=>{const c=document.createElement("canvas");c.width=c.height=PS;return c;};
+const LAY={bg:mkC(),fg:mkC()},TMP=mkC(),COMP=mkC();
 const pOwner=()=>{try{return sessionStorage.getItem("mp-active")||"gast";}catch(e){return"gast";}};
 const gGet=()=>{try{return JSON.parse(localStorage.getItem(GKEY)||"[]")}catch(e){return[]}};
 const gPut=l=>{try{localStorage.setItem(GKEY,JSON.stringify(l));return true;}catch(e){return false;}};
 function pSay(t){const b=$("pbub");b.textContent=t;b.hidden=false;clearTimeout(pSay.t);pSay.t=setTimeout(()=>b.hidden=true,3200);}
 function pHop(){const p=$("ppet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");}
 function openPaint(){
-  $("ppet").innerHTML=owlSVG(pet);if(PT.test&&PT.saved){PT.strokes=PT.saved.strokes;PT.mirror=PT.saved.mirror;PT.saved=null;}PT.test=null;$("ptestBar").hidden=true;$("ptools").hidden=false;$("pMirror").hidden=false;
+  $("ppet").innerHTML=owlSVG(pet);if(PT.test&&PT.saved){PT.strokes=PT.saved.strokes;PT.mirror=PT.saved.mirror;PT.saved=null;}PT.test=null;$("ptestBar").hidden=true;$("ptools").hidden=false;$("pMirror").hidden=false;$("pBag").hidden=true;
   renderPaintUI();pRedraw();show("paint");pSay("Rita på ena sidan. Spegeln ritar den andra!");
 }
-function renderPaintUI(){
-  $("pMirror").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===PT.mirror));
-  $("pBrush").querySelectorAll("button").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.t===PT.tool);if(b.dataset.t==="stamp")b.textContent=STAMPS[PT.stamp];});
-  $("pColors").innerHTML=PCOL.map(c=>`<button data-c="${c}" style="--c:${c}" aria-label="Färg" aria-pressed="${PT.color===c}"></button>`).join("");
-  $("pUndo").disabled=!PT.strokes.length&&!PT.cleared;
-}
-/* Spegelbilder av en punkt */
+/* ---------- Ritning ---------- */
+// samma slumptal varje gång strecket ritas om (spray, krita och glitter)
+const rng=seed=>{let s=seed>>>0;return()=>(s=(Math.imul(s,1664525)+1013904223)>>>0)/4294967296;};
 function mirrors(x,y,m){const a=[[x,y]];if(m==="v"||m==="b")a.push([PS-x,y]);if(m==="h"||m==="b")a.push([x,PS-y]);if(m==="b")a.push([PS-x,PS-y]);return a;}
-function drawStamp(c,s,x,y,col,size){
-  c.save();c.translate(x,y);c.fillStyle=col;
-  if(s===2){c.beginPath();c.arc(0,0,size*.55,0,7);c.fill();}
-  else if(s===0){c.beginPath();for(let i=0;i<10;i++){const r=i%2?size*.42:size,a=-Math.PI/2+i*Math.PI/5;c.lineTo(Math.cos(a)*r,Math.sin(a)*r);}c.closePath();c.fill();}
-  else{const r=size*.55;c.beginPath();c.moveTo(0,r*.9);c.bezierCurveTo(-r*1.6,-r*.2,-r*.7,-r*1.5,0,-r*.5);c.bezierCurveTo(r*.7,-r*1.5,r*1.6,-r*.2,0,r*.9);c.fill();}
+function drawStamp(c,s,x,y,col,size,fx,fy){
+  c.save();c.translate(x,y);c.scale(fx||1,fy||1);c.fillStyle=col;
+  if(s==="dot"){c.beginPath();c.arc(0,0,size*.55,0,7);c.fill();}
+  else if(s==="star"){c.beginPath();for(let i=0;i<10;i++){const r=i%2?size*.42:size,a=-Math.PI/2+i*Math.PI/5;c.lineTo(Math.cos(a)*r,Math.sin(a)*r);}c.closePath();c.fill();}
+  else if(s==="heart"){const r=size*.55;c.beginPath();c.moveTo(0,r*.9);c.bezierCurveTo(-r*1.6,-r*.2,-r*.7,-r*1.5,0,-r*.5);c.bezierCurveTo(r*.7,-r*1.5,r*1.6,-r*.2,0,r*.9);c.fill();}
+  else{c.font=`${size*1.7}px "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif`;c.textAlign="center";c.textBaseline="middle";c.fillText(s,0,size*.08);}
   c.restore();
 }
-function drawStroke(c,s){
-  const m=s.mirror,pts=s.pts;
-  if(s.tool==="stamp"){pts.forEach(([x,y])=>mirrors(x,y,m).forEach(([a,b],k)=>drawStamp(c,s.stamp,a,b,s.color,26)));return;}
-  c.lineCap="round";c.lineJoin="round";c.lineWidth=PSIZE[s.tool];
+function strokePath(c,pts,tr){c.beginPath();pts.forEach((p,i)=>{const [x,y]=tr(p);i?c.lineTo(x,y):c.moveTo(x,y);});if(pts.length===1){const [x,y]=tr(pts[0]);c.lineTo(x+.01,y);}c.stroke();}
+function drawStroke(c,s,sc){
+  sc=sc||1;const m=s.mirror,pts=s.pts,erase=s.tool==="erase";
+  if(s.tool==="fill")return;
+  c.save();c.lineCap="round";c.lineJoin="round";
+  if(erase){if(s.layer==="fg")c.globalCompositeOperation="destination-out";c.strokeStyle="#fff";c.fillStyle="#fff";}
   const copies=mirrors(0,0,m).length;
   for(let k=0;k<copies;k++){
-    const tr=([x,y])=>mirrors(x,y,m)[k];
-    if(pts.length===1){const [x,y]=tr(pts[0]);c.fillStyle=s.tool==="erase"?"#fff":s.tool==="rain"?`hsl(${s.h0%360},90%,55%)`:s.color;c.beginPath();c.arc(x,y,PSIZE[s.tool]/2,0,7);c.fill();continue;}
-    if(s.tool==="rain"){for(let i=1;i<pts.length;i++){const [x0,y0]=tr(pts[i-1]),[x1,y1]=tr(pts[i]);c.strokeStyle=`hsl(${(s.h0+i*6)%360},90%,55%)`;c.beginPath();c.moveTo(x0,y0);c.lineTo(x1,y1);c.stroke();}}
-    else{c.strokeStyle=s.tool==="erase"?"#fff":s.color;c.beginPath();pts.forEach((p,i)=>{const [x,y]=tr(p);i?c.lineTo(x,y):c.moveTo(x,y);});c.stroke();}
+    const tr=p=>mirrors(p[0],p[1],m)[k],R=rng(s.seed);
+    // spegelvänd kopia: stämplar och prickar speglas också, så att bilden blir exakt symmetrisk
+    const t0=tr([0,0]),t1=tr([1,1]),fx=Math.sign(t1[0]-t0[0])||1,fy=Math.sign(t1[1]-t0[1])||1;
+    if(s.tool==="stamp"){pts.forEach(p=>{const [x,y]=tr(p);drawStamp(c,s.stamp,x,y,s.color,26*sc,fx,fy);});continue;}
+    if(s.tool==="line"||s.tool==="circle"||s.tool==="rect"){
+      if(pts.length<2)continue;const [a,b]=[tr(pts[0]),tr(pts[pts.length-1])];c.strokeStyle=s.color;c.lineWidth=PSIZE.shape*sc;c.beginPath();
+      if(s.tool==="line"){c.moveTo(a[0],a[1]);c.lineTo(b[0],b[1]);}
+      else if(s.tool==="circle"){c.arc(a[0],a[1],Math.hypot(b[0]-a[0],b[1]-a[1]),0,7);}
+      else c.rect(Math.min(a[0],b[0]),Math.min(a[1],b[1]),Math.abs(b[0]-a[0]),Math.abs(b[1]-a[1]));
+      c.stroke();continue;}
+    if(s.tool==="spray"){c.fillStyle=s.color;pts.forEach(p=>{for(let i=0;i<12;i++){const a=R()*7,r=Math.sqrt(R())*24*sc,[x,y]=tr([p[0]+Math.cos(a)*r,p[1]+Math.sin(a)*r]);c.beginPath();c.arc(x,y,(1.2+R()*1.6)*sc,0,7);c.fill();}});continue;}
+    if(s.tool==="glitter"){pts.forEach((p,i)=>{const [x,y]=tr(p);for(let j=0;j<3;j++){const a=R()*7,r=R()*12*sc,[gx,gy]=tr([p[0]+Math.cos(a)*r,p[1]+Math.sin(a)*r]);c.fillStyle=R()<.75?s.color:"#fff";c.beginPath();c.arc(gx,gy,(1.5+R()*2.5)*sc,0,7);c.fill();}
+        if(i%4===0){const g=5*sc;c.strokeStyle="#fff";c.lineWidth=1.6*sc;c.beginPath();c.moveTo(x-g,y);c.lineTo(x+g,y);c.moveTo(x,y-g);c.lineTo(x,y+g);c.stroke();}});continue;}
+    if(s.tool==="chalk"){c.strokeStyle=s.color;c.lineWidth=4*sc;c.globalAlpha=.55;
+      for(let j=0;j<3;j++){const o=[(R()-.5)*8*sc,(R()-.5)*8*sc];c.beginPath();pts.forEach((p,i)=>{const [x,y]=tr([p[0]+o[0],p[1]+o[1]]);if(i&&R()<.12){c.stroke();c.beginPath();c.moveTo(x,y);}else i?c.lineTo(x,y):c.moveTo(x,y);});c.stroke();}
+      c.globalAlpha=1;continue;}
+    if(s.tool==="rain"){c.lineWidth=PSIZE.rain*sc;if(pts.length===1){c.strokeStyle=`hsl(${s.seed%360},90%,55%)`;strokePath(c,pts,tr);}
+      for(let i=1;i<pts.length;i++){c.strokeStyle=`hsl(${(s.seed+i*6)%360},90%,55%)`;strokePath(c,[pts[i-1],pts[i]],tr);}continue;}
+    if(s.tool==="hl"){c.globalAlpha=.38;c.lineWidth=PSIZE.hl*sc;c.strokeStyle=s.color;c.lineCap="square";strokePath(c,pts,tr);c.globalAlpha=1;c.lineCap="round";continue;}
+    if(s.tool==="neon"){c.shadowColor=s.color;c.shadowBlur=18*sc;c.lineWidth=PSIZE.neon*sc;c.strokeStyle=s.color;strokePath(c,pts,tr);c.shadowBlur=0;c.lineWidth=3*sc;c.strokeStyle="rgba(255,255,255,.85)";strokePath(c,pts,tr);continue;}
+    c.lineWidth=PSIZE[s.tool]*sc;if(!erase)c.strokeStyle=s.color;strokePath(c,pts,tr);
   }
+  c.restore();
 }
-function pRedraw(){
-  pctx.fillStyle="#fff";pctx.fillRect(0,0,PS,PS);
+/* Fyllhinken: fyller området man trycker i (som det syns, båda lagren) i det lager man står i. Spegelvänt också. */
+function compose(dst,over){const x=dst.getContext("2d");x.fillStyle="#fff";x.fillRect(0,0,PS,PS);
+  if(PT.vis.bg)x.drawImage(over&&over.layer==="bg"?over.c:LAY.bg,0,0);if(PT.vis.fg)x.drawImage(over&&over.layer==="fg"?over.c:LAY.fg,0,0);}
+function floodFill(layer,sx,sy,hex){
+  sx=Math.round(sx);sy=Math.round(sy);if(sx<0||sy<0||sx>=PS||sy>=PS)return;
+  compose(COMP);const src=COMP.getContext("2d").getImageData(0,0,PS,PS).data,i0=(sy*PS+sx)*4,tr=src[i0],tg=src[i0+1],tb=src[i0+2];
+  const r=parseInt(hex.slice(1,3),16),g=parseInt(hex.slice(3,5),16),b=parseInt(hex.slice(5,7),16);
+  if(Math.abs(tr-r)+Math.abs(tg-g)+Math.abs(tb-b)<10)return;
+  const same=i=>Math.abs(src[i]-tr)+Math.abs(src[i+1]-tg)+Math.abs(src[i+2]-tb)<60;
+  const mask=new Uint8Array(PS*PS),st=[sx,sy];
+  while(st.length){const y=st.pop(),x0=st.pop();let x=x0;while(x>0&&!mask[y*PS+x-1]&&same((y*PS+x-1)*4))x--;
+    let up=false,dn=false;for(;x<PS&&!mask[y*PS+x]&&same((y*PS+x)*4);x++){mask[y*PS+x]=1;
+      if(y>0){const u=same(((y-1)*PS+x)*4)&&!mask[(y-1)*PS+x];if(u&&!up){st.push(x,y-1);up=true;}else if(!u)up=false;}
+      if(y<PS-1){const d=same(((y+1)*PS+x)*4)&&!mask[(y+1)*PS+x];if(d&&!dn){st.push(x,y+1);dn=true;}else if(!d)dn=false;}}}
+  const L=LAY[layer].getContext("2d"),img=L.getImageData(0,0,PS,PS),d=img.data;
+  for(let y=0;y<PS;y++)for(let x=0;x<PS;x++){const i=y*PS+x;
+    // ett pixels kant extra, så att det inte blir vita glipor mot konturen
+    if(mask[i]||(x>0&&mask[i-1])||(x<PS-1&&mask[i+1])||(y>0&&mask[i-PS])||(y<PS-1&&mask[i+PS])){const j=i*4;d[j]=r;d[j+1]=g;d[j+2]=b;d[j+3]=255;}}
+  L.putImageData(img,0,0);
+}
+function commit(s){
+  if(s.tool==="fill"){mirrors(s.pts[0][0],s.pts[0][1],s.mirror).forEach(([x,y])=>floodFill(s.layer,x,y,s.color));return;}
+  drawStroke(LAY[s.layer].getContext("2d"),s);
+}
+function resetLayers(){const b=LAY.bg.getContext("2d");b.fillStyle="#fff";b.fillRect(0,0,PS,PS);LAY.fg.getContext("2d").clearRect(0,0,PS,PS);}
+// visar duken: färdiga lager + strecket man håller på med
+function pRender(){
+  let over=null;
+  if(PT.cur&&PT.cur.tool!=="fill"){const t=TMP.getContext("2d");t.clearRect(0,0,PS,PS);t.drawImage(LAY[PT.cur.layer],0,0);drawStroke(t,PT.cur);over={layer:PT.cur.layer,c:TMP};}
+  compose(pcv,over);
   if(PT.test)drawTestFigure(pctx);
-  PT.strokes.forEach(s=>drawStroke(pctx,s));if(PT.cur)drawStroke(pctx,PT.cur);
-  // symmetrilinjerna i ett eget lager (följer inte med när bilden sparas)
   povx.clearRect(0,0,PS,PS);povx.strokeStyle="rgba(61,90,254,.55)";povx.lineWidth=3;povx.setLineDash([14,10]);
   const m=PT.test?"v":PT.mirror;
   if(m==="v"||m==="b"){povx.beginPath();povx.moveTo(PS/2,0);povx.lineTo(PS/2,PS);povx.stroke();}
   if(m==="h"||m==="b"){povx.beginPath();povx.moveTo(0,PS/2);povx.lineTo(PS,PS/2);povx.stroke();}
   povx.setLineDash([]);
   if(PT.test&&PT.test.shown)drawTestAnswer(povx);
-  renderPaintUI();
 }
+// ritar om allt från början (efter ångra, börja om och byte till/från Testa mig)
+function pRedraw(){resetLayers();PT.strokes.forEach(commit);pRender();renderPaintUI();}
+
+/* ---------- Verktyg och färger ---------- */
+function sample(t,c){
+  const cv=document.createElement("canvas");cv.width=96;cv.height=44;const x=cv.getContext("2d");
+  if(t==="erase"||t==="fill")return"";
+  const s={tool:t,color:c,mirror:"n",seed:7,layer:"fg",stamp:PT.stamp,pts:t==="line"||t==="rect"?[[14,10],[82,34]]:t==="circle"?[[48,22],[66,22]]:[[10,30],[26,14],[42,30],[58,14],[74,30],[86,18]]};
+  if(t==="stamp"){s.pts=[[48,22]];}
+  drawStroke(x,s,t==="stamp"?.95:.55);return cv.toDataURL();
+}
+function toolName(t){return(PBR.concat(PSH).find(b=>b.t===t)||{n:t==="stamp"?"Stämpel":t==="erase"?"Sudd":"Fyll"}).n;}
+function renderPaintUI(){
+  $("pMirror").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===PT.mirror));
+  const ic=PT.tool==="erase"?"🧽":PT.tool==="fill"?"🪣":`<img src="${sample(PT.tool,PT.color)}" alt="">`;
+  $("pBagBtn").innerHTML=`<span class="pbic">${ic}</span><span><b>Penselväska</b><small>${toolName(PT.tool)}</small></span>`;
+  $("ptools").querySelectorAll(".pq").forEach(b=>b.setAttribute("aria-pressed",b.dataset.t===PT.tool));
+  $("pLayers").querySelectorAll("[data-l]").forEach(b=>{b.setAttribute("aria-pressed",b.dataset.l===PT.layer);b.querySelector(".eye").textContent=PT.vis[b.dataset.l]?"👁️":"🙈";});
+  $("pColors").innerHTML=PCOL.map(c=>`<button data-c="${c}" style="--c:${c}" aria-label="Färg" aria-pressed="${PT.color.toUpperCase()===c}"></button>`).join("")+
+    `<label class="pcustom" aria-label="Egen färg" style="--c:${PCOL.includes(PT.color.toUpperCase())?"conic-gradient(red,orange,yellow,lime,cyan,blue,magenta,red)":PT.color}"><input type="color" id="pPick" value="${PT.color}"></label>`;
+  $("pUndo").disabled=!PT.strokes.length&&!PT.cleared;
+}
+function renderBag(){
+  const btn=(t,inner,n,extra)=>`<button data-t="${t}"${extra||""} aria-pressed="${PT.tool===t&&(!extra||PT.stamp===extra.match(/"(.*)"/)[1])}" aria-label="${n}">${inner}<small>${n}</small></button>`;
+  $("pBrushes").innerHTML=PBR.map(b=>btn(b.t,`<img src="${sample(b.t,PT.color)}" alt="">`,b.n)).join("");
+  $("pShapes").innerHTML=PSH.map(b=>btn(b.t,`<img src="${sample(b.t,PT.color)}" alt="">`,b.n)).join("");
+  $("pStamps").innerHTML=PSTAMP.map(s=>{const old=PT.stamp;PT.stamp=s;const im=sample("stamp",PT.color);PT.stamp=old;return`<button data-t="stamp" data-s="${s}" aria-pressed="${PT.tool==="stamp"&&PT.stamp===s}" aria-label="Stämpel"><img src="${im}" alt=""></button>`;}).join("");
+}
+$("pBagBtn").onclick=()=>{renderBag();$("pBag").hidden=!$("pBag").hidden;};
+$("pBag").onclick=e=>{
+  if(e.target===$("pBag")){$("pBag").hidden=true;return;}
+  const b=e.target.closest("[data-t]");if(!b)return;PT.tool=b.dataset.t;if(b.dataset.s)PT.stamp=b.dataset.s;
+  $("pBag").hidden=true;renderPaintUI();pSay(toolName(PT.tool)+"!");
+};
+$("ptools").addEventListener("click",e=>{const q=e.target.closest(".pq");if(q){PT.tool=q.dataset.t;renderPaintUI();}});
+$("pLayers").onclick=e=>{
+  const eye=e.target.closest(".eye"),b=e.target.closest("[data-l]");if(!b)return;
+  if(eye){PT.vis[b.dataset.l]=!PT.vis[b.dataset.l];pRender();renderPaintUI();return;}
+  PT.layer=b.dataset.l;PT.vis[PT.layer]=true;pRender();renderPaintUI();
+  pSay(PT.layer==="bg"?"Bakgrunden: måla himmel, mark eller färg bakom allt.":"Förgrunden: det du ritar hamnar framför bakgrunden.");
+};
+$("pColors").addEventListener("click",e=>{const b=e.target.closest("[data-c]");if(!b)return;PT.color=b.dataset.c;if(PT.tool==="erase")PT.tool="mid";renderPaintUI();});
+$("pColors").addEventListener("input",e=>{if(e.target.id==="pPick"){PT.color=e.target.value;if(PT.tool==="erase")PT.tool="mid";}});
+$("pColors").addEventListener("change",e=>{if(e.target.id==="pPick")renderPaintUI();});
+
+/* ---------- Pekare ---------- */
 function pPos(e){const r=pcv.getBoundingClientRect();return[(e.clientX-r.left)/r.width*PS,(e.clientY-r.top)/r.height*PS];}
 pov.addEventListener("pointerdown",e=>{
   e.preventDefault();try{pov.setPointerCapture(e.pointerId);}catch(_){}
   const p=pPos(e);if(PT.test&&PT.test.shown)return;
-  const tool=PT.test?"mid":PT.tool;
-  PT.cur={tool,color:PT.test?"#3D5AFE":PT.color,mirror:PT.test?"n":PT.mirror,stamp:PT.stamp,pts:[p],h0:Math.floor(Math.random()*360)};
-  if(tool==="stamp"){window.Ljud&&Ljud.pop&&Ljud.pop(PT.stamp*3);}
-  pRedraw();
+  const tool=PT.test?"mid":PT.tool,layer=PT.test?"fg":PT.layer;
+  if(!PT.test&&!PT.vis[layer]){PT.vis[layer]=true;renderPaintUI();}
+  PT.cur={tool,layer,color:PT.test?"#3D5AFE":PT.color,mirror:PT.test?"n":PT.mirror,stamp:PT.stamp,pts:[p],seed:Math.floor(Math.random()*1e9)};
+  if(tool==="fill"){const s=PT.cur;PT.cur=null;commit(s);PT.strokes.push(s);PT.cleared=null;pRender();renderPaintUI();window.Ljud&&Ljud.pop&&Ljud.pop(2);return;}
+  if(tool==="stamp")window.Ljud&&Ljud.pop&&Ljud.pop(4);
+  pRender();
 });
 pov.addEventListener("pointermove",e=>{
-  if(!PT.cur)return;const p=pPos(e),l=PT.cur.pts[PT.cur.pts.length-1];
-  if(PT.cur.tool==="stamp"){if(Math.hypot(p[0]-l[0],p[1]-l[1])>46)PT.cur.pts.push(p);}else if(Math.hypot(p[0]-l[0],p[1]-l[1])>2)PT.cur.pts.push(p);
-  pRedraw();
+  if(!PT.cur)return;const p=pPos(e),c=PT.cur,l=c.pts[c.pts.length-1];
+  if(c.tool==="line"||c.tool==="circle"||c.tool==="rect")c.pts=[c.pts[0],p];
+  else if(c.tool==="stamp"){if(Math.hypot(p[0]-l[0],p[1]-l[1])>48)c.pts.push(p);}
+  else if(Math.hypot(p[0]-l[0],p[1]-l[1])>2)c.pts.push(p);
+  pRender();
 });
-const pEnd=()=>{if(!PT.cur)return;PT.strokes.push(PT.cur);PT.cur=null;PT.cleared=null;pRedraw();
+const pEnd=()=>{if(!PT.cur)return;const s=PT.cur;PT.cur=null;commit(s);PT.strokes.push(s);PT.cleared=null;pRender();renderPaintUI();
   if(!PT.test&&PT.strokes.length===3)pSay(pickOne(["Titta, båda sidorna blir likadana!","Snyggt! Det blir symmetriskt.","Spegeln hänger med!"]));};
 pov.addEventListener("pointerup",pEnd);pov.addEventListener("pointercancel",pEnd);
-$("pMirror").onclick=e=>{const b=e.target.closest("[data-m]");if(!b||PT.test)return;PT.mirror=b.dataset.m;pRedraw();
+$("pMirror").onclick=e=>{const b=e.target.closest("[data-m]");if(!b||PT.test)return;PT.mirror=b.dataset.m;pRender();renderPaintUI();
   pSay(PT.mirror==="v"?"Lodrät spegel, som en fjäril.":PT.mirror==="h"?"Vågrät spegel, som en spegling i vatten.":"Två speglar: ett kalejdoskop!");};
-$("pBrush").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;if(b.dataset.t==="stamp"&&PT.tool==="stamp")PT.stamp=(PT.stamp+1)%STAMPS.length;PT.tool=b.dataset.t;renderPaintUI();};
-$("pColors").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;PT.color=b.dataset.c;if(PT.tool==="erase")PT.tool="mid";renderPaintUI();};
 $("pUndoT").onclick=()=>$("pUndo").onclick();
 $("pUndo").onclick=()=>{if(PT.strokes.length)PT.strokes.pop();else if(PT.cleared){PT.strokes=PT.cleared;PT.cleared=null;}pRedraw();};
 $("pClear").onclick=()=>{if(!PT.strokes.length)return;PT.cleared=PT.strokes;PT.strokes=[];pRedraw();pSay("Ny duk! Ångra om du ångrar dig.");};
