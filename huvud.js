@@ -89,7 +89,7 @@ body.mph-mini #quit{display:none}
 
   /* ---------- Bakåtknappen ---------- */
   const helskarm=(ds.helskarm||'').split(/\s+/).filter(Boolean);
-  const djup=id=>id==='home'||id==='menu'||id==='start'?0:['game','result','mem','bub','win','tug'].includes(id)?2:1;
+  const djup=id=>id==='home'||id==='menu'||id==='start'?0:['game','result','mem','bub','win','tug','paint'].includes(id)?2:1;
   const BACK=['#quit','[data-home]','#toolBack','#rModes','#rHome','#rChoose','#backMenu','#memQuit','#bubQuit','#wHome','#tugQuit','#tugBack','.back:not(a)'];
   const navOn=ds.nav!=='av';
   let cur={mp:'home',d:0,i:0},st=[0],ign=0,fix=null,popping=false;

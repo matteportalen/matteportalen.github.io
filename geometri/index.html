@@ -224,6 +224,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <p class="rsub" id="rSub"></p>
   <button class="go" id="rAgain">Spela igen</button>
   <button class="big" id="rHome">Välj något annat</button>
+  <button class="pbanner" id="rPaint" hidden style="margin-top:16px"><span class="pbi" aria-hidden="true"></span><span><b>🎨 Prova att spegelmåla!</b><small>Rita själv, och spegeln gör andra halvan symmetrisk.</small></span></button>
 </section>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -597,6 +598,7 @@ function openHome(){G=null;$("pBanner").querySelector(".pbi").innerHTML=ICON.spe
   $("areas").innerHTML=AREAS.map(a=>`<button class="acard" data-a="${a.id}" style="--c:${a.c}"><span class="ico">${ICON[a.id]}</span><b>${a.name}</b><small>${a.desc}</small><span class="ak">${a.ak}</span>${a.tool?'<small class="free">🎨 Fritt verktyg</small>':starHtml(data.stars[a.id]||0)}</button>`).join("");
   show("home");}
 $("pBanner").onclick=()=>openPaint();
+$("rPaint").onclick=()=>openPaint();
 $("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;start(AREAS.find(a=>a.id===b.dataset.a));};
 
 /* ---------- Uppläsning ---------- */
@@ -675,6 +677,8 @@ function finish(){
   if(st>(data.stars[id]||0)){data.stars[id]=st;save();}
   $("rTitle").textContent=st===3?"Alla rätt direkt!":st===2?"Bra jobbat!":"Klart!";
   $("rBig").innerHTML=starHtml(st);$("rSub").textContent=`${right} av ${ROUND} rätt på första försöket.`;
+  // efter Symmetri: en väg vidare till Spegelmåla
+  $("rPaint").hidden=G.area.id!=="symmetri";if(!$("rPaint").hidden)$("rPaint").querySelector(".pbi").innerHTML=ICON.spegel;
   show("result");if(st===3){window.Ljud&&Ljud.fanfare();confetti();}
 }
 $("rAgain").onclick=()=>start(G.area);$("rHome").onclick=openHome;
