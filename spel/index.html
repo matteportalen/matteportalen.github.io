@@ -79,7 +79,6 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .towerpad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .towerpad .okb{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.3rem}
 .tans{display:inline-block;min-width:1.6em;padding:0 .15em;border-radius:12px;border:3px solid var(--accent);color:var(--accent);background:#EEF1FF;line-height:1.1}
-.gamecard.skatt{background:linear-gradient(135deg,#17AFC4,#1D2B53);box-shadow:0 6px 0 #0E1735;margin-top:14px}
 .gamecard.kiosk{background:linear-gradient(135deg,#FF5FA2,#7B61FF);box-shadow:0 6px 0 #4B3AA8;margin-top:14px}
 .gamecard.jakt{background:linear-gradient(135deg,#2BB673,#1D2B53);box-shadow:0 6px 0 #0E1735;margin-top:14px;text-decoration:none}
 /* paradspelet högst upp */
@@ -88,7 +87,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gamecard.hero b{font-size:2rem}
 .gamecard .new{display:inline-block;background:#fff;color:#C96A0C;border-radius:999px;padding:0 10px;font-size:.85rem;font-weight:800;transform:rotate(-3deg);margin-bottom:4px}
 .gamecard.jakt:active{transform:translateY(3px)}
-.gamecard.skatt:active,.gamecard.kiosk:active{transform:translateY(3px)}
+.gamecard.kiosk:active{transform:translateY(3px)}
 .q{flex-wrap:wrap}
 .qnote{flex-basis:100%;font-size:.42em;line-height:1.2}
 /* Bubbeljakten */
@@ -186,7 +185,6 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
   <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Varje rätt svar bygger tornet högre. Kommer du ända upp till månen?</small></span></button>
-  <button class="gamecard skatt" id="btnSkatt"><span class="pic cards3">🏴‍☠️</span><span><b>Skattkartan</b><small>Svara rätt, gräv fram kistor och samla så många poäng du kan!</small></span></button>
   <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Kiosken</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
   <div class="soon">Fler spel kommer!</div>
 </div>
@@ -299,7 +297,6 @@ $("btnBub").onclick=()=>{game="bub";if(cat==="klocka")cat="plus10";renderChoose(
 $("memChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.memMode=b.dataset.m;save();renderChoose();};
 $("bubChips").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.bubFrom=b.dataset.f;save();renderChoose();};
 $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
-$("btnSkatt").onclick=()=>{game="skatt";renderChoose();showOnly("choose");};
 $("btnKiosk").onclick=()=>{game="kiosk";renderChoose();showOnly("choose");};
 $("btnTower").onclick=()=>{game="tower";if(cat==="klocka")cat="hundra";renderChoose();showOnly("choose");};
 $("btnFrog").onclick=()=>{game="frog";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
@@ -310,8 +307,8 @@ $("laneChips").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;dat
 $("backMenu").onclick=()=>showOnly("menu");
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function renderChoose(){
-  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="skatt"?(data.skatt=data.skatt||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):game==="bub"?(data.bubbel=data.bubbel||{}):(data.mem=data.mem||{});
-  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="skatt"?"Hissa seglen! ⛵":game==="kiosk"?"Öppna kiosken! 🏪":game==="bub"?"Börja poppa! 🫧":"Börja spela! 🃏";
+  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):game==="bub"?(data.bubbel=data.bubbel||{}):(data.mem=data.mem||{});
+  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="kiosk"?"Öppna kiosken! 🏪":game==="bub"?"Börja poppa! 🫧":"Börja spela! 🃏";
   $("frogOpt").hidden=game!=="frog";
   $("memOpt").hidden=game!=="mem";
   $("memChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.memMode||"solo")));
@@ -322,7 +319,7 @@ function renderChoose(){
   let list=CATS.filter(c=>(game==="mem"||!c.memOnly)&&!(rush&&c.noRush));
   if(game==="kiosk")list=[{id:"tiotal",name:"Priser upp till 20 kr",t:"20",c:"#FF9F43",desc:"Handla och räkna växel med små pengar"},{id:"hundra",name:"Priser upp till 100 kr",t:"100",c:"#17AFC4",desc:"Större summor och växel upp till 100 kr"}];
   if(!list.find(c=>c.id===cat))cat=list[0].id;
-  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&!["tower","kiosk"].includes(game)?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="skatt"||game==="bub"?"poäng":"rätt"}</small>`:""}${game==="bub"&&r&&r.bana?`<small>Klarat bana ${r.bana}</small>`:""}</button>`;}).join("");
+  $("cats").innerHTML=list.map(c=>{const r=store[c.id];return`<button class="cat" data-c="${c.id}" aria-pressed="${c.id===cat}" style="--c:${c.c}"><span class="t">${c.t}</span><b>${c.name}</b><small>${c.desc}</small>${starHtml(r?r.stars:0)}${r&&r.best&&!["tower","kiosk"].includes(game)?`<small>Rekord: ${r.best} ${game==="mem"?"drag":game==="bub"?"poäng":"rätt"}</small>`:""}${game==="bub"&&r&&r.bana?`<small>Klarat bana ${r.bana}</small>`:""}</button>`;}).join("");
   const C=CATS.find(c=>c.id===cat);$("tables").hidden=!C.tables;
   const bs=game==="bub"&&store[cat];$("bubOpt").hidden=!(bs&&bs.bana);
   if(bs&&bs.bana){const f=data.bubFrom==="cont"?"cont":"1";$("bubChips").innerHTML=`<button data-f="1" aria-pressed="${f==="1"}">Bana 1</button><button data-f="cont" aria-pressed="${f==="cont"}">Fortsätt på bana ${bs.bana+1}</button>`;}
@@ -334,7 +331,7 @@ function renderChoose(){
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;if(cat!==b.dataset.c)tables.clear();cat=b.dataset.c;renderChoose();};
 $("chips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;if(!t)tables.clear();else tables.has(t)?tables.delete(t):tables.add(t);renderChoose();};
 const owlResHtml=`<img src="${avSrc}" alt="" style="width:100%;display:block">`;
-const startCurrent=()=>{$("rOwl").innerHTML=owlResHtml;return game==="bub"?startBub():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="skatt"?startSkatt():game==="kiosk"?startKiosk():startMem();};
+const startCurrent=()=>{$("rOwl").innerHTML=owlResHtml;return game==="bub"?startBub():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="kiosk"?startKiosk():startMem();};
 $("btnStart").onclick=()=>{data.cat=cat;data.tables=[...tables];save();startCurrent();};
 
 /* ---------- Spelet ---------- */
@@ -344,7 +341,7 @@ let W=0,H=0,G=null,raf=0;
 function resize(){const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 window.addEventListener("resize",()=>{if(G)resize();});
 
-$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();showOnly("choose");renderChoose();};
+$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopKiosk();showOnly("choose");renderChoose();};
 $("rAgain").onclick=()=>startCurrent();
 $("rChoose").onclick=()=>{renderChoose();showOnly("choose");};
 
@@ -363,7 +360,7 @@ function carHud(){
 }
 function roadGeom(){const x0=W*.1,rw=W*.8,lw=rw/C.L;return{x0,rw,lw,cx:i=>x0+lw*(i+.5),carY:H*.8,carW:Math.min(lw*.7,74),signH:Math.min(H*.1,58)};}
 function startCar(){
-  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();
+  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();stopFrog();stopTower();stopKiosk();
   OPTN=data.lanes||3;
   $("carBtns").hidden=false;$("hint").textContent="Byt fil med pilarna. Vet du svaret? Tryck på 🚀 Turbo!";
   showOnly("game");resize();
@@ -484,7 +481,7 @@ function stopSpace(){if(A)A.over=true;cancelAnimationFrame(araf);A=null;$("space
 function spaceHud(){$("hearts").innerHTML=[0,1,2].map(i=>shield(i<A.shields)).join("");$("score").textContent=`${A.score} / ${GOAL}`;$("progFill").style.width=(A.score/GOAL*100)+"%";}
 const shipPos=()=>({x:W/2,y:H*.9});
 function startSpace(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
   OPTN=4;$("carBtns").hidden=true;$("spaceBtns").hidden=false;$("hint").textContent="Tryck på en sten för att sikta och skjuta, eller vrid kanonen och tryck Skjut!";
   showOnly("game");resize();
   A={shields:3,score:0,t:0,ang:0,rocks:[],shots:[],parts:[],stars:Array.from({length:70},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.4,tw:Math.random()*6})),
@@ -606,7 +603,7 @@ function stopFrog(){if(F)F.over=true;cancelAnimationFrame(fraf);F=null;window.Lj
 const ROWS=5;
 function frogGeom(){const top=H*.11,bot=H*.9,gap=(bot-top)/(ROWS+1);return{top,bot,gap,rowY:i=>bot-(i+1)*gap,padR:Math.min(W*.12,gap*.42,48)};}
 function startFrog(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
   OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("hint").textContent="Tryck på näckrosbladet med rätt svar. Fånga flugorna om du hinner!";
   showOnly("game");resize();
   F={lives:3,score:0,river:0,r:-1,t:0,rows:[],drift:data.frogMode==="strom",frog:{x:W/2,y:0,on:null},jump:null,sink:0,parts:[],glow:null,glowT:0,
@@ -763,7 +760,7 @@ let chirpT=0;
 function chirpLoop(){clearTimeout(chirpT);if(!T||T.over)return;const z=T.n;if(z>=5&&z<=11&&!document.hidden)window.Ljud&&Ljud.chirp();chirpT=setTimeout(chirpLoop,1800+Math.random()*2500);}
 function towerGeom(){const bh=Math.min(H*.085,44),bw=Math.min(W*.36,150),ground=H*.9,moonR=Math.min(W*.3,130);return{bh,bw,ground,moonR};}
 function startTower(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
   OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=false;$("game").classList.add("tower");
   $("hint").textContent="Skriv svaret och tryck OK. Varje rätt svar bygger tornet högre!";
   showOnly("game");resize();
@@ -784,7 +781,7 @@ function towerKey(k){
   else if(T.input.length<3)T.input+=k;
   towerQ();
 }
-const padGame=()=>T?towerKey:SK?skattKey:KI?kioskKey:null;
+const padGame=()=>T?towerKey:KI?kioskKey:null;
 $("towerPad").onclick=e=>{const b=e.target.closest("button"),f=padGame();if(b&&f)f(b.dataset.k);};
 document.addEventListener("keydown",e=>{const f=padGame();if(!f||$("game").hidden)return;if(/^\d$/.test(e.key))f(e.key);else if(e.key==="Backspace"){e.preventDefault();f("del");}else if(e.key==="Enter"){e.preventDefault();f("ok");}});
 function towerSubmit(){
@@ -879,7 +876,7 @@ function finishTower(){
   cancelAnimationFrame(traf);window.Ljud&&Ljud.space.stop();clearTimeout(chirpT);
   const st=T.miss===0?3:T.miss<=3?2:1,mi=T.miss;
   data.tower=data.tower||{};const r=data.tower[cat]||{stars:0};data.tower[cat]={stars:Math.max(r.stars||0,st)};data.towerPlayed=(data.towerPlayed||0)+1;data.towerWon=true;if(st===3)data.towerPerfect=true;save();
-  stopTower();stopSkatt();stopKiosk();
+  stopTower();stopKiosk();
   $("rTitle").textContent=st===3?"Ända till månen, utan ett enda fel!":"Du är på månen!";
   $("rBig").innerHTML=starHtml(st);
   $("rSub").textContent=`Tornet blev ${TGOAL} klossar högt.`+(mi?` ${mi} ${mi===1?"kloss":"klossar"} ramlade ner på vägen.`:"")+(st<3?" Utan några fel får du tre stjärnor.":"");
@@ -891,121 +888,8 @@ function prepPlay(hint,mode){
   $("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=mode!=="pad";
   $("game").classList.toggle("tower",mode==="pad");$("hint").textContent=hint;showOnly("game");resize();
 }
-function stopOthers(){if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopSkatt();stopKiosk();}
+function stopOthers(){if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();}
 const qBox=(pre,input,post,state)=>{$("q").innerHTML=`${pre}<span class="tans${state?" "+state:""}">${input||"?"}</span>${post||""}`;$("q").className="q"+(state==="ok"?" ok":state==="bad"?" bad":"");};
-
-/* ---------- Skattkartan ---------- */
-let SK=null,skraf=0;
-const ISL=10;
-function stopSkatt(){if(SK)SK.over=true;cancelAnimationFrame(skraf);SK=null;}
-function skPos(i){const gap=Math.min(H*.3,110);return{x:W*(i%2?.7:.3)+Math.sin(i*1.7)*W*.05,y:H*.78-i*gap};}
-function startSkatt(){
-  stopOthers();OPTN=3;prepPlay("Svara rätt så hittar du en kista. Tryck snabbt på kistan för att öppna den!","pad");
-  SK={i:0,right:0,pts:0,chests:0,bonusN:0,input:"",sail:null,chest:null,pops:[],cam:0,t:0,parts:[],over:false,done:false,last:performance.now()};
-  skTask();skraf=requestAnimationFrame(skFrame);
-}
-function skHud(){$("hearts").textContent=`💰 ${SK.pts} poäng`;$("score").textContent=`Ö ${Math.min(SK.i+1,ISL)} / ${ISL}`;$("progFill").style.width=(SK.i/ISL*100)+"%";}
-function skTask(){SK.task=gen();SK.input="";SK.busy=false;qBox(SK.task.q+"<span>=</span>","");skHud();}
-function skattKey(k){
-  if(!SK||SK.over)return;
-  if(SK.chest&&SK.chest.phase==="tap"){if(k==="ok")chestTap();return;}
-  if(SK.busy)return;
-  if(k==="del")SK.input=SK.input.slice(0,-1);else if(k==="ok"){if(SK.input!=="")skSubmit();return;}else if(SK.input.length<3)SK.input+=k;qBox(SK.task.q+"<span>=</span>",SK.input);
-}
-function sailOn(){if(!SK||SK.over)return;SK.sail={t:0,from:SK.i};window.Ljud&&Ljud.whoosh();}
-function skSubmit(){
-  SK.busy=true;const ok=+SK.input===SK.task.a,p=skPos(SK.i);
-  if(ok){
-    SK.right++;qBox(SK.task.q+"<span>=</span>",SK.input,"","ok");window.Ljud&&Ljud.ok();
-    const gold=Math.random()<.22;
-    SK.chest={phase:"dig",t:0,taps:0,need:5,gold,bonus:gold?pickOne([5,10]):0,x:p.x-10,y:p.y-2,wob:0};
-    setTimeout(()=>{if(!SK||!SK.chest)return;SK.chest.phase="tap";SK.chest.t=0;$("q").innerHTML=`Tryck på ${SK.chest.gold?"guldkistan":"kistan"}! <span class="qnote">Snabbt, fem gånger!</span>`;$("q").className="q ok";},700);
-  }else{
-    window.Ljud&&Ljud.splash();qBox(SK.task.q+"<span>=</span>",SK.input,"","bad");
-    for(let i=0;i<20;i++)SK.parts.push({x:p.x,y:p.y+SK.cam,vx:(Math.random()-.5)*240,vy:-Math.random()*220,life:.8,c:pickOne(["#E6C06E","#F2D48A"])});
-    setTimeout(()=>{if(!SK)return;$("q").innerHTML=SK.task.q+`<span>= ${SK.task.a}</span><span class="qnote">Ingen kista här. 😢</span>`;$("q").className="q bad";},500);
-    setTimeout(sailOn,2300);
-  }
-}
-function chestTap(){
-  const c=SK&&SK.chest;if(!c||c.phase!=="tap")return;
-  c.taps++;c.wob=.25;window.Ljud&&Ljud.clonk();
-  for(let i=0;i<6;i++)SK.parts.push({x:c.x,y:c.y+SK.cam,vx:(Math.random()-.5)*180,vy:-Math.random()*160,life:.5,c:"#C99A6B"});
-  if(c.taps>=c.need){
-    c.phase="open";const fast=c.t<=2?2:0,got=5+fast+c.bonus;SK.pts+=got;SK.chests++;if(c.gold)SK.bonusN++;
-    c.got=got;c.fast=fast;c.t=0;window.Ljud&&(c.gold?Ljud.magic():Ljud.kaching());
-    SK.pops.push({txt:`+${got}`,x:c.x,y:c.y-30,t:0});
-    for(let i=0;i<(c.gold?40:22);i++)SK.parts.push({x:c.x,y:c.y+SK.cam-10,vx:(Math.random()-.5)*260,vy:-120-Math.random()*220,life:1,c:"#FFC93C",coin:true});
-    $("q").innerHTML=`+${got} poäng!<span class="qnote">${["Kistan: 5",fast?"snabbt: +2":"",c.bonus?`guldbonus: +${c.bonus}`:""].filter(Boolean).join(" · ")}</span>`;$("q").className="q ok";skHud();
-    setTimeout(()=>{if(!SK)return;SK.chest=null;sailOn();},1500);
-  }
-}
-cv.addEventListener("pointerdown",e=>{if(!SK||!SK.chest||SK.chest.phase!=="tap")return;e.preventDefault();chestTap();});
-document.addEventListener("keydown",e=>{if(!SK||!SK.chest||SK.chest.phase!=="tap")return;if(e.key===" "){e.preventDefault();chestTap();}});
-function skFrame(now){
-  if(!SK)return;const dt=Math.min(.05,(now-SK.last)/1000);SK.last=now;SK.t+=dt;
-  if(SK.chest){SK.chest.t+=dt;SK.chest.wob=Math.max(0,SK.chest.wob-dt);}
-  if(SK.sail){SK.sail.t+=dt;if(SK.sail.t>=1.3){SK.i++;SK.sail=null;skHud();
-    if(SK.i>=ISL){SK.over=true;SK.done=true;SK.doneT=0;window.Ljud&&Ljud.fanfare();$("q").innerHTML=`Du samlade ${SK.pts} poäng! 💰`;$("q").className="q ok";setTimeout(finishSkatt,2800);}
-    else skTask();}}
-  if(SK.done){SK.doneT+=dt;if(Math.random()<.5)SK.parts.push({x:skPos(ISL).x,y:skPos(ISL).y+SK.cam-10,vx:(Math.random()-.5)*220,vy:-120-Math.random()*200,life:1,c:"#FFC93C",coin:true});}
-  SK.pops.forEach(p=>p.t+=dt);SK.pops=SK.pops.filter(p=>p.t<1.2);
-  const shipI=SK.sail?SK.sail.from+Math.min(1,SK.sail.t/1.3):SK.i,target=Math.max(0,H*.6-(H*.78-shipI*Math.min(H*.3,110)));SK.cam+=(target-SK.cam)*Math.min(1,dt*3);
-  SK.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=320*dt;p.life-=dt;});SK.parts=SK.parts.filter(p=>p.life>0);
-  drawSkatt(shipI);skraf=requestAnimationFrame(skFrame);
-}
-function drawChest(c,cam){
-  const x=c.x,y=c.y+cam,rise=c.phase==="dig"?Math.min(1,c.t/.6):1,w=54,h=36,shake=c.wob?Math.sin(c.wob*80)*4:0;
-  // grävd grop
-  ctx.fillStyle="#C99A6B";ctx.beginPath();ctx.ellipse(x,y+6,40,11,0,0,7);ctx.fill();
-  ctx.save();ctx.translate(x+shake,y+6-h*rise);ctx.beginPath();ctx.rect(-w,-40,w*2,h+40);ctx.clip();
-  const body=c.gold?"#F2C230":"#8A5A2B",lid=c.gold?"#FFD95A":"#A86F36",band=c.gold?"#C99A0A":"#5E3F1E";
-  ctx.fillStyle=body;ctx.fillRect(-w/2,0,w,h);ctx.fillStyle=band;ctx.fillRect(-w/2,h*.35,w,4);ctx.fillRect(-3,0,6,h);
-  const open=c.phase==="open"?Math.min(1,c.t*3):0;
-  ctx.save();ctx.translate(-w/2,0);ctx.rotate(-open*1.1);ctx.fillStyle=lid;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(w,0);ctx.lineTo(w,-12);ctx.quadraticCurveTo(w/2,-26,0,-12);ctx.closePath();ctx.fill();ctx.restore();
-  if(open>.3){ctx.fillStyle="#FFE58A";ctx.beginPath();ctx.arc(0,-2,9,0,7);ctx.fill();}
-  if(!open){ctx.fillStyle="#FFC93C";ctx.fillRect(-6,h*.2,12,12);}
-  ctx.restore();
-  if(c.gold&&!open){for(let i=0;i<3;i++){const a=SK.t*3+i*2.1;ctx.fillStyle="#FFF4CC";ctx.beginPath();ctx.arc(x+Math.cos(a)*30,y-10+Math.sin(a)*14,2.5,0,7);ctx.fill();}}
-  if(c.phase==="tap"){
-    const pulse=1+Math.sin(SK.t*10)*.06;ctx.save();ctx.translate(x,y-h-34);ctx.scale(pulse,pulse);
-    ctx.fillStyle="rgba(29,43,83,.85)";ctx.beginPath();ctx.ellipse(0,0,40,14,0,0,7);ctx.fill();ctx.fillStyle="#fff";ctx.font='800 15px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("Tryck! 👆",0,1);ctx.restore();
-    for(let i=0;i<c.need;i++){ctx.fillStyle=i<c.taps?"#FFC93C":"rgba(255,255,255,.8)";ctx.strokeStyle="#1D2B53";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(x-32+i*16,y+24,6.5,0,7);ctx.fill();ctx.stroke();}
-  }
-}
-function drawSkatt(shipI){
-  if(!W)return;const cam=SK.cam;
-  const sea=ctx.createLinearGradient(0,0,0,H);sea.addColorStop(0,"#2F8FD8");sea.addColorStop(1,"#5EB8FF");ctx.fillStyle=sea;ctx.fillRect(0,0,W,H);
-  ctx.strokeStyle="rgba(255,255,255,.3)";ctx.lineWidth=2;for(let i=0;i<16;i++){const y=((i*47+SK.t*10)%(H+40))-20,x=(i*89)%W;ctx.beginPath();ctx.moveTo(x,y);ctx.quadraticCurveTo(x+10,y-5,x+20,y);ctx.quadraticCurveTo(x+30,y+5,x+40,y);ctx.stroke();}
-  ctx.strokeStyle="#E5484D";ctx.lineWidth=3;ctx.setLineDash([8,8]);ctx.beginPath();
-  for(let i=0;i<=ISL;i++){const p=skPos(i);i?ctx.lineTo(p.x,p.y+cam):ctx.moveTo(p.x,p.y+cam);}ctx.stroke();ctx.setLineDash([]);
-  for(let i=0;i<=ISL;i++){const p=skPos(i),y=p.y+cam;if(y<-60||y>H+60)continue;const R=i===ISL?38:30;
-    ctx.fillStyle="#F2D48A";ctx.beginPath();ctx.ellipse(p.x,y,R,R*.55,0,0,7);ctx.fill();ctx.fillStyle="#E6C06E";ctx.beginPath();ctx.ellipse(p.x,y+R*.12,R*.8,R*.35,0,0,7);ctx.fill();
-    if(i<ISL){ctx.strokeStyle="#8A5A2B";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(p.x+16,y);ctx.quadraticCurveTo(p.x+20,y-18,p.x+14,y-30);ctx.stroke();ctx.fillStyle="#2BB673";
-      [-1,1,-.3,.4].forEach(k=>{ctx.beginPath();ctx.ellipse(p.x+14+k*10,y-32,12,4,k*.6,0,7);ctx.fill();});}
-    else{ctx.strokeStyle="#E5484D";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(p.x-10,y-10);ctx.lineTo(p.x+10,y+6);ctx.moveTo(p.x+10,y-10);ctx.lineTo(p.x-10,y+6);ctx.stroke();}}
-  if(SK.chest)drawChest(SK.chest,cam);
-  let sp;if(SK.sail){const a=skPos(SK.sail.from),b=skPos(SK.sail.from+1),t=Math.min(1,SK.sail.t/1.3),e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;sp={x:a.x+(b.x-a.x)*e,y:a.y+(b.y-a.y)*e};}else sp=skPos(SK.i);
-  const side=sp.x>W/2?-1:1,sx=sp.x+(SK.sail?0:side*(W*.2)),sy=sp.y+cam+(SK.sail?0:10)+Math.sin(SK.t*3)*2;
-  ctx.save();ctx.translate(sx,sy);ctx.rotate(Math.sin(SK.t*2)*.05);
-  ctx.fillStyle="#8A5A2B";ctx.beginPath();ctx.moveTo(-26,0);ctx.lineTo(26,0);ctx.lineTo(18,12);ctx.lineTo(-18,12);ctx.closePath();ctx.fill();
-  ctx.strokeStyle="#5E3F1E";ctx.lineWidth=3;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(0,-40);ctx.stroke();
-  ctx.fillStyle="#fff";ctx.beginPath();ctx.moveTo(2,-38);ctx.quadraticCurveTo(22,-22,2,-6);ctx.closePath();ctx.fill();ctx.fillStyle="#1D2B53";ctx.fillRect(0,-44,12,6);
-  if(avImg.complete)ctx.drawImage(avImg,-24,-26,20,23);
-  ctx.restore();
-  SK.pops.forEach(p=>{ctx.globalAlpha=Math.max(0,1-p.t/1.2);ctx.fillStyle="#FFC93C";ctx.strokeStyle="#1D2B53";ctx.lineWidth=4;ctx.font='800 28px "Baloo 2", system-ui, sans-serif';ctx.textAlign="center";ctx.textBaseline="middle";
-    const y=p.y+cam-p.t*40;ctx.strokeText(p.txt,p.x,y);ctx.fillText(p.txt,p.x,y);});ctx.globalAlpha=1;
-  SK.parts.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life);ctx.fillStyle=p.c;ctx.beginPath();p.coin?ctx.ellipse(p.x,p.y,5,5*Math.abs(Math.sin(SK.t*8+p.x))+.5,0,0,7):ctx.arc(p.x,p.y,3.5,0,7);ctx.fill();});ctx.globalAlpha=1;
-}
-function finishSkatt(){
-  cancelAnimationFrame(skraf);const r=SK.right,pts=SK.pts,st=r===ISL?3:r>=ISL-2?2:1,ch=SK.chests,gb=SK.bonusN;
-  data.skatt=data.skatt||{};const old=data.skatt[cat]||{stars:0,best:0},rec=pts>(old.best||0);
-  data.skatt[cat]={stars:Math.max(old.stars||0,st),best:Math.max(old.best||0,pts)};data.skattWon=true;if(st===3)data.skattPerfect=true;save();
-  stopSkatt();$("rTitle").textContent=rec&&old.best?"Nytt rekord!":st===3?"Alla kistor hittade!":"Skattjakten är klar!";
-  $("rBig").innerHTML=`${pts} poäng<div style="font-size:.5em">${starHtml(st)}</div>`;
-  $("rSub").textContent=`Du hittade ${ch} av ${ISL} kistor`+(gb?`, varav ${gb} ${gb===1?"guldkista":"guldkistor"}`:"")+"."+(rec&&old.best?` Förra rekordet var ${old.best} poäng.`:!rec&&old.best?` Ditt rekord är ${old.best} poäng.`:"");
-  showOnly("result");confetti();
-}
 
 /* ---------- Ugglans kiosk ---------- */
 let KI=null,kiraf=0;
