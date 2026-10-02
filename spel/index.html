@@ -126,6 +126,41 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .bubmsg .box{background:var(--card);border-radius:22px;padding:18px;max-width:340px;width:100%;text-align:center;box-shadow:0 6px 0 rgba(29,43,83,.3)}
 .bubmsg h3{font-size:1.9rem;margin:0;line-height:1.1}
 .bubmsg p{margin:6px 0 0;color:var(--muted);font-weight:700}
+/* Spel för två: Memory och Dragkampen bredvid varandra */
+.pairrow{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.pairrow .gamecard{margin-top:0;flex-direction:column;align-items:flex-start;gap:6px;position:relative;padding:14px 12px}
+.pairrow .gamecard .pic{width:auto;font-size:2.8rem;text-align:left}
+.pairrow .gamecard b{font-size:1.35rem}
+.pairrow .gamecard small{font-size:.92rem}
+.gamecard .pair{position:absolute;top:10px;right:10px;background:#fff;border-radius:999px;padding:1px 9px;font-size:1.25rem;box-shadow:0 2px 0 rgba(29,43,83,.25)}
+.gamecard.tugc{background:linear-gradient(135deg,#FF9F43,#E5484D);box-shadow:0 6px 0 #B8323A}
+.gamecard.tugc:active{transform:translateY(3px);box-shadow:0 3px 0 #B8323A}
+/* Dragkampen */
+.tug{position:fixed;inset:0;z-index:6;background:var(--bg);display:grid;gap:8px;padding:8px;padding-top:calc(8px + env(safe-area-inset-top,0px));padding-bottom:calc(8px + env(safe-area-inset-bottom,0px))}
+.tug.side{grid-template-areas:"arena arena" "p1 p2";grid-template-rows:minmax(150px,36%) 1fr;grid-template-columns:1fr 1fr}
+@media (orientation:landscape){.tug.side{grid-template-areas:"p1 arena p2";grid-template-rows:1fr;grid-template-columns:1fr 1.25fr 1fr}}
+.tug.face{grid-template-areas:"p2" "arena" "p1";grid-template-rows:1fr minmax(120px,24%) 1fr;grid-template-columns:1fr}
+.tug.face #tp2{transform:rotate(180deg)}
+.tarena{grid-area:arena;position:relative;border-radius:18px;overflow:hidden;box-shadow:0 4px 0 var(--line);min-height:0}
+#tcv{width:100%;height:100%;display:block}
+.tarena .quit{position:absolute;left:8px;top:8px;width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-size:1.2rem;font-weight:800}
+#tp1{grid-area:p1}#tp2{grid-area:p2}
+.tpanel{background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:8px;display:flex;flex-direction:column;gap:6px;min-height:0;user-select:none;-webkit-user-select:none}
+.tpanel .thead{display:flex;align-items:center;gap:6px;font-weight:800}
+.tpanel .thead img{width:30px;height:auto}
+.tpanel .tcount{margin-left:auto;color:var(--muted);font-size:.95rem}
+.ttask{font-weight:800;font-size:clamp(1.4rem,5.5vmin,2.4rem);text-align:center;line-height:1.1;display:flex;align-items:center;justify-content:center;gap:.25em;min-height:1.4em}
+.tans{text-align:center;font-weight:800;font-size:clamp(1.3rem,5vmin,2.2rem);border-radius:12px;border:3px solid var(--accent);color:var(--accent);background:#EEF1FF;line-height:1.25;min-height:1.4em}
+.tans.empty{color:#B4C0D8}.tans.ok{border-color:var(--good);color:var(--good-dark);background:#DDF5E7}.tans.bad{border-color:var(--bad);color:var(--bad);background:#FDE4E4;font-size:clamp(1rem,3.8vmin,1.6rem)}
+.tkeys{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:1;min-height:0}
+.tkeys button{border-radius:12px;background:var(--bg);font-size:clamp(1.3rem,5vmin,2rem);font-weight:800;box-shadow:0 3px 0 var(--line);min-height:42px;touch-action:none}
+.tkeys button.down{transform:translateY(3px);box-shadow:0 0 0 var(--line);background:#DCE6FA}
+.tpanel.bot .tkeys{opacity:.45;pointer-events:none}
+.tmsg{position:fixed;inset:0;z-index:8;display:grid;place-items:center;background:rgba(29,43,83,.45);padding:16px}
+.tmsg .box{background:var(--card);border-radius:22px;padding:18px;max-width:360px;width:100%;text-align:center;box-shadow:0 6px 0 rgba(29,43,83,.3)}
+.tmsg h3{margin:0;font-size:1.8rem;line-height:1.15;display:flex;align-items:center;justify-content:center;gap:8px}.tmsg h3 img{width:54px}
+.tmsg p{color:var(--muted);font-weight:700;margin:6px 0 0}
+.stars.big{font-size:2rem;margin-top:6px}
 /* Memory */
 .memtop{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 12px}
 .memtop .quit{width:42px;height:42px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-size:1.2rem;font-weight:800}
@@ -195,8 +230,11 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <p class="lead">Spela och räkna samtidigt!</p>
   <button class="gamecard bub" id="btnBub"><span class="pic cards3">🫧</span><span><span class="new">Nytt!</span><b>Bubbeljakten</b><small>Sikta och skjut uppgiften mot bubblan med rätt svar. Poppa hela planen!</small></span></button>
   <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Svara rätt, släpp balken från lyftkranen och bygg ända till månen. Prick rakt, annars rasar tornet!</small></span></button>
-  <a class="gamecard jakt hero" href="skattjakten/"><span class="pic cards3">🗝️</span><span><span class="new">Nytt!</span><b>Skattjakten</b><small>Utforska labyrinten, lös hindrens textuppgifter och fyll skattkammaren!</small></span></a>
-  <button class="gamecard mem" id="btnMem"><span class="pic cards3">🃏</span><span><b>Memory</b><small>Vänd korten och hitta paren: uppgiften och svaret.</small></span></button>
+  <a class="gamecard jakt" href="skattjakten/"><span class="pic cards3">🗝️</span><span><span class="new">Nytt!</span><b>Skattjakten</b><small>Utforska labyrinten, lös hindrens textuppgifter och fyll skattkammaren!</small></span></a>
+  <div class="pairrow">
+    <button class="gamecard mem" id="btnMem"><span class="pair" title="Kan spelas två och två">🤝</span><span class="pic cards3">🃏</span><span><b>Memory</b><small>Hitta paren. Själv eller mot en vän.</small></span></button>
+    <button class="gamecard tugc" id="btnTug"><span class="pair" title="Kan spelas två och två">🤝</span><span class="pic cards3">💪</span><span><span class="new">Nytt!</span><b>Dragkampen</b><small>Räkna snabbast och dra repet! Mot en vän eller Roboten.</small></span></button>
+  </div>
   <button class="gamecard car" id="btnCar"><span class="pic cards3">🏎️</span><span><b>Racerbanan</b><small>Tävla mot tre bilar! Kör under bågen med rätt svar, undvik hinder och plocka mynt till garaget.</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
@@ -243,6 +281,24 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   </div>
 </div>
 
+<div class="wrap" id="tugSetup" hidden>
+  <button class="back" id="tugBack">← Tillbaka</button>
+  <h2>💪 Dragkampen</h2>
+  <p class="lead">Svara rätt och snabbt, så drar ditt djur repet ett snäpp. Först till 5 snäpp vinner, och den andra hamnar i leran!</p>
+  <div class="laneopt"><p>Vem tävlar du mot?</p><div class="chips" id="tugMode"></div><p class="tstars" id="tugStars" style="font-weight:700;color:var(--muted);margin:8px 0 0"></p></div>
+  <div class="laneopt" id="tugLayoutOpt"><p>Hur sitter ni?</p><div class="chips" id="tugLayout"></div></div>
+  <div class="laneopt"><p id="tugP1t">Spelare 1 räknar med</p><div class="chips" id="tugC1"></div></div>
+  <div class="laneopt" id="tugC2opt"><p>Spelare 2 räknar med</p><div class="chips" id="tugC2"></div></div>
+  <button class="go" id="tugStart">Dra! 💪</button>
+</div>
+
+<div id="tug" class="tug side" hidden>
+  <div class="tpanel" id="tp2"></div>
+  <div class="tarena"><canvas id="tcv" aria-label="Dragkampen"></canvas><button class="quit" id="tugQuit" aria-label="Avsluta">✕</button></div>
+  <div class="tpanel" id="tp1"></div>
+</div>
+<div class="tmsg" id="tugMsg" hidden><div class="box"><h3 id="tugMsgT"></h3><p id="tugMsgS"></p><button class="go" id="tugAgain">Spela igen</button><button class="rowbtn" id="tugMenu">Byt inställningar</button></div></div>
+
 <div class="wrap result" id="result" hidden>
   <div id="rOwl" style="width:130px;margin:0 auto"></div>
   <h2 id="rTitle"></h2>
@@ -255,7 +311,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
-<script src="../huvud.js" data-titel="Spelhörnan" data-ikon="🎮" data-helskarm="game mem bub"></script>
+<script src="../huvud.js" data-titel="Spelhörnan" data-ikon="🎮" data-helskarm="game mem bub tug"></script>
 <script>
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -311,7 +367,7 @@ function gen(){
 }
 
 /* ---------- Menyer ---------- */
-function showOnly(id){["menu","choose","game","mem","result","bub"].forEach(x=>$(x).hidden=x!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+function showOnly(id){["menu","choose","game","mem","result","bub","tugSetup","tug"].forEach(x=>$(x).hidden=x!==id);if(id!=="tug")$("tugMsg").hidden=true;window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 $("btnBub").onclick=()=>{game="bub";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("memChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.memMode=b.dataset.m;save();renderChoose();};
 $("bubChips").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.bubFrom=b.dataset.f;save();renderChoose();};
@@ -1310,6 +1366,139 @@ function finishMem(){
   $("rBig").innerHTML=starHtml(st);
   $("rSub").textContent=`Du hittade alla ${PAIRS} par på ${mv} drag.`+(rec&&r.best?" Nytt rekord!":r.best&&!rec?` Ditt rekord är ${r.best} drag.`:"")+(st<3?` Klarar du det på ${PAIRS+3} drag får du tre stjärnor.`:"");
   showOnly("result");window.Ljud&&Ljud.fanfare();if(st===3||rec)confetti();
+}
+
+/* ---------- Dragkampen ----------
+   Två spelare (eller en mot Roboten) drar i ett rep. Varje spelare har egen uppgift och egen sifferknappsats.
+   Svaret skickas när man skrivit lika många siffror som svaret har. Rätt svar drar repet ett snäpp åt sitt håll.
+   Först till 5 snäpp vinner, och den andra glider ner i lerpölen i mitten.
+   Varje spelare väljer eget räknesätt, så att olika åldrar kan mötas. Stjärnor bara mot Roboten (lätt 1, mellan 2, svår 3). */
+const TUGWIN=5;
+const TUGBOT={latt:{name:"Lätt",min:5.5,max:8.5,ok:.72,st:1},mellan:{name:"Mellan",min:3.8,max:5.8,ok:.85,st:2},svar:{name:"Svår",min:2.4,max:3.8,ok:.94,st:3}};
+const TUGCATS=CATS.filter(c=>!c.memOnly);
+let TG=null,tgraf=0;
+const tcv=$("tcv"),tx=tcv.getContext("2d");
+function tugCfg(){data.tugCfg=Object.assign({mode:"vs",layout:"side",c1:"plus10",c2:"plus10"},data.tugCfg||{});return data.tugCfg;}
+function renderTugSetup(){
+  const c=tugCfg(),bot=c.mode!=="vs";
+  $("tugMode").innerHTML=`<button data-m="vs" aria-pressed="${c.mode==="vs"}">🤝 Mot en vän</button>`+Object.entries(TUGBOT).map(([k,b])=>`<button data-m="${k}" aria-pressed="${c.mode===k}">🤖 Roboten: ${b.name}</button>`).join("");
+  $("tugLayoutOpt").hidden=bot;
+  $("tugLayout").innerHTML=`<button data-l="side" aria-pressed="${c.layout==="side"}">Bredvid varandra</button><button data-l="face" aria-pressed="${c.layout==="face"}">Mitt emot (surfplatta på bordet)</button>`;
+  const chips=(sel,cur)=>TUGCATS.map(k=>`<button data-c="${k.id}" aria-pressed="${cur===k.id}">${k.t} ${k.name.replace("Multiplikation","Gånger (alla tabeller)").replace("Division","Delat (alla tabeller)")}</button>`).join("");
+  $("tugP1t").textContent=bot?"Du räknar med":"Spelare 1 räknar med";$("tugC1").innerHTML=chips("c1",c.c1);
+  $("tugC2opt").hidden=bot;$("tugC2").innerHTML=chips("c2",c.c2);
+  const r=(data.tug||{}).robot;$("tugStars").innerHTML=r&&r.stars?`Mot Roboten: ${starHtml(r.stars)}`:"Vinn mot Roboten för att få stjärnor: Lätt ger en, Mellan två och Svår tre.";
+}
+$("tugMode").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;tugCfg().mode=b.dataset.m;save();renderTugSetup();};
+$("tugLayout").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;tugCfg().layout=b.dataset.l;save();renderTugSetup();};
+$("tugC1").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;tugCfg().c1=b.dataset.c;save();renderTugSetup();};
+$("tugC2").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;tugCfg().c2=b.dataset.c;save();renderTugSetup();};
+$("btnTug").onclick=()=>{renderTugSetup();showOnly("tugSetup");};
+$("tugBack").onclick=()=>showOnly("menu");
+$("tugStart").onclick=startTug;
+$("tugQuit").onclick=()=>{stopTug();renderTugSetup();showOnly("tugSetup");};
+$("tugAgain").onclick=startTug;
+$("tugMenu").onclick=()=>{stopTug();renderTugSetup();showOnly("tugSetup");};
+
+// en uppgift i ett visst räknesätt (alla tabeller i multiplikation och division)
+function genFor(c){const oc=cat,ot=tables;cat=c;tables=new Set();const t=gen();cat=oc;tables=ot;return t;}
+function stopTug(){if(TG){TG.over=true;clearTimeout(TG.botT);TG.tm.forEach(clearTimeout);}cancelAnimationFrame(tgraf);TG=null;}
+const tgLater=(f,ms)=>{const g=TG;const id=setTimeout(()=>{if(TG===g&&!g.over)f();},ms);g.tm.push(id);};
+function startTug(){
+  stopTug();const c=tugCfg(),bot=c.mode!=="vs";
+  const mine=owlCfg.animal||"uggla";
+  if(!bot&&(!memFriend||memFriend===mine))memFriend=pickOne(Object.keys(PETNAME).filter(a=>a!==mine&&a!=="robot"));
+  const oth=bot?"robot":memFriend,othImg=new Image();
+  othImg.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG({animal:oth,color:"natur",glasses:"ingen",hat:"ingen",neck:"ingen"},"",true));
+  TG={pull:0,shown:0,over:false,won:null,bot,botCfg:TUGBOT[c.mode],tm:[],t:0,parts:[],last:performance.now(),endT:0,
+      P:[{name:PETNAME[mine]||"Ugglan",img:avImg,src:avSrc,cat:c.c1,task:null,input:"",busy:false,lean:0,right:0},
+         {name:bot?"Roboten":PETNAME[oth],img:othImg,src:othImg.src,cat:bot?c.c1:c.c2,task:null,input:"",busy:false,lean:0,right:0}]};
+  $("tug").className="tug "+(bot?"side":c.layout);
+  [0,1].forEach(i=>{const P=TG.P[i],el=$("tp"+(i+1));
+    el.innerHTML=`<div class="thead"><img src="${P.src}" alt=""><b>${P.name}</b><span class="tcount" id="tcount${i}"></span></div><div class="ttask" id="ttask${i}"></div><div class="tans" id="tans${i}"></div>
+      <div class="tkeys" data-p="${i}">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-k="${n}">${n}</button>`).join("")}<button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><span></span></div>`;
+    el.classList.toggle("bot",bot&&i===1);});
+  $("tugMsg").hidden=true;showOnly("tug");tugResize();
+  [0,1].forEach(i=>tugTask(i));
+  cancelAnimationFrame(tgraf);tgraf=requestAnimationFrame(tugFrame);
+}
+function tugTask(i){
+  const P=TG.P[i];P.task=genFor(P.cat);P.input="";P.busy=false;
+  $("ttask"+i).innerHTML=P.task.q+" =";tugAns(i);
+  if(TG.bot&&i===1)tugBotPlan();
+}
+function tugAns(i,state){const P=TG.P[i],a=$("tans"+i);a.textContent=P.input||"?";a.className="tans"+(state?" "+state:"")+(P.input?"":" empty");$("tcount"+i).textContent="💪 "+P.right;}
+function tugKey(i,k){
+  if(!TG||TG.over||TG.won!=null)return;const P=TG.P[i];if(P.busy||(TG.bot&&i===1))return;
+  if(k==="del"){P.input=P.input.slice(0,-1);tugAns(i);return;}
+  if(P.input.length>=3)return;P.input+=k;tugAns(i);
+  if(P.input.length>=String(P.task.a).length)tugCheck(i);
+}
+function tugCheck(i){
+  const P=TG.P[i];P.busy=true;
+  if(+P.input===P.task.a){P.right++;tugAns(i,"ok");tugPull(i);tgLater(()=>tugTask(i),350);}
+  else{window.Ljud&&Ljud.bad();tugAns(i,"bad");$("tans"+i).textContent=`${P.input} – rätt är ${P.task.a}`;tgLater(()=>tugTask(i),1300);}
+}
+function tugPull(i){
+  TG.pull+=i===0?-1:1;TG.P[i].lean=1;window.Ljud&&Ljud.drag&&Ljud.drag();
+  for(let k=0;k<10;k++)TG.parts.push({side:i,x:0,y:0,vx:(Math.random()-.5)*80+(i?60:-60),vy:-Math.random()*70,life:.6,c:"#C99A6B"});
+  if(Math.abs(TG.pull)>=TUGWIN){TG.won=i;TG.endT=0;window.Ljud&&Ljud.splash&&tgLater(()=>Ljud.splash(),500);tgLater(()=>{window.Ljud&&Ljud.fanfare();confetti();tugEnd();},1300);}
+}
+// Roboten: svarar efter en stund, ibland fel. Siffrorna skrivs synligt i dess ruta.
+function tugBotPlan(){
+  const b=TG.botCfg,P=TG.P[1],t=(b.min+Math.random()*(b.max-b.min))*1000,ok=Math.random()<b.ok;
+  const ans=String(ok?P.task.a:Math.max(0,P.task.a+(Math.random()<.5?1:-1)*rnd(1,2)));
+  clearTimeout(TG.botT);
+  const g=TG;TG.botT=setTimeout(function type(){if(TG!==g||g.over||g.won!=null)return;
+    if(P.input.length<ans.length){P.input+=ans[P.input.length];tugAns(1);TG.botT=setTimeout(type,260);}else tugCheck(1);},t-ans.length*260);
+}
+$("tug").addEventListener("pointerdown",e=>{const b=e.target.closest(".tkeys button");if(!b)return;e.preventDefault();tugKey(+b.parentElement.dataset.p,b.dataset.k);b.classList.add("down");setTimeout(()=>b.classList.remove("down"),120);});
+document.addEventListener("keydown",e=>{if(!TG||$("tug").hidden)return;if(/^\d$/.test(e.key))tugKey(0,e.key);else if(e.key==="Backspace"){e.preventDefault();tugKey(0,"del");}});
+function tugEnd(){
+  if(!TG)return;const i=TG.won,P=TG.P[i];TG.over=true;clearTimeout(TG.botT);
+  data.tugPlayed=(data.tugPlayed||0)+1;let extra="";
+  if(TG.bot&&i===0){const st=TG.botCfg.st;data.tug=data.tug||{};const r=data.tug.robot||{stars:0};data.tug.robot={stars:Math.max(r.stars||0,st)};if(st===3)data.tugHard=true;extra=`<div class="stars big">${starHtml(st)}</div>`;}
+  save();
+  $("tugMsgT").innerHTML=`<img src="${P.src}" alt=""> ${TG.bot&&i===1?"Roboten vann den här gången!":`${P.name} vann! 🎉`}`;
+  $("tugMsgS").innerHTML=(TG.bot&&i===1?"Försök igen, eller välj en lättare robot.":`${TG.P[0].name} ${TG.P[0].right} rätt, ${TG.P[1].name.toLowerCase()} ${TG.P[1].right} rätt.`)+extra;
+  $("tugMsg").hidden=false;
+}
+function tugResize(){const r=tcv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;tcv.width=Math.max(1,Math.round(r.width*dpr));tcv.height=Math.max(1,Math.round(r.height*dpr));tx.setTransform(dpr,0,0,dpr,0,0);TG&&(TG.W=r.width,TG.H=r.height);}
+window.addEventListener("resize",()=>{if(TG&&!$("tug").hidden)tugResize();});
+function tugFrame(now){
+  if(!TG)return;const dt=Math.min(.05,(now-TG.last)/1000);TG.last=now;TG.t+=dt;
+  TG.shown+=(TG.pull-TG.shown)*Math.min(1,dt*7);TG.P.forEach(P=>P.lean=Math.max(0,P.lean-dt*3));
+  if(TG.won!=null)TG.endT+=dt;
+  TG.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=200*dt;p.life-=dt;});TG.parts=TG.parts.filter(p=>p.life>0);
+  drawTug();tgraf=requestAnimationFrame(tugFrame);
+}
+function drawTug(){
+  const W=TG.W,H=TG.H;if(!W)return;const c=tx;c.clearRect(0,0,W,H);
+  const gy=H*.78,cw=Math.min(H*.42,W*.2),cx=W/2,step=Math.max(8,(W/2-cw*1.2)/(TUGWIN*2)),D=TUGWIN*step+cw*.55,off=TG.shown*step;
+  // himmel, gräs och lerpölen i mitten (mållinjen)
+  const sky=c.createLinearGradient(0,0,0,gy);sky.addColorStop(0,"#8FD3FF");sky.addColorStop(1,"#D6F0FF");c.fillStyle=sky;c.fillRect(0,0,W,gy);
+  // sol, moln och kullar
+  c.fillStyle="#FFE07A";c.beginPath();c.arc(W*.82,Math.min(gy*.22,70),Math.min(W*.07,34),0,7);c.fill();
+  c.fillStyle="rgba(255,255,255,.9)";[[.2,.18,1],[.55,.32,.8],[.85,.5,.7]].forEach(([fx,fy,sc],j)=>{const x=((fx*W+TG.t*8*(j+1))%(W+80))-40,y=gy*fy,r=Math.min(W*.05,26)*sc;c.beginPath();c.arc(x,y,r,0,7);c.arc(x+r,y-r*.4,r*.9,0,7);c.arc(x+r*1.9,y,r*.8,0,7);c.fill();});
+  c.fillStyle="#9ED9A5";c.beginPath();c.ellipse(W*.18,gy,W*.3,gy*.12,0,Math.PI,0);c.fill();c.beginPath();c.ellipse(W*.86,gy,W*.26,gy*.09,0,Math.PI,0);c.fill();
+  c.fillStyle="#6BCB77";c.fillRect(0,gy,W,H-gy);c.fillStyle="#4FAF5E";c.fillRect(0,gy,W,4);
+  c.fillStyle="#7A4E2D";c.beginPath();c.ellipse(cx,gy+H*.07,cw*.75,H*.06,0,0,7);c.fill();c.fillStyle="#9A6A40";c.beginPath();c.ellipse(cx-cw*.15,gy+H*.06,cw*.3,H*.02,0,0,7);c.fill();
+  // mållinjer vid 5 snäpp
+  c.strokeStyle="rgba(255,255,255,.8)";c.setLineDash([6,6]);c.lineWidth=2;[-1,1].forEach(s=>{const x=cx+s*TUGWIN*step;c.beginPath();c.moveTo(x,gy-cw*1.4);c.lineTo(x,gy+6);c.stroke();});c.setLineDash([]);
+  // gubbarna: den som förlorar glider ner i leran
+  const pos=i=>{let x=(i===0?cx-D:cx+D)+off,y=gy,rot=(i===0?-1:1)*(.12+TG.P[i].lean*.18);
+    if(TG.won!=null&&TG.won!==i){const k=Math.min(1,TG.endT/.9);x+=(cx-x)*k;y+=k*cw*.35;rot=(i===0?1:-1)*k*1.2;}
+    if(TG.won===i)y-=Math.abs(Math.sin(TG.endT*6))*cw*.25*(TG.endT>.9?1:0);
+    return{x,y,rot};};
+  const p0=pos(0),p1=pos(1),hy=gy-cw*.55;
+  // repet med röd markering
+  c.strokeStyle="#C99A6B";c.lineWidth=Math.max(4,cw*.08);c.beginPath();c.moveTo(p0.x+cw*.3,hy);c.quadraticCurveTo(cx+off,hy+4,p1.x-cw*.3,hy);c.stroke();
+  c.strokeStyle="#8A5A00";c.lineWidth=1.5;for(let x=Math.min(p0.x,p1.x)+cw*.3;x<p1.x-cw*.3;x+=10){c.beginPath();c.moveTo(x,hy-2);c.lineTo(x+5,hy+2);c.stroke();}
+  c.fillStyle="#E5484D";c.beginPath();c.moveTo(cx+off,hy);c.lineTo(cx+off-9,hy+22);c.lineTo(cx+off+9,hy+22);c.fill();
+  [[TG.P[0],p0],[TG.P[1],p1]].forEach(([P,p],i)=>{if(!P.img.complete)return;c.save();c.translate(p.x,p.y);c.rotate(p.rot);if(i===1)c.scale(-1,1);c.drawImage(P.img,-cw/2,-cw*1.167,cw,cw*1.167);c.restore();});
+  TG.parts.forEach(p=>{const b=p.side===0?p0:p1;c.globalAlpha=Math.max(0,p.life/.6);c.fillStyle=p.c;c.beginPath();c.arc(b.x+p.x,gy+p.y,3,0,7);c.fill();});c.globalAlpha=1;
+  // plask i leran
+  if(TG.won!=null&&TG.endT>.6&&TG.endT<1.6){const k=(TG.endT-.6);c.fillStyle="#7A4E2D";for(let j=0;j<8;j++){const a=j/8*Math.PI;c.beginPath();c.arc(cx+Math.cos(a)*cw*.6*(1+k),gy+H*.05-Math.sin(a)*cw*.5*k*2+k*k*cw,4,0,7);c.fill();}}
 }
 
 /* ---------- Bubbeljakten ---------- */

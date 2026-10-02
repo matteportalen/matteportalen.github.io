@@ -79,6 +79,8 @@
     /* Bubbeljakten: plopp (stiger i ton när många spricker) och skott */
     pop(i){if(!isOn())return;const c=ac();if(!c)return;const f=520*Math.pow(1.07,Math.min(i||0,14));tone(f,0,.09,'sine',.17,f*2.2);noiseBurst(c,0,.04,2600,1,.05);},
     shoot(){if(!isOn())return;tone(240,0,.14,'triangle',.09,560);},
+    /* Dragkampen: ett ryck i repet */
+    drag(){if(!isOn())return;const c=ac();if(!c)return;noiseBurst(c,0,.16,700,1,.13,220);tone(170,0,.2,'triangle',.13,110);},
     /* Klockan (Stationen): tågets tuta och stationens pling-plong */
     toot(){if(!isOn())return;[0,.42].forEach((d,i)=>{const L=i?.55:.28;tone(370,d,L,'sawtooth',.045,360);tone(466,d,L,'sawtooth',.04,455);tone(554,d,L,'triangle',.05,545);});},
     chime(){if(!isOn())return;[[784,0],[659,.32],[523,.64]].forEach(([f,d])=>{tone(f,d,.7,'sine',.11);tone(f*2,d,.25,'sine',.02);});},

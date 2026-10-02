@@ -59,7 +59,7 @@ body.mph-mini #quit{display:none}
     const mu=get('mattespel-multiplikation-v1');if(mu&&mu.facts)n+=medalsFrom((a,b)=>mu.facts[Math.min(a,b)+'x'+Math.max(a,b)]||[]).reduce((a,b)=>a+b,0);
     const dv=get('mattespel-division-v1');if(dv&&dv.facts)n+=medalsFrom((q,d)=>dv.facts[d+':'+q+':0']||[]).reduce((a,b)=>a+b,0);
     const sp=get('mattespel-spel-v1')||{};
-    n+=['fly','mem','car','space','frog','tower','skatt','kiosk','bubbel'].flatMap(k=>Object.values(sp[k]||{})).reduce((a,r)=>a+((r&&r.stars)||0),0);
+    n+=['fly','mem','car','space','frog','tower','skatt','kiosk','bubbel','tug'].flatMap(k=>Object.values(sp[k]||{})).reduce((a,r)=>a+((r&&r.stars)||0),0);
     ['klockan','geometri','brak','uppstallning','hundraruta','tiotal','taluppfattning'].forEach(k=>{const d=get('mattespel-'+k+'-v1');n+=sum((d&&d.stars)||{});});
     const sj=get('mattespel-skattjakten-v1');n+=Object.values((sj&&sj.stars)||{}).reduce((a,b)=>a+(+b||0),0);
     return n;
@@ -89,8 +89,8 @@ body.mph-mini #quit{display:none}
 
   /* ---------- Bakåtknappen ---------- */
   const helskarm=(ds.helskarm||'').split(/\s+/).filter(Boolean);
-  const djup=id=>id==='home'||id==='menu'||id==='start'?0:['game','result','mem','bub','win'].includes(id)?2:1;
-  const BACK=['#quit','[data-home]','#toolBack','#rModes','#rHome','#rChoose','#backMenu','#memQuit','#bubQuit','#wHome','.back:not(a)'];
+  const djup=id=>id==='home'||id==='menu'||id==='start'?0:['game','result','mem','bub','win','tug'].includes(id)?2:1;
+  const BACK=['#quit','[data-home]','#toolBack','#rModes','#rHome','#rChoose','#backMenu','#memQuit','#bubQuit','#wHome','#tugQuit','#tugBack','.back:not(a)'];
   const navOn=ds.nav!=='av';
   let cur={mp:'home',d:0,i:0},st=[0],ign=0,fix=null,popping=false;
   if(navOn)history.replaceState(cur,'');

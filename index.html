@@ -199,7 +199,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   </div>
 
   <nav class="cards" aria-label="Övningar">
-    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Åtta spel! Leta skatter i labyrinten, poppa bubblor, kör, hoppa, bygg och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
+    <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Nio spel! Leta skatter i labyrinten, poppa bubblor, dra rep, kör, hoppa, bygg och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="lillaplus/"><span class="tile sm" style="--c:#2BB673">+ −</span><span class="txt"><b>Lilla plus &amp; minus</b><small>Huvudräkning med tal upp till 10.</small><span class="badge" id="bLilla" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="tiotal/"><span class="tile" style="--c:#3D8BFD">10</span><span class="txt"><b>Tiotalsövergång</b><small>Räkna via tiotalet med tioruta och tallinje.</small><span class="badge" id="bTiotal" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="hundraruta/"><span class="tile" style="--c:#17AFC4"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="21" y="12" width="7.5" height="7.5" rx="1.5" fill="#FFC93C" opacity="1"/><rect x="30" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="3" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="30" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/></svg></span><span class="txt"><b>Hundrarutan</b><small>Steg åt sidan är ett, steg upp och ner är tio. Laga den trasiga hundrarutan!</small><span class="badge" id="bHundra" hidden></span></span><span class="chev">›</span></a>
@@ -353,7 +353,7 @@ S.dRest=!!dv&&[...Object.keys(dv.race||{}),...Object.keys(dv.blitz||{})].some(k=
 const kl=get("mattespel-klockan-v1");S.kl=(kl&&kl.stars)||{};
 {const s=sum(S.kl);S.stars+=s;if(s)show("bKlocka",`⭐ ${s} stjärnor`)}
 const sp=get("mattespel-spel-v1");S.spel=sp||{fly:{},played:0,perfect:false};
-{const s=[...Object.values(S.spel.fly||{}),...Object.values(S.spel.mem||{}),...Object.values(S.spel.car||{}),...Object.values(S.spel.space||{}),...Object.values(S.spel.frog||{}),...Object.values(S.spel.tower||{}),...Object.values(S.spel.skatt||{}),...Object.values(S.spel.kiosk||{}),...Object.values(S.spel.bubbel||{})].reduce((a,r)=>a+(r.stars||0),0);S.stars+=s;
+{const s=[...Object.values(S.spel.fly||{}),...Object.values(S.spel.mem||{}),...Object.values(S.spel.car||{}),...Object.values(S.spel.space||{}),...Object.values(S.spel.frog||{}),...Object.values(S.spel.tower||{}),...Object.values(S.spel.skatt||{}),...Object.values(S.spel.kiosk||{}),...Object.values(S.spel.bubbel||{}),...Object.values(S.spel.tug||{})].reduce((a,r)=>a+(r.stars||0),0);S.stars+=s;
  const best=Math.max(0,...[...Object.values(S.spel.fly||{}),...Object.values(S.spel.car||{}),...Object.values(S.spel.space||{}),...Object.values(S.spel.frog||{})].map(r=>r.best||0));
  if(s)show("bSpel",`⭐ ${s} stjärnor`);else if(best)show("bSpel",`Rekord: ${best} rätt`);}
 const ge=get("mattespel-geometri-v1");S.geo=(ge&&ge.stars)||{};
@@ -438,9 +438,10 @@ const STICKERS=[
   ["hundra","🌌","Stjärnhimmel","Samla 100 stjärnor.",()=>S.stars>=100],
   ["tre","🔥","Tre i rad","Träna tre dagar i rad.",()=>S.bestStreak>=3],
   ["vecka","🚀","En hel vecka","Träna sju dagar i rad.",()=>S.bestStreak>=7],
-  ["flygare","🎮","Spelglad","Spela ett spel i Spelhörnan.",()=>(S.spel.played||0)>0||["mem","car","space","frog","tower","skatt","kiosk","bubbel"].some(k=>Object.keys(S.spel[k]||{}).length)||(S.spel.memVs||0)>0||Object.keys(S.sj.stars||{}).length>0],
+  ["flygare","🎮","Spelglad","Spela ett spel i Spelhörnan.",()=>(S.spel.played||0)>0||["mem","car","space","frog","tower","skatt","kiosk","bubbel","tug"].some(k=>Object.keys(S.spel[k]||{}).length)||(S.spel.tugPlayed||0)>0||(S.spel.memVs||0)>0||Object.keys(S.sj.stars||{}).length>0],
   ["ratt","🏎️","Rattkungen","Kör i mål på Racerbanan i Spelhörnan.",()=>!!S.spel.carWon],
   ["fulltos","🏁","Fullt ös","Vinn ett lopp på Racerbanan utan ett enda fel.",()=>!!S.spel.carPerfect],
+  ["dragkamp","💪","Dragkampsmästaren","Vinn mot Roboten på Svår i Dragkampen.",()=>!!S.spel.tugHard],
   ["garage","🚗","Garagekungen","Skaffa alla fordon i Racerbanans garage.",()=>(S.spel.carOwned||[]).length>=6],
   ["rymd","🚀","Rymdkadetten","Rädda rymden i Asteroidjakten.",()=>!!S.spel.spaceWon],
   ["kapten","☄️","Asteroidkaptenen","Rädda rymden utan att tappa en sköld.",()=>!!S.spel.spacePerfect],
