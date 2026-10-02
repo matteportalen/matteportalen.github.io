@@ -461,7 +461,7 @@ const STICKERS=[
   ["pizza","🍕","Dela lika","Få en medalj i Division.",()=>S.dMed.some(Boolean)],
   ["kakor","🍪","Smulorna","Sätt ett rekord i Division med rest.",()=>S.dRest],
   ["klocka","🕒","Klockan slår","Få stjärnor på Hel timme i Klockan.",()=>(S.kl.hel||0)>0],
-  ["runthalv","🕧","Runt halv-proffs","Få tre stjärnor på Tjugo och fem i halv i Klockan.",()=>(S.kl.runthalv||0)===3],
+  ["runthalv","🕧","Runt halv-proffs","Få tre stjärnor på nivån ”Tjugo över till tjugo i” i Klockan.",()=>(S.kl.runthalv||0)===3],
   ["tidtagare","⏱️","Tidtagaren","Få stjärnor på Mäta tid i Klockan.",()=>(S.kl.mata||0)>0],
   ["klockmastare","🕰️","Klockmästaren","Få stjärnor på alla nivåer i Klockan.",()=>["hel","halv","kvart","fem","runthalv","dig","mata","mix"].every(k=>(S.kl[k]||0)>0)],
   ["former","🔺","Formfinnaren","Få stjärnor på Former i Geometri.",()=>(S.geo.former||0)>0],
