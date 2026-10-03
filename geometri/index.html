@@ -123,6 +123,24 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .mgrid .fbody::before,.mgrid .fbody::after{content:"";position:absolute;top:-16px;width:3px;height:19px;background:#4A3428;border-radius:2px;transform-origin:50% 100%}
 .mgrid .fbody::before{left:2px;transform:rotate(-28deg)}
 .mgrid .fbody::after{right:2px;transform:rotate(28deg)}
+/* Bygg bilden */
+.pbniva{display:flex;gap:8px;margin:6px 0 12px}
+.pbniva button{flex:1;background:var(--card);border-radius:14px;padding:8px 6px;font-weight:800;box-shadow:0 3px 0 var(--line);line-height:1.15}
+.pbniva button small{display:block;font-weight:700;color:var(--muted);font-size:.78rem}
+.pbniva button[aria-pressed="true"]{background:var(--ink);color:#fff}.pbniva button[aria-pressed="true"] small{color:#C6D6F2}
+.pbgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:10px}
+.pbgrid button{background:var(--card);border-radius:16px;padding:8px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:2px;font-weight:800;font-size:.9rem}
+.pbgrid button svg{width:100%;height:70px}
+.pbgrid .stars{font-size:.9rem}
+.pbtitle{font-size:1.3rem}
+.pblead{margin:2px 0 8px;font-size:1rem}
+.wrap:has(#pbplay:not([hidden])){max-width:1100px}
+.pbdone{position:fixed;inset:0;z-index:30;background:rgba(29,43,83,.4);display:grid;place-items:center;padding:16px}
+.pbdone .box{background:var(--card);border-radius:22px;padding:18px;max-width:380px;width:100%;text-align:center;box-shadow:0 6px 0 rgba(29,43,83,.3)}
+.pbdone h3{margin:0;font-size:1.7rem}.pbdone p{color:var(--muted);font-weight:700}
+.pbq p{color:var(--ink);font-weight:800;margin:8px 0 6px}
+.pbq .opts{display:flex;gap:8px;justify-content:center}.pbq .opts button{min-width:60px;height:52px;border-radius:14px;background:var(--bg);font-size:1.4rem;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.pbq .opts button.right{background:#DDF5E7;color:var(--good-dark)}.pbq .opts button.bad{background:#FDE4E4;color:var(--bad)}
 /* Spegelmåla */
 .pbanner{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border-radius:22px;padding:14px 16px;margin:4px 0 14px;color:#fff;background:linear-gradient(135deg,#7B61FF,#FF5FA2);box-shadow:0 6px 0 #5A3FD6}
 .pbanner:active{transform:translateY(3px);box-shadow:0 3px 0 #5A3FD6}
@@ -221,6 +239,19 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   </div>
   <div class="pgal" id="pGal" hidden><div class="box"><div class="ptop"><h3>🖼️ Mitt galleri</h3><button id="pGalClose" aria-label="Stäng">✕</button></div><div class="glist" id="pGalList"></div><p class="gnote">Bilderna sparas bara i den här webbläsaren. ⬇️ laddar ner bilden, 🗑️ tar bort den.</p></div></div>
 </section>
+<section id="pblist" class="screen" hidden>
+  <button class="back" id="pblBack">← Tillbaka</button>
+  <h2 style="margin:8px 0 2px">🧩 Bygg bilden</h2>
+  <p class="lead">Välj en bild och lägg mönsterbitarna så att hela bilden blir täckt. Det finns ofta flera sätt!</p>
+  <div class="pbniva" id="pbNiva"><button data-n="1">Lätt<small>linjerna syns</small></button><button data-n="2">Mellan<small>bara bilden</small></button><button data-n="3">Svår<small>få bitar</small></button></div>
+  <div class="pbgrid" id="pbGrid"></div>
+</section>
+<section id="pbplay" class="screen" hidden>
+  <div class="gtop"><button class="back" id="pbBack">← Bilderna</button><b class="pbtitle" id="pbTitle"></b></div>
+  <p class="lead pblead" id="pbLead"></p>
+  <div id="pbHost"></div>
+  <div class="pbdone" id="pbDone" hidden><div class="box"><h3>Bilden är klar! 🎉</h3><p id="pbSum"></p><div id="pbQ"></div><button class="go" id="pbNext">Nästa bild</button><button class="big" id="pbList">Till bilderna</button></div></div>
+</section>
 <section id="game" class="screen" hidden>
   <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
   <div class="progress"><i id="prog"></i></div>
@@ -255,6 +286,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../bitar.js"></script>
 <script src="../huvud.js" data-titel="Geometri" data-ikon="🔺"></script>
 <script>
 const $=id=>document.getElementById(id);
@@ -605,6 +637,7 @@ const ICON={
   stracka:svg(`<line x1="18" y1="76" x2="82" y2="22" stroke="#1D2B53" stroke-width="4" stroke-linecap="round"/><circle cx="18" cy="76" r="6" fill="#1D2B53"/><circle cx="82" cy="22" r="6" fill="#1D2B53"/><text x="10" y="92" font-size="15" font-weight="800" fill="#1D2B53">A</text><text x="84" y="16" font-size="15" font-weight="800" fill="#1D2B53">B</text>`),
   symmetri:svg(`<g transform="translate(8 8) scale(5.6)"><path d="${BFLY}" fill="#FF5FA2" stroke="#1D2B53" stroke-width=".4" stroke-linejoin="round"/></g><line x1="49.8" y1="2" x2="49.8" y2="98" stroke="#3D5AFE" stroke-width="3" stroke-dasharray="6 5"/>`),
   spegel:svg(`<line x1="50" y1="4" x2="50" y2="96" stroke="#3D5AFE" stroke-width="3" stroke-dasharray="6 5"/><path d="M44 22 Q14 18 18 48 Q22 74 44 80" stroke="#FF5FA2" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M56 22 Q86 18 82 48 Q78 74 56 80" stroke="#FF5FA2" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="30" cy="44" r="6" fill="#F2B707"/><circle cx="70" cy="44" r="6" fill="#F2B707"/>`),
+  bygg:`<svg viewBox="-3.2 -3.6 6.4 5.2" style="width:100%;height:100%"><polygon points="-2,0 -1,0 -0.5,-0.866 -1,-1.732 -2,-1.732 -2.5,-0.866" fill="#F7C531" stroke="#C99A0A" stroke-width=".08"/><polygon points="-1,0 1,0 0.5,-0.866 -0.5,-0.866" fill="#E5484D" stroke="#A8282D" stroke-width=".08"/><polygon points="1,0 2,0 2.5,-0.866 1.5,-0.866" fill="#3D8BFD" stroke="#1F5FC4" stroke-width=".08"/><polygon points="-0.5,-0.866 0.5,-0.866 0,-1.732" fill="#2BB673" stroke="#1A7E4E" stroke-width=".08"/><polygon points="0.5,-0.866 1.5,-0.866 1,-1.732" fill="#2BB673" stroke="#1A7E4E" stroke-width=".08"/></svg>`,
   matt:svg(`<rect x="8" y="44" width="84" height="7" fill="#B07A45"/><rect x="8" y="66" width="84" height="7" fill="#B07A45"/>${[12,34,56,78].map(x=>`<path d="M${x} 90 V34 L${x+5} 26 L${x+10} 34 V90Z" fill="#D9A066" stroke="#7A4F26" stroke-width="2.5" stroke-linejoin="round"/>`).join("")}`)
 };
 const AREAS=[
@@ -614,6 +647,7 @@ const AREAS=[
   {id:"stracka",name:"Punkt, linje och sträcka",desc:"Namnge figurerna och rita sträckor.",ak:"Åk 3",c:"#7B61FF",gen:genStracka},
   {id:"monster",name:"Mönster",desc:"Pärlhalsband: vad kommer sedan?",ak:"Åk 1",c:"#FF9F43",gen:genMonster},
   {id:"symmetri",name:"Symmetri",desc:"Fjärilar och nyckelpigor.",ak:"Åk 2–3",c:"#FF5FA2",gen:genSym},
+  {id:"bygg",name:"Bygg bilden",desc:"Lägg mönsterbitar så att bilden blir hel.",ak:"Åk 1–3",c:"#F7C531",bygg:true},
   {id:"matt",name:"Omkrets och area",desc:"Staket runt hagen och odlingens area.",ak:"Åk 3",c:"#17AFC4",gen:genMatt}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
@@ -623,7 +657,7 @@ function openHome(){G=null;$("pBanner").querySelector(".pbi").innerHTML=ICON.spe
   show("home");}
 $("pBanner").onclick=()=>openPaint();
 $("rPaint").onclick=()=>openPaint();
-$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;start(AREAS.find(a=>a.id===b.dataset.a));};
+$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;if(b.dataset.a==="bygg")return openBygg();start(AREAS.find(a=>a.id===b.dataset.a));};
 
 /* ---------- Uppläsning ---------- */
 let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
@@ -958,6 +992,43 @@ $("pTestDone").onclick=()=>{
 };
 $("pTestNew").onclick=()=>$("pTest").onclick.call(null);
 $("pTestEnd").onclick=()=>{PT.test=null;if(PT.saved){PT.strokes=PT.saved.strokes;PT.mirror=PT.saved.mirror;}PT.saved=null;$("ptools").hidden=false;$("pMirror").hidden=false;$("ptestBar").hidden=true;pRedraw();pSay("Tillbaka till spegelmålningen!");};
+
+/* ---------- Bygg bilden (mönsterbitar, motorn finns i bitar.js) ----------
+   Lätt: linjerna mellan bitarna syns. Mellan: bara bilden. Svår: bara bilden och högst så många bitar som lösningen har.
+   Varje bild sparar högsta klarade nivå i data.bygg. Stjärnor för området: 5 bilder på Lätt = 1, på Mellan = 2, på Svår = 3. */
+const PBN={hex:["sexhörning","sexhörningar"],trap:["trapets","trapetser"],romb:["blå romb","blå romber"],tri:["triangel","trianglar"],sq:["kvadrat","kvadrater"],tan:["smal romb","smala romber"]};
+let PB=null;
+function byggStars(){const v=Object.values(data.bygg||{});return v.filter(x=>x>=3).length>=5?3:v.filter(x=>x>=2).length>=5?2:v.filter(x=>x>=1).length>=5?1:0;}
+function openBygg(){
+  data.bygg=data.bygg||{};const n=data.byggNiva||2;
+  $("pbNiva").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.n===n));
+  $("pbGrid").innerHTML=MPBitar.BILDER.map(B=>{const d=data.bygg[B.id]||0;return`<button data-b="${B.id}">${MPBitar.thumb(B,d?"#7ACB98":"#9AA7BF")}${B.n}${starHtml(d)}</button>`;}).join("");
+  show("pblist");
+}
+$("pbNiva").onclick=e=>{const b=e.target.closest("[data-n]");if(!b)return;data.byggNiva=+b.dataset.n;save();openBygg();};
+$("pbGrid").onclick=e=>{const b=e.target.closest("[data-b]");if(b)playBygg(b.dataset.b);};
+$("pblBack").onclick=()=>openHome();
+$("pbBack").onclick=()=>{$("pbDone").hidden=true;openBygg();};
+$("pbList").onclick=()=>{$("pbDone").hidden=true;openBygg();};
+function playBygg(id){
+  const B=MPBitar.BILDER.find(x=>x.id===id),niva=data.byggNiva||2;PB={id};
+  $("pbTitle").textContent=`${B.n} · ${["","Lätt","Mellan","Svår"][niva]}`;
+  $("pbLead").textContent=niva===1?"Dra bitarna till bilden. De vita linjerna visar var de kan ligga.":niva===3?`Täck bilden med högst ${B.sol.length} bitar.`:"Dra bitarna till bilden. Vrid med den gula knappen, två fingrar eller två tryck.";
+  $("pbDone").hidden=true;show("pbplay");
+  PB.game=MPBitar.spel($("pbHost"),{bild:B,niva,tray:B.extra.length?["hex","trap","romb","tri","sq","tan"]:["hex","trap","romb","tri","sq","tan"],onDone:r=>byggDone(B,niva,r)});
+}
+function byggDone(B,niva,r){
+  const before=byggStars();data.bygg[B.id]=Math.max(data.bygg[B.id]||0,niva);const st=byggStars();if(st>(data.stars.bygg||0))data.stars.bygg=st;save();
+  window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
+  const parts=Object.entries(r.counts).map(([t,n])=>`${n} ${PBN[t][n===1?0:1]}`);
+  $("pbSum").textContent=`Du använde ${r.n} bitar: ${parts.join(", ")}.`+(st>before?` Ny stjärna i Geometri! ⭐`:"");
+  // följdfråga: hur många av en sort?
+  const types=Object.keys(r.counts),t=pickOne(types),ans=r.counts[t],opts=[ans,ans+1,ans>1?ans-1:ans+2];
+  $("pbQ").innerHTML=`<div class="pbq"><p>Hur många ${PBN[t][1]} använde du?</p><div class="opts">${shuffle(opts).map(v=>`<button data-v="${v}">${v}</button>`).join("")}</div></div>`;
+  $("pbQ").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(+b.dataset.v===ans){b.classList.add("right");window.Ljud&&Ljud.ok&&Ljud.ok();$("pbQ").querySelector("p").textContent="Rätt! Bra räknat. 🎉";}else{b.classList.add("bad");b.disabled=true;window.Ljud&&Ljud.bad&&Ljud.bad();}});
+  setTimeout(()=>{$("pbDone").hidden=false;},700);
+  const i=MPBitar.BILDER.findIndex(x=>x.id===B.id);$("pbNext").onclick=()=>playBygg(MPBitar.BILDER[(i+1)%MPBitar.BILDER.length].id);
+}
 
 openHome();
 // direktlänk från Verktygslådan: geometri/#spegel

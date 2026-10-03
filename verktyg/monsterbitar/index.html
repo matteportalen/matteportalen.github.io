@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mönsterbitar – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1100px;margin:0 auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
+.lead{margin:0 0 12px;color:var(--muted);font-size:1.05rem}
+.note{color:var(--muted);font-size:.95rem;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← Verktygslådan</a>
+  <h1>🔷 Mönsterbitar</h1>
+  <p class="lead">Bygg vad du vill! Dra bitar från lådan, vrid med den gula knappen, två fingrar eller två tryck. Dra en bit tillbaka till lådan för att ta bort den.</p>
+  <div id="host"></div>
+  <p class="note">Visste du? Två trapetser blir en sexhörning, och tre blå romber blir också en sexhörning. Hur många trianglar behövs?</p>
+</div>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../bitar.js"></script>
+<script src="../../huvud.js" data-titel="Mönsterbitar" data-ikon="🔷" data-hem="../../" data-nav="av"></script>
+<script>
+// Fritt bygge med mönsterbitarna (motorn finns i bitar.js). Inget sparas.
+MPBitar.spel(document.getElementById("host"),{box:{x0:0,y0:0,x1:16,y1:10}});
+</script>
+</body>
+</html>
