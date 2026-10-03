@@ -31,8 +31,8 @@ h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
 .btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .btn[aria-pressed="true"]{background:var(--ink);color:#fff}
 /* Kulramen */
-.frame{position:relative;display:flex;gap:10px;background:var(--card);border-radius:20px;padding:16px 12px 16px 10px;box-shadow:0 5px 0 var(--line);touch-action:none;user-select:none;-webkit-user-select:none}
-.total{flex:none;width:58px;display:flex;align-items:center;justify-content:center;border-left:4px solid #8FB2E8;border-top:4px solid #8FB2E8;border-bottom:4px solid #8FB2E8;border-radius:10px 0 0 10px;font-weight:800;font-size:1.7rem;color:var(--ink)}
+.frame{position:relative;display:flex;flex-direction:row-reverse;gap:10px;background:var(--card);border-radius:20px;padding:16px 12px 16px 10px;box-shadow:0 5px 0 var(--line);touch-action:none;user-select:none;-webkit-user-select:none}
+.total{flex:none;width:58px;display:flex;align-items:center;justify-content:center;border-right:4px solid #8FB2E8;border-top:4px solid #8FB2E8;border-bottom:4px solid #8FB2E8;border-radius:0 10px 10px 0;font-weight:800;font-size:1.7rem;color:var(--ink)}
 .rows{flex:1;display:flex;flex-direction:column;gap:var(--gap,10px);border-left:8px solid #3B4A6B;border-right:8px solid #3B4A6B;border-radius:4px;padding:6px 0}
 .row{position:relative;height:var(--bead);display:flex;align-items:center}
 .row::before{content:"";position:absolute;left:0;right:0;top:50%;height:4px;margin-top:-2px;background:#7D8AA6;border-radius:2px}
@@ -52,7 +52,7 @@ h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
 <div class="wrap">
   <a class="back" href="../">← Verktygslådan</a>
   <h1>🧮 Kulramen</h1>
-  <p class="lead">Tryck på en kula för att flytta den och alla kulor bredvid. Du kan också dra. Fem röda och fem vita på varje rad gör det lätt att se talen.</p>
+  <p class="lead">Alla kulor börjar till vänster. Tryck på en kula för att flytta den och alla kulor bredvid till höger, eller dra. Fem röda och fem vita på varje rad gör det lätt att se talen.</p>
   <div class="bar">
     <div class="seg" id="segRows"><button data-r="1">1 rad (10)</button><button data-r="2">2 rader (20)</button><button data-r="10">10 rader (100)</button></div>
     <button class="btn" id="btnNum" aria-pressed="false">🙈 Dölj siffrorna</button>
@@ -65,8 +65,10 @@ h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
 <script src="../../djur.js"></script>
 <script src="../../huvud.js" data-titel="Kulramen" data-ikon="🧮" data-hem="../../" data-nav="av"></script>
 <script>
-/* Kulramen: 1, 2 eller 10 rader med tio kulor (5 röda, 5 vita). Kulorna som flyttats till vänster räknas.
-   Tryck på en kula: den och alla kulor mellan den och vänstersidan flyttas (eller tillbaka). Dra för att ställa in en rad. */
+/* Kulramen: 1, 2 eller 10 rader med tio kulor (5 vita, 5 röda). Noll = alla kulor till vänster (lärarens val);
+   kulorna som flyttats till höger räknas, de röda först. Tryck på en kula: den och alla kulor mellan den och
+   högersidan flyttas (eller tillbaka). Dra för att ställa in en rad.
+   Internt räknas som på en vanlig kulram och speglas när kulorna placeras. */
 const $=id=>document.getElementById(id);
 const st={rows:10,cnt:[],hide:false};
 try{const s=JSON.parse(sessionStorage.getItem("mp-kulram")||"null");if(s)Object.assign(st,s);}catch(e){}
@@ -81,8 +83,8 @@ function build(){
 function place(){
   const {w,b}=geom();$("frame").style.setProperty("--bead",b+"px");$("frame").style.setProperty("--gap",(st.rows>2?Math.max(6,b*.28):b*.6)+"px");
   $("rows").querySelectorAll(".row").forEach(row=>{const r=+row.dataset.r,c=st.cnt[r];
-    row.querySelectorAll(".bead").forEach(el=>{const i=+el.dataset.i,x=i<c?i*b:w-(10-i)*b;el.style.left=x+"px";});
-    const cn=row.querySelector(".cnt");cn.textContent=c&&c<10?c:c===10?"10":"";cn.style.left=(c<10?c*b+(w-10*b)/2-14:c*b-28)+"px";});
+    row.querySelectorAll(".bead").forEach(el=>{const i=+el.dataset.i,x=i<c?i*b:w-(10-i)*b;el.style.left=(w-b-x)+"px";});
+    const cn=row.querySelector(".cnt"),mid=c<10?c*b+(w-10*b)/2:c*b-14;cn.textContent=c?c:"";cn.style.left=(w-mid-14)+"px";});
   $("total").firstElementChild.textContent=st.cnt.reduce((a,x)=>a+x,0);
   $("frame").classList.toggle("hide",st.hide);
   $("btnNum").textContent=st.hide?"👁️ Visa siffrorna":"🙈 Dölj siffrorna";$("btnNum").setAttribute("aria-pressed",st.hide);
@@ -97,7 +99,7 @@ $("rows").addEventListener("pointerdown",e=>{
 });
 $("rows").addEventListener("pointermove",e=>{
   if(!drag)return;const {b}=geom(),dx=e.clientX-drag.x0;if(Math.abs(dx)<b*.4&&!drag.moved)return;drag.moved=true;
-  setRow(drag.r,drag.c0+Math.round(dx/b));
+  setRow(drag.r,drag.c0+Math.round(dx/b)); // dra åt höger = fler kulor räknas
 });
 const end=()=>{if(!drag)return;const d=drag;drag=null;if(d.moved||d.bead==null)return;
   const c=st.cnt[d.r];setRow(d.r,d.bead<c?d.bead:d.bead+1);};
