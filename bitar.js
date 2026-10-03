@@ -1,55 +1,25 @@
-/* Mönsterbitar för Matte-Portalen: sexhörning, trapets, blå romb, triangel, kvadrat och smal romb.
-   Används av Geometri ("Bygg bilden") och Verktygslådan (fritt bygge). En gemensam fil, inga kopior.
+/* Tangram för Matte-Portalen (Geometri). Sju bitar ur en kvadrat 4×4: två stora trianglar, en mellanstor,
+   två små, en kvadrat och ett parallellogram. Bitarna vrids i steg om 45°, parallellogrammet kan vändas.
+   (Filen hette från början mönsterbitar; Bygg bilden och fritt bygge togs bort, Tangram tränar samma sak bättre.)
 
-   Koordinater: 1 enhet = bitarnas sida. Triangelnätet: punkten L(a,b) = (a + b/2, b·h), h = √3/2, y uppåt.
-   Bilderna ritas som "triangelpixlar" i ASCII: varje tecken är en liten triangel. Rad b räknas nerifrån,
-   kolumn m = vänsterkanten i halva enheter. Triangeln pekar upp om (m − b) är jämnt, annars ner.
-   Lösningen räknas fram automatiskt (sexhörningar först, sedan trapetser, romber och trianglar).
-
-   MPBitar.spel(svg, opts) bygger en spelplan: bitlåda, dra, vrid fritt (handtag, två fingrar, scrollhjul,
-   dubbeltryck) med snäpp till 60° (30° för kvadrat och smal romb) och till triangelnätet. */
+   Koordinater: y uppåt. Liten triangel = (0,0),(2,0),(1,1).
+   MPBitar.spel(host,{bild,tray,unik,tips,onDone}) bygger en spelplan: bitlåda, dra, vrid fritt (handtag, två fingrar,
+   scrollhjul, dubbeltryck) med snäpp till 45° och till andra bitars och silhuettens hörn.
+   tips:true ger knappen 💡 Tips: varje tryck visar var en bit ur lösningen ska ligga (streckad kontur, stora bitar
+   först). Konturen ligger kvar tills biten ligger där. onDone({n,counts,tips}). */
 (function(){
-  const H=Math.sqrt(3)/2,C30=Math.sqrt(3)/2;
   const TYPES={
-    hex:{n:"Sexhörning",col:"#F7C531",st:"#C99A0A",v:[[0,0],[1,0],[1.5,H],[1,2*H],[0,2*H],[-.5,H]],step:60,lat:true},
-    trap:{n:"Trapets",col:"#E5484D",st:"#A8282D",v:[[0,0],[2,0],[1.5,H],[.5,H]],step:60,lat:true},
-    romb:{n:"Romb",col:"#3D8BFD",st:"#1F5FC4",v:[[0,0],[1,0],[1.5,H],[.5,H]],step:60,lat:true},
-    tri:{n:"Triangel",col:"#2BB673",st:"#1A7E4E",v:[[0,0],[1,0],[.5,H]],step:60,lat:true},
-    sq:{n:"Kvadrat",col:"#FF9F43",st:"#C96A0C",v:[[0,0],[1,0],[1,1],[0,1]],step:30,lat:false},
-    tan:{n:"Smal romb",col:"#E9D3A1",st:"#B08A4A",v:[[0,0],[1,0],[1+C30,.5],[C30,.5]],step:30,lat:false},
-    // tangram: sju bitar ur en kvadrat 4×4. Vrids i steg om 45°. Parallellogrammet kan vändas.
-    tL:{n:"Stor triangel",col:"#E5484D",st:"#A8282D",v:[[0,0],[4,0],[2,2]],step:45,tg:true},
-    tL2:{n:"Stor triangel",col:"#FF9F43",st:"#C96A0C",v:[[0,0],[4,0],[2,2]],step:45,tg:true},
-    tM:{n:"Mellanstor triangel",col:"#7B61FF",st:"#5440C9",v:[[0,0],[2,0],[0,2]],step:45,tg:true},
-    tS:{n:"Liten triangel",col:"#2BB673",st:"#1A7E4E",v:[[0,0],[2,0],[1,1]],step:45,tg:true},
-    tS2:{n:"Liten triangel",col:"#FF5FA2",st:"#C2447C",v:[[0,0],[2,0],[1,1]],step:45,tg:true},
-    tQ:{n:"Kvadrat",col:"#F7C531",st:"#C99A0A",v:[[1,0],[2,1],[1,2],[0,1]],step:45,tg:true},
-    tP:{n:"Parallellogram",col:"#17AFC4",st:"#0E7F8E",v:[[0,0],[2,0],[3,1],[1,1]],step:45,tg:true,flip:true}
+    tL:{n:"Stor triangel",col:"#E5484D",st:"#A8282D",v:[[0,0],[4,0],[2,2]],step:45},
+    tL2:{n:"Stor triangel",col:"#FF9F43",st:"#C96A0C",v:[[0,0],[4,0],[2,2]],step:45},
+    tM:{n:"Mellanstor triangel",col:"#7B61FF",st:"#5440C9",v:[[0,0],[2,0],[0,2]],step:45},
+    tS:{n:"Liten triangel",col:"#2BB673",st:"#1A7E4E",v:[[0,0],[2,0],[1,1]],step:45},
+    tS2:{n:"Liten triangel",col:"#FF5FA2",st:"#C2447C",v:[[0,0],[2,0],[1,1]],step:45},
+    tQ:{n:"Kvadrat",col:"#F7C531",st:"#C99A0A",v:[[1,0],[2,1],[1,2],[0,1]],step:45},
+    tP:{n:"Parallellogram",col:"#17AFC4",st:"#0E7F8E",v:[[0,0],[2,0],[3,1],[1,1]],step:45,flip:true}
   };
   // bitarnas hörn runt tyngdpunkten
   for(const t of Object.values(TYPES)){const cx=t.v.reduce((a,p)=>a+p[0],0)/t.v.length,cy=t.v.reduce((a,p)=>a+p[1],0)/t.v.length;t.loc=t.v.map(([x,y])=>[x-cx,y-cy]);}
-  const L=(a,b)=>[a+b/2,b*H];
-  // en triangelpixel: rad b, kolumn m (vänsterkant i halva enheter)
-  function triPts(b,m){const x=m/2,y0=b*H,y1=(b+1)*H;return((m-b)%2+2)%2===0?[[x,y0],[x+1,y0],[x+.5,y1]]:[[x,y1],[x+1,y1],[x+.5,y0]];}
-  function parse(rows){
-    const T=new Set(),n=rows.length;
-    rows.forEach((row,i)=>{const b=n-1-i;for(let m=0;m<row.length;m++)if(row[m]==="#")T.add(b+","+m);});
-    return T;
-  }
-  // lägg bitar: sexhörningar, trapetser, romber, trianglar (girigt, stora bitar först)
-  function tile(T){
-    const left=new Set(T),pieces=[],has=k=>left.has(k),take=ks=>ks.forEach(k=>left.delete(k));
-    const keys=[...T].map(k=>k.split(",").map(Number)).sort((p,q)=>p[0]-q[0]||p[1]-q[1]);
-    // sexhörning runt punkten (X,b): rad b−1 och b, kolumn X−2..X
-    for(const [b,m] of keys){for(const X of [m+2,m+1,m]){if(((X-b)%2+2)%2)continue;const ks=[];for(const bb of [b-1,b])for(const mm of [X-2,X-1,X])ks.push(bb+","+mm);
-      if(ks.every(has)){take(ks);pieces.push({t:"hex",ks});}}}
-    for(const [b,m] of keys){const ks=[b+","+m,b+","+(m+1),b+","+(m+2)];if(ks.every(has)){take(ks);pieces.push({t:"trap",ks});}}
-    for(const [b,m] of keys){if(!has(b+","+m))continue;const down=((m-b)%2+2)%2===1;
-      const pair=[b+","+(m+1)].concat(down?[(b+1)+","+m]:[]).find(has);if(pair){take([b+","+m,pair]);pieces.push({t:"romb",ks:[b+","+m,pair]});}}
-    for(const k of [...left]){pieces.push({t:"tri",ks:[k]});left.delete(k);}
-    return pieces;
-  }
-  function bounds(T){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const k of T){const [b,m]=k.split(",").map(Number);for(const [x,y] of triPts(b,m)){x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}}return{x0,y0,x1,y1};}
+  const sort=t=>t.replace(/2$/,""); // de två stora och de två små trianglarna är likadana
   // k = kategori i bildväljaren. Figurerna är klassiska tangrambilder (fritt ritade efter förebilder, kontrollerade: yta 16, inget överlapp)
   const TANGRAM_KAT=[["former","Former"],["djur","Djur"],["saker","Saker och människor"]];
   const TANGRAM=[
@@ -87,69 +57,63 @@
   /* ---------- Hjälpfunktioner ---------- */
   const rot=([x,y],d)=>{const a=d*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return[x*c-y*s,x*s+y*c];};
   function pieceVerts(p){return TYPES[p.t].loc.map(v=>{const [x,y]=rot(p.flip?[-v[0],v[1]]:v,p.ang);return[x+p.x,y+p.y];});}
-  function nearestLattice(x,y){let best=null,bd=1e9;const b0=Math.round(y/H);for(let b=b0-1;b<=b0+1;b++){const a=Math.round(x-b/2);for(let aa=a-1;aa<=a+1;aa++){const [px,py]=L(aa,b),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=[px,py];}}}return{p:best,d:bd};}
-  // snäpp: vinkel till steg, sedan ett hörn till närmaste nätpunkt (eller till andra bitars hörn)
+  // snäpp: vinkel till steg, sedan ett hörn till andra bitars eller silhuettens hörn
   function snap(p,others,extraTargets){
     const st=TYPES[p.t].step;p.ang=((Math.round(p.ang/st)*st)%360+360)%360;
     const vs=pieceVerts(p);let best=null;
     const targets=(extraTargets||[]).slice();(others||[]).forEach(o=>{if(o!==p)pieceVerts(o).forEach(v=>targets.push(v));});
-    for(const v of vs){
-      if(TYPES[p.t].lat){const {p:q,d}=nearestLattice(v[0],v[1]);if(d<.35&&(!best||d<best.d))best={dx:q[0]-v[0],dy:q[1]-v[1],d};}
-      for(const t of targets){const d=Math.hypot(t[0]-v[0],t[1]-v[1]);if(d<.3&&(!best||d<best.d-.02))best={dx:t[0]-v[0],dy:t[1]-v[1],d};}
-    }
+    for(const v of vs)for(const t of targets){const d=Math.hypot(t[0]-v[0],t[1]-v[1]);if(d<.3&&(!best||d<best.d-.02))best={dx:t[0]-v[0],dy:t[1]-v[1],d};}
     if(best){p.x+=best.dx;p.y+=best.dy;}
   }
+  // ligger biten p precis på lösningens bit q? (samma sort och samma hörn, i vilken ordning som helst)
+  function sameSpot(p,q){if(sort(p.t)!==sort(q.t))return false;const a=pieceVerts(p),b=pieceVerts(q);return b.every(v=>a.some(w=>Math.hypot(w[0]-v[0],w[1]-v[1])<.15));}
 
-  /* ---------- Bildens form: trianglar + extra bitar ---------- */
-  function bildPolys(B){const out=[...B.T].map(k=>{const [b,m]=k.split(",").map(Number);return triPts(b,m);});B.extra.forEach(e=>out.push(pieceVerts(e)));return out;}
+  /* ---------- Figurens form ---------- */
+  function bildPolys(B){return B.extra.map(pieceVerts);}
   function bildBox(B){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;bildPolys(B).forEach(P=>P.forEach(([x,y])=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}));return{x0,y0,x1,y1};}
-  // lösningens bitar som polygoner
-  function solPolys(B){
-    return B.sol.map(pc=>{if(pc.piece)return{t:pc.t,pts:pieceVerts(pc.piece)};
-      // yttre kanter: kanter som bara en triangel i biten har
-      const tris=pc.ks.map(k=>{const [b,m]=k.split(",").map(Number);return triPts(b,m);}),E=new Map(),key=(p,q)=>{const a=p.map(v=>v.toFixed(3)).join(),b=q.map(v=>v.toFixed(3)).join();return a<b?a+"|"+b:b+"|"+a;};
-      tris.forEach(T=>T.forEach((p,i)=>{const q=T[(i+1)%3],k=key(p,q);E.set(k,E.has(k)?null:[p,q]);}));
-      return{t:pc.t,edges:[...E.values()].filter(Boolean),tris};});
-  }
   const svgNS="http://www.w3.org/2000/svg",el=(n,a)=>{const e=document.createElementNS(svgNS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
   const ptsAttr=P=>P.map(([x,y])=>x.toFixed(3)+","+(-y).toFixed(3)).join(" ");
-  function thumb(B,col){const {x0,y0,x1,y1}=bildBox(B),pad=.25;return`<svg viewBox="${x0-pad} ${-(y1+pad)} ${x1-x0+2*pad} ${y1-y0+2*pad}" aria-hidden="true"><path d="${silPath(B)}" fill="${col||"#9AA7BF"}" stroke="${col||"#9AA7BF"}" stroke-width=".05" stroke-linejoin="round"/></svg>`;}
   // silhuetten som en enda form, så att inga skarvar mellan bitarna syns (de skulle avslöja lösningen)
   function silPath(B){return bildPolys(B).map(P=>"M"+P.map(([x,y])=>(+x.toFixed(4))+" "+(+(-y).toFixed(4))).join("L")+"Z").join("");}
+  function thumb(B,col){const {x0,y0,x1,y1}=bildBox(B),pad=.25;return`<svg viewBox="${x0-pad} ${-(y1+pad)} ${x1-x0+2*pad} ${y1-y0+2*pad}" aria-hidden="true"><path d="${silPath(B)}" fill="${col||"#9AA7BF"}" stroke="${col||"#9AA7BF"}" stroke-width=".05" stroke-linejoin="round"/></svg>`;}
 
-  /* ---------- Spelplanen ----------
-     opts: {bild, nivå: 1 lätt (linjer syns) | 2 mellan | 3 svår (högst N bitar), fri:true för fritt bygge, onDone(info)} */
+  /* ---------- Spelplanen ---------- */
+  const TIPORD=["tL","tL2","tM","tP","tQ","tS","tS2"]; // stora bitar först, de är svårast att placera
   function spel(host,opts){
-    opts=opts||{};const B=opts.bild,fri=!B;
-    const box=B?bildBox(B):(opts.box||{x0:0,y0:0,x1:14,y1:9}),mx=fri?0:2.2,my=fri?0:1.2;
+    opts=opts||{};const B=opts.bild,tray=opts.tray||Object.keys(TYPES);
+    const box=bildBox(B),mx=2.2,my=1.2;
     const VB={x:box.x0-mx,y:-(box.y1+my),w:box.x1-box.x0+2*mx,h:box.y1-box.y0+2*my};
-    host.innerHTML=`<div class="mb"><svg class="mb-board" viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" role="img" aria-label="${B?"Bygg bilden: "+B.n:"Fritt bygge"}"></svg>
-      <div class="mb-tray">${(opts.tray||Object.keys(TYPES)).map(t=>`<button class="mb-t" data-t="${t}" aria-label="${TYPES[t].n}"><svg viewBox="${(m=>`${-m} ${-m} ${2*m} ${2*m}`)(TYPES[t].tg?Math.max(1.25,Math.max(...TYPES[t].loc.map(([x,y])=>Math.hypot(x,y)))*1.06):1.25)}"><polygon points="${ptsAttr(TYPES[t].loc)}" fill="${TYPES[t].col}" stroke="${TYPES[t].st}" stroke-width=".06" stroke-linejoin="round"/></svg></button>`).join("")}</div>
-      <div class="mb-ctl"><button data-a="rot">↻ Vrid</button>${(opts.tray||[]).some(t=>TYPES[t].flip)?'<button data-a="flip">⇋ Vänd</button>':""}<button data-a="del">🗑 Ta bort</button><button data-a="undo">↶ Ångra</button><button data-a="clear">Börja om</button><span class="mb-info"></span></div></div>`;
-    const svg=host.querySelector(".mb-board"),gS=el("g",{}),gL=el("g",{}),gP=el("g",{}),gH=el("g",{});svg.append(gS,gL,gP,gH);
+    host.innerHTML=`<div class="mb"><svg class="mb-board" viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" role="img" aria-label="Tangram: ${B.n}"></svg>
+      <div class="mb-tray">${tray.map(t=>`<button class="mb-t" data-t="${t}" aria-label="${TYPES[t].n}"><svg viewBox="${(m=>`${-m} ${-m} ${2*m} ${2*m}`)(Math.max(1.25,Math.max(...TYPES[t].loc.map(([x,y])=>Math.hypot(x,y)))*1.06))}"><polygon points="${ptsAttr(TYPES[t].loc)}" fill="${TYPES[t].col}" stroke="${TYPES[t].st}" stroke-width=".06" stroke-linejoin="round"/></svg></button>`).join("")}</div>
+      <div class="mb-ctl"><button data-a="rot">↻ Vrid</button>${tray.some(t=>TYPES[t].flip)?'<button data-a="flip">⇋ Vänd</button>':""}<button data-a="del">🗑 Ta bort</button><button data-a="undo">↶ Ångra</button><button data-a="clear">Börja om</button>${opts.tips?'<button data-a="tip" class="tips">💡 Tips</button>':""}<span class="mb-info"></span></div></div>`;
+    const svg=host.querySelector(".mb-board"),gS=el("g",{}),gT=el("g",{}),gP=el("g",{}),gH=el("g",{});svg.append(gS,gP,gT,gH);
     const info=host.querySelector(".mb-info");
-    // silhuetten
-    if(B)gS.append(el("path",{d:silPath(B),fill:"#C9D2E3",stroke:"#C9D2E3","stroke-width":".05","stroke-linejoin":"round"}));
-    let pieces=[],sel=null,hist=[],done=false;
-    const tg=B?bildPolys(B).flat():[],snp=p=>snap(p,pieces,tg); // bildens hörn är också snäppmål (för kvadraterna)
+    gS.append(el("path",{d:silPath(B),fill:"#C9D2E3",stroke:"#C9D2E3","stroke-width":".05","stroke-linejoin":"round"}));
+    let pieces=[],sel=null,hist=[],done=false,tips=0;const shown=[]; // shown = lösningens bitar som visas som tips
+    const sol=TIPORD.map(t=>B.extra.find(e=>e.t===t)).filter(Boolean);
+    const tgt=bildPolys(B).flat(),snp=p=>snap(p,pieces,tgt); // figurens hörn är också snäppmål
     const save=()=>{hist.push(JSON.stringify(pieces));if(hist.length>60)hist.shift();};
     const toWorld=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const q=p.matrixTransform(svg.getScreenCTM().inverse());return[q.x,-q.y];};
     function radius(p){return Math.max(...TYPES[p.t].loc.map(([x,y])=>Math.hypot(x,y)));}
+    const placed=q=>pieces.some(p=>sameSpot(p,q));
     function draw(){
       gP.innerHTML="";gH.innerHTML="";
       pieces.forEach(p=>{const T=TYPES[p.t],poly=el("polygon",{points:ptsAttr(pieceVerts(p)),fill:T.col,stroke:p===sel?"#1D2B53":T.st,"stroke-width":p===sel?".09":".05","stroke-linejoin":"round",class:"mb-p"});poly._p=p;gP.append(poly);});
+      // tips: konturen ligger ovanpå bitarna (utan att ta tryck) tills biten ligger rätt
+      gT.innerHTML="";shown.forEach(q=>{if(placed(q))return;const T=TYPES[q.t];
+        gT.append(el("polygon",{points:ptsAttr(pieceVerts(q)),fill:T.col,"fill-opacity":".28",stroke:T.st,"stroke-width":".08","stroke-dasharray":".22 .14","stroke-linejoin":"round","pointer-events":"none",class:"mb-tip"}));});
       if(sel&&!drag){const r=radius(sel)+.55,a=(sel.ang+90)*Math.PI/180,hx=sel.x+Math.cos(a)*r,hy=sel.y+Math.sin(a)*r;
         gH.append(el("line",{x1:sel.x,y1:-sel.y,x2:hx,y2:-hy,stroke:"#1D2B53","stroke-width":".04","stroke-dasharray":".12 .1","pointer-events":"none"})); // linjen får inte ta trycket från biten
         const h=el("g",{class:"mb-h",transform:`translate(${hx} ${-hy})`});h.append(el("circle",{r:".36",fill:"#FFC93C",stroke:"#1D2B53","stroke-width":".06"}));
         const t=el("text",{"text-anchor":"middle","dominant-baseline":"central","font-size":".46","font-weight":"800",fill:"#1D2B53"});t.textContent="↻";h.append(t);gH.append(h);}
-      if(B){const n=pieces.length;info.textContent=B.tg?`Bitar: ${n} av 7`:`Bitar: ${n}`;}else info.textContent=`Bitar: ${pieces.length}`;
-      // tangram: varje bit finns bara en gång i lådan
+      info.textContent=`Bitar: ${pieces.length} av 7`+(tips?` · Tips: ${tips}`:"");
+      // varje bit finns bara en gång i lådan
       if(opts.unik)host.querySelectorAll(".mb-t").forEach(b=>b.classList.toggle("used",pieces.some(q=>q.t===b.dataset.t)));
     }
-    // är bilden täckt? räknas i pixlar: täckt del, bitar utanför och bitar som ligger på varandra
+    // är figuren täckt? räknas i pixlar: täckt del, bitar utanför och bitar som ligger på varandra
     let cv=null;
     function check(){
-      if(!B||done)return;const S=22,W=Math.ceil(VB.w*S),H2=Math.ceil(VB.h*S);
+      if(done)return;const S=22,W=Math.ceil(VB.w*S),H2=Math.ceil(VB.h*S);
       if(!cv){cv=document.createElement("canvas");cv.width=W;cv.height=H2;}
       const c=cv.getContext("2d",{willReadFrequently:true}),path=P=>{c.beginPath();P.forEach(([x,y],i)=>{const X=(x-VB.x)*S,Y=(-y-VB.y)*S;i?c.lineTo(X,Y):c.moveTo(X,Y);});c.closePath();};
       c.globalCompositeOperation="source-over";c.clearRect(0,0,W,H2);c.fillStyle="rgb(0,0,255)";bildPolys(B).forEach(P=>{path(P);c.fill();});
@@ -158,12 +122,14 @@
       for(let i=0;i<d.length;i+=4){const inS=d[i+2]>160,r=d[i];if(inS){sil++;if(r>=25)cov++;}else if(r>=45&&d[i+2]<60)out++;if(r>=105)ov++;}
       const ok=sil&&cov/sil>.97&&out/sil<.02&&ov/sil<.03;
       if(ok){const counts={};pieces.forEach(p=>counts[p.t]=(counts[p.t]||0)+1);
-        done=true;sel=null;draw();opts.onDone&&opts.onDone({n:pieces.length,counts});}
+        done=true;sel=null;shown.length=0;draw();opts.onDone&&opts.onDone({n:pieces.length,counts,tips});}
     }
     function change(){draw();check();}
+    // nästa tips: första biten i lösningen som inte ligger rätt och inte redan visas
+    function tip(){const q=sol.find(q=>!placed(q)&&!shown.includes(q));if(!q)return;shown.push(q);tips++;window.Ljud&&Ljud.pop&&Ljud.pop(3);draw();}
     // ---------- pekare ----------
     let drag=null;const pts=new Map();let lastTap={p:null,t:0};
-    function rot(p,deg){p.ang=((p.ang+deg)%360+360)%360;}
+    function turn(p,deg){p.ang=((p.ang+deg)%360+360)%360;}
     svg.addEventListener("pointerdown",e=>{
       if(done)return;e.preventDefault();pts.set(e.pointerId,toWorld(e));try{svg.setPointerCapture(e.pointerId);}catch(_){}
       if(pts.size===2&&sel){const [a,b]=[...pts.values()];drag={kind:"two",a0:Math.atan2(b[1]-a[1],b[0]-a[0])*180/Math.PI,ang0:sel.ang};return;}
@@ -171,7 +137,7 @@
       if(h&&sel){save();drag={kind:"rot",id:e.pointerId};return;}
       const poly=e.target.closest(".mb-p");
       if(poly){const p=poly._p,w=toWorld(e);
-        if(lastTap.p===p&&performance.now()-lastTap.t<320){save();rot(p,TYPES[p.t].step);snp(p);lastTap={p:null,t:0};sel=p;change();return;}
+        if(lastTap.p===p&&performance.now()-lastTap.t<320){save();turn(p,TYPES[p.t].step);snp(p);lastTap={p:null,t:0};sel=p;change();return;}
         lastTap={p,t:performance.now()};save();sel=p;pieces=pieces.filter(q=>q!==p).concat([p]);drag={kind:"move",id:e.pointerId,dx:p.x-w[0],dy:p.y-w[1],moved:false};draw();return;}
       sel=null;draw();
     });
@@ -186,13 +152,13 @@
       if(drag.kind==="two"&&pts.size>0)return;
       const d=drag;drag=null;
       const tr=host.querySelector(".mb-tray").getBoundingClientRect(),overTray=e.clientY>=tr.top&&e.clientY<=tr.bottom&&e.clientX>=tr.left&&e.clientX<=tr.right;
-      // ett kort tryck i lådan: biten läggs mitt på planen. En bit som släpps över lådan tas bort.
+      // ett kort tryck i lådan: biten läggs på planen. En bit som släpps över lådan tas bort.
       if(d.fresh&&overTray){sel.x=VB.x+VB.w*(.2+.6*Math.random());sel.y=-(VB.y+VB.h*(.2+.6*Math.random()));} // utspridda, inte i en hög
       else if(d.kind==="move"&&d.moved&&overTray){pieces=pieces.filter(q=>q!==sel);sel=null;change();return;}
       if(sel){snp(sel);}change();
     };
     svg.addEventListener("pointerup",up);svg.addEventListener("pointercancel",up);
-    let wheelT=0;svg.addEventListener("wheel",e=>{if(!sel||done)return;e.preventDefault();if(!wheelT)save();rot(sel,e.deltaY>0?15:-15);draw();clearTimeout(wheelT);wheelT=setTimeout(()=>{wheelT=0;snp(sel);change();},260);},{passive:false});
+    let wheelT=0;svg.addEventListener("wheel",e=>{if(!sel||done)return;e.preventDefault();if(!wheelT)save();turn(sel,e.deltaY>0?15:-15);draw();clearTimeout(wheelT);wheelT=setTimeout(()=>{wheelT=0;snp(sel);change();},260);},{passive:false});
     // ny bit från lådan: dyker upp under fingret och följer med
     host.querySelector(".mb-tray").addEventListener("pointerdown",e=>{
       const b=e.target.closest(".mb-t");if(!b||done||b.classList.contains("used"))return;e.preventDefault();save();
@@ -203,22 +169,20 @@
       const onUp=ev=>{document.removeEventListener("pointerup",onUp);if(drag&&drag.fresh&&ev.pointerId===e.pointerId)up(ev);};document.addEventListener("pointerup",onUp);
       draw();
     });
-    document.addEventListener("pointermove",e=>{if(drag&&drag.fresh&&e.pointerId===drag.id){const w=toWorld(e);sel.x=w[0];sel.y=w[1];drawLight();}});
-    function drawLight(){draw();}
+    document.addEventListener("pointermove",e=>{if(drag&&drag.fresh&&e.pointerId===drag.id){const w=toWorld(e);sel.x=w[0];sel.y=w[1];draw();}});
     host.querySelector(".mb-ctl").onclick=e=>{const a=e.target.closest("[data-a]");if(!a||done)return;const k=a.dataset.a;
-      if(k==="rot"&&sel){save();rot(sel,TYPES[sel.t].step);snp(sel);change();}
+      if(k==="rot"&&sel){save();turn(sel,TYPES[sel.t].step);snp(sel);change();}
       else if(k==="flip"&&sel&&TYPES[sel.t].flip){save();sel.flip=!sel.flip;snp(sel);change();}
       else if(k==="del"&&sel){save();pieces=pieces.filter(q=>q!==sel);sel=null;change();}
       else if(k==="undo"&&hist.length){pieces=JSON.parse(hist.pop());sel=null;change();}
-      else if(k==="clear"&&pieces.length){save();pieces=[];sel=null;change();}};
-    document.addEventListener("keydown",e=>{if(!host.isConnected||!sel||done)return;if(e.key==="r"||e.key==="R"){save();rot(sel,TYPES[sel.t].step);snp(sel);change();}else if(e.key==="Delete"||e.key==="Backspace"){e.preventDefault();save();pieces=pieces.filter(q=>q!==sel);sel=null;change();}});
+      else if(k==="clear"&&pieces.length){save();pieces=[];sel=null;change();}
+      else if(k==="tip")tip();};
+    document.addEventListener("keydown",e=>{if(!host.isConnected||!sel||done)return;if(e.key==="r"||e.key==="R"){save();turn(sel,TYPES[sel.t].step);snp(sel);change();}else if(e.key==="Delete"||e.key==="Backspace"){e.preventDefault();save();pieces=pieces.filter(q=>q!==sel);sel=null;change();}});
     draw();
-    return{get pieces(){return pieces;},set pieces(v){pieces=v;change();},check,draw,VB};
+    return{get pieces(){return pieces;},set pieces(v){pieces=v;change();},get tips(){return tips;},tip,check,draw,VB};
   }
   TANGRAM.forEach(F=>{
-    F.tg=true;F.T=new Set();
     F.extra=F.p.map(([t,r,f,dx,dy])=>{const v=TYPES[t].v.map(([x,y])=>{const [a,b]=rot(f?[-x,y]:[x,y],r);return[a+dx,b+dy];}),cx=v.reduce((a,q)=>a+q[0],0)/v.length,cy=v.reduce((a,q)=>a+q[1],0)/v.length;return{t,x:cx,y:cy,ang:r,flip:!!f};});
-    F.sol=F.extra.map(e=>({t:e.t,piece:e}));
   });
   // stilen för spelplanen, en gång per sida
   if(!document.getElementById("mb-css")){const st=document.createElement("style");st.id="mb-css";st.textContent=`
@@ -233,6 +197,8 @@
 .mb-ctl button{background:#fff;border:0;border-radius:12px;padding:6px 12px;font:inherit;font-weight:800;color:#1D2B53;box-shadow:0 3px 0 #C6D6F2;min-height:44px;cursor:pointer}
 .mb-info{font-weight:800;color:#56668F;padding:0 6px}
 .mb-p,.mb-h{cursor:grab}
+.mb-ctl button.tips{background:#FFF4CC;box-shadow:0 3px 0 #E9CF7A}
+@keyframes mbtip{from{opacity:0}to{opacity:1}}.mb-tip{animation:mbtip .4s ease-out}@media (prefers-reduced-motion:reduce){.mb-tip{animation:none}}
 @media (min-width:900px){.mb{display:grid;grid-template-columns:1fr 84px;grid-template-areas:"board tray" "ctl ctl";align-items:start}.mb-board{grid-area:board;max-height:calc(100vh - 230px)}.mb-tray{grid-area:tray;flex-direction:column}.mb-ctl{grid-area:ctl}}`;document.head.appendChild(st);}
-  window.MPBitar={TYPES,TANGRAM,TANGRAM_KAT,L,triPts,parse,tile,bounds,pieceVerts,snap,H,bildPolys,bildBox,solPolys,thumb,spel};
+  window.MPBitar={TYPES,TANGRAM,TANGRAM_KAT,pieceVerts,snap,bildPolys,bildBox,thumb,spel};
 })();

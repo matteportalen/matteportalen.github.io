@@ -130,7 +130,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .pbgrid .stars{font-size:.9rem}
 .pbgrid .pbcat{grid-column:1/-1;margin:8px 0 0;font-size:1.05rem;font-weight:800;color:var(--muted)}
 .pbgrid .pbcat small{font-weight:700;font-size:.85rem}
-.pbgrid .done{color:var(--good-dark);font-size:.85rem}
+.pbgrid .done{color:var(--good-dark);font-size:.85rem}.pbgrid .done.help{color:#9A7300}
 .pbtitle{font-size:1.3rem}
 .pblead{margin:2px 0 8px;font-size:1rem}
 .wrap:has(#pbplay:not([hidden])){max-width:1100px}
@@ -237,7 +237,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <section id="pblist" class="screen" hidden>
   <button class="back" id="pblBack">← Tillbaka</button>
   <h2 style="margin:8px 0 2px">🔺 Tangram</h2>
-  <p class="lead">Sju bitar ur en kvadrat. Använd alla sju och bygg figuren. Parallellogrammet kan du vända med ⇋.</p>
+  <p class="lead">Sju bitar ur en kvadrat. Använd alla sju och bygg figuren. Fastnar du kan du ta ett 💡 tips, men figurer klara utan tips ger stjärnor.</p>
   <div class="pbgrid" id="pbGrid"></div>
 </section>
 <section id="pbplay" class="screen" hidden>
@@ -989,15 +989,16 @@ $("pTestEnd").onclick=()=>{PT.test=null;if(PT.saved){PT.strokes=PT.saved.strokes
 
 /* ---------- Tangram (motorn finns i bitar.js) ----------
    Alla sju bitar i varje figur (varje bit finns en gång i lådan), bara silhuetten. Figurerna grupperas i Former, Djur,
-   Saker och människor. Parallellogrammet kan vändas. Sparas i data.tangram (klar = 2; gamla 1:or från Lätt räknas inte).
-   Stjärnor: 3 figurer = 1, 10 = 2, 20 = 3. (Bygg bilden med mönsterbitar togs bort, Tangram tränar samma sak bättre;
+   Saker och människor. Parallellogrammet kan vändas. 💡 Tips visar var en bit ska ligga.
+   Sparas i data.tangram: 2 = klar utan tips, 1 = klar med tips (gamla 1:or från Lätt räknas likadant).
+   Stjärnor räknar bara figurer klara utan tips: 3 figurer = 1, 10 = 2, 20 = 3. (Bygg bilden med mönsterbitar togs bort, Tangram tränar samma sak bättre;
    gamla stjärnor i data.stars.bygg räknas fortfarande.) */
 const TG_TRAY=["tL","tL2","tM","tS","tS2","tQ","tP"];
 let PB=null;
 function tangramStars(){const n=Object.values(data.tangram||{}).filter(x=>x>=2).length;return n>=20?3:n>=10?2:n>=3?1:0;}
 function openTangram(){
   data.tangram=data.tangram||{};
-  const card=B=>{const d=data.tangram[B.id]||0;return`<button data-b="${B.id}">${MPBitar.thumb(B,d>=2?"#7ACB98":"#9AA7BF")}${B.n}<span class="done">${d>=2?"✓ Klar":"&nbsp;"}</span></button>`;};
+  const card=B=>{const d=data.tangram[B.id]||0;return`<button data-b="${B.id}">${MPBitar.thumb(B,d>=2?"#7ACB98":d?"#F2CF6B":"#9AA7BF")}${B.n}<span class="done${d===1?" help":""}">${d>=2?"✓ Klar":d?"💡 Med tips":"&nbsp;"}</span></button>`;};
   $("pbGrid").innerHTML=MPBitar.TANGRAM_KAT.map(([k,kn])=>{const L=MPBitar.TANGRAM.filter(B=>B.k===k),klar=L.filter(B=>(data.tangram[B.id]||0)>=2).length;
     return`<h3 class="pbcat">${kn} <small>${klar} av ${L.length} klara</small></h3>`+L.map(card).join("");}).join("");
   show("pblist");
@@ -1010,12 +1011,13 @@ function playTangram(id){
   const B=MPBitar.TANGRAM.find(x=>x.id===id);PB={id};
   $("pbTitle").textContent=B.n;
   $("pbDone").hidden=true;show("pbplay");
-  PB.game=MPBitar.spel($("pbHost"),{bild:B,tray:TG_TRAY,unik:true,onDone:()=>tangramDone(B)});
+  PB.game=MPBitar.spel($("pbHost"),{bild:B,tray:TG_TRAY,unik:true,tips:true,onDone:r=>tangramDone(B,r.tips)});
 }
-function tangramDone(B){
-  const before=tangramStars();data.tangram[B.id]=2;const st=tangramStars();if(st>(data.stars.tangram||0))data.stars.tangram=st;save();
-  window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
-  $("pbSum").textContent=`Du lade alla sju bitarna!`+(st>before?` Ny stjärna i Geometri! ⭐`:"");
+function tangramDone(B,tips){
+  const before=tangramStars(),old=data.tangram[B.id]||0;data.tangram[B.id]=Math.max(old,tips?1:2);const st=tangramStars();if(st>(data.stars.tangram||0))data.stars.tangram=st;save();
+  window.Ljud&&Ljud.fanfare&&Ljud.fanfare();if(!tips)confetti();
+  $("pbSum").textContent=tips?`Du lade alla sju bitarna med ${tips} tips. Klarar du den utan tips? Då räknas den till stjärnorna.`+(old>=2?" (Du har redan klarat den utan tips.)":""):
+    `Du lade alla sju bitarna utan tips!`+(st>before?` Ny stjärna i Geometri! ⭐`:"");
   setTimeout(()=>{$("pbDone").hidden=false;},700);
   const L=MPBitar.TANGRAM,i=L.findIndex(x=>x.id===B.id);$("pbNext").onclick=()=>playTangram(L[(i+1)%L.length].id);
 }
