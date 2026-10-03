@@ -50,133 +50,6 @@
     return pieces;
   }
   function bounds(T){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const k of T){const [b,m]=k.split(",").map(Number);for(const [x,y] of triPts(b,m)){x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}}return{x0,y0,x1,y1};}
-  // Bilderna (rad överst först). Varje tecken = en liten triangel.
-  const BILDER=[
-    {id:"hus",n:"Hus",rows:[
-      "       #",
-      "      ###",
-      "     #####",
-      "    #######",
-      "   #########",
-      "  ###########"],
-      // kroppen av kvadrater under taket (taket slutar vid y = 0), dörr i mitten
-      extra:[{t:"sq",x:2.5,y:-.5},{t:"sq",x:3.5,y:-.5},{t:"sq",x:4.5,y:-.5},{t:"sq",x:5.5,y:-.5},{t:"sq",x:2.5,y:-1.5},{t:"sq",x:5.5,y:-1.5}]},
-    {id:"drake",n:"Drake",rows:[
-      "      #",
-      "   #####",
-      "  #######",
-      " #########",
-      " #########",
-      "  #######",
-      "   #####",
-      "    ###",
-      "     #",
-      "",
-      "     #",
-      "",
-      "     #"]},
-    {id:"fisk",n:"Fisk",rows:[
-      "     ####     ",
-      "#   ########  ",
-      "############# ",
-      "############# ",
-      "#   ########  ",
-      "     ####     "]},
-    {id:"raket",n:"Raket",rows:[
-      "    #    ",
-      "   ###   ",
-      "   ###   ",
-      "   ###   ",
-      "   ###   ",
-      "  #####  ",
-      " ### ### ",
-      " #     # "]},
-    {id:"bat",n:"Segelbåt",rows:[
-      "       #",
-      "      ###",
-      "     #####",
-      "    #######",
-      "   #########",
-      "      ###",
-      " #############",
-      "  ###########",
-      "   #########"]},
-    {id:"svamp",n:"Svamp",rows:[
-      "    #####",
-      "  #########",
-      " ###########",
-      "#############",
-      "    #####",
-      "    #####",
-      "    #####",
-      "   #######"]},
-    {id:"gran",n:"Gran",rows:[
-      "    #    ",
-      "   ###   ",
-      "  #####  ",
-      "   ###   ",
-      "  #####  ",
-      " ####### ",
-      "  #####  ",
-      " ####### ",
-      "#########",
-      "   ###   ",
-      "   ###   "]},
-    {id:"stjarna",n:"Stjärna",rows:[
-      "     #     ",
-      "    ###    ",
-      "###########",
-      " ######### ",
-      " ######### ",
-      "###########",
-      "    ###    ",
-      "     #     "]},
-    {id:"fjaril",n:"Fjäril",rows:[
-      " #####   #####",
-      "#######0#######",
-      " #############",
-      " #############",
-      "#######0#######",
-      " #####   #####"]},
-    {id:"krona",n:"Krona",rows:[
-      "#     #     #",
-      "##   ###   ##",
-      "###############",
-      "###############",
-      "###############"]},
-    {id:"robot",n:"Robot",rows:[
-      "    ###    ",
-      "  #######  ",
-      "  #######  ",
-      "    ###    ",
-      "###########",
-      " ######### ",
-      " ######### ",
-      "  ##   ##  ",
-      "  ##   ##  "]},
-    {id:"hjarta",n:"Hjärta",rows:[
-      " ####  ####",
-      "###########",
-      "###########",
-      " ######### ",
-      "  #######  ",
-      "   #####   ",
-      "    ###    ",
-      "     #     "]},
-    {id:"skoldpadda",n:"Sköldpadda",rows:[
-      "     #####     ",
-      "    #######    ",
-      "## #########  ##",
-      "################",
-      "    #######   ",
-      "   ##     ##  "]},
-    {id:"tag",n:"Tåg",rows:[
-      "##           ",
-      "##   ########",
-      "#############",
-      "#############",
-      " ###  ###  ### "]}
-  ];
   // k = kategori i bildväljaren. Figurerna är klassiska tangrambilder (fritt ritade efter förebilder, kontrollerade: yta 16, inget överlapp)
   const TANGRAM_KAT=[["former","Former"],["djur","Djur"],["saker","Saker och människor"]];
   const TANGRAM=[
@@ -210,8 +83,6 @@
     {id:"trojan",n:"Tröja",k:"saker",p:[["tS",45,0,0,1.4142],["tM",225,0,1.4142,4.2426],["tS2",315,0,1.4142,4.2426],["tL",45,0,1.4142,0],["tQ",45,0,3.5355,2.1213],["tP",135,1,4.2426,4.2426],["tL2",225,0,4.2426,2.8284]]},
     {id:"person",n:"Person",k:"saker",p:[["tQ",45,0,1.4142,4.9497],["tL",135,0,2.8284,2.8284],["tL2",315,0,0,5.6569],["tS",45,0,0,1.4142],["tP",45,0,0,0],["tS2",45,0,1.4142,1.4142],["tM",315,0,1.4142,1.4142]]}
   ];
-  BILDER.forEach(B=>{B.T=parse(B.rows);B.sol=tile(B.T);B.box=bounds(B.T);B.extra=(B.extra||[]).map(e=>Object.assign({ang:0},e));
-    B.extra.forEach(e=>{B.sol.push({t:e.t,poly:null,piece:e});});});
 
   /* ---------- Hjälpfunktioner ---------- */
   const rot=([x,y],d)=>{const a=d*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return[x*c-y*s,x*s+y*c];};
@@ -232,7 +103,7 @@
   /* ---------- Bildens form: trianglar + extra bitar ---------- */
   function bildPolys(B){const out=[...B.T].map(k=>{const [b,m]=k.split(",").map(Number);return triPts(b,m);});B.extra.forEach(e=>out.push(pieceVerts(e)));return out;}
   function bildBox(B){let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;bildPolys(B).forEach(P=>P.forEach(([x,y])=>{x0=Math.min(x0,x);y0=Math.min(y0,y);x1=Math.max(x1,x);y1=Math.max(y1,y);}));return{x0,y0,x1,y1};}
-  // lösningens bitar som polygoner (för linjerna i Lätt och för bildsamlingen)
+  // lösningens bitar som polygoner
   function solPolys(B){
     return B.sol.map(pc=>{if(pc.piece)return{t:pc.t,pts:pieceVerts(pc.piece)};
       // yttre kanter: kanter som bara en triangel i biten har
@@ -249,7 +120,7 @@
   /* ---------- Spelplanen ----------
      opts: {bild, nivå: 1 lätt (linjer syns) | 2 mellan | 3 svår (högst N bitar), fri:true för fritt bygge, onDone(info)} */
   function spel(host,opts){
-    opts=opts||{};const B=opts.bild,fri=!B,niva=opts.niva||2;
+    opts=opts||{};const B=opts.bild,fri=!B;
     const box=B?bildBox(B):(opts.box||{x0:0,y0:0,x1:14,y1:9}),mx=fri?0:2.2,my=fri?0:1.2;
     const VB={x:box.x0-mx,y:-(box.y1+my),w:box.x1-box.x0+2*mx,h:box.y1-box.y0+2*my};
     host.innerHTML=`<div class="mb"><svg class="mb-board" viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" role="img" aria-label="${B?"Bygg bilden: "+B.n:"Fritt bygge"}"></svg>
@@ -257,11 +128,8 @@
       <div class="mb-ctl"><button data-a="rot">↻ Vrid</button>${(opts.tray||[]).some(t=>TYPES[t].flip)?'<button data-a="flip">⇋ Vänd</button>':""}<button data-a="del">🗑 Ta bort</button><button data-a="undo">↶ Ångra</button><button data-a="clear">Börja om</button><span class="mb-info"></span></div></div>`;
     const svg=host.querySelector(".mb-board"),gS=el("g",{}),gL=el("g",{}),gP=el("g",{}),gH=el("g",{});svg.append(gS,gL,gP,gH);
     const info=host.querySelector(".mb-info");
-    // silhuetten (och linjerna i Lätt)
-    if(B){gS.append(el("path",{d:silPath(B),fill:"#C9D2E3",stroke:"#C9D2E3","stroke-width":".05","stroke-linejoin":"round"}));
-      if(niva===1)solPolys(B).forEach(sp=>{(sp.edges||[]).forEach(([p,q])=>gL.append(el("line",{x1:p[0],y1:-p[1],x2:q[0],y2:-q[1],stroke:"#fff","stroke-width":".06","stroke-linecap":"round"})));
-        if(sp.pts)gL.append(el("polygon",{points:ptsAttr(sp.pts),fill:"none",stroke:"#fff","stroke-width":".06"}));});}
-    const maxN=B?B.sol.length:Infinity;
+    // silhuetten
+    if(B)gS.append(el("path",{d:silPath(B),fill:"#C9D2E3",stroke:"#C9D2E3","stroke-width":".05","stroke-linejoin":"round"}));
     let pieces=[],sel=null,hist=[],done=false;
     const tg=B?bildPolys(B).flat():[],snp=p=>snap(p,pieces,tg); // bildens hörn är också snäppmål (för kvadraterna)
     const save=()=>{hist.push(JSON.stringify(pieces));if(hist.length>60)hist.shift();};
@@ -274,7 +142,7 @@
         gH.append(el("line",{x1:sel.x,y1:-sel.y,x2:hx,y2:-hy,stroke:"#1D2B53","stroke-width":".04","stroke-dasharray":".12 .1","pointer-events":"none"})); // linjen får inte ta trycket från biten
         const h=el("g",{class:"mb-h",transform:`translate(${hx} ${-hy})`});h.append(el("circle",{r:".36",fill:"#FFC93C",stroke:"#1D2B53","stroke-width":".06"}));
         const t=el("text",{"text-anchor":"middle","dominant-baseline":"central","font-size":".46","font-weight":"800",fill:"#1D2B53"});t.textContent="↻";h.append(t);gH.append(h);}
-      if(B){const n=pieces.length;info.textContent=niva===3&&!B.tg?`Bitar: ${n} (högst ${maxN})`:B.tg?`Bitar: ${n} av 7`:`Bitar: ${n}`;}else info.textContent=`Bitar: ${pieces.length}`;
+      if(B){const n=pieces.length;info.textContent=B.tg?`Bitar: ${n} av 7`:`Bitar: ${n}`;}else info.textContent=`Bitar: ${pieces.length}`;
       // tangram: varje bit finns bara en gång i lådan
       if(opts.unik)host.querySelectorAll(".mb-t").forEach(b=>b.classList.toggle("used",pieces.some(q=>q.t===b.dataset.t)));
     }
@@ -290,8 +158,7 @@
       for(let i=0;i<d.length;i+=4){const inS=d[i+2]>160,r=d[i];if(inS){sil++;if(r>=25)cov++;}else if(r>=45&&d[i+2]<60)out++;if(r>=105)ov++;}
       const ok=sil&&cov/sil>.97&&out/sil<.02&&ov/sil<.03;
       if(ok){const counts={};pieces.forEach(p=>counts[p.t]=(counts[p.t]||0)+1);
-        if(niva===3&&pieces.length>maxN){info.textContent=`Bilden är klar med ${pieces.length} bitar. Klarar du den med högst ${maxN}?`;return;}
-        done=true;sel=null;draw();opts.onDone&&opts.onDone({n:pieces.length,counts,max:maxN});}
+        done=true;sel=null;draw();opts.onDone&&opts.onDone({n:pieces.length,counts});}
     }
     function change(){draw();check();}
     // ---------- pekare ----------
@@ -367,5 +234,5 @@
 .mb-info{font-weight:800;color:#56668F;padding:0 6px}
 .mb-p,.mb-h{cursor:grab}
 @media (min-width:900px){.mb{display:grid;grid-template-columns:1fr 84px;grid-template-areas:"board tray" "ctl ctl";align-items:start}.mb-board{grid-area:board;max-height:calc(100vh - 230px)}.mb-tray{grid-area:tray;flex-direction:column}.mb-ctl{grid-area:ctl}}`;document.head.appendChild(st);}
-  window.MPBitar={TYPES,BILDER,TANGRAM,TANGRAM_KAT,L,triPts,parse,tile,bounds,pieceVerts,snap,H,bildPolys,bildBox,solPolys,thumb,spel};
+  window.MPBitar={TYPES,TANGRAM,TANGRAM_KAT,L,triPts,parse,tile,bounds,pieceVerts,snap,H,bildPolys,bildBox,solPolys,thumb,spel};
 })();
