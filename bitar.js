@@ -177,13 +177,38 @@
       "#############",
       " ###  ###  ### "]}
   ];
+  // k = kategori i bildväljaren. Figurerna är klassiska tangrambilder (fritt ritade efter förebilder, kontrollerade: yta 16, inget överlapp)
+  const TANGRAM_KAT=[["former","Former"],["djur","Djur"],["saker","Saker och människor"]];
   const TANGRAM=[
-    {id:"kvadrat",n:"Kvadrat",p:[["tL",0,0,0,0],["tL2",270,0,0,4],["tM",180,0,4,4],["tS",90,0,4,0],["tQ",0,0,2,1],["tS2",180,0,3,3],["tP",0,1,3,3]]},
-    {id:"hus",n:"Hus",p:[["tL",0,0,0,4],["tL2",180,0,4,4],["tM",0,0,0,2],["tS",90,0,4,2],["tS2",0,0,2,2],["tQ",0,0,2,5],["tP",0,0,1,1]]},
-    {id:"fisk",n:"Fisk",p:[["tL",0,0,0,0],["tL2",180,0,4,0],["tM",270,0,0,2],["tQ",0,0,-2,-1],["tS",270,0,-3,1],["tS2",180,0,3,-2],["tP",180,0,6,0]]},
-    {id:"bat",n:"Segelbåt",p:[["tL2",180,0,4,0],["tL",90,0,2,0],["tM",0,0,2,0],["tS",270,0,2,4],["tQ",0,0,1,4],["tP",180,0,3,-2],["tS2",0,0,2,-3]]},
-    {id:"raket",n:"Raket",p:[["tL",90,0,0,0],["tL2",270,0,0,4],["tQ",0,0,-1,4],["tS",270,0,-2,2],["tS2",90,0,2,0],["tM",180,0,1,0],["tP",90,0,1,-4]]},
-    {id:"pil",n:"Pil",p:[["tL",270,0,4,4],["tL2",0,0,0,1],["tM",270,0,0,3],["tS",180,0,4,3],["tS2",90,0,4,1],["tQ",0,0,-2,1],["tP",0,0,-3,0]]}
+    {id:"kvadrat",n:"Kvadrat",k:"former",p:[["tL",0,0,0,0],["tL2",270,0,0,4],["tM",180,0,4,4],["tS",90,0,4,0],["tQ",0,0,2,1],["tS2",180,0,3,3],["tP",0,1,3,3]]},
+    {id:"triangel",n:"Triangel",k:"former",p:[["tL",0,0,0,0],["tL2",90,0,4,0],["tM",0,0,4,0],["tQ",0,0,4,1],["tS",270,0,4,4],["tP",0,1,8,0],["tS2",0,0,5,1]]},
+    {id:"rektangel",n:"Rektangel",k:"former",p:[["tL",45,0,0,0],["tL2",225,0,2.8284,2.8284],["tM",135,0,4.2426,1.4142],["tS",315,0,2.8284,2.8284],["tQ",45,0,4.9497,0.7071],["tP",45,1,5.6569,1.4142],["tS2",225,0,5.6569,1.4142]]},
+    {id:"parallellogram",n:"Parallellogram",k:"former",p:[["tL",0,0,0,0],["tL2",90,0,4,0],["tS",270,0,4,2],["tQ",0,0,4,1],["tM",270,0,4,4],["tS2",180,0,7,3],["tP",0,0,5,3]]},
+    {id:"trapets",n:"Trapets",k:"former",p:[["tL",225,0,2.8284,2.8284],["tL2",45,0,2.8284,0],["tS",225,0,4.2426,1.4142],["tQ",45,0,4.9497,-0.7071],["tM",225,0,5.6569,2.8284],["tS2",135,0,7.0711,0],["tP",135,0,8.4853,0]]},
+    {id:"femhorning",n:"Femhörning",k:"former",p:[["tS",45,0,0,0],["tL",225,0,2.8284,4.2426],["tL2",135,0,5.6569,1.4142],["tM",225,0,1.4142,1.4142],["tP",135,0,4.2426,0],["tS2",315,0,2.8284,1.4142],["tQ",45,0,4.9497,-0.7071]]},
+    {id:"sexhorning",n:"Sexhörning",k:"former",p:[["tL",90,0,2,0],["tM",90,0,4,0],["tL2",270,0,2,4],["tS",180,0,4,4],["tQ",0,0,3,2],["tP",90,1,5,3],["tS2",270,0,5,3]]},
+    {id:"katt",n:"Katt",k:"djur",p:[["tQ",0,0,0,0],["tS",270,0,0,3],["tS2",90,0,2,1],["tL",270,0,1,0],["tM",315,0,-0.4142,-1.4142],["tL2",225,0,3,-2],["tP",0,0,3,-4.8284]]},
+    {id:"kanin",n:"Kanin",k:"djur",p:[["tL",270,0,0,4],["tL2",0,0,0,0],["tM",180,0,4,2],["tQ",0,0,0,3],["tP",90,1,1,7],["tS",90,0,2,4],["tS2",270,0,4,2]]},
+    {id:"hund",n:"Hund",k:"djur",p:[["tL",45,0,0,0],["tL2",225,0,4.2426,4.2426],["tQ",45,0,4.9497,2.1213],["tS2",45,0,4.2426,1.4142],["tS",90,0,5.2426,0.4142],["tM",225,0,5.6569,5.6569],["tP",135,0,0.7071,2.8284]]},
+    {id:"fisk",n:"Fisk",k:"djur",p:[["tL",0,0,0,0],["tL2",180,0,4,0],["tM",270,0,0,2],["tQ",0,0,-2,-1],["tS",270,0,-3,1],["tS2",180,0,3,-2],["tP",180,0,6,0]]},
+    {id:"gas",n:"Gås",k:"djur",p:[["tL",135,0,2.8284,0],["tL2",180,0,4,2.8284],["tM",315,0,-1.4142,1.4142],["tS",270,0,-1.4142,3.4142],["tQ",0,0,-1.4142,2.4142],["tP",90,0,0.5858,3.4142],["tS2",315,0,-1.8284,6.4142]]},
+    {id:"kamel",n:"Kamel",k:"djur",p:[["tL",270,0,0,4],["tL2",315,0,1.1716,2.8284],["tM",225,0,2.5858,4.2426],["tQ",0,0,0,3],["tP",90,0,0,3],["tS",315,0,-1.4142,6.4142],["tS2",45,0,4,1.4142]]},
+    {id:"ko",n:"Ko",k:"djur",p:[["tL",270,0,0,4],["tL2",90,0,4,0],["tM",45,0,2,2],["tQ",45,0,-0.7071,2.2929],["tS",225,0,-1.4142,5.8284],["tS2",135,0,1.4142,4.4142],["tP",90,0,5,1]]},
+    {id:"krabba",n:"Krabba",k:"djur",p:[["tL",135,0,2.8284,1.4142],["tL2",315,0,1.4142,2.8284],["tQ",45,0,2.1213,2.1213],["tP",45,1,5.6569,4.2426],["tS2",135,0,5.6569,4.2426],["tM",315,0,-1.4142,4.2426],["tS",45,0,0,0]]},
+    {id:"bjorn",n:"Björn",k:"djur",p:[["tL",90,0,0,0.2426],["tL2",45,0,0,1.4142],["tS",135,0,0.2426,0],["tM",90,0,2.8284,2.2426],["tQ",45,0,3.5355,2.1213],["tS2",135,0,5.6569,2.8284],["tP",135,0,4.2426,0.8284]]},
+    {id:"val",n:"Val",k:"djur",p:[["tL",315,0,0,2.8284],["tL2",135,0,5.6569,0],["tP",135,0,2.8284,0],["tQ",0,0,4.6569,0],["tS",180,0,5.6569,2],["tS2",90,0,6.6569,1],["tM",45,0,6.6569,3]]},
+    {id:"lejon",n:"Lejon",k:"djur",p:[["tL",45,0,0,0],["tS",0,0,0,0],["tM",90,0,4,2],["tL2",45,0,4,2],["tQ",0,0,5,2],["tS2",315,0,2.5858,2],["tP",45,1,0,2.8284]]},
+    {id:"elefant",n:"Elefant",k:"djur",p:[["tL",45,0,0,0],["tL2",225,0,3.5355,3.5355],["tQ",45,0,2.8284,-1.4142],["tS",90,0,0,-1],["tM",135,0,4.9497,2.1213],["tP",45,1,6.364,2.1213],["tS2",135,0,6.364,2.1213]]},
+    {id:"kanguru",n:"Känguru",k:"djur",p:[["tL",135,0,2.8284,3],["tS",225,0,0,7.2426],["tS2",90,0,0,2],["tM",180,0,3.4142,3],["tQ",0,0,0.4142,1],["tL2",0,0,0.4142,0],["tP",0,1,6.4142,0]]},
+    {id:"groda",n:"Groda",k:"djur",p:[["tQ",45,0,0.8787,4.2929],["tS",45,0,2.4142,5],["tS2",225,0,3.8284,6.4142],["tM",225,0,2,5.4142],["tL2",180,0,4,4],["tL",0,0,1,1],["tP",0,0,1,0]]},
+    {id:"hus",n:"Hus",k:"saker",p:[["tL",225,0,1.4142,5.6569],["tL2",135,0,4.2426,2.8284],["tM",135,0,1.4142,1.4142],["tS",315,0,0,2.8284],["tQ",45,0,2.1213,0.7071],["tP",45,1,2.8284,1.4142],["tS2",225,0,2.8284,1.4142]]},
+    {id:"raket",n:"Raket",k:"saker",p:[["tL",90,0,0,0],["tL2",270,0,0,4],["tQ",0,0,-1,4],["tS",270,0,-2,2],["tS2",90,0,2,0],["tM",180,0,1,0],["tP",90,0,1,-4]]},
+    {id:"pil",n:"Pil",k:"saker",p:[["tL",270,0,4,4],["tL2",0,0,0,1],["tM",270,0,0,3],["tS",180,0,4,3],["tS2",90,0,4,1],["tQ",0,0,-2,1],["tP",0,0,-3,0]]},
+    {id:"ljus",n:"Ljus",k:"saker",p:[["tM",90,0,1,0],["tL",270,0,0,5],["tL2",90,0,2,3],["tS",270,0,0,7],["tQ",0,0,0,6],["tS2",0,0,1,0],["tP",90,1,2,3]]},
+    {id:"bord",n:"Bord",k:"saker",p:[["tL",45,0,0,1.4142],["tQ",45,0,0.7071,-0.7071],["tS",225,0,1.4142,2.8284],["tM",225,0,2.8284,4.2426],["tL2",315,0,2.8284,4.2426],["tP",135,1,4.2426,2.8284],["tS2",135,0,5.6569,0]]},
+    {id:"stol",n:"Stol",k:"saker",p:[["tS",45,0,0,5.6569],["tP",135,1,0,5.6569],["tM",315,0,0,5.6569],["tL",135,0,2.8284,1.4142],["tQ",45,0,0.7071,-0.7071],["tL2",315,0,1.4142,2.8284],["tS2",135,0,4.2426,0]]},
+    {id:"trojan",n:"Tröja",k:"saker",p:[["tS",45,0,0,1.4142],["tM",225,0,1.4142,4.2426],["tS2",315,0,1.4142,4.2426],["tL",45,0,1.4142,0],["tQ",45,0,3.5355,2.1213],["tP",135,1,4.2426,4.2426],["tL2",225,0,4.2426,2.8284]]},
+    {id:"person",n:"Person",k:"saker",p:[["tQ",45,0,1.4142,4.9497],["tL",135,0,2.8284,2.8284],["tL2",315,0,0,5.6569],["tS",45,0,0,1.4142],["tP",45,0,0,0],["tS2",45,0,1.4142,1.4142],["tM",315,0,1.4142,1.4142]]}
   ];
   BILDER.forEach(B=>{B.T=parse(B.rows);B.sol=tile(B.T);B.box=bounds(B.T);B.extra=(B.extra||[]).map(e=>Object.assign({ang:0},e));
     B.extra.forEach(e=>{B.sol.push({t:e.t,poly:null,piece:e});});});
@@ -217,7 +242,9 @@
   }
   const svgNS="http://www.w3.org/2000/svg",el=(n,a)=>{const e=document.createElementNS(svgNS,n);for(const k in a)e.setAttribute(k,a[k]);return e;};
   const ptsAttr=P=>P.map(([x,y])=>x.toFixed(3)+","+(-y).toFixed(3)).join(" ");
-  function thumb(B,col){const {x0,y0,x1,y1}=bildBox(B),pad=.25;return`<svg viewBox="${x0-pad} ${-(y1+pad)} ${x1-x0+2*pad} ${y1-y0+2*pad}" aria-hidden="true">${bildPolys(B).map(P=>`<polygon points="${ptsAttr(P)}" fill="${col||"#9AA7BF"}" stroke="${col||"#9AA7BF"}" stroke-width=".05" stroke-linejoin="round"/>`).join("")}</svg>`;}
+  function thumb(B,col){const {x0,y0,x1,y1}=bildBox(B),pad=.25;return`<svg viewBox="${x0-pad} ${-(y1+pad)} ${x1-x0+2*pad} ${y1-y0+2*pad}" aria-hidden="true"><path d="${silPath(B)}" fill="${col||"#9AA7BF"}" stroke="${col||"#9AA7BF"}" stroke-width=".05" stroke-linejoin="round"/></svg>`;}
+  // silhuetten som en enda form, så att inga skarvar mellan bitarna syns (de skulle avslöja lösningen)
+  function silPath(B){return bildPolys(B).map(P=>"M"+P.map(([x,y])=>(+x.toFixed(4))+" "+(+(-y).toFixed(4))).join("L")+"Z").join("");}
 
   /* ---------- Spelplanen ----------
      opts: {bild, nivå: 1 lätt (linjer syns) | 2 mellan | 3 svår (högst N bitar), fri:true för fritt bygge, onDone(info)} */
@@ -231,7 +258,7 @@
     const svg=host.querySelector(".mb-board"),gS=el("g",{}),gL=el("g",{}),gP=el("g",{}),gH=el("g",{});svg.append(gS,gL,gP,gH);
     const info=host.querySelector(".mb-info");
     // silhuetten (och linjerna i Lätt)
-    if(B){bildPolys(B).forEach(P=>gS.append(el("polygon",{points:ptsAttr(P),fill:"#C9D2E3",stroke:"#C9D2E3","stroke-width":".05","stroke-linejoin":"round"})));
+    if(B){gS.append(el("path",{d:silPath(B),fill:"#C9D2E3",stroke:"#C9D2E3","stroke-width":".05","stroke-linejoin":"round"}));
       if(niva===1)solPolys(B).forEach(sp=>{(sp.edges||[]).forEach(([p,q])=>gL.append(el("line",{x1:p[0],y1:-p[1],x2:q[0],y2:-q[1],stroke:"#fff","stroke-width":".06","stroke-linecap":"round"})));
         if(sp.pts)gL.append(el("polygon",{points:ptsAttr(sp.pts),fill:"none",stroke:"#fff","stroke-width":".06"}));});}
     const maxN=B?B.sol.length:Infinity;
@@ -340,5 +367,5 @@
 .mb-info{font-weight:800;color:#56668F;padding:0 6px}
 .mb-p,.mb-h{cursor:grab}
 @media (min-width:900px){.mb{display:grid;grid-template-columns:1fr 84px;grid-template-areas:"board tray" "ctl ctl";align-items:start}.mb-board{grid-area:board;max-height:calc(100vh - 230px)}.mb-tray{grid-area:tray;flex-direction:column}.mb-ctl{grid-area:ctl}}`;document.head.appendChild(st);}
-  window.MPBitar={TYPES,BILDER,TANGRAM,L,triPts,parse,tile,bounds,pieceVerts,snap,H,bildPolys,bildBox,solPolys,thumb,spel};
+  window.MPBitar={TYPES,BILDER,TANGRAM,TANGRAM_KAT,L,triPts,parse,tile,bounds,pieceVerts,snap,H,bildPolys,bildBox,solPolys,thumb,spel};
 })();
