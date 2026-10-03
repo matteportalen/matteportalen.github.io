@@ -77,6 +77,12 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .opts button.right{background:#DDF5E7;color:var(--good-dark);box-shadow:0 3px 0 #9FE0BC}
 .opts button:disabled{cursor:default}
 .adj{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px}
+.adj.six{grid-template-columns:repeat(3,1fr)}
+.elapsed{font-weight:800;font-size:1.25rem;color:#C96A0C;margin:4px 0 0;min-height:1.5em}
+.span{display:flex;justify-content:center;align-items:center;gap:8px;margin:2px 0 6px;flex-wrap:wrap}
+.chip{font-weight:800;font-size:1.15rem;border-radius:12px;padding:2px 12px;font-variant-numeric:tabular-nums}
+.chip.st{background:#DDF5E7;color:#157548}.chip.en{background:#FDE4E4;color:#C0353A}.arr{font-weight:800;color:var(--muted)}
+.tbox .gap{width:.4em}
 .adj button{background:var(--bg);border-radius:12px;padding:8px 2px;font-weight:800;font-size:1rem;box-shadow:0 3px 0 var(--line)}
 .go{display:block;width:100%;margin-top:12px;padding:14px;border-radius:18px;background:var(--good);color:#fff;font-size:1.35rem;font-weight:800;box-shadow:0 5px 0 var(--good-dark)}
 .hint{font-size:.9rem;color:var(--muted);margin:4px 0 0}
@@ -234,6 +240,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../klocka.js"></script>
 <script src="../huvud.js" data-titel="Klockan" data-ikon="🕒"></script>
 <script>
 const $=s=>document.querySelector(s);
@@ -249,42 +256,9 @@ let data=load();
 function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.stars)return Object.assign({race:{},blitz:{}},d);}catch(e){}return{stars:{},race:{},blitz:{}};}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}
 
-/* ---------- Tid på svenska ---------- */
-const HN=['tolv','ett','två','tre','fyra','fem','sex','sju','åtta','nio','tio','elva','tolv'];
-const hn=h=>HN[((h%12)+12)%12||12];
-function phrase(h,m){           // h = timme 0–23, m = minuter (multipel av 5)
-  const a=hn(h),b=hn(h+1);
-  return({0:`klockan ${a}`,5:`fem över ${a}`,10:`tio över ${a}`,15:`kvart över ${a}`,20:`tjugo över ${a}`,25:`fem i halv ${b}`,
-    30:`halv ${b}`,35:`fem över halv ${b}`,40:`tjugo i ${b}`,45:`kvart i ${b}`,50:`tio i ${b}`,55:`fem i ${b}`})[m];
-}
-const cap=s=>s[0].toUpperCase()+s.slice(1);
-const two=n=>String(n).padStart(2,'0');
-const dig=(h,m)=>`${two(h)}.${two(m)}`;
+/* ---------- Tid på svenska och klockbilden finns i ../klocka.js ---------- */
+const {hn,two,dig,cap,phrase,fmtDur,clockSVG}=MPKlocka;
 function partOfDay(h){return h<5?'på natten':h<10?'på morgonen':h<12?'på förmiddagen':h<18?'på eftermiddagen':'på kvällen';}
-function fmtDur(min){const h=Math.floor(min/60),m=min%60;const hs=h?`${h} ${h===1?'timme':'timmar'}`:'',ms=m?`${m} minuter`:'';return hs&&ms?`${hs} och ${ms}`:hs||ms;}
-
-/* ---------- Klockan (SVG) ---------- */
-function clockSVG(h,m,o={}){
-  const ah=o.hourAngle!=null?o.hourAngle:((h%12)+m/60)*30,am=o.minAngle!=null?o.minAngle:m*6;
-  let s=`<svg class="clock${o.small?' small':''}" viewBox="-22 -22 244 244" role="img" aria-label="Analog klocka">`;
-  s+=`<circle cx="100" cy="100" r="96" fill="#fff" stroke="#1D2B53" stroke-width="6"/>`;
-  if(o.halves){
-    s+=`<path d="M100 100L100 7A93 93 0 0 1 100 193Z" fill="#DDF5E7"/><path d="M100 100L100 193A93 93 0 0 1 100 7Z" fill="#FFE9D2"/>`;
-    s+=`<text x="136" y="106" text-anchor="middle" font-size="15" font-weight="800" fill="#157548" stroke="#fff" stroke-width="4" paint-order="stroke">över</text><text x="64" y="106" text-anchor="middle" font-size="17" font-weight="800" fill="#C96A0C" stroke="#fff" stroke-width="4" paint-order="stroke">i</text>`;
-  }
-  if(o.wedge){const[m1,dm]=o.wedge;if(dm>=60)s+=`<circle cx="100" cy="100" r="92" fill="rgba(255,159,67,.28)"/>`;
-    const rest=dm%60;if(rest){const a1=m1*6*Math.PI/180,a2=(m1+rest)*6*Math.PI/180,R=92,large=rest>30?1:0;
-      s+=`<path d="M100 100L${100+R*Math.sin(a1)} ${100-R*Math.cos(a1)}A${R} ${R} 0 ${large} 1 ${100+R*Math.sin(a2)} ${100-R*Math.cos(a2)}Z" fill="rgba(255,159,67,.45)"/>`;}}
-  for(let i=0;i<60;i++){const a=i*6*Math.PI/180,maj=i%5===0,r1=maj?80:86,r2=92;
-    s+=`<line x1="${100+r1*Math.sin(a)}" y1="${100-r1*Math.cos(a)}" x2="${100+r2*Math.sin(a)}" y2="${100-r2*Math.cos(a)}" stroke="#1D2B53" stroke-width="${maj?3:1.3}" stroke-linecap="round"/>`;}
-  for(let i=1;i<=12;i++){const a=i*30*Math.PI/180;s+=`<text x="${100+66*Math.sin(a)}" y="${100-66*Math.cos(a)+7}" text-anchor="middle" font-size="21" font-weight="800" fill="#1D2B53">${i}</text>`;}
-  if(o.ring){for(let i=0;i<12;i++){const a=i*30*Math.PI/180;
-    s+=`<text x="${100+110*Math.sin(a)}" y="${100-110*Math.cos(a)+5}" text-anchor="middle" font-size="13" font-weight="800" fill="#3D5AFE">${two(i*5)}</text>`;}}
-  s+=`<g class="hh" transform="rotate(${ah} 100 100)"><line x1="100" y1="112" x2="100" y2="50" stroke="#1D2B53" stroke-width="9" stroke-linecap="round"/></g>`;
-  s+=`<g class="mh" transform="rotate(${am} 100 100)"><line x1="100" y1="114" x2="100" y2="22" stroke="#3D5AFE" stroke-width="5.5" stroke-linecap="round"/></g>`;
-  s+=`<circle cx="100" cy="100" r="7" fill="#FFC93C" stroke="#1D2B53" stroke-width="2"/></svg>`;
-  return s;
-}
 
 /* ---------- Nivåer ---------- */
 const LEVELS=[
@@ -293,6 +267,7 @@ const LEVELS=[
   {id:'kvart',name:'Kvart',desc:'Kvart över och kvart i.',mins:[15,45],ex:[3,15]},
   {id:'fem',name:'Fem och tio',desc:'Fem över, tio i …',mins:[5,10,50,55],ex:[3,10]},
   {id:'runthalv',name:'Tjugo över till tjugo i',desc:'Tjugo över, fem i halv, fem över halv, tjugo i …',mins:[20,25,35,40],ex:[2,25]},
+  {id:'minut',name:'Minuter',desc:'Tre minuter över fyra, sju minuter i nio …',mins:Array.from({length:60},(_,i)=>i).filter(i=>i%5),ex:[8,53],step:1},
   {id:'dig',name:'Digital tid',desc:'24-timmarsklockan, t.ex. 15.45.',digital:true},
   {id:'mata',name:'Mäta tid',desc:'Hur lång tid tar det?',measure:true},
   {id:'mix',name:'Blanda allt',desc:'Alla sorters klockslag.',mins:[0,5,10,15,20,25,30,35,40,45,50,55],ex:[8,40],mix:true}
@@ -301,7 +276,7 @@ const EARLIER=lv=>LEVELS.slice(0,LEVELS.indexOf(lv)).filter(l=>l.mins&&!l.mix).f
 
 /* ---------- Stationen: elevens djur är konduktör, ett lok per nivå i Lokstallet ---------- */
 const pet=Object.assign(lasDjur(),{hat:'konduktor'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
-const LOKS={hel:['🚂','Ångloket'],halv:['🚋','Spårvagnen'],kvart:['🚃','Rälsbussen'],fem:['🚞','Fjälltåget'],runthalv:['🚆','Pendeltåget'],dig:['🚇','Tunnelbanan'],mata:['🚄','Snabbtåget'],mix:['🚅','Expresståget']};
+const LOKS={hel:['🚂','Ångloket'],halv:['🚋','Spårvagnen'],kvart:['🚃','Rälsbussen'],fem:['🚞','Fjälltåget'],runthalv:['🚆','Pendeltåget'],dig:['🚇','Tunnelbanan'],mata:['🚄','Snabbtåget'],minut:['🚈','Lättbanan'],mix:['🚅','Expresståget']};
 const hasLok=id=>(data.stars[id]||0)>=2; // ett lok när nivån har minst två stjärnor (högst två fel i Öva)
 const petFx=c=>{const p=$('#hpet');if(p){p.classList.remove('hop','hmm');void p.offsetWidth;p.classList.add(c);}};
 $('#homePet').innerHTML=owlSVG(pet);$('#hpet').innerHTML=owlSVG(pet);$('#rPet').innerHTML=owlSVG(pet);
@@ -313,7 +288,8 @@ function analogDistractors(h,m,pool){
   const add=(hh,mm,score)=>{const p=phrase(hh,mm);if(p&&p!==phrase(h,m)&&!cands.has(p))cands.set(p,score+Math.random());};
   add(h+1,m,3);add(h-1,m,2);add(h,(60-m)%60,3);add(h+1,(60-m)%60,2);
   if(m>=20&&m<=40){add(h,(m+30)%60,2);add(h+1,m===30?0:m,1);}
-  pool.forEach(mm=>add(h,mm,1));[0,15,30,45].forEach(mm=>add(h,mm,.5));
+  if(m%5){[m-1,m+1].filter(x=>x>0&&x<60).forEach(x=>add(h,x,2.6));add(h,m<30?m+30:m-30,1.5);} // räknat ett streck fel, eller fel halva
+  else pool.forEach(mm=>add(h,mm,1));[0,15,30,45].forEach(mm=>add(h,mm,.5));
   return[...cands.entries()].sort((a,b)=>b[1]-a[1]).slice(0,3).map(x=>x[0]);
 }
 function optsTask(correct,distr){return shuffle([correct,...distr]);}
@@ -323,13 +299,18 @@ function genAnalog(lv,forRace){
   const p=phrase(h,m);
   const r=Math.random();
   // Öva: mest "ställ klockan" (går inte att gissa), sedan välj rätt klocka, "Stämmer det?" och flerval.
-  if(!forRace&&r<.4)return{kind:'set',instr:`Ställ klockan på ${p}.`,speak:`Ställ klockan på ${p}.`,target:(h%12)*60+m,h,m,help:helpAnalog(h,m)};
+  if(!forRace&&r<.4)return{kind:'set',instr:`Ställ klockan på ${p}.`,speak:`Ställ klockan på ${p}.`,target:(h%12)*60+m,h,m,step:lv.step||5,help:helpAnalog(h,m)};
   if(forRace?r<.4:r<.62)return pickTask(h,m,p);
   if(!forRace&&r<.78)return ynTask(h,m,p);
   return{kind:'opts',instr:'Vad är klockan?',speak:'Vad är klockan?',vis:clockSVG(h,m),options:optsTask(cap(p),analogDistractors(h,m,pool).map(cap)),answer:cap(p),help:helpAnalog(h,m)};
 }
 function explain(h,m){
   const a=hn(h),b=hn(h+1);
+  if(m%5){const f=Math.floor(m/5)*5,n=m-f,s=`Den långa visaren står ${n} små streck efter ${f?f/5:12}. Räkna femmor till ${f}, sedan ett streck i taget: ${m} minuter. `;
+    if(m<20)return s+`Det är på högra sidan, alltså över. ${cap(phrase(h,m))}.`;
+    if(m<30)return s+`Det fattas ${30-m} till halv. Alltså ${phrase(h,m)}.`;
+    if(m<40)return s+`Visaren har gått ${m-30} förbi halv. Alltså ${phrase(h,m)}.`;
+    return s+`Det fattas ${60-m} minuter tills klockan blir ${b}. Alltså ${phrase(h,m)}.`;}
   if(m===0)return`Den långa visaren pekar rakt upp på 12. Då är klockan hel. Den korta visaren pekar på ${h%12||12}. Klockan är ${a}.`;
   if(m===30)return`Den långa visaren pekar rakt ner på 6. Då är det halv. Den korta visaren står mitt emellan ${h%12||12} och ${(h%12)+1}. Halv betyder halvvägs till ${b}.`;
   if(m<30){if(m===25)return`Den långa visaren är nästan nere vid 6, men inte riktigt. Det fattas 5 minuter till halv. Alltså fem i halv ${b}.`;
@@ -395,31 +376,44 @@ function genMeasure(forRace){
     tip:d>=60?`Ett helt varv med den långa visaren är 1 timme. Räkna först hela varv, sedan minuterna som är kvar. Det orange visar hur långt minutvisaren har gått.`
              :`Det orange visar hur långt den långa visaren har gått: från ${two(sm)} till ${two(em)}. Varje litet streck är en minut, och varje siffra är 5 minuter.`});
   const r=Math.random();
-  // Två analoga klockor utan digital text
+  // Mät med tidsblock (bara i Öva): start på en femma, slut på vilken minut som helst
+  if(!forRace&&r>=.45&&r<.7)return genBlocks();
   // Tidtabellen: hur lång tid tar resan?
   if(!forRace&&r>=.85||forRace&&r<.35){
     const town=pickOne(TOWNS),opts=new Set([d]);[d-5,d+5,d-15,d+15,d+60,d-60,d+10].filter(x=>x>0).sort(()=>Math.random()-.5).forEach(x=>{if(opts.size<4)opts.add(x);});
     return{kind:'opts',instr:'Hur lång tid tar resan?',speak:`Tåget till ${town} går ${sh} och ${sm}. Det är framme ${eh} och ${em}. Hur lång tid tar resan?`,
       vis:boardHTML(town,dig(sh,sm),dig(eh,em)),options:shuffle([...opts].map(fmtDur)),answer:fmtDur(d),help};
   }
-  if(forRace||r<.35){
+  if(forRace||r<.25){
     const opts=new Set([d]);[d-5,d+5,d-15,d+15,d+60,d-60,d+30].filter(x=>x>0).sort(()=>Math.random()-.5).forEach(x=>{if(opts.size<4)opts.add(x);});
     return{kind:'opts',instr:'Hur lång tid har gått?',speak:'Titta på klockorna. Hur lång tid har gått från start till slut?',
       vis:`<div class="clocks"><figure>${clockSVG(sh,sm,{small:true})}<figcaption>Start</figcaption></figure><figure>${clockSVG(eh,em,{small:true})}<figcaption>Slut</figcaption></figure></div>`,
       options:shuffle([...opts].map(fmtDur)),answer:fmtDur(d),help};
   }
-  // Ställ slutklockan
-  if(r<.6){
+  // Ställ slutklockan (tårtbiten visar hur långt man har dragit)
+  if(r<.45){
     const ev=pickOne([['Rasten','är'],['Lektionen','är'],['Filmen','är'],['Promenaden','tar']]);
     const txt=`${ev[0]} börjar när klockan är som på den lilla klockan. ${ev[0]} ${ev[1]} ${fmtDur(d)}. Ställ den stora klockan på när ${ev[0].toLowerCase()} slutar.`;
     return{kind:'set',instr:`${ev[0]} ${ev[1]} ${fmtDur(d)}. När slutar ${ev[0].toLowerCase()}?`,speak:txt,
       topVis:`<div class="clocks"><figure>${clockSVG(sh,sm,{small:true})}<figcaption>Start</figcaption></figure></div><p class="hint">Den stora klockan står på starttiden. Flytta den till sluttiden.</p>`,
-      target:(eh%12)*60+em,startT:(sh%12)*60+sm,h:eh,m:em,answer:cap(phrase(eh,em)),help};
+      target:(eh%12)*60+em,startT:(sh%12)*60+sm,h:eh,m:em,step:5,answer:cap(phrase(eh,em)),help};
   }
   // Berättelse med digital tid
   const st=pickOne(STORIES),txt=st[0].replace('{t}',pickOne(TOWNS)).replace('{s}',dig(sh,sm)).replace('{d}',fmtDur(d));
   return{kind:'keys',instr:st[1],speak:`${txt} ${st[1]}`,vis:`<p class="story">${txt}</p>`,boxes:[eh,em],answer:dig(eh,em),help};
 }
+const EVENTS=[['Konserten','börjar','slutar'],['Fotbollsmatchen','börjar','slutar'],['Bilresan','börjar','är slut'],['Bakningen','börjar','är klar'],['Tågresan','börjar','är framme'],['Utflykten','börjar','är slut']];
+function genBlocks(){
+  const d=Math.random()<.25?rnd(61,100):rnd(11,59),s0=rnd(7*12,15*12)*5,e=s0+d;
+  const sh=Math.floor(s0/60),sm=s0%60,eh=Math.floor(e/60),em=e%60,ev=pickOne(EVENTS);
+  const help=()=>({fact:`Det tar ${fmtDur(d)}.`,vis:clockSVG(eh,em,{wedge:[sm,d]})+hopsHTML(s0,d),
+    tip:`Börja med stora block och fyll på med små. Från ${dig(sh,sm)} till ${dig(eh,em)}: ${blockSplit(d)}.`});
+  return{kind:'blocks',instr:`${ev[0]} ${ev[1]} ${dig(sh,sm)} och ${ev[2]} ${dig(eh,em)}. Hur lång tid tar det?`,
+    speak:`${ev[0]} ${ev[1]} ${sh} och ${sm}, och ${ev[2]} ${eh} och ${em}. Hur lång tid tar det? Lägg block från start till slut.`,
+    s0,e,d,boxes:d>=60?[Math.floor(d/60),d%60]:[d],labels:d>=60?['tim','min']:['minuter'],answer:fmtDur(d),help};
+}
+// stora block först: 38 = 30 + 5 + 1 + 1 + 1
+function blockSplit(d){const out=[];for(const v of [60,30,15,10,5,1])while(d>=v){out.push(v===60?'1 tim':v);d-=v;}return out.join(' + ');}
 function genTask(lv,forRace){if(lv.digital)return genDigital(forRace);if(lv.measure)return genMeasure(forRace);return genAnalog(lv,forRace);}
 
 /* ---------- Uppläsning ---------- */
@@ -506,7 +500,7 @@ function nextTask(){
   render();
 }
 function render(){
-  const t=G.t,c=$('#content');$('#pad').hidden=t.kind!=='keys';
+  const t=G.t,c=$('#content');$('#pad').hidden=t.kind!=='keys';G.phase=null;
   if(t.kind==='opts'){
     c.innerHTML=t.vis+`<div class="opts">${t.options.map(o=>`<button data-o="${o}">${o}</button>`).join('')}</div>`;
     c.querySelectorAll('.opts button').forEach(b=>b.onclick=()=>answerOpt(b));
@@ -525,11 +519,14 @@ function render(){
       if(ok){b.classList.add('right');return correct();}
       b.classList.add('bad');b.disabled=true;wrong(b.dataset.v==='1'?'Ja':'Nej',()=>{});});
   }else if(t.kind==='keys'){
-    G.inputs=['',''];G.slot=0;
+    G.inputs=t.boxes.map(()=>'');G.slot=0;
     c.innerHTML=t.vis+`<div class="tbox" id="tbox"></div>`;renderBoxes();
+  }else if(t.kind==='blocks'){
+    mountBlocks(c);
   }else{
-    G.T=t.startT!=null?t.startT%720:0;
-    c.innerHTML=(t.topVis||'')+clockSVG(0,0)+`<div class="adj"><button data-d="-60">−1 tim</button><button data-d="-5">−5 min</button><button data-d="5">+5 min</button><button data-d="60">+1 tim</button></div><p class="hint">Ta tag i en visare och dra. Eller använd knapparna.</p><button class="go" id="setDone">Klar</button>`;
+    G.T=t.startT!=null?t.startT%720:0;const one=t.step===1;
+    c.innerHTML=(t.topVis||'')+clockSVG(0,0)+(t.startT!=null?`<p class="elapsed" id="elapsed"></p>`:'')+
+      `<div class="adj${one?' six':''}">${(one?[-60,-5,-1,1,5,60]:[-60,-5,5,60]).map(d=>`<button data-d="${d}">${d>0?'+':'−'}${Math.abs(d)===60?'1 tim':Math.abs(d)+' min'}</button>`).join('')}</div><p class="hint">Ta tag i en visare och dra. Eller använd knapparna.</p><button class="go" id="setDone">Klar</button>`;
     mountSet(c);
   }
 }
@@ -543,48 +540,56 @@ function answerOpt(b){
 }
 /* Digital tid med sifferknappar */
 function renderBoxes(){
-  const box=i=>{const v=G.inputs[i];return`<span><span class="ans${G.slot===i&&!G.busy?' act':''}${v?' filled':''}" data-slot="${i}">${v||'?'}</span><small>${i?'minuter':'timmar'}</small></span>`;};
-  $('#tbox').innerHTML=box(0)+'<span>.</span>'+box(1);
-  $('#okBtn').textContent=G.slot===0?'Nästa':'OK';
+  const t=G.t,L=t.labels||['timmar','minuter'],n=t.boxes.length;
+  const box=i=>{const v=G.inputs[i];return`<span><span class="ans${G.slot===i&&!G.busy?' act':''}${v?' filled':''}" data-slot="${i}">${v||'?'}</span><small>${L[i]}</small></span>`;};
+  $('#tbox').innerHTML=t.boxes.map((_,i)=>box(i)).join(t.labels?'<span class="gap"></span>':'<span>.</span>');
+  $('#okBtn').textContent=G.slot<n-1?'Nästa':'OK';
   $('#tbox').querySelectorAll('.ans').forEach(a=>a.onclick=()=>{if(!G.busy){G.slot=+a.dataset.slot;renderBoxes();}});
 }
 function press(k){
-  if(!G||G.busy||G.over||G.t.kind!=='keys')return;
-  if(k==='del'){if(!G.inputs[G.slot]&&G.slot===1)G.slot=0;else G.inputs[G.slot]=G.inputs[G.slot].slice(0,-1);}
-  else if(k==='ok'){if(G.slot===0){if(G.inputs[0]!=='')G.slot=1;}else if(G.inputs[0]!==''&&G.inputs[1]!=='')return submitKeys();}
-  else if(G.inputs[G.slot].length<2){G.inputs[G.slot]+=k;if(G.slot===0&&G.inputs[0].length===2)G.slot=1;}
+  if(!G||G.busy||G.over||!(G.t.kind==='keys'||G.phase==='keys'))return;const n=G.t.boxes.length;
+  if(k==='del'){if(!G.inputs[G.slot]&&G.slot>0)G.slot--;else G.inputs[G.slot]=G.inputs[G.slot].slice(0,-1);}
+  else if(k==='ok'){if(G.slot<n-1){if(G.inputs[G.slot]!=='')G.slot++;}else if(G.inputs.every(v=>v!==''))return submitKeys();}
+  else if(G.inputs[G.slot].length<2){G.inputs[G.slot]+=k;if(G.slot<n-1&&G.inputs[G.slot].length===2)G.slot++;}
   renderBoxes();
 }
 $$('#pad button').forEach(b=>b.onclick=()=>press(b.dataset.k));
 function submitKeys(){
-  const t=G.t,h=+G.inputs[0],m=+G.inputs[1],ok=h===t.boxes[0]&&m===t.boxes[1];
+  const t=G.t,v=G.inputs.map(Number),ok=v.every((x,i)=>x===t.boxes[i]);
   if(ok)return correct();
-  wrong(`${two(h)}.${two(m)}`,()=>{G.inputs=['',''];G.slot=0;renderBoxes();});
+  const given=t.kind==='blocks'?(v.length>1?`${v[0]} tim ${v[1]} min`:`${v[0]} minuter`):`${two(v[0])}.${two(v[1])}`;
+  wrong(given,()=>{G.inputs=t.boxes.map(()=>'');G.slot=0;renderBoxes();});
 }
-/* Ställ klockan */
+/* Ställ klockan (dra i visarna finns i klocka.js). I Mäta tid visar en tårtbit hur långt minutvisaren har gått från start. */
 function mountSet(c){
-  const all=c.querySelectorAll('svg.clock'),svg=all[all.length-1],/* den stora klockan, inte startklockan i Mäta tid */hh=svg.querySelector('.hh'),mh=svg.querySelector('.mh');
-  const draw=()=>{const h=Math.floor(G.T/60),m=G.T%60;hh.setAttribute('transform',`rotate(${(h+m/60)*30} 100 100)`);mh.setAttribute('transform',`rotate(${m*6} 100 100)`);};
-  const pt=e=>{const r=svg.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*244-22,y=(e.clientY-r.top)/r.height*244-22;
-    const dx=x-100,dy=y-100;return{a:(Math.atan2(dx,-dy)*180/Math.PI+360)%360,r:Math.hypot(dx,dy),dx,dy};};
-  // Man tar tag i den visare man trycker närmast (avståndet till visaren, inte hur långt ut man trycker)
-  const segDist=(p,ang,len)=>{const a=ang*Math.PI/180,ux=Math.sin(a),uy=-Math.cos(a),t=Math.max(0,Math.min(len,p.dx*ux+p.dy*uy));return Math.hypot(p.dx-ux*t,p.dy-uy*t);};
-  const nearest=p=>{const h=Math.floor(G.T/60),m=G.T%60;return segDist(p,(h+m/60)*30,50)<=segDist(p,m*6,78)?'h':'m';};
-  let hand=null;
-  const moveTo=p=>{const m=G.T%60,h=Math.floor(G.T/60);
-    if(hand==='m'){const nm=Math.round(p.a/30)*5%60;let d=((nm-m)%60+90)%60-30;G.T=((G.T+d)%720+720)%720;}
-    else{const nh=((Math.round((p.a-m/2)/30))%12+12)%12;G.T=nh*60+m;}
-    draw();$('#task').className='task';$('#feedback').textContent='';};
-  svg.addEventListener('pointerdown',e=>{if(G.busy)return;const p=pt(e);hand=nearest(p);(hand==='h'?hh:mh).classList.add('grab');svg.setPointerCapture(e.pointerId);moveTo(p);});
-  svg.addEventListener('pointermove',e=>{if(hand)moveTo(pt(e));});
-  const end=()=>{hand=null;hh.classList.remove('grab');mh.classList.remove('grab');};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
-  c.querySelectorAll('.adj button').forEach(b=>b.onclick=()=>{if(G.busy)return;G.T=((G.T+ +b.dataset.d)%720+720)%720;draw();$('#task').className='task';$('#feedback').textContent='';});
+  const all=c.querySelectorAll('svg.clock'),svg=all[all.length-1]/* den stora klockan, inte startklockan i Mäta tid */,t=G.t;
+  const draw=()=>{MPKlocka.setHands(svg,G.T);if(t.startT!=null){const el=MPKlocka.setWedge(svg,t.startT,G.T);$('#elapsed').innerHTML=el?`⏱️ ${MPKlocka.short(el)}`:'⏱️ Dra den långa visaren framåt';}};
+  const touched=()=>{draw();$('#task').className='task';$('#feedback').textContent='';};
+  MPKlocka.drag(svg,{get:()=>G.T,set:T=>{G.T=T;},step:()=>t.step||5,busy:()=>G.busy,onMove:touched});
+  c.querySelectorAll('.adj button').forEach(b=>b.onclick=()=>{if(G.busy)return;G.T=((G.T+ +b.dataset.d)%720+720)%720;touched();});
   $('#setDone').onclick=()=>{if(G.busy)return;
-    if(G.T===G.t.target)return correct();
+    if(G.T===t.target)return correct();
     const h=Math.floor(G.T/60),m=G.T%60;
     wrong(cap(phrase(h||12,m)),()=>{});
   };
   draw();
+}
+/* Mät med tidsblock: lägg block från start tills det räcker, skriv sedan hur lång tid det blev. */
+function mountBlocks(c){
+  const t=G.t;
+  c.innerHTML=`<div class="span"><span class="chip st">Start ${dig(Math.floor(t.s0/60),t.s0%60)}</span><span class="arr">→</span><span class="chip en">Slut ${dig(Math.floor(t.e/60),t.e%60)}</span></div>`+
+    clockSVG(0,0,{wide:t.d>=60?44:30,mark:t.e%60})+`<div id="kbHost"></div><div class="tbox" id="tbox" hidden></div>`;
+  const svg=c.querySelector('svg.clock');MPKlocka.setHands(svg,t.s0);
+  G.kb=MPKlocka.blocks($('#kbHost'),{svg,start:t.s0,end:t.e,onChange:(list,sum)=>{
+    MPKlocka.setHands(svg,t.s0+sum);MPKlocka.setWedge(svg,sum?t.s0:null,t.s0+sum);
+    if(G.busy)return;$('#task').className='task';
+    if(sum>t.d){$('#feedback').textContent='För långt! Tryck på ett block för att ta bort det.';$('#task').className='task bad';}
+    else if(sum===t.d){G.kb.lock();$('#feedback').textContent='';window.Ljud&&Ljud.chime&&Ljud.chime();
+      c.querySelector('.kb-sum').innerHTML=list.map(v=>v===60?'1 tim':v).join(' + ')+' = <b>?</b>';
+      $('#instr').textContent='Blocken räcker precis! Hur lång tid blev det?';
+      G.phase='keys';G.inputs=t.boxes.map(()=>'');G.slot=0;$('#tbox').hidden=false;renderBoxes();$('#pad').hidden=false;}
+    else $('#feedback').textContent=sum?`Det fattas lite till slutet.`:'';
+  }});
 }
 /* Rätt och fel */
 const PRAISE=['Rätt!','Snyggt!','Bra!','Toppen!','Klockrent!','Tåget går i tid!'];
@@ -625,7 +630,7 @@ $('#helpGo').onclick=()=>{
 document.addEventListener('keydown',e=>{
   if($('#game').hidden||!G||G.over)return;
   if(!$('#help').hidden){if(e.key==='Enter'){e.preventDefault();$('#helpGo').click();}return;}
-  if(G.t&&G.t.kind==='keys'){if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==='Backspace'){e.preventDefault();press('del');}else if(e.key==='Enter'||e.key==='.'){e.preventDefault();press('ok');}}
+  if(G.t&&(G.t.kind==='keys'||G.phase==='keys')){if(/^[0-9]$/.test(e.key))press(e.key);else if(e.key==='Backspace'){e.preventDefault();press('del');}else if(e.key==='Enter'||e.key==='.'){e.preventDefault();press('ok');}}
 });
 $('#spk').onclick=()=>{if(G&&G.t)speak(G.t.speak);};
 $('#quit').onclick=()=>{if(G){G.over=true;cancelAnimationFrame(G.raf);}$('#count').hidden=true;openModes();};

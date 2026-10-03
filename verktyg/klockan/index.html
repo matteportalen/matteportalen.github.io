@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Klockan – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1000px;margin:0 auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
+.lead{margin:0 0 12px;color:var(--muted);font-size:1.05rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.btn{background:var(--card);border-radius:12px;padding:7px 12px;font-weight:800;font-size:.95rem;box-shadow:0 3px 0 var(--line)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+.seg{display:flex;background:var(--card);border-radius:14px;padding:3px;box-shadow:0 3px 0 var(--line)}
+.seg button{border-radius:11px;padding:6px 12px;font-weight:800;font-size:.95rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.main{display:grid;gap:14px}
+@media(min-width:880px){.main{grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);align-items:start}}
+.card{background:var(--card);border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--line)}
+.clock{width:min(88vw,430px);height:auto;display:block;margin:0 auto;touch-action:none;user-select:none}
+.clock text{font-family:var(--font)}
+.clock g.grab{filter:drop-shadow(0 0 3px #FFC93C) drop-shadow(0 0 3px #FFC93C)}
+.read{text-align:center;min-height:2.6em;margin-top:4px}
+.digital{display:inline-block;font-weight:800;font-size:clamp(2rem,9vw,2.8rem);background:#141D3D;color:#FFD23F;box-shadow:inset 0 0 0 3px #2A3866;border-radius:14px;padding:0 16px;letter-spacing:2px;font-variant-numeric:tabular-nums}
+.words{display:block;font-weight:800;font-size:1.3rem}
+.adj{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:10px}
+.adj button{background:var(--bg);border-radius:12px;padding:8px 2px;font-weight:800;font-size:.95rem;box-shadow:0 3px 0 var(--line);min-height:44px}
+h2{font-size:1.35rem;margin:0 0 6px}
+.mrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.go{background:var(--good);color:#fff;border-radius:14px;padding:8px 14px;font-weight:800;box-shadow:0 4px 0 var(--good-dark)}
+.go:active{transform:translateY(2px);box-shadow:0 2px 0 var(--good-dark)}
+.elapsed{font-weight:800;font-size:1.2rem;color:#C96A0C;min-height:1.5em;margin:6px 0 0}
+.note{color:var(--muted);font-size:.95rem;margin-top:10px}
+.hide .digital,.hide .words{visibility:hidden}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← Verktygslådan</a>
+  <h1>🕒 Klockan</h1>
+  <p class="lead">Dra i visarna. Sätt en starttid och se hur långt minutvisaren går, eller mät tiden med block.</p>
+  <div class="bar">
+    <div class="seg" id="segStep"><button data-s="1" aria-pressed="true">1 min</button><button data-s="5" aria-pressed="false">5 min</button></div>
+    <button class="btn" data-o="digital" aria-pressed="true">Digital tid</button>
+    <button class="btn" data-o="words" aria-pressed="true">I ord</button>
+    <button class="btn" data-o="ring" aria-pressed="false">Minuttal</button>
+    <button class="btn" data-o="halves" aria-pressed="false">Över / i</button>
+    <button class="btn" id="btnNow">Klockan nu</button>
+  </div>
+  <div class="main">
+    <div class="card">
+      <div id="clockBox"></div>
+      <div class="read" id="read"></div>
+      <div class="adj" id="adj"></div>
+    </div>
+    <div class="card">
+      <h2>⏱️ Mät tid</h2>
+      <div class="mrow"><button class="go" id="btnStart">📍 Start här</button><button class="btn" id="btnClear">Rensa</button></div>
+      <p class="elapsed" id="elapsed"></p>
+      <div id="kbHost"></div>
+      <p class="note" id="mNote">Tryck på 📍 Start här. Dra sedan den långa visaren framåt, eller lägg block från starten: först stora block, sedan små.</p>
+    </div>
+  </div>
+</div>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../klocka.js"></script>
+<script src="../../huvud.js" data-titel="Klockan" data-ikon="🕒" data-hem="../../" data-nav="av"></script>
+<script>
+/* Klockan som verktyg: dra visarna (1 eller 5 minuter), digital tid och ord, tårtbit från en starttid och tidsblock.
+   Allt ritas med klocka.js. Inget sparas. */
+const K=MPKlocka,$=id=>document.getElementById(id);
+const now=()=>{const d=new Date();return d.getHours()*60+d.getMinutes();};
+const st={T:now(),step:1,start:null,o:{digital:true,words:true,ring:false,halves:false}};
+let svg=null,kb=null;
+function build(){
+  $('clockBox').innerHTML=K.clockSVG(0,0,{wide:50,ring:st.o.ring,halves:st.o.halves});
+  svg=$('clockBox').querySelector('svg');
+  K.drag(svg,{get:()=>st.T,set:T=>{st.T=T;},step:()=>st.step,mod:1440,onMove:draw});
+  kb=K.blocks($('kbHost'),{svg,start:st.start==null?st.T:st.start,base:st.o.ring?121:101,showSum:true});
+  if(st.start==null)$('kbHost').hidden=true;
+  draw();
+}
+function draw(){
+  K.setHands(svg,st.T);
+  const h=Math.floor(st.T/60),m=st.T%60;
+  $('read').innerHTML=(st.o.digital?`<span class="digital">${K.dig(h,m)}</span>`:'')+(st.o.words?`<span class="words">${K.cap(K.phrase(h,m))}</span>`:'');
+  if(st.start!=null){const el=K.setWedge(svg,st.start,st.T,1440);
+    $('elapsed').textContent=`Från ${K.dig(Math.floor(st.start/60),st.start%60)}: ${el?K.short(el):'0 min'}`;}
+  else{K.setWedge(svg,null);$('elapsed').textContent='';}
+}
+function setAdj(){const ds=st.step===1?[-60,-5,-1,1,5,60]:[-60,-15,-5,5,15,60];
+  $('adj').innerHTML=ds.map(d=>`<button data-d="${d}">${d>0?'+':'−'}${Math.abs(d)===60?'1 tim':Math.abs(d)+' min'}</button>`).join('');}
+$('adj').onclick=e=>{const b=e.target.closest('[data-d]');if(!b)return;st.T=((st.T+ +b.dataset.d)%1440+1440)%1440;draw();};
+$('segStep').onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;st.step=+b.dataset.s;if(st.step===5)st.T=Math.round(st.T/5)*5%1440;
+  $('segStep').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));setAdj();draw();};
+document.querySelectorAll('[data-o]').forEach(b=>b.onclick=()=>{const k=b.dataset.o;st.o[k]=!st.o[k];b.setAttribute('aria-pressed',st.o[k]);
+  if(k==='ring'||k==='halves'){const keep=kb?kb.list:[];build();keep.forEach(v=>$('kbHost').querySelector(`.kb-pal [data-v="${v}"]`).click());}else draw();});
+$('btnNow').onclick=()=>{st.T=st.step===5?Math.round(now()/5)*5%1440:now();draw();};
+$('btnStart').onclick=()=>{st.start=st.T;$('kbHost').hidden=false;kb.setStart(st.T);kb.clear();$('mNote').hidden=true;draw();window.Ljud&&Ljud.pop&&Ljud.pop(2);};
+$('btnClear').onclick=()=>{st.start=null;kb.clear();$('kbHost').hidden=true;$('mNote').hidden=false;draw();};
+setAdj();build();
+</script>
+</body>
+</html>
