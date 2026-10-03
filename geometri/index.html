@@ -960,6 +960,8 @@ $("pTestNew").onclick=()=>$("pTest").onclick.call(null);
 $("pTestEnd").onclick=()=>{PT.test=null;if(PT.saved){PT.strokes=PT.saved.strokes;PT.mirror=PT.saved.mirror;}PT.saved=null;$("ptools").hidden=false;$("pMirror").hidden=false;$("ptestBar").hidden=true;pRedraw();pSay("Tillbaka till spegelmålningen!");};
 
 openHome();
+// direktlänk från Verktygslådan: geometri/#spegel
+if(location.hash==="#spegel"){history.replaceState(history.state,"",location.pathname);setTimeout(openPaint,0);}
 </script>
 </body>
 </html>

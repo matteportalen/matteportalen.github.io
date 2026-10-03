@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bråkväggen – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:980px;margin:0 auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
+.lead{margin:0 0 12px;color:var(--muted);font-size:1.05rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.seg{display:flex;background:var(--card);border-radius:14px;padding:3px;box-shadow:0 3px 0 var(--line)}
+.seg button{border-radius:11px;padding:7px 11px;font-weight:800;font-size:.92rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{background:var(--card);border-radius:12px;padding:8px 12px;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+/* Väggen */
+.wall{position:relative;background:var(--card);border-radius:18px;padding:10px;box-shadow:0 5px 0 var(--line);user-select:none;-webkit-user-select:none}
+.frow{display:flex;gap:0;height:clamp(34px,6.2vw,52px);margin-bottom:3px}
+.tile{flex:1;display:flex;align-items:center;justify-content:center;border:2px solid rgba(29,43,83,.35);border-radius:6px;color:#fff;font-weight:800;line-height:1;font-size:clamp(.7rem,2.6vw,1.15rem);background:var(--c);cursor:pointer;margin-right:1px;min-width:0;overflow:hidden;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.tile.off{background:repeating-linear-gradient(135deg,#F5F8FF 0 6px,#E8EEF9 6px 12px);color:transparent;text-shadow:none;border-style:dashed}
+.fr{display:inline-flex;flex-direction:column;align-items:center;line-height:1}
+.fr span:first-child{border-bottom:2px solid currentColor;padding:0 2px}
+.dec{font-size:.92em}
+/* Linjalen */
+.ruler{position:absolute;top:4px;bottom:4px;width:0;border-left:3px dashed #1D2B53;pointer-events:none}
+.rgrip{position:absolute;top:-16px;left:-16px;width:32px;height:32px;border-radius:50%;background:#FFC93C;border:3px solid #1D2B53;pointer-events:auto;cursor:ew-resize;touch-action:none;box-shadow:0 2px 0 rgba(29,43,83,.3)}
+.readout{margin:10px 0 0;font-weight:800;text-align:center;min-height:1.6em;font-size:1.15rem}
+/* Byggraden */
+.build{margin-top:14px;background:var(--card);border-radius:18px;padding:10px;box-shadow:0 5px 0 var(--line)}
+.build h3{margin:0 0 6px;font-size:1.1rem}
+.brow{position:relative;display:flex;height:clamp(38px,6.6vw,54px);border:3px dashed var(--line);border-radius:8px;background:#F7FAFF;overflow:visible}
+.brow .tile{flex:none}
+.brow.full{border-color:var(--good);background:#E8F8EF}
+.brow.over{border-color:var(--bad);background:#FDECEC}
+.bsum{font-weight:800;text-align:center;margin-top:6px;min-height:1.5em;font-size:1.15rem}
+.over-mark{position:absolute;top:-6px;bottom:-6px;left:100%;border-left:4px solid var(--bad)}
+.note{color:var(--muted);font-size:.95rem;margin-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← Verktygslådan</a>
+  <h1>🧱 Bråkväggen</h1>
+  <p class="lead" id="lead"></p>
+  <div class="bar">
+    <div class="seg" id="segMode"><button data-m="hide">👁️ Dölj/visa</button><button data-m="build">➕ Bygg</button><button data-m="ruler">📏 Linjal</button></div>
+    <div class="seg" id="segLabel"><button data-l="frac">½ Bråk</button><button data-l="dec">0,5 Decimal</button><button data-l="none">Inga</button></div>
+    <button class="btn" id="btnAll">Visa alla</button>
+  </div>
+  <div class="wall" id="wall"></div>
+  <div class="readout" id="readout"></div>
+  <div class="build" id="build" hidden><h3>Byggraden: lägg bitar tills det blir en hel</h3><div class="brow" id="brow"></div><div class="bsum" id="bsum"></div><div style="text-align:center;margin-top:6px"><button class="btn" id="btnClearB">↺ Töm byggraden</button></div></div>
+  <p class="note">Tips: dölj bitar och fråga vad som fattas, eller använd linjalen för att hitta bråk som är lika stora, till exempel ½ = 2/4 = 3/6.</p>
+</div>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Bråkväggen" data-ikon="🧱" data-hem="../../" data-nav="av"></script>
+<script>
+/* Bråkväggen: raderna 1, ½, ⅓, ¼, ⅕, ⅙, ⅛, 1/10, 1/12 (färger som klassiska bråkstavar).
+   Dölj/visa: tryck på en bit. Bygg: tryck på en bit för att lägga den i byggraden; summan visas, "En hel!" när den blir 1.
+   Linjal: dra den gula knappen; alla bråk som slutar exakt där linjen står visas (likvärdiga bråk). Inget sparas. */
+const $=id=>document.getElementById(id);
+const DEN=[1,2,3,4,5,6,8,10,12];
+const COL={1:"#E5484D",2:"#FF5FA2",3:"#FF9F43",4:"#F2B707",5:"#2BB673",6:"#17AFC4",8:"#3D5AFE",10:"#7B61FF",12:"#56668F"};
+const st={mode:"hide",label:"frac",off:new Set(),build:[],ruler:.5};
+const gcd=(a,b)=>b?gcd(b,a%b):a;
+const frac=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
+const decTxt=d=>{const v=1/d,s=(Math.round(v*100)/100).toString().replace(".",",");return(Math.abs(v*100-Math.round(v*100))>1e-9?"≈":"")+s;};
+const lab=d=>st.label==="none"?"":st.label==="dec"?`<span class="dec">${d===1?"1":decTxt(d)}</span>`:d===1?"1":frac(1,d);
+function render(){
+  $("wall").innerHTML=DEN.map(d=>`<div class="frow">${Array.from({length:d},(_,i)=>`<div class="tile${st.off.has(d+":"+i)?" off":""}" data-d="${d}" data-i="${i}" style="--c:${COL[d]}">${lab(d)}</div>`).join("")}</div>`).join("")+
+    (st.mode==="ruler"?`<div class="ruler" id="ruler"><div class="rgrip" id="rgrip"></div></div>`:"");
+  $("segMode").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===st.mode));
+  $("segLabel").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===st.label));
+  $("build").hidden=st.mode!=="build";$("btnAll").hidden=st.mode!=="hide";
+  $("lead").textContent=st.mode==="hide"?"Tryck på en bit för att dölja eller visa den. Jämför: vilken är störst?":st.mode==="build"?"Tryck på bitar i väggen för att lägga dem i byggraden. Blir det en hel?":"Dra den gula knappen. Bråken som slutar precis vid linjen är lika stora.";
+  if(st.mode==="ruler")placeRuler();else $("readout").textContent="";
+  renderBuild();
+}
+// linjalens plats räknas från väggens första till sista rad
+function wallBox(){const r=$("wall").querySelector(".frow").getBoundingClientRect(),w=$("wall").getBoundingClientRect();return{x0:r.left-w.left,width:r.width};}
+function placeRuler(){
+  const {x0,width}=wallBox(),ru=$("ruler");if(!ru)return;
+  // fäst vid närmaste bitkant om linjen är nära
+  let best=null,bd=1;DEN.forEach(d=>{for(let k=0;k<=d;k++){const v=k/d,dd=Math.abs(v-st.ruler);if(dd<bd){bd=dd;best=v;}}});
+  if(bd<.012)st.ruler=best;
+  ru.style.left=(x0+st.ruler*width)+"px";
+  const eq=[];DEN.forEach(d=>{const k=Math.round(st.ruler*d);if(Math.abs(k/d-st.ruler)<1e-6)eq.push(k===0?"0":k===d?(d===1?"1":`${k}/${d}`):`${k}/${d}`);});
+  $("readout").innerHTML=eq.length?`Linjen står vid: ${eq.map(t=>t.includes("/")?frac(...t.split("/")):t).join(" = ")}`:"Dra linjen till en kant mellan två bitar.";
+}
+function renderBuild(){
+  if(st.mode!=="build")return;
+  const sum=st.build.reduce((a,d)=>a+120/d,0);
+  $("brow").innerHTML=st.build.map((d,i)=>`<div class="tile" data-b="${i}" style="--c:${COL[d]};width:${100/d}%">${lab(d)}</div>`).join("")+(sum>120?`<div class="over-mark"></div>`:"");
+  $("brow").className="brow"+(sum===120?" full":sum>120?" over":"");
+  const g=gcd(sum,120),parts=st.build.length?st.build.map(d=>d===1?"1":`1/${d}`).join(" + "):"";
+  $("bsum").innerHTML=!st.build.length?"Tom. Tryck på en bit i väggen.":`${parts} = ${sum===120?"1":sum/g+"/"+120/g}`+(sum===120?" 🎉 En hel!":sum>120?" (mer än en hel)":"");
+}
+$("wall").addEventListener("click",e=>{
+  const t=e.target.closest(".tile");if(!t)return;const d=+t.dataset.d,k=d+":"+t.dataset.i;
+  if(st.mode==="hide"){st.off.has(k)?st.off.delete(k):st.off.add(k);t.classList.toggle("off");window.Ljud&&Ljud.pop&&Ljud.pop(DEN.indexOf(d));}
+  else if(st.mode==="build"){st.build.push(d);const sum=st.build.reduce((a,x)=>a+120/x,0);window.Ljud&&(sum===120?Ljud.fanfare&&Ljud.fanfare():Ljud.pop&&Ljud.pop(st.build.length));renderBuild();}
+});
+$("brow").onclick=e=>{const t=e.target.closest("[data-b]");if(!t)return;st.build.splice(+t.dataset.b,1);renderBuild();};
+let rdrag=false;
+$("wall").addEventListener("pointerdown",e=>{if(st.mode!=="ruler")return;rdrag=true;try{$("wall").setPointerCapture(e.pointerId);}catch(_){}moveRuler(e);});
+$("wall").addEventListener("pointermove",e=>{if(rdrag)moveRuler(e);});
+$("wall").addEventListener("pointerup",()=>rdrag=false);
+function moveRuler(e){const {x0,width}=wallBox(),w=$("wall").getBoundingClientRect();st.ruler=Math.max(0,Math.min(1,(e.clientX-w.left-x0)/width));placeRuler();}
+$("segMode").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;st.mode=b.dataset.m;render();};
+$("segLabel").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;st.label=b.dataset.l;render();};
+$("btnAll").onclick=()=>{st.off.clear();render();};
+$("btnClearB").onclick=()=>{st.build=[];renderBuild();};
+window.addEventListener("resize",()=>{if(st.mode==="ruler")placeRuler();});
+render();
+</script>
+</body>
+</html>

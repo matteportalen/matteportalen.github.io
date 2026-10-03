@@ -134,6 +134,10 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .plates{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:10px}
 .plate{width:86px;height:86px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 7px #E6ECF7,0 3px 0 #C6D6F2;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;font-size:1.05rem;line-height:1.15;padding:13px}
 .plate.on{box-shadow:inset 0 0 0 7px #9BE0B8,0 3px 0 #1E9E5E}
+.wallcard{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:10px 14px;margin:0 0 14px;box-shadow:0 4px 0 var(--line);text-decoration:none;color:inherit}
+.wallcard .wi{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:1.8rem;background:#FFF1CC;flex:none}
+.wallcard b{display:block;font-size:1.15rem}.wallcard small{display:block;color:var(--muted);font-size:.9rem;line-height:1.25}
+.wallcard .chev{margin-left:auto;color:var(--muted);font-size:1.6rem;font-weight:800}
 </style>
 </head>
 <body>
@@ -141,6 +145,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <section id="home" class="screen">
   <h1>Bråk</h1>
   <p class="lead">Pizza, chokladkaka och rulltårta. Dela, skär och jämför.</p>
+  <a class="wallcard" href="../verktyg/brakvaggen/"><span class="wi">🧱</span><span><b>Bråkväggen</b><small>Verktyg: jämför bråkstavar och hitta lika stora bråk.</small></span><span class="chev">›</span></a>
   <div class="areas" id="areas"></div>
   <p class="note">Tre stjärnor får du om alla tio uppgifter blir rätt direkt.</p>
 </section>

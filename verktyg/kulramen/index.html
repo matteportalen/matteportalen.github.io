@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kulramen – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:900px;margin:0 auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
+.lead{margin:0 0 12px;color:var(--muted);font-size:1.05rem}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.seg{display:flex;background:var(--card);border-radius:14px;padding:3px;box-shadow:0 3px 0 var(--line)}
+.seg button{border-radius:11px;padding:7px 12px;font-weight:800;font-size:.95rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.btn{background:var(--card);border-radius:12px;padding:8px 12px;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.btn[aria-pressed="true"]{background:var(--ink);color:#fff}
+/* Kulramen */
+.frame{position:relative;display:flex;gap:10px;background:var(--card);border-radius:20px;padding:16px 12px 16px 10px;box-shadow:0 5px 0 var(--line);touch-action:none;user-select:none;-webkit-user-select:none}
+.total{flex:none;width:58px;display:flex;align-items:center;justify-content:center;border-left:4px solid #8FB2E8;border-top:4px solid #8FB2E8;border-bottom:4px solid #8FB2E8;border-radius:10px 0 0 10px;font-weight:800;font-size:1.7rem;color:var(--ink)}
+.rows{flex:1;display:flex;flex-direction:column;gap:var(--gap,10px);border-left:8px solid #3B4A6B;border-right:8px solid #3B4A6B;border-radius:4px;padding:6px 0}
+.row{position:relative;height:var(--bead);display:flex;align-items:center}
+.row::before{content:"";position:absolute;left:0;right:0;top:50%;height:4px;margin-top:-2px;background:#7D8AA6;border-radius:2px}
+.bead{position:absolute;top:0;width:var(--bead);height:var(--bead);border-radius:50%;transition:left .22s cubic-bezier(.3,.8,.4,1);cursor:pointer;
+  box-shadow:inset -3px -4px 0 rgba(0,0,0,.18),inset 3px 3px 0 rgba(255,255,255,.55),0 2px 0 rgba(29,43,83,.25)}
+.bead.r{background:radial-gradient(circle at 35% 30%,#FF8A8A,#E5484D 55%,#B8323A)}
+.bead.w{background:radial-gradient(circle at 35% 30%,#fff,#EEF2FA 60%,#C6D6F2);border:2px solid #8FB2E8}
+.cnt{position:absolute;top:50%;transform:translateY(-50%);font-weight:800;font-size:clamp(.75rem,2.4vw,1rem);color:#fff;background:var(--accent);border-radius:999px;padding:0 7px;line-height:1.5;pointer-events:none;transition:left .22s;z-index:2}
+.cnt:empty{display:none}
+.rlabel{width:34px;flex:none;align-self:center;text-align:center;font-weight:800;color:var(--muted)}
+.hide .cnt,.hide .total span{visibility:hidden}
+.note{color:var(--muted);font-size:.95rem;margin-top:12px}
+@media (prefers-reduced-motion:reduce){.bead,.cnt{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← Verktygslådan</a>
+  <h1>🧮 Kulramen</h1>
+  <p class="lead">Tryck på en kula för att flytta den och alla kulor bredvid. Du kan också dra. Fem röda och fem vita på varje rad gör det lätt att se talen.</p>
+  <div class="bar">
+    <div class="seg" id="segRows"><button data-r="1">1 rad (10)</button><button data-r="2">2 rader (20)</button><button data-r="10">10 rader (100)</button></div>
+    <button class="btn" id="btnNum" aria-pressed="false">🙈 Dölj siffrorna</button>
+    <button class="btn" id="btnReset">↺ Nollställ</button>
+  </div>
+  <div class="frame" id="frame"><div class="total" id="total"><span>0</span></div><div class="rows" id="rows"></div></div>
+  <p class="note">Tips: dölj siffrorna, visa ett tal på kulramen och låt eleverna se hur många det är utan att räkna en och en.</p>
+</div>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Kulramen" data-ikon="🧮" data-hem="../../" data-nav="av"></script>
+<script>
+/* Kulramen: 1, 2 eller 10 rader med tio kulor (5 röda, 5 vita). Kulorna som flyttats till vänster räknas.
+   Tryck på en kula: den och alla kulor mellan den och vänstersidan flyttas (eller tillbaka). Dra för att ställa in en rad. */
+const $=id=>document.getElementById(id);
+const st={rows:10,cnt:[],hide:false};
+try{const s=JSON.parse(sessionStorage.getItem("mp-kulram")||"null");if(s)Object.assign(st,s);}catch(e){}
+const keep=()=>{try{sessionStorage.setItem("mp-kulram",JSON.stringify(st))}catch(e){}};
+function geom(){const w=$("rows").clientWidth,b=Math.max(22,Math.min(46,w/14.5));return{w,b};}
+function build(){
+  st.cnt=Array.from({length:st.rows},(_,i)=>st.cnt[i]||0);
+  $("rows").innerHTML=st.cnt.map((_,r)=>`<div class="row" data-r="${r}">${Array.from({length:10},(_,i)=>`<div class="bead ${i<5?"r":"w"}" data-i="${i}"></div>`).join("")}<div class="cnt"></div></div>`).join("");
+  $("segRows").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.r===st.rows));
+  place();
+}
+function place(){
+  const {w,b}=geom();$("frame").style.setProperty("--bead",b+"px");$("frame").style.setProperty("--gap",(st.rows>2?Math.max(6,b*.28):b*.6)+"px");
+  $("rows").querySelectorAll(".row").forEach(row=>{const r=+row.dataset.r,c=st.cnt[r];
+    row.querySelectorAll(".bead").forEach(el=>{const i=+el.dataset.i,x=i<c?i*b:w-(10-i)*b;el.style.left=x+"px";});
+    const cn=row.querySelector(".cnt");cn.textContent=c&&c<10?c:c===10?"10":"";cn.style.left=(c<10?c*b+(w-10*b)/2-14:c*b-28)+"px";});
+  $("total").firstElementChild.textContent=st.cnt.reduce((a,x)=>a+x,0);
+  $("frame").classList.toggle("hide",st.hide);
+  $("btnNum").textContent=st.hide?"👁️ Visa siffrorna":"🙈 Dölj siffrorna";$("btnNum").setAttribute("aria-pressed",st.hide);
+  keep();
+}
+function setRow(r,c){c=Math.max(0,Math.min(10,c));if(st.cnt[r]===c)return;st.cnt[r]=c;window.Ljud&&Ljud.pop&&Ljud.pop(c);place();}
+// tryck och dra
+let drag=null;
+$("rows").addEventListener("pointerdown",e=>{
+  const row=e.target.closest(".row");if(!row)return;e.preventDefault();const r=+row.dataset.r,bead=e.target.closest(".bead");
+  drag={r,x0:e.clientX,moved:false,bead:bead?+bead.dataset.i:null,c0:st.cnt[r]};try{row.setPointerCapture(e.pointerId);}catch(_){}
+});
+$("rows").addEventListener("pointermove",e=>{
+  if(!drag)return;const {b}=geom(),dx=e.clientX-drag.x0;if(Math.abs(dx)<b*.4&&!drag.moved)return;drag.moved=true;
+  setRow(drag.r,drag.c0+Math.round(dx/b));
+});
+const end=()=>{if(!drag)return;const d=drag;drag=null;if(d.moved||d.bead==null)return;
+  const c=st.cnt[d.r];setRow(d.r,d.bead<c?d.bead:d.bead+1);};
+$("rows").addEventListener("pointerup",end);$("rows").addEventListener("pointercancel",()=>drag=null);
+$("segRows").onclick=e=>{const b=e.target.closest("[data-r]");if(!b)return;st.rows=+b.dataset.r;st.cnt=st.cnt.slice(0,st.rows);build();};
+$("btnNum").onclick=()=>{st.hide=!st.hide;place();};
+$("btnReset").onclick=()=>{st.cnt=st.cnt.map(()=>0);place();};
+window.addEventListener("resize",place);
+build();
+</script>
+</body>
+</html>
