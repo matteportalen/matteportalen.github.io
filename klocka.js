@@ -3,22 +3,23 @@
    Tider räknas i minuter efter midnatt (T). Klockan visar T modulo 12 timmar. */
 (function(){
   const HN=['tolv','ett','två','tre','fyra','fem','sex','sju','åtta','nio','tio','elva','tolv'];
-  const NUM=['noll','en','två','tre','fyra','fem','sex','sju','åtta','nio','tio','elva','tolv','tretton','fjorton','femton','sexton','sjutton','arton','nitton','tjugo'];
+  const NUM=['noll','en','två','tre','fyra','fem','sex','sju','åtta','nio','tio','elva','tolv','tretton','fjorton','femton','sexton','sjutton','arton','nitton','tjugo','tjugoen','tjugotvå','tjugotre','tjugofyra'];
   const hn=h=>HN[((h%12)+12)%12||12];
   const two=n=>String(n).padStart(2,'0');
   const dig=(h,m)=>`${two(h)}.${two(m)}`;
   const cap=s=>s[0].toUpperCase()+s.slice(1);
   const min=n=>`${NUM[n]} ${n===1?'minut':'minuter'}`;
   /* Klockslag i ord. Femminuterstiderna som i klassrummet (:20 tjugo över, :25 fem i halv, :35 fem över halv, :40 tjugo i).
-     Övriga minuter: 1–19 över, 21–29 i halv, 31–39 över halv, 41–59 i. */
+     Övriga minuter (lärarens regel, samma gränser som fälten i "Över / i"): 1–24 över, 26–29 i halv, 31–34 över halv, 36–59 i.
+     Alltså "tjugotvå minuter över fyra", inte "åtta minuter i halv fem". */
   function phrase(h,m){
     const a=hn(h),b=hn(h+1);
     const five={0:`klockan ${a}`,5:`fem över ${a}`,10:`tio över ${a}`,15:`kvart över ${a}`,20:`tjugo över ${a}`,25:`fem i halv ${b}`,
       30:`halv ${b}`,35:`fem över halv ${b}`,40:`tjugo i ${b}`,45:`kvart i ${b}`,50:`tio i ${b}`,55:`fem i ${b}`};
     if(m in five)return five[m];
-    if(m<20)return`${min(m)} över ${a}`;
+    if(m<25)return`${min(m)} över ${a}`;
     if(m<30)return`${min(30-m)} i halv ${b}`;
-    if(m<40)return`${min(m-30)} över halv ${b}`;
+    if(m<35)return`${min(m-30)} över halv ${b}`;
     return`${min(60-m)} i ${b}`;
   }
   function fmtDur(t){const h=Math.floor(t/60),m=t%60;const hs=h?`${h} ${h===1?'timme':'timmar'}`:'',ms=m?`${m} ${m===1?'minut':'minuter'}`:'';return hs&&ms?`${hs} och ${ms}`:hs||ms||'0 minuter';}
@@ -38,14 +39,14 @@
     const ah=o.hourAngle!=null?o.hourAngle:((h%12)+m/60)*30,am=o.minAngle!=null?o.minAngle:m*6,W=o.wide||22;
     let s=`<svg class="clock${o.small?' small':''}" viewBox="${-W} ${-W} ${200+2*W} ${200+2*W}" role="img" aria-label="Analog klocka">`;
     s+=`<g class="ring"></g><circle cx="100" cy="100" r="96" fill="#fff" stroke="#1D2B53" stroke-width="6"/><g class="wedge"></g>`;
-    /* Över och i: 0–20 över, 20–30 i halv, 30–40 över halv, 40–60 i (samma regel som phrase).
+    /* Över och i: 0–25 över, 25–30 i halv, 30–35 över halv, 35–60 i (samma regel som phrase).
        Runt halv är det tvärtom, därför egna, ljusare fält med text. */
     if(o.halves){
-      const Z=[[0,20,'#CDEFD9','över','#157548',15],[20,30,'#FFF0DE','i halv','#C96A0C',11],[30,40,'#E6F7EC','över halv','#157548',11],[40,60,'#FFE0C2','i','#C96A0C',17]];
+      const Z=[[0,25,'#CDEFD9','över','#157548',15],[25,30,'#FFF0DE','i halv','#C96A0C',9.5],[30,35,'#E6F7EC','över halv','#157548',9.5],[35,60,'#FFE0C2','i','#C96A0C',17]];
       Z.forEach(([a,b,f])=>{s+=`<path d="${pie(93,a*6,b*6)}" fill="${f}"/>`;});
-      [20,30,40].forEach(mm=>{const [x,y]=P(93,mm*6);s+=`<line x1="100" y1="100" x2="${x}" y2="${y}" stroke="#fff" stroke-width="2"/>`;});
-      Z.forEach(([a,b,,txt,col,fs])=>{const w=txt.split(' '),[x,y]=P(w.length>1?47:40,(a+b)/2*6);
-        s+=`<text x="${x}" y="${y+fs*.35-(w.length-1)*fs*.5}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${col}" stroke="#fff" stroke-width="3.5" paint-order="stroke">${w.map((t,i)=>`<tspan x="${x}" dy="${i?fs:0}">${t}</tspan>`).join('')}</text>`;});
+      [25,30,35].forEach(mm=>{const [x,y]=P(93,mm*6);s+=`<line x1="100" y1="100" x2="${x}" y2="${y}" stroke="#fff" stroke-width="2"/>`;});
+      Z.forEach(([a,b,,txt,col,fs])=>{const w=txt.split(' '),[x,y]=P(w.length>1?55:40,(a+b)/2*6);
+        s+=`<text x="${x}" y="${y+fs*.35-(w.length-1)*fs*.5}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${col}" stroke="#fff" stroke-width="3.5" paint-order="stroke">${w.map((t,i)=>`<tspan x="${x}" dy="${i?fs*.95:0}">${t}</tspan>`).join('')}</text>`;});
     }
     if(o.wedge){const[m1,dm]=o.wedge;if(dm>=60)s+=`<circle cx="100" cy="100" r="92" fill="rgba(255,159,67,.28)"/>`;
       const rest=dm%60;if(rest)s+=`<path d="${pie(92,m1*6,(m1+rest)*6)}" fill="rgba(255,159,67,.45)"/>`;}

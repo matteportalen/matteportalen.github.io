@@ -267,7 +267,7 @@ const LEVELS=[
   {id:'kvart',name:'Kvart',desc:'Kvart över och kvart i.',mins:[15,45],ex:[3,15]},
   {id:'fem',name:'Fem och tio',desc:'Fem över, tio i …',mins:[5,10,50,55],ex:[3,10]},
   {id:'runthalv',name:'Tjugo över till tjugo i',desc:'Tjugo över, fem i halv, fem över halv, tjugo i …',mins:[20,25,35,40],ex:[2,25]},
-  {id:'minut',name:'Minuter',desc:'Tre minuter över fyra, sju minuter i nio …',mins:Array.from({length:60},(_,i)=>i).filter(i=>i%5),ex:[8,53],step:1},
+  {id:'minut',name:'Minuter',desc:'Tre minuter över fyra, två minuter i halv fem, sju minuter i nio …',mins:Array.from({length:60},(_,i)=>i).filter(i=>i%5),ex:[8,53],step:1},
   {id:'dig',name:'Digital tid',desc:'24-timmarsklockan, t.ex. 15.45.',digital:true},
   {id:'mata',name:'Mäta tid',desc:'Hur lång tid tar det?',measure:true},
   {id:'mix',name:'Blanda allt',desc:'Alla sorters klockslag.',mins:[0,5,10,15,20,25,30,35,40,45,50,55],ex:[8,40],mix:true}
@@ -307,9 +307,9 @@ function genAnalog(lv,forRace){
 function explain(h,m){
   const a=hn(h),b=hn(h+1);
   if(m%5){const f=Math.floor(m/5)*5,n=m-f,s=`Den långa visaren står ${n} små streck efter ${f?f/5:12}. Räkna femmor till ${f}, sedan ett streck i taget: ${m} minuter. `;
-    if(m<20)return s+`Det är på högra sidan, alltså över. ${cap(phrase(h,m))}.`;
-    if(m<30)return s+`Det fattas ${30-m} till halv. Alltså ${phrase(h,m)}.`;
-    if(m<40)return s+`Visaren har gått ${m-30} förbi halv. Alltså ${phrase(h,m)}.`;
+    if(m<25)return s+`Den har gått ${m} minuter efter hel, alltså över. ${cap(phrase(h,m))}.`;
+    if(m<30)return s+`Det är nära halv, och det fattas ${30-m} till halv. Alltså ${phrase(h,m)}.`;
+    if(m<35)return s+`Visaren har gått ${m-30} förbi halv. Alltså ${phrase(h,m)}.`;
     return s+`Det fattas ${60-m} minuter tills klockan blir ${b}. Alltså ${phrase(h,m)}.`;}
   if(m===0)return`Den långa visaren pekar rakt upp på 12. Då är klockan hel. Den korta visaren pekar på ${h%12||12}. Klockan är ${a}.`;
   if(m===30)return`Den långa visaren pekar rakt ner på 6. Då är det halv. Den korta visaren står mitt emellan ${h%12||12} och ${(h%12)+1}. Halv betyder halvvägs till ${b}.`;
