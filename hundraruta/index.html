@@ -160,7 +160,7 @@ h2.sub{font-size:1.4rem;margin:18px 0 8px}
 <section id="tool" class="screen" hidden>
   <div class="gtop"><button class="back" id="toolBack">← Tillbaka</button><button class="hbtn" id="toolClear">Rensa</button></div>
   <h2 style="margin:8px 0 6px">Hundrarutan</h2>
-  <div class="tmodes"><div class="seg2" id="toolMode"><button data-m="mark">🖍️ Markera</button><button data-m="hop">🦘 Hoppa</button></div><div class="seg2" id="toolOrient"><button data-o="top">1 överst</button><button data-o="bottom">100 överst</button></div></div>
+  <div class="tmodes"><div class="seg2" id="toolMode"><button data-m="mark">🖍️ Markera</button><button data-m="hop">🦘 Hoppa</button></div></div>
   <p class="lead tlead" id="toolLead"></p>
   <div class="hopbar" id="hopBar" hidden>
     <div class="hops"><button data-h="-10" class="minus">−10</button><button data-h="-1" class="minus">−1</button><button data-h="1" class="plus">+1</button><button data-h="10" class="plus">+10</button><button data-h="undo" class="undo">↶</button></div>
@@ -288,11 +288,11 @@ $("toolIco").innerHTML=mini((r,c)=>(r+c)%3===0?"#FFC93C":"#fff");
 /* ---------- Verktyget: markera eller hoppa ----------
    Hoppa: tryck på ett starttal, sedan +10, −10, +1 eller −1. Pilarna ritas (grönt plus, rött minus) och hoppen summeras,
    t.ex. 100 − 36 = 64. Uppgiftsläge: skriv eller slumpa en uppgift, eleven hoppar själv och sidan säger när man landat rätt.
-   Rutan kan vändas: 1 överst eller 100 överst (lärare gör olika). */
+   Rutan har alltid 1 överst (läraren valde bort 100 överst). */
 const marks=new Set();
-const TL={mode:"mark",orient:"top",start:null,path:[],task:null};
-const cellOrder=()=>{const a=[];for(let v=0;v<10;v++){const r=TL.orient==="top"?v:9-v;for(let c=0;c<10;c++)a.push(r*10+c+1);}return a;};
-const visRC=n=>{const[r,c]=rc(n);return[TL.orient==="top"?r:9-r,c];};
+const TL={mode:"mark",start:null,path:[],task:null};
+const cellOrder=()=>Array.from({length:100},(_,i)=>i+1);
+const visRC=rc;
 function drawTool(){
   const order=cellOrder(),onPath=new Map();TL.path.forEach((n,i)=>{if(i)onPath.set(n,TL.path[i]>TL.path[i-1]?"honp":"hon");});
   const end=TL.path.length?TL.path[TL.path.length-1]:null;
@@ -305,7 +305,6 @@ function drawTool(){
     h+='</svg>';}
   $("toolGrid").innerHTML=h+'</div>';
   $("toolMode").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===TL.mode));
-  $("toolOrient").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.o===TL.orient));
   $("hopBar").hidden=TL.mode!=="hop";
   $("toolLead").textContent=TL.mode==="mark"?"Tryck på ett tal för att markera det. Tryck igen för att ta bort markeringen.":TL.start==null?"Tryck på talet du vill starta på.":"Hoppa med knapparna. Ett steg åt sidan är 1, ett steg upp eller ner är 10.";
   hopSum();
@@ -335,7 +334,6 @@ $("toolGrid").onclick=e=>{const el=e.target.closest("[data-n]");if(!el)return;co
 $("hopBar").querySelector(".hops").onclick=e=>{const b=e.target.closest("[data-h]");if(!b)return;
   if(b.dataset.h==="undo"){if(TL.path.length>1){TL.path.pop();if(TL.task)TL.task.done=false;}else{TL.start=null;TL.path=[];}drawTool();return;}hop(+b.dataset.h);};
 $("toolMode").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;TL.mode=b.dataset.m;drawTool();};
-$("toolOrient").onclick=e=>{const b=e.target.closest("[data-o]");if(!b)return;TL.orient=b.dataset.o;drawTool();};
 $("tOp").onclick=()=>{$("tOp").textContent=$("tOp").textContent==="+"?"−":"+";};
 function setTask(a,op,b){const ans=op==="+"?a+b:a-b;if(!(a>=1&&a<=100&&b>=1&&ans>=1&&ans<=100)){toast("Både talen och svaret måste finnas i hundrarutan (1–100).");return;}
   TL.mode="hop";TL.task={a,op,b,answer:ans,done:false};TL.start=null;TL.path=[];$("tA").value=a;$("tB").value=b;$("tOp").textContent=op;drawTool();}
