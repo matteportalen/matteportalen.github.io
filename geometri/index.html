@@ -241,8 +241,8 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 </section>
 <section id="pblist" class="screen" hidden>
   <button class="back" id="pblBack">← Tillbaka</button>
-  <h2 style="margin:8px 0 2px">🧩 Bygg bilden</h2>
-  <p class="lead">Välj en bild och lägg mönsterbitarna så att hela bilden blir täckt. Det finns ofta flera sätt!</p>
+  <h2 style="margin:8px 0 2px" id="pbHead">🧩 Bygg bilden</h2>
+  <p class="lead" id="pbIntro"></p>
   <div class="pbniva" id="pbNiva"><button data-n="1">Lätt<small>linjerna syns</small></button><button data-n="2">Mellan<small>bara bilden</small></button><button data-n="3">Svår<small>få bitar</small></button></div>
   <div class="pbgrid" id="pbGrid"></div>
 </section>
@@ -638,6 +638,7 @@ const ICON={
   symmetri:svg(`<g transform="translate(8 8) scale(5.6)"><path d="${BFLY}" fill="#FF5FA2" stroke="#1D2B53" stroke-width=".4" stroke-linejoin="round"/></g><line x1="49.8" y1="2" x2="49.8" y2="98" stroke="#3D5AFE" stroke-width="3" stroke-dasharray="6 5"/>`),
   spegel:svg(`<line x1="50" y1="4" x2="50" y2="96" stroke="#3D5AFE" stroke-width="3" stroke-dasharray="6 5"/><path d="M44 22 Q14 18 18 48 Q22 74 44 80" stroke="#FF5FA2" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M56 22 Q86 18 82 48 Q78 74 56 80" stroke="#FF5FA2" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="30" cy="44" r="6" fill="#F2B707"/><circle cx="70" cy="44" r="6" fill="#F2B707"/>`),
   bygg:`<svg viewBox="-3.2 -3.6 6.4 5.2" style="width:100%;height:100%"><polygon points="-2,0 -1,0 -0.5,-0.866 -1,-1.732 -2,-1.732 -2.5,-0.866" fill="#F7C531" stroke="#C99A0A" stroke-width=".08"/><polygon points="-1,0 1,0 0.5,-0.866 -0.5,-0.866" fill="#E5484D" stroke="#A8282D" stroke-width=".08"/><polygon points="1,0 2,0 2.5,-0.866 1.5,-0.866" fill="#3D8BFD" stroke="#1F5FC4" stroke-width=".08"/><polygon points="-0.5,-0.866 0.5,-0.866 0,-1.732" fill="#2BB673" stroke="#1A7E4E" stroke-width=".08"/><polygon points="0.5,-0.866 1.5,-0.866 1,-1.732" fill="#2BB673" stroke="#1A7E4E" stroke-width=".08"/></svg>`,
+  tangram:`<svg viewBox="-0.3 -4.3 4.6 4.6" style="width:100%;height:100%"><g stroke="#1D2B53" stroke-width=".08" stroke-linejoin="round"><polygon points="0,0 4,0 2,-2" fill="#E5484D"/><polygon points="0,0 2,-2 0,-4" fill="#FF9F43"/><polygon points="4,-4 2,-4 4,-2" fill="#7B61FF"/><polygon points="4,0 4,-2 3,-1" fill="#2BB673"/><polygon points="2,-2 3,-1 4,-2 3,-3" fill="#F7C531"/><polygon points="2,-2 3,-3 1,-3" fill="#FF5FA2"/><polygon points="1,-3 3,-3 2,-4 0,-4" fill="#17AFC4"/></g></svg>`,
   matt:svg(`<rect x="8" y="44" width="84" height="7" fill="#B07A45"/><rect x="8" y="66" width="84" height="7" fill="#B07A45"/>${[12,34,56,78].map(x=>`<path d="M${x} 90 V34 L${x+5} 26 L${x+10} 34 V90Z" fill="#D9A066" stroke="#7A4F26" stroke-width="2.5" stroke-linejoin="round"/>`).join("")}`)
 };
 const AREAS=[
@@ -648,6 +649,7 @@ const AREAS=[
   {id:"monster",name:"Mönster",desc:"Pärlhalsband: vad kommer sedan?",ak:"Åk 1",c:"#FF9F43",gen:genMonster},
   {id:"symmetri",name:"Symmetri",desc:"Fjärilar och nyckelpigor.",ak:"Åk 2–3",c:"#FF5FA2",gen:genSym},
   {id:"bygg",name:"Bygg bilden",desc:"Lägg mönsterbitar så att bilden blir hel.",ak:"Åk 1–3",c:"#F7C531",bygg:true},
+  {id:"tangram",name:"Tangram",desc:"Sju bitar, en figur. Använd alla!",ak:"Åk 2–3",c:"#7B61FF"},
   {id:"matt",name:"Omkrets och area",desc:"Staket runt hagen och odlingens area.",ak:"Åk 3",c:"#17AFC4",gen:genMatt}
 ];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
@@ -657,7 +659,7 @@ function openHome(){G=null;$("pBanner").querySelector(".pbi").innerHTML=ICON.spe
   show("home");}
 $("pBanner").onclick=()=>openPaint();
 $("rPaint").onclick=()=>openPaint();
-$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;if(b.dataset.a==="bygg")return openBygg();start(AREAS.find(a=>a.id===b.dataset.a));};
+$("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(!b)return;if(b.dataset.a==="bygg")return openBygg("bygg");if(b.dataset.a==="tangram")return openBygg("tangram");start(AREAS.find(a=>a.id===b.dataset.a));};
 
 /* ---------- Uppläsning ---------- */
 let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
@@ -993,41 +995,55 @@ $("pTestDone").onclick=()=>{
 $("pTestNew").onclick=()=>$("pTest").onclick.call(null);
 $("pTestEnd").onclick=()=>{PT.test=null;if(PT.saved){PT.strokes=PT.saved.strokes;PT.mirror=PT.saved.mirror;}PT.saved=null;$("ptools").hidden=false;$("pMirror").hidden=false;$("ptestBar").hidden=true;pRedraw();pSay("Tillbaka till spegelmålningen!");};
 
-/* ---------- Bygg bilden (mönsterbitar, motorn finns i bitar.js) ----------
-   Lätt: linjerna mellan bitarna syns. Mellan: bara bilden. Svår: bara bilden och högst så många bitar som lösningen har.
-   Varje bild sparar högsta klarade nivå i data.bygg. Stjärnor för området: 5 bilder på Lätt = 1, på Mellan = 2, på Svår = 3. */
+/* ---------- Bygg bilden och Tangram (motorn finns i bitar.js) ----------
+   Mönsterbitar: Lätt = linjerna syns, Mellan = bara bilden, Svår = högst så många bitar som lösningen.
+   Tangram: alla sju bitar i varje figur (varje bit finns en gång i lådan), Lätt och Mellan. Parallellogrammet kan vändas.
+   Sparas i data.bygg / data.tangram (högsta nivå per bild) och data.byggNiva / data.tangramNiva.
+   Stjärnor: mönsterbitar 5 bilder på Lätt/Mellan/Svår = 1/2/3; tangram 3 figurer på Lätt = 1, 3 på Mellan = 2, alla på Mellan = 3. */
 const PBN={hex:["sexhörning","sexhörningar"],trap:["trapets","trapetser"],romb:["blå romb","blå romber"],tri:["triangel","trianglar"],sq:["kvadrat","kvadrater"],tan:["smal romb","smala romber"]};
-let PB=null;
+const TG_TRAY=["tL","tL2","tM","tS","tS2","tQ","tP"];
+let PB=null,PBM="bygg"; // "bygg" (mönsterbitar) eller "tangram"
+const pbList=()=>PBM==="tangram"?MPBitar.TANGRAM:MPBitar.BILDER;
 function byggStars(){const v=Object.values(data.bygg||{});return v.filter(x=>x>=3).length>=5?3:v.filter(x=>x>=2).length>=5?2:v.filter(x=>x>=1).length>=5?1:0;}
-function openBygg(){
-  data.bygg=data.bygg||{};const n=data.byggNiva||2;
+function tangramStars(){const v=Object.values(data.tangram||{});return v.filter(x=>x>=2).length>=MPBitar.TANGRAM.length?3:v.filter(x=>x>=2).length>=3?2:v.filter(x=>x>=1).length>=3?1:0;}
+function openBygg(mode){
+  if(mode)PBM=mode;const tg=PBM==="tangram";
+  data[PBM]=data[PBM]||{};let n=data[PBM+"Niva"]||(tg?1:2);if(tg&&n>2)n=2;
+  $("pbHead").textContent=tg?"🔺 Tangram":"🧩 Bygg bilden";
+  $("pbIntro").textContent=tg?"Sju bitar ur en kvadrat. Använd alla sju och bygg figuren. Parallellogrammet kan du vända med ⇋.":"Välj en bild och lägg mönsterbitarna så att hela bilden blir täckt. Det finns ofta flera sätt!";
+  $("pbNiva").querySelector('[data-n="3"]').hidden=tg;
   $("pbNiva").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",+b.dataset.n===n));
-  $("pbGrid").innerHTML=MPBitar.BILDER.map(B=>{const d=data.bygg[B.id]||0;return`<button data-b="${B.id}">${MPBitar.thumb(B,d?"#7ACB98":"#9AA7BF")}${B.n}${starHtml(d)}</button>`;}).join("");
+  $("pbGrid").innerHTML=pbList().map(B=>{const d=data[PBM][B.id]||0;return`<button data-b="${B.id}">${MPBitar.thumb(B,d?"#7ACB98":"#9AA7BF")}${B.n}${starHtml(d)}</button>`;}).join("");
   show("pblist");
 }
-$("pbNiva").onclick=e=>{const b=e.target.closest("[data-n]");if(!b)return;data.byggNiva=+b.dataset.n;save();openBygg();};
+$("pbNiva").onclick=e=>{const b=e.target.closest("[data-n]");if(!b)return;data[PBM+"Niva"]=+b.dataset.n;save();openBygg();};
 $("pbGrid").onclick=e=>{const b=e.target.closest("[data-b]");if(b)playBygg(b.dataset.b);};
 $("pblBack").onclick=()=>openHome();
 $("pbBack").onclick=()=>{$("pbDone").hidden=true;openBygg();};
 $("pbList").onclick=()=>{$("pbDone").hidden=true;openBygg();};
 function playBygg(id){
-  const B=MPBitar.BILDER.find(x=>x.id===id),niva=data.byggNiva||2;PB={id};
+  const tg=PBM==="tangram",B=pbList().find(x=>x.id===id);let niva=data[PBM+"Niva"]||(tg?1:2);if(tg&&niva>2)niva=2;PB={id};
   $("pbTitle").textContent=`${B.n} · ${["","Lätt","Mellan","Svår"][niva]}`;
-  $("pbLead").textContent=niva===1?"Dra bitarna till bilden. De vita linjerna visar var de kan ligga.":niva===3?`Täck bilden med högst ${B.sol.length} bitar.`:"Dra bitarna till bilden. Vrid med den gula knappen, två fingrar eller två tryck.";
+  $("pbLead").textContent=tg?(niva===1?"Lägg de sju bitarna i figuren. De vita linjerna visar var de ska ligga.":"Lägg alla sju bitarna så att figuren blir täckt. Vrid med den gula knappen och vänd parallellogrammet med ⇋."):
+    niva===1?"Dra bitarna till bilden. De vita linjerna visar var de kan ligga.":niva===3?`Täck bilden med högst ${B.sol.length} bitar.`:"Dra bitarna till bilden. Vrid med den gula knappen, två fingrar eller två tryck.";
   $("pbDone").hidden=true;show("pbplay");
-  PB.game=MPBitar.spel($("pbHost"),{bild:B,niva,tray:B.extra.length?["hex","trap","romb","tri","sq","tan"]:["hex","trap","romb","tri","sq","tan"],onDone:r=>byggDone(B,niva,r)});
+  PB.game=MPBitar.spel($("pbHost"),{bild:B,niva,tray:tg?TG_TRAY:["hex","trap","romb","tri","sq","tan"],unik:tg,onDone:r=>byggDone(B,niva,r)});
 }
 function byggDone(B,niva,r){
-  const before=byggStars();data.bygg[B.id]=Math.max(data.bygg[B.id]||0,niva);const st=byggStars();if(st>(data.stars.bygg||0))data.stars.bygg=st;save();
+  const tg=PBM==="tangram",starsOf=tg?tangramStars:byggStars,key=tg?"tangram":"bygg";
+  const before=starsOf();data[PBM][B.id]=Math.max(data[PBM][B.id]||0,niva);const st=starsOf();if(st>(data.stars[key]||0))data.stars[key]=st;save();
   window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
-  const parts=Object.entries(r.counts).map(([t,n])=>`${n} ${PBN[t][n===1?0:1]}`);
-  $("pbSum").textContent=`Du använde ${r.n} bitar: ${parts.join(", ")}.`+(st>before?` Ny stjärna i Geometri! ⭐`:"");
-  // följdfråga: hur många av en sort?
-  const types=Object.keys(r.counts),t=pickOne(types),ans=r.counts[t],opts=[ans,ans+1,ans>1?ans-1:ans+2];
-  $("pbQ").innerHTML=`<div class="pbq"><p>Hur många ${PBN[t][1]} använde du?</p><div class="opts">${shuffle(opts).map(v=>`<button data-v="${v}">${v}</button>`).join("")}</div></div>`;
-  $("pbQ").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(+b.dataset.v===ans){b.classList.add("right");window.Ljud&&Ljud.ok&&Ljud.ok();$("pbQ").querySelector("p").textContent="Rätt! Bra räknat. 🎉";}else{b.classList.add("bad");b.disabled=true;window.Ljud&&Ljud.bad&&Ljud.bad();}});
+  if(tg){$("pbSum").textContent=`Du lade alla sju bitarna!`+(st>before?` Ny stjärna i Geometri! ⭐`:"");
+    $("pbQ").innerHTML=`<div class="pbq"><p>Visste du? Alla tangramfigurer är lika stora, för de är byggda av samma sju bitar.</p></div>`;}
+  else{
+    const parts=Object.entries(r.counts).map(([t,n])=>`${n} ${PBN[t][n===1?0:1]}`);
+    $("pbSum").textContent=`Du använde ${r.n} bitar: ${parts.join(", ")}.`+(st>before?` Ny stjärna i Geometri! ⭐`:"");
+    // följdfråga: hur många av en sort?
+    const types=Object.keys(r.counts),t=pickOne(types),ans=r.counts[t],opts=[ans,ans+1,ans>1?ans-1:ans+2];
+    $("pbQ").innerHTML=`<div class="pbq"><p>Hur många ${PBN[t][1]} använde du?</p><div class="opts">${shuffle(opts).map(v=>`<button data-v="${v}">${v}</button>`).join("")}</div></div>`;
+    $("pbQ").querySelectorAll("button").forEach(b=>b.onclick=()=>{if(+b.dataset.v===ans){b.classList.add("right");window.Ljud&&Ljud.ok&&Ljud.ok();$("pbQ").querySelector("p").textContent="Rätt! Bra räknat. 🎉";}else{b.classList.add("bad");b.disabled=true;window.Ljud&&Ljud.bad&&Ljud.bad();}});}
   setTimeout(()=>{$("pbDone").hidden=false;},700);
-  const i=MPBitar.BILDER.findIndex(x=>x.id===B.id);$("pbNext").onclick=()=>playBygg(MPBitar.BILDER[(i+1)%MPBitar.BILDER.length].id);
+  const L=pbList(),i=L.findIndex(x=>x.id===B.id);$("pbNext").onclick=()=>playBygg(L[(i+1)%L.length].id);
 }
 
 openHome();

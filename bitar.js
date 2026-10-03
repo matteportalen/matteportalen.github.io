@@ -16,7 +16,15 @@
     romb:{n:"Romb",col:"#3D8BFD",st:"#1F5FC4",v:[[0,0],[1,0],[1.5,H],[.5,H]],step:60,lat:true},
     tri:{n:"Triangel",col:"#2BB673",st:"#1A7E4E",v:[[0,0],[1,0],[.5,H]],step:60,lat:true},
     sq:{n:"Kvadrat",col:"#FF9F43",st:"#C96A0C",v:[[0,0],[1,0],[1,1],[0,1]],step:30,lat:false},
-    tan:{n:"Smal romb",col:"#E9D3A1",st:"#B08A4A",v:[[0,0],[1,0],[1+C30,.5],[C30,.5]],step:30,lat:false}
+    tan:{n:"Smal romb",col:"#E9D3A1",st:"#B08A4A",v:[[0,0],[1,0],[1+C30,.5],[C30,.5]],step:30,lat:false},
+    // tangram: sju bitar ur en kvadrat 4×4. Vrids i steg om 45°. Parallellogrammet kan vändas.
+    tL:{n:"Stor triangel",col:"#E5484D",st:"#A8282D",v:[[0,0],[4,0],[2,2]],step:45,tg:true},
+    tL2:{n:"Stor triangel",col:"#FF9F43",st:"#C96A0C",v:[[0,0],[4,0],[2,2]],step:45,tg:true},
+    tM:{n:"Mellanstor triangel",col:"#7B61FF",st:"#5440C9",v:[[0,0],[2,0],[0,2]],step:45,tg:true},
+    tS:{n:"Liten triangel",col:"#2BB673",st:"#1A7E4E",v:[[0,0],[2,0],[1,1]],step:45,tg:true},
+    tS2:{n:"Liten triangel",col:"#FF5FA2",st:"#C2447C",v:[[0,0],[2,0],[1,1]],step:45,tg:true},
+    tQ:{n:"Kvadrat",col:"#F7C531",st:"#C99A0A",v:[[1,0],[2,1],[1,2],[0,1]],step:45,tg:true},
+    tP:{n:"Parallellogram",col:"#17AFC4",st:"#0E7F8E",v:[[0,0],[2,0],[3,1],[1,1]],step:45,tg:true,flip:true}
   };
   // bitarnas hörn runt tyngdpunkten
   for(const t of Object.values(TYPES)){const cx=t.v.reduce((a,p)=>a+p[0],0)/t.v.length,cy=t.v.reduce((a,p)=>a+p[1],0)/t.v.length;t.loc=t.v.map(([x,y])=>[x-cx,y-cy]);}
@@ -169,12 +177,20 @@
       "#############",
       " ###  ###  ### "]}
   ];
+  const TANGRAM=[
+    {id:"kvadrat",n:"Kvadrat",p:[["tL",0,0,0,0],["tL2",270,0,0,4],["tM",180,0,4,4],["tS",90,0,4,0],["tQ",0,0,2,1],["tS2",180,0,3,3],["tP",0,1,3,3]]},
+    {id:"hus",n:"Hus",p:[["tL",0,0,0,4],["tL2",180,0,4,4],["tM",0,0,0,2],["tS",90,0,4,2],["tS2",0,0,2,2],["tQ",0,0,2,5],["tP",0,0,1,1]]},
+    {id:"fisk",n:"Fisk",p:[["tL",0,0,0,0],["tL2",180,0,4,0],["tM",270,0,0,2],["tQ",0,0,-2,-1],["tS",270,0,-3,1],["tS2",180,0,3,-2],["tP",180,0,6,0]]},
+    {id:"bat",n:"Segelbåt",p:[["tL2",180,0,4,0],["tL",90,0,2,0],["tM",0,0,2,0],["tS",270,0,2,4],["tQ",0,0,1,4],["tP",180,0,3,-2],["tS2",0,0,2,-3]]},
+    {id:"raket",n:"Raket",p:[["tL",90,0,0,0],["tL2",270,0,0,4],["tQ",0,0,-1,4],["tS",270,0,-2,2],["tS2",90,0,2,0],["tM",180,0,1,0],["tP",90,0,1,-4]]},
+    {id:"pil",n:"Pil",p:[["tL",270,0,4,4],["tL2",0,0,0,1],["tM",270,0,0,3],["tS",180,0,4,3],["tS2",90,0,4,1],["tQ",0,0,-2,1],["tP",0,0,-3,0]]}
+  ];
   BILDER.forEach(B=>{B.T=parse(B.rows);B.sol=tile(B.T);B.box=bounds(B.T);B.extra=(B.extra||[]).map(e=>Object.assign({ang:0},e));
     B.extra.forEach(e=>{B.sol.push({t:e.t,poly:null,piece:e});});});
 
   /* ---------- Hjälpfunktioner ---------- */
   const rot=([x,y],d)=>{const a=d*Math.PI/180,c=Math.cos(a),s=Math.sin(a);return[x*c-y*s,x*s+y*c];};
-  function pieceVerts(p){return TYPES[p.t].loc.map(v=>{const [x,y]=rot(v,p.ang);return[x+p.x,y+p.y];});}
+  function pieceVerts(p){return TYPES[p.t].loc.map(v=>{const [x,y]=rot(p.flip?[-v[0],v[1]]:v,p.ang);return[x+p.x,y+p.y];});}
   function nearestLattice(x,y){let best=null,bd=1e9;const b0=Math.round(y/H);for(let b=b0-1;b<=b0+1;b++){const a=Math.round(x-b/2);for(let aa=a-1;aa<=a+1;aa++){const [px,py]=L(aa,b),d=Math.hypot(px-x,py-y);if(d<bd){bd=d;best=[px,py];}}}return{p:best,d:bd};}
   // snäpp: vinkel till steg, sedan ett hörn till närmaste nätpunkt (eller till andra bitars hörn)
   function snap(p,others,extraTargets){
@@ -210,8 +226,8 @@
     const box=B?bildBox(B):(opts.box||{x0:0,y0:0,x1:14,y1:9}),mx=fri?0:2.2,my=fri?0:1.2;
     const VB={x:box.x0-mx,y:-(box.y1+my),w:box.x1-box.x0+2*mx,h:box.y1-box.y0+2*my};
     host.innerHTML=`<div class="mb"><svg class="mb-board" viewBox="${VB.x} ${VB.y} ${VB.w} ${VB.h}" role="img" aria-label="${B?"Bygg bilden: "+B.n:"Fritt bygge"}"></svg>
-      <div class="mb-tray">${(opts.tray||Object.keys(TYPES)).map(t=>`<button class="mb-t" data-t="${t}" aria-label="${TYPES[t].n}"><svg viewBox="-1.25 -1.25 2.5 2.5"><polygon points="${ptsAttr(TYPES[t].loc)}" fill="${TYPES[t].col}" stroke="${TYPES[t].st}" stroke-width=".06" stroke-linejoin="round"/></svg></button>`).join("")}</div>
-      <div class="mb-ctl"><button data-a="rot">↻ Vrid</button><button data-a="del">🗑 Ta bort</button><button data-a="undo">↶ Ångra</button><button data-a="clear">Börja om</button><span class="mb-info"></span></div></div>`;
+      <div class="mb-tray">${(opts.tray||Object.keys(TYPES)).map(t=>`<button class="mb-t" data-t="${t}" aria-label="${TYPES[t].n}"><svg viewBox="${(m=>`${-m} ${-m} ${2*m} ${2*m}`)(TYPES[t].tg?Math.max(1.25,Math.max(...TYPES[t].loc.map(([x,y])=>Math.hypot(x,y)))*1.06):1.25)}"><polygon points="${ptsAttr(TYPES[t].loc)}" fill="${TYPES[t].col}" stroke="${TYPES[t].st}" stroke-width=".06" stroke-linejoin="round"/></svg></button>`).join("")}</div>
+      <div class="mb-ctl"><button data-a="rot">↻ Vrid</button>${(opts.tray||[]).some(t=>TYPES[t].flip)?'<button data-a="flip">⇋ Vänd</button>':""}<button data-a="del">🗑 Ta bort</button><button data-a="undo">↶ Ångra</button><button data-a="clear">Börja om</button><span class="mb-info"></span></div></div>`;
     const svg=host.querySelector(".mb-board"),gS=el("g",{}),gL=el("g",{}),gP=el("g",{}),gH=el("g",{});svg.append(gS,gL,gP,gH);
     const info=host.querySelector(".mb-info");
     // silhuetten (och linjerna i Lätt)
@@ -231,7 +247,9 @@
         gH.append(el("line",{x1:sel.x,y1:-sel.y,x2:hx,y2:-hy,stroke:"#1D2B53","stroke-width":".04","stroke-dasharray":".12 .1","pointer-events":"none"})); // linjen får inte ta trycket från biten
         const h=el("g",{class:"mb-h",transform:`translate(${hx} ${-hy})`});h.append(el("circle",{r:".36",fill:"#FFC93C",stroke:"#1D2B53","stroke-width":".06"}));
         const t=el("text",{"text-anchor":"middle","dominant-baseline":"central","font-size":".46","font-weight":"800",fill:"#1D2B53"});t.textContent="↻";h.append(t);gH.append(h);}
-      if(B){const n=pieces.length;info.textContent=niva===3?`Bitar: ${n} (högst ${maxN})`:`Bitar: ${n}`;}else info.textContent=`Bitar: ${pieces.length}`;
+      if(B){const n=pieces.length;info.textContent=niva===3&&!B.tg?`Bitar: ${n} (högst ${maxN})`:B.tg?`Bitar: ${n} av 7`:`Bitar: ${n}`;}else info.textContent=`Bitar: ${pieces.length}`;
+      // tangram: varje bit finns bara en gång i lådan
+      if(opts.unik)host.querySelectorAll(".mb-t").forEach(b=>b.classList.toggle("used",pieces.some(q=>q.t===b.dataset.t)));
     }
     // är bilden täckt? räknas i pixlar: täckt del, bitar utanför och bitar som ligger på varandra
     let cv=null;
@@ -275,7 +293,7 @@
       const d=drag;drag=null;
       const tr=host.querySelector(".mb-tray").getBoundingClientRect(),overTray=e.clientY>=tr.top&&e.clientY<=tr.bottom&&e.clientX>=tr.left&&e.clientX<=tr.right;
       // ett kort tryck i lådan: biten läggs mitt på planen. En bit som släpps över lådan tas bort.
-      if(d.fresh&&overTray){sel.x=VB.x+VB.w/2+(Math.random()-.5);sel.y=-(VB.y+VB.h/2)+(Math.random()-.5);}
+      if(d.fresh&&overTray){sel.x=VB.x+VB.w*(.2+.6*Math.random());sel.y=-(VB.y+VB.h*(.2+.6*Math.random()));} // utspridda, inte i en hög
       else if(d.kind==="move"&&d.moved&&overTray){pieces=pieces.filter(q=>q!==sel);sel=null;change();return;}
       if(sel){snp(sel);}change();
     };
@@ -283,7 +301,7 @@
     let wheelT=0;svg.addEventListener("wheel",e=>{if(!sel||done)return;e.preventDefault();if(!wheelT)save();rot(sel,e.deltaY>0?15:-15);draw();clearTimeout(wheelT);wheelT=setTimeout(()=>{wheelT=0;snp(sel);change();},260);},{passive:false});
     // ny bit från lådan: dyker upp under fingret och följer med
     host.querySelector(".mb-tray").addEventListener("pointerdown",e=>{
-      const b=e.target.closest(".mb-t");if(!b||done)return;e.preventDefault();save();
+      const b=e.target.closest(".mb-t");if(!b||done||b.classList.contains("used"))return;e.preventDefault();save();
       const w=toWorld(e),p={t:b.dataset.t,x:w[0],y:w[1],ang:0};pieces.push(p);sel=p;
       pts.set(e.pointerId,w);drag={kind:"move",id:e.pointerId,dx:0,dy:0,moved:true,fresh:true};
       try{svg.setPointerCapture(e.pointerId);}catch(_){}
@@ -295,6 +313,7 @@
     function drawLight(){draw();}
     host.querySelector(".mb-ctl").onclick=e=>{const a=e.target.closest("[data-a]");if(!a||done)return;const k=a.dataset.a;
       if(k==="rot"&&sel){save();rot(sel,TYPES[sel.t].step);snp(sel);change();}
+      else if(k==="flip"&&sel&&TYPES[sel.t].flip){save();sel.flip=!sel.flip;snp(sel);change();}
       else if(k==="del"&&sel){save();pieces=pieces.filter(q=>q!==sel);sel=null;change();}
       else if(k==="undo"&&hist.length){pieces=JSON.parse(hist.pop());sel=null;change();}
       else if(k==="clear"&&pieces.length){save();pieces=[];sel=null;change();}};
@@ -302,6 +321,11 @@
     draw();
     return{get pieces(){return pieces;},set pieces(v){pieces=v;change();},check,draw,VB};
   }
+  TANGRAM.forEach(F=>{
+    F.tg=true;F.T=new Set();
+    F.extra=F.p.map(([t,r,f,dx,dy])=>{const v=TYPES[t].v.map(([x,y])=>{const [a,b]=rot(f?[-x,y]:[x,y],r);return[a+dx,b+dy];}),cx=v.reduce((a,q)=>a+q[0],0)/v.length,cy=v.reduce((a,q)=>a+q[1],0)/v.length;return{t,x:cx,y:cy,ang:r,flip:!!f};});
+    F.sol=F.extra.map(e=>({t:e.t,piece:e}));
+  });
   // stilen för spelplanen, en gång per sida
   if(!document.getElementById("mb-css")){const st=document.createElement("style");st.id="mb-css";st.textContent=`
 .mb{display:flex;flex-direction:column;gap:8px}
@@ -309,11 +333,12 @@
 .mb-tray{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;background:#fff;border-radius:16px;padding:6px;box-shadow:0 3px 0 #C6D6F2;touch-action:none}
 .mb-t{width:58px;height:58px;border-radius:12px;background:#F2F6FD;border:0;cursor:grab;touch-action:none}
 .mb-t svg{width:100%;height:100%;display:block}
-@media (max-width:420px){.mb-t{width:50px;height:50px}.mb-tray{gap:4px}}
+.mb-t.used{opacity:.25;cursor:default}
+@media (max-width:899px){.mb-tray{flex-wrap:nowrap;gap:4px}.mb-t{flex:1 1 0;min-width:0;max-width:58px;width:auto;height:auto;aspect-ratio:1}}
 .mb-ctl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:center}
 .mb-ctl button{background:#fff;border:0;border-radius:12px;padding:6px 12px;font:inherit;font-weight:800;color:#1D2B53;box-shadow:0 3px 0 #C6D6F2;min-height:44px;cursor:pointer}
 .mb-info{font-weight:800;color:#56668F;padding:0 6px}
 .mb-p,.mb-h{cursor:grab}
 @media (min-width:900px){.mb{display:grid;grid-template-columns:1fr 84px;grid-template-areas:"board tray" "ctl ctl";align-items:start}.mb-board{grid-area:board;max-height:calc(100vh - 230px)}.mb-tray{grid-area:tray;flex-direction:column}.mb-ctl{grid-area:ctl}}`;document.head.appendChild(st);}
-  window.MPBitar={TYPES,BILDER,L,triPts,parse,tile,bounds,pieceVerts,snap,H,bildPolys,bildBox,solPolys,thumb,spel};
+  window.MPBitar={TYPES,BILDER,TANGRAM,L,triPts,parse,tile,bounds,pieceVerts,snap,H,bildPolys,bildBox,solPolys,thumb,spel};
 })();

@@ -22,6 +22,9 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
 .lead{margin:0 0 12px;color:var(--muted);font-size:1.05rem}
 .note{color:var(--muted);font-size:.95rem;margin-top:12px}
+.tabs{display:inline-flex;background:var(--card);border-radius:14px;padding:3px;box-shadow:0 3px 0 var(--line);margin-bottom:10px}
+.tabs button{border-radius:11px;padding:7px 14px;font-weight:800}
+.tabs button[aria-pressed="true"]{background:var(--ink);color:#fff}
 </style>
 </head>
 <body>
@@ -29,6 +32,7 @@ h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
   <a class="back" href="../">← Verktygslådan</a>
   <h1>🔷 Mönsterbitar</h1>
   <p class="lead">Bygg vad du vill! Dra bitar från lådan, vrid med den gula knappen, två fingrar eller två tryck. Dra en bit tillbaka till lådan för att ta bort den.</p>
+  <div class="tabs" id="tabs"><button data-m="pb" aria-pressed="true">🔷 Mönsterbitar</button><button data-m="tg" aria-pressed="false">🔺 Tangram</button></div>
   <div id="host"></div>
   <p class="note">Visste du? Två trapetser blir en sexhörning, och tre blå romber blir också en sexhörning. Hur många trianglar behövs?</p>
 </div>
@@ -37,8 +41,14 @@ h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
 <script src="../../bitar.js"></script>
 <script src="../../huvud.js" data-titel="Mönsterbitar" data-ikon="🔷" data-hem="../../" data-nav="av"></script>
 <script>
-// Fritt bygge med mönsterbitarna (motorn finns i bitar.js). Inget sparas.
-MPBitar.spel(document.getElementById("host"),{box:{x0:0,y0:0,x1:16,y1:10}});
+// Fritt bygge med mönsterbitarna eller tangrambitarna (motorn finns i bitar.js). Inget sparas.
+const notes={pb:"Visste du? Två trapetser blir en sexhörning, och tre blå romber blir också en sexhörning. Hur många trianglar behövs?",
+  tg:"Tangram: sju bitar som går att lägga ihop till en kvadrat. Kan du bygga kvadraten? Vänd parallellogrammet med ⇋."};
+function start(m){document.querySelectorAll("#tabs button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===m));
+  MPBitar.spel(document.getElementById("host"),m==="tg"?{box:{x0:0,y0:0,x1:14,y1:9},tray:["tL","tL2","tM","tS","tS2","tQ","tP"],unik:true}:{box:{x0:0,y0:0,x1:16,y1:10}});
+  document.querySelector(".note").textContent=notes[m];}
+document.getElementById("tabs").onclick=e=>{const b=e.target.closest("[data-m]");if(b)start(b.dataset.m);};
+start("pb");
 </script>
 </body>
 </html>
