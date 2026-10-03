@@ -38,9 +38,14 @@
     const ah=o.hourAngle!=null?o.hourAngle:((h%12)+m/60)*30,am=o.minAngle!=null?o.minAngle:m*6,W=o.wide||22;
     let s=`<svg class="clock${o.small?' small':''}" viewBox="${-W} ${-W} ${200+2*W} ${200+2*W}" role="img" aria-label="Analog klocka">`;
     s+=`<g class="ring"></g><circle cx="100" cy="100" r="96" fill="#fff" stroke="#1D2B53" stroke-width="6"/><g class="wedge"></g>`;
+    /* Över och i: 0–20 över, 20–30 i halv, 30–40 över halv, 40–60 i (samma regel som phrase).
+       Runt halv är det tvärtom, därför egna, ljusare fält med text. */
     if(o.halves){
-      s+=`<path d="M100 100L100 7A93 93 0 0 1 100 193Z" fill="#DDF5E7"/><path d="M100 100L100 193A93 93 0 0 1 100 7Z" fill="#FFE9D2"/>`;
-      s+=`<text x="136" y="106" text-anchor="middle" font-size="15" font-weight="800" fill="#157548" stroke="#fff" stroke-width="4" paint-order="stroke">över</text><text x="64" y="106" text-anchor="middle" font-size="17" font-weight="800" fill="#C96A0C" stroke="#fff" stroke-width="4" paint-order="stroke">i</text>`;
+      const Z=[[0,20,'#CDEFD9','över','#157548',15],[20,30,'#FFF0DE','i halv','#C96A0C',11],[30,40,'#E6F7EC','över halv','#157548',11],[40,60,'#FFE0C2','i','#C96A0C',17]];
+      Z.forEach(([a,b,f])=>{s+=`<path d="${pie(93,a*6,b*6)}" fill="${f}"/>`;});
+      [20,30,40].forEach(mm=>{const [x,y]=P(93,mm*6);s+=`<line x1="100" y1="100" x2="${x}" y2="${y}" stroke="#fff" stroke-width="2"/>`;});
+      Z.forEach(([a,b,,txt,col,fs])=>{const w=txt.split(' '),[x,y]=P(w.length>1?47:40,(a+b)/2*6);
+        s+=`<text x="${x}" y="${y+fs*.35-(w.length-1)*fs*.5}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${col}" stroke="#fff" stroke-width="3.5" paint-order="stroke">${w.map((t,i)=>`<tspan x="${x}" dy="${i?fs:0}">${t}</tspan>`).join('')}</text>`;});
     }
     if(o.wedge){const[m1,dm]=o.wedge;if(dm>=60)s+=`<circle cx="100" cy="100" r="92" fill="rgba(255,159,67,.28)"/>`;
       const rest=dm%60;if(rest)s+=`<path d="${pie(92,m1*6,(m1+rest)*6)}" fill="rgba(255,159,67,.45)"/>`;}
