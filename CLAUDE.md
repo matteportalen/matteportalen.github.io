@@ -60,7 +60,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 - Färger: `--bg #EAF3FF`, `--ink #1D2B53`, `--muted #56668F`, `--card #FFFFFF`, `--line #C6D6F2`, `--good #1E9E5E`, `--good-dark #157548`, `--bad #E5484D`, `--accent #3D5AFE`, `--gold #F2B707`.
 - Vita kort med hård skugga rakt nedåt (`box-shadow:0 4px 0 var(--line)`) som trycks ner 3 px vid tryck.
-- Stora tryckytor (minst 48 px), sifferknappsats för inmatning, 🔊-uppläsning med svensk röst där det finns.
+- Stora tryckytor (minst 48 px), sifferknappsats för inmatning, 🔊-uppläsning med svensk röst där det finns. **Uppläsningen sker bara när man trycker på 🔊, aldrig automatiskt** (lärarens val).
 - Konfetti vid alla rätt eller nytt rekord. Respektera `prefers-reduced-motion`.
 - Rätt svar: grönt och pling. Fel svar: mjukt rosa, en förklaring och uppgiften kommer tillbaka senare i rundan. Aldrig bara ordet "Fel".
 - **Emojis används som ikoner.** Ett försök med egenritade SVG-ikoner och en stilguide gjordes men **valdes bort**: läraren tyckte emojiversionen var snyggare. Rita inte nya figurer i SVG utan att fråga.

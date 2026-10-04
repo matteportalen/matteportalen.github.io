@@ -246,6 +246,7 @@ const cInPart=c=>inPart(c.L);
 /* ---------- Uppläsning ---------- */
 let svVoice=null;const lv=()=>{try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null;}catch(e){}};
 if('speechSynthesis' in window){lv();speechSynthesis.onvoiceschanged=lv;}
+// uppläsning bara när man trycker på 🔊 (lärarens val), aldrig automatiskt
 function speak(t){if(!('speechSynthesis' in window))return;lv();speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='sv-SE';if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
 
 /* ---------- Kartan ---------- */
@@ -352,10 +353,10 @@ function nextTask(){if(!G)return;if(scrollY>0)window.scrollTo(0,0); // nästa fr
   const it=G.queue.shift();G.t=it.o;G.first=!it.again;G.busy=false;$('prog').textContent=`${Math.min(G.n,G.i+1)} av ${G.n}`;
   // Sätt nålen: alltid hela Sverige, inga prickar (de skulle avslöja svaret)
   if(G.mode==='nal'){const m=drawMap($('gMap'),{col:true});G.paths=m.paths;Object.values(m.paths).forEach(p=>p.classList.add('in','dim2'));G.dots={};$('opts').innerHTML='';
-    G.ask=`Var ligger ${G.t.n}? Sätt nålen i rätt landskap.`;$('instr').textContent=G.ask;speak(`Var ligger ${G.t.n}?`);return;}
+    G.ask=`Var ligger ${G.t.n}? Sätt nålen i rätt landskap.`;$('instr').textContent=G.ask;return;}
   const m=drawMap($('gMap'),{focus:true});G.paths=m.paths;
   if(ST(G.mode)){G.dots=drawCities($('gMap'),G.pool,{});const c=G.t;
-    if(G.mode==='hittastad'){$('opts').innerHTML='';G.ask=`Var ligger ${c.n}?`;$('instr').textContent=G.ask;speak(G.ask);return;}
+    if(G.mode==='hittastad'){$('opts').innerHTML='';G.ask=`Var ligger ${c.n}?`;$('instr').textContent=G.ask;return;}
     G.dots[c.n].classList.add('hl');G.dots[c.n].setAttribute('r',G.dots[c.n]._r*1.7);
     // hälften av gångerna: vad heter staden? Andra hälften: i vilket landskap ligger den?
     G.kind=Math.random()<.5&&G.pool.length>=4?'namn':'landskap';
@@ -370,7 +371,7 @@ function nextTask(){if(!G)return;if(scrollY>0)window.scrollTo(0,0); // nästa fr
     $('opts').innerHTML=shuffle([G.t,...others]).map(o=>`<button data-id="${o.id}">${o.n}</button>`).join('');
     $('opts').querySelectorAll('button').forEach(b=>b.onclick=()=>answerV(b));
   }else{
-    $('opts').innerHTML='';$('instr').textContent=`Var ligger ${G.t.n}?`;speak(`Var ligger ${G.t.n}?`);
+    $('opts').innerHTML='';$('instr').textContent=`Var ligger ${G.t.n}?`;
   }}
 $('gSpk').onclick=()=>{if(!G||!G.t)return;speak(ST(G.mode)?G.ask:G.mode==='vilket'?'Vilket landskap lyser?':`Var ligger ${G.t.n}?`);};
 function reward(o){$('reward').innerHTML=`<div class="reward"><img src="${o.vImg}" alt=""><img src="${o.dImg}" alt=""><img src="${o.bImg}" alt=""><span>${o.djur} och ${o.bl.toLowerCase()}</span></div>`;}
