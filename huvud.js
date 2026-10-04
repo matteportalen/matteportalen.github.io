@@ -7,6 +7,8 @@
    data-liggande  "ja": göm sidhuvudet på mobil i liggande läge (Tiobas)
    data-portal    "ovriga" på sidorna i Övriga ämnen (annan logga, färg och startsida). Standard: Matte-Portalen.
    Loggan är en hamburgerknapp (☰): den öppnar menyn med portalerna (startsidan och Övriga ämnen).
+   Tillbaka-knappen (←) längst till vänster finns på alla sidor utom startsidorna: ett steg bakåt i sidan,
+   och från sidans första skärm tillbaka dit man kom ifrån (eller till startsidan).
    Bara portaler med innehåll står i listan.
    Sidan anropar MPS.visa(id) varje gång den byter skärm (i sin show-funktion).
 
@@ -36,6 +38,9 @@
 .mph-logo:hover .mph-mark,.mph-logo:focus-visible .mph-mark{transform:rotate(-6deg) scale(1.08);filter:drop-shadow(0 0 6px rgba(255,255,255,.9)) drop-shadow(0 2px 0 rgba(29,43,83,.25))}
 @media (prefers-reduced-motion:reduce){.mph-logo::before{animation:none!important}.mph-logo .mph-mark{transition:none}}
 .mph-mark{width:34px;height:34px;display:block;flex:none;filter:drop-shadow(0 2px 0 rgba(29,43,83,.25))}
+.mph-bk{width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.95)!important;color:#1D2B53!important;font-weight:800;font-size:1.35rem!important;line-height:1;flex:none;box-shadow:0 3px 0 rgba(29,43,83,.25);display:grid;place-items:center}
+.mph-bk:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(29,43,83,.25)}
+.mph.mini .mph-bk{display:none}
 .mph-x{display:none;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.95)!important;color:#1D2B53!important;font-weight:800;font-size:1.2rem;box-shadow:0 3px 0 rgba(29,43,83,.25)}
 .mph-title{flex:1;min-width:0;font-weight:800;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
 .mph-sep{opacity:.6;margin:0 2px}
@@ -96,7 +101,8 @@ body.mph-mini #quit{display:none}
   if(!document.getElementById('mph-css')){const st=document.createElement('style');st.id='mph-css';st.textContent=CSS;document.head.appendChild(st);}
   const h=document.createElement('header');h.className='mph'+(titel?' has-title':'')+(ds.liggande==='ja'?' liggande':'')+(PORTAL.id!=='matte'?' '+PORTAL.id:'');
   const pet=window.lasDjur&&window.owlSVG?owlSVG(lasDjur()):'',namn=profilnamn();
-  h.innerHTML=`<button class="mph-x" aria-label="Avsluta">✕</button>
+  const hemUrl=new URL(hem+PORTAL.href,location.href),paStart=hemUrl.pathname.replace(/index\.html$/,'')===location.pathname.replace(/index\.html$/,'');
+  h.innerHTML=`${paStart?'':'<button class="mph-bk" aria-label="Tillbaka">←</button>'}<button class="mph-x" aria-label="Avsluta">✕</button>
     <button class="mph-logo" aria-label="${PORTAL.a}${PORTAL.b}, meny" aria-haspopup="true" aria-expanded="false">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="mph-burger" aria-hidden="true">☰</span></button>
     <span class="mph-title">${titel?`<span class="mph-sep">›</span> ${ikon?ikon+' ':''}${esc(titel)}`:''}</span>
     <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
@@ -105,12 +111,18 @@ body.mph-mini #quit{display:none}
   snd.onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);label();if(Ljud.on&&Ljud.ok)Ljud.ok();document.dispatchEvent(new Event('mp-ljud'));};
   document.addEventListener('mp-ljud-andrat',label);
   h.querySelector('.mph-x').onclick=()=>history.back();
+  // tillbaka: inne i sidan ett steg bakåt (sidans egna knappar trycks via historiken), annars dit man kom ifrån
+  const bk=h.querySelector('.mph-bk');
+  if(bk)bk.onclick=()=>{
+    if(navOn&&cur.i>0){history.back();return;}
+    let fran=null;try{fran=document.referrer?new URL(document.referrer):null;}catch(e){}
+    if(fran&&fran.origin===location.origin&&fran.pathname!==location.pathname)history.back();else location.href=hemUrl.href;};
   // menyn bakom loggan
   const ptl=h.querySelector('.mph-logo');let meny=null;
   const stang=()=>{if(meny){meny.remove();meny=null;ptl.setAttribute('aria-expanded','false');}};
   ptl.onclick=e=>{e.stopPropagation();if(meny)return stang();
     meny=document.createElement('nav');meny.className='mph-menu';meny.setAttribute('aria-label','Meny');
-    meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p.a}${p.b}<small>${p.sub}</small></span></a>`).join('');
+    meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p===PORTAL?`🏠 Startsidan<small>${p.a}${p.b}</small>`:`${p.a}${p.b}<small>${p.sub}</small>`}</span></a>`).join('');
     h.appendChild(meny);ptl.setAttribute('aria-expanded','true');meny.querySelector('a').focus({preventScroll:true});};
   document.addEventListener('click',e=>{if(meny&&!meny.contains(e.target))stang();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')stang();});
