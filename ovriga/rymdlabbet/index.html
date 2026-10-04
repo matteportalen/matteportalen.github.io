@@ -91,6 +91,12 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
 .agelist b{display:block}
 .agelist span{color:var(--gold);font-weight:800;font-size:1.2rem}
 .err{color:#FFB4B4}
+.ginfo{display:flex;gap:12px;align-items:flex-start;margin-top:10px;background:rgba(255,255,255,.07);border-radius:16px;padding:10px}
+.ginfo canvas{width:110px;height:110px;flex:none;border-radius:14px}
+.ginfo dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:.95rem;align-items:baseline}
+.ginfo dt{color:var(--soft);font-weight:700;font-size:.85rem}
+.ginfo dd{margin:0;font-weight:800}
+@media(max-width:420px){.ginfo dl{grid-template-columns:1fr}.ginfo dt{margin-top:4px}}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -235,11 +241,18 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
 <section id="jattar" class="screen" hidden>
   <button class="back" data-home>← Rymdlabbet</button>
   <h2>⭐ Jättarna i rymden</h2>
-  <div class="say" style="margin-bottom:10px"><div><p class="big" id="gBig"></p><p id="gTxt"></p></div><button class="spk" data-say="jattar" aria-label="Läs upp">🔊</button></div>
-  <div class="stage"><canvas id="gCv" height="420"></canvas></div>
-  <div class="slider"><span>🌍</span><input type="range" id="gZoom" min="0" max="1" step="0.001" aria-label="Zooma"><span>⭐</span></div>
-  <div class="chips" id="gPick" style="margin-top:8px"></div>
-  <p class="note">Stjärnornas storlek är ungefärlig, eftersom de är så långt bort att de är svåra att mäta.</p>
+  <div class="lab">
+    <div><div class="stage"><canvas id="gCv" height="440"></canvas></div>
+      <div class="slider"><span>🌍</span><input type="range" id="gZoom" min="0" max="1" step="0.0005" aria-label="Zooma"><span>🕳️</span></div>
+      <div class="ctrl"><button class="b go" id="gTour">▶ Resa genom jättarna</button></div>
+      <div class="chips" id="gPick" style="margin-top:8px"></div>
+    </div>
+    <div class="panel">
+      <div class="say"><div><p class="big" id="gBig"></p><p id="gTxt"></p></div><button class="spk" data-say="jattar" aria-label="Läs upp">🔊</button></div>
+      <div class="ginfo" id="gInfo" hidden><canvas id="gThumb" width="240" height="240"></canvas><dl id="gDl"></dl></div>
+      <p class="note">Alla klot står på samma punkt, de stora bakom de små. De streckade ringarna visar planeternas banor runt solen. Stjärnornas storlek är ungefärlig, eftersom de är så långt bort att de är svåra att mäta.</p>
+    </div>
+  </div>
 </section>
 
 <!-- Svarta hål -->
@@ -357,7 +370,7 @@ function show(id){if('speechSynthesis' in window)speechSynthesis.cancel();docume
   if(id==='zoom')openZoom();if(id==='jattar')openGiants();if(id==='hal')openHole();if(id==='himmel')openNight();if(id==='liv')openLife();}
 document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
 document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>show('home'));
-function redraw(){if(cur==='storlek')drawSize();if(cur==='avstand')drawDist();if(cur==='vikt')drawWeight();if(cur==='zoom')drawZoom();if(cur==='jattar')drawGiants();if(cur==='hal'&&!$('kTxt').textContent.includes('blir'))kDraw(null,0);}
+function redraw(){if(cur==='storlek')drawSize();if(cur==='avstand')drawDist();if(cur==='vikt')drawWeight();if(cur==='zoom')drawZoom();if(cur==='jattar'){drawGiants();if(gSel)gText();}if(cur==='hal'&&!$('kTxt').textContent.includes('blir'))kDraw(null,0);}
 addEventListener('resize',()=>{if(cur==='storlek')openSize(true);if(cur==='avstand')drawDist();if(cur==='morker')drawEcl();if(cur==='dag'||cur==='arstid')size3D();if(cur==='jattar')drawGiants();});
 
 /* =====================================================================
@@ -806,45 +819,79 @@ $('zSl').addEventListener('input',e=>{cancelAnimationFrame(zAnim);zV=+e.target.v
 $('zOut').onclick=()=>zTo(Math.min(7,Math.floor(zV+.001)+1));$('zIn').onclick=()=>zTo(Math.max(0,Math.ceil(zV-.001)-1));
 
 /* =====================================================================
-   Jättarna: alla klot står på samma punkt, de stora bakom de små
+   Jättarna: alla klot står på samma punkt, de stora bakom de små.
+   Radie i solradier (R☉). Svarta hål: händelsehorisontens radie. Banor: banans radie.
    ===================================================================== */
-const GI=[ // radie i solradier
-  {n:'Jorden',r:.00917,col:'rgb(70,130,220)',p:'jorden',fb:'ett pepparkorn, 2 mm'},
-  {n:'Jupiter',r:.1005,col:'rgb(201,162,122)',p:'jupiter',fb:'en vindruva, 2 cm'},
-  {n:'Solen',r:1,col:'rgb(255,200,60)',p:'solen',fb:'en fotboll, 22 cm'},
-  {n:'Sirius',r:1.71,col:'rgb(200,220,255)',fb:'en badboll, 38 cm',t:'Den starkaste stjärnan på natthimlen. Den lyser blåvitt.'},
-  {n:'Arcturus',r:25.4,col:'rgb(255,170,90)',fb:'en giraff, 5,6 meter',t:'En orange jättestjärna. Syns högt på himlen på våren.'},
-  {n:'Polstjärnan',r:37.5,col:'rgb(255,240,190)',fb:'ett hus med två våningar, 8 meter',t:'Står nästan rakt över nordpolen. Den har hjälpt sjöfarare att hitta norr i tusentals år.'},
-  {n:'Rigel',r:78.9,col:'rgb(170,200,255)',fb:'ett höghus med sex våningar, 17 meter',t:'Den blå jättestjärnan i Orions fot.'},
-  {n:'Betelgeuse',r:764,col:'rgb(255,110,60)',fb:'Kaknästornet i Stockholm, 170 meter',t:'Den röda superjätten i Orions axel. En dag exploderar den som en supernova.'},
-  {n:'VY Canis Majoris',r:1420,col:'rgb(255,80,50)',fb:'nästan som Eiffeltornet, 310 meter',t:'En av de största stjärnor vi känner till. Om den stod där solen står skulle den nå ut förbi Jupiter.'}];
-let gZoom=0,gSel=null;
-function gScale(H){const a=H*.36/1,b=H*.45/1420;return Math.exp(Math.log(a)+(Math.log(b)-Math.log(a))*gZoom);}
-function drawGiants(){const cv=$('gCv'),{c,w,h}=fitCanvas(cv,420),s=gScale(h),bx=w*.5,by=h-34;
+const GI=[
+  {n:'Jorden',r:.00917,typ:'planet',p:'jorden',fb:'ett pepparkorn, 2 mm',typn:'Planet',avst:'Här bor vi',temp:'15 °C i snitt'},
+  {n:'Jupiter',r:.1005,typ:'planet',p:'jupiter',fb:'en vindruva, 2 cm',typn:'Gasjätte, den största planeten',avst:'43 ljusminuter',temp:'−110 °C i molnen'},
+  {n:'Solen',r:1,typ:'star',col:'rgb(255,200,60)',p:'solen',fb:'en fotboll, 22 cm',typn:'Stjärna (gul dvärg)',avst:'8 ljusminuter',temp:'5 500 °C på ytan',t:'Solen är en ganska vanlig stjärna. Den ser stor ut för att den är så nära.'},
+  {n:'Sirius',r:1.71,typ:'star',col:'rgb(190,215,255)',fb:'en badboll, 38 cm',typn:'Vit stjärna',avst:'8,6 ljusår',temp:'9 700 °C',t:'Den starkaste stjärnan på natthimlen. Den lyser blåvitt.'},
+  {n:'Sagittarius A*',r:17,typ:'bh',fb:'ett rum, 4 meter',typn:'Svart hål mitt i Vintergatan',avst:'26 000 ljusår',temp:'Väger som 4 miljoner solar',t:'Mitt i vår egen galax finns ett jättestort svart hål. Alla Vintergatans stjärnor går runt det.'},
+  {n:'Arcturus',r:25.4,typ:'star',col:'rgb(255,165,80)',fb:'en giraff, 5,6 meter',typn:'Orange jättestjärna',avst:'37 ljusår',temp:'4 000 °C',t:'Syns högt på himlen på våren.'},
+  {n:'Polstjärnan',r:37.5,typ:'star',col:'rgb(255,238,185)',fb:'ett hus med två våningar, 8 meter',typn:'Gul superjätte',avst:'430 ljusår',temp:'6 000 °C',t:'Står nästan rakt över nordpolen och har hjälpt sjöfarare att hitta norr i tusentals år.'},
+  {n:'Rigel',r:78.9,typ:'star',col:'rgb(160,195,255)',fb:'ett höghus med sex våningar, 17 meter',typn:'Blå superjätte',avst:'860 ljusår',temp:'12 000 °C',t:'Den blå jättestjärnan i Orions fot. Blå stjärnor är de hetaste.'},
+  {n:'Jordens bana',r:215,typ:'bana',fb:'en ring 95 meter bred',typn:'Jordens väg runt solen',avst:'',temp:'',t:'Den streckade ringen är jordens bana runt solen. Ett år tar det att åka ett varv.'},
+  {n:'Betelgeuse',r:764,typ:'star',col:'rgb(255,105,55)',fb:'Kaknästornet i Stockholm, 170 meter',typn:'Röd superjätte',avst:'550 ljusår',temp:'3 300 °C',t:'Den röda stjärnan i Orions axel. Om den stod där solen står skulle den nå ut förbi Mars. En dag exploderar den som en supernova.'},
+  {n:'Jupiters bana',r:1118,typ:'bana',fb:'en ring 490 meter bred',typn:'Jupiters väg runt solen',avst:'',temp:'',t:'Jupiters bana runt solen. Ett varv tar 12 år.'},
+  {n:'VY Canis Majoris',r:1420,typ:'star',col:'rgb(255,85,50)',fb:'nästan som Eiffeltornet, 310 meter',typn:'Röd hyperjätte',avst:'3 800 ljusår',temp:'3 500 °C',t:'En av de största stjärnorna. Den kastar ut stora moln av gas omkring sig.'},
+  {n:'UY Scuti',r:1700,typ:'star',col:'rgb(255,95,60)',fb:'högre än Eiffeltornet, 370 meter',typn:'Röd superjätte',avst:'9 500 ljusår',temp:'3 400 °C',t:'Länge räknad som den största kända stjärnan. Fem miljarder solar skulle få plats i den.'},
+  {n:'Stephenson 2-18',r:2150,typ:'star',col:'rgb(255,70,45)',fb:'en skyskrapa med 150 våningar, 470 meter',typn:'Röd superjätte',avst:'19 000 ljusår',temp:'3 200 °C',t:'Kanske den största stjärna vi känner till. Om den stod där solen står skulle den nå ut förbi Saturnus.'},
+  {n:'Neptunus bana',r:6450,typ:'bana',fb:'en ring 2,8 km bred',typn:'Neptunus väg runt solen',avst:'',temp:'',t:'Neptunus bana, längst ut i solsystemet. Hela solsystemet ryms innanför den här ringen.'},
+  {n:'M87*',r:27500,typ:'bh',fb:'en liten stad, 6 km',typn:'Svart hål i galaxen M87',avst:'55 miljoner ljusår',temp:'Väger som 6,5 miljarder solar',t:'År 2019 tog forskare den allra första bilden av ett svart hål. Det var det här. Hela solsystemet skulle få plats inuti.'},
+  {n:'TON 618',r:280000,typ:'bh',fb:'från Stockholm nästan till Uppsala, 60 km',typn:'Ett av de största svarta hålen',avst:'10 miljarder ljusår',temp:'Väger som 40 miljarder solar',t:'Ett av de största svarta hål vi känner till. Det slukar gas och stjärnor, och gasen som virvlar runt det lyser starkare än en hel galax.'}];
+const G_MAX=280000;let gZoom=0,gShow=0,gSel=null,gRaf=0,gTour=null;
+function gScale(h,z){const a=h*.36,b=h*.45/G_MAX;return Math.exp(Math.log(a)+(Math.log(b)-Math.log(a))*z);}
+const gZoomFor=(o,h)=>{const a=Math.log(h*.36),b=Math.log(h*.45/G_MAX);return Math.max(0,Math.min(1,(Math.log(h*.4/o.r)-a)/(b-a)));};
+const cl=(x)=>Math.max(0,Math.min(1,x));
+/* stjärna: solens yta i stjärnans färg, mörkare kant och glöd */
+function starBall(c,x,y,r,col,glow){const im=img(SOLEN);
+  if(glow){const gr=c.createRadialGradient(x,y,r*.9,x,y,r*1.6);gr.addColorStop(0,col.replace('rgb','rgba').replace(')',',.45)'));gr.addColorStop(1,col.replace('rgb','rgba').replace(')',',0)'));c.fillStyle=gr;c.beginPath();c.arc(x,y,r*1.6,0,7);c.fill();}
+  c.save();c.beginPath();c.arc(x,y,r,0,7);c.clip();
+  if(im.complete&&im.naturalWidth)c.drawImage(im,im.naturalWidth*.2,0,im.naturalWidth*.5,im.naturalHeight,x-r,y-r,2*r,2*r);else{c.fillStyle=col;c.fillRect(x-r,y-r,2*r,2*r);}
+  c.globalCompositeOperation='color';c.fillStyle=col;c.fillRect(x-r,y-r,2*r,2*r);
+  c.globalCompositeOperation='screen';c.fillStyle='rgba(255,255,255,.18)';c.fillRect(x-r,y-r,2*r,2*r);
+  c.globalCompositeOperation='source-over';const ld=c.createRadialGradient(x,y,r*.55,x,y,r);ld.addColorStop(0,'rgba(0,0,0,0)');ld.addColorStop(1,'rgba(40,0,0,.5)');c.fillStyle=ld;c.fillRect(x-r,y-r,2*r,2*r);c.restore();}
+/* svart hål: glödande skiva av gas runt ett svart klot */
+function bhBall(c,x,y,r){const g=c.createRadialGradient(x,y,r*.95,x,y,r*2.6);g.addColorStop(0,'rgba(255,220,150,.95)');g.addColorStop(.15,'rgba(255,150,60,.85)');g.addColorStop(.5,'rgba(220,60,20,.35)');g.addColorStop(1,'rgba(150,20,0,0)');
+  c.fillStyle=g;c.beginPath();c.arc(x,y,r*2.6,0,7);c.fill();
+  c.save();c.translate(x,y);c.scale(1,.28);c.strokeStyle='rgba(255,200,120,.85)';c.lineWidth=r*.35;c.beginPath();c.arc(0,0,r*1.9,0,7);c.stroke();c.restore();
+  c.fillStyle='#000';c.beginPath();c.arc(x,y,r,0,7);c.fill();c.strokeStyle='rgba(255,235,200,.9)';c.lineWidth=Math.max(1,r*.04);c.beginPath();c.arc(x,y,r*1.02,0,7);c.stroke();}
+function gDrawObj(c,o,x,cy,r){if(o.typ==='bana'){c.save();c.setLineDash([8,7]);c.strokeStyle='rgba(201,212,242,.75)';c.lineWidth=2;c.beginPath();c.arc(x,cy,r,0,7);c.stroke();c.restore();return;}
+  if(o.typ==='bh')bhBall(c,x,cy,r);else if(o.typ==='planet')ball(c,x,cy,r,BYID[o.p]);else starBall(c,x,cy,r,o.col,true);}
+function drawGiants(){const cv=$('gCv'),{c,w,h}=fitCanvas(cv,440),s=gScale(h,gShow),bx=w*.5,by=h-30;
   c.fillStyle='#05070F';c.fillRect(0,0,w,h);
-  const r0=srand(5);for(let k=0;k<90;k++){c.fillStyle=`rgba(255,255,255,${r0()*.5+.2})`;c.fillRect(r0()*w,r0()*h,1.5,1.5);}
-  let full=null;
-  for(let i=GI.length-1;i>=0;i--){const o=GI[i],r=o.r*s;if(r<.6)continue;const cy=by-r;
-    if(r>h*1.6){full=o;continue;} // för stor för bilden: ritas inte
-    if(o.p){ball(c,bx,cy,r,BYID[o.p]);}else{const g=c.createRadialGradient(bx-r*.3,cy-r*.3,r*.1,bx,cy,r);g.addColorStop(0,'#fff');g.addColorStop(.25,o.col);g.addColorStop(1,o.col.replace('rgb','rgba').replace(')',',.9)'));c.fillStyle=g;c.beginPath();c.arc(bx,cy,r,0,7);c.fill();}
-    if(gSel===o){c.strokeStyle='#FFC93C';c.lineWidth=3;c.beginPath();c.arc(bx,cy,r+4,0,7);c.stroke();}}
-  // namn på dem som syns lagom stora
-  c.font='800 15px "Baloo 2", sans-serif';c.textAlign='center';
-  GI.forEach(o=>{const r=o.r*s;if(r<3||r>h*.9)return;const ty=by-2*r-8;if(ty<16)return;c.fillStyle='#fff';c.strokeStyle='rgba(0,0,0,.6)';c.lineWidth=4;c.strokeText(o.n,bx,ty);c.fillText(o.n,bx,ty);});
-  const small=GI.filter(o=>o.r*s<3&&o.r*s>=.0);if(small.length&&small.length<GI.length){c.fillStyle='#C9D4F2';c.font='700 13px "Baloo 2", sans-serif';c.fillText(`${small.map(o=>o.n).join(', ')}: för små för att synas`,w/2,h-10);}
-  const huge=GI.filter(o=>o.r*s>h*1.6);if(huge.length){c.fillStyle='#FFC93C';c.font='800 15px "Baloo 2", sans-serif';c.fillText(`Dra i reglaget: ${huge.length===1?huge[0].n+' är':huge.length+' stjärnor är'} för stor${huge.length===1?'':'a'} för att få plats än!`,w/2,24);}
-  gText();}
-function gText(){const o=gSel;if(!o){const big=GI.filter(x=>x.r*gScale(420)>=3&&x.r*gScale(420)<420*6).pop();
-    $('gBig').textContent='Hur stora är stjärnorna?';$('gTxt').textContent=gZoom<.15?'Här är jorden, Jupiter och solen. Solen är en ganska vanlig stjärna. Dra i reglaget så kommer jättarna!':`Alla klot står på samma punkt, de stora bakom de små. ${big?big.n+' är den största som syns nu.':''} Tryck på ett namn nedanför.`;return;}
-  $('gBig').textContent=`${o.n}${o.r>=1?`: ${fmt(o.r,o.r<10?1:0)} gånger så bred som solen`:''}.`;
-  $('gTxt').textContent=`${o.t?o.t+' ':''}Om solen var en fotboll skulle ${o.n.toLowerCase()==='solen'?'den':o.n} vara ${o.fb}.`;}
-function openGiants(){$('gZoom').value=gZoom;$('gPick').innerHTML=GI.map((o,i)=>`<button class="b" data-i="${i}" aria-pressed="${gSel===o}">${o.n}</button>`).join('');
-  $('gPick').querySelectorAll('button').forEach(b=>b.onclick=()=>{const o=GI[+b.dataset.i];gSel=o;$('gPick').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
-    // zooma så att den valda syns stor
-    const h=420,target=Math.log(h*.4/o.r),a=Math.log(h*.36),bb=Math.log(h*.45/1420),to=Math.max(0,Math.min(1,(target-a)/(bb-a))),from=gZoom,t0=performance.now();
-    (function f(n){const k=Math.min(1,(n-t0)/900),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;gZoom=from+(to-from)*e;$('gZoom').value=gZoom;drawGiants();if(k<1)requestAnimationFrame(f);})(t0);});
-  drawGiants();}
-$('gZoom').addEventListener('input',e=>{gZoom=+e.target.value;drawGiants();});
+  const r0=srand(5);for(let k=0;k<110;k++){c.fillStyle=`rgba(255,255,255,${r0()*.5+.2})`;c.fillRect(r0()*w,r0()*h,1.5,1.5);}
+  const vis=[];
+  for(let i=GI.length-1;i>=0;i--){const o=GI[i],r=o.r*s;const a=cl((r-.4)/2.5)*cl((h*5-r)/(h*3));if(a<=.01)continue;
+    c.globalAlpha=a;gDrawObj(c,o,bx,by-r,r);if(gSel===o){c.strokeStyle='#FFC93C';c.lineWidth=3;c.beginPath();c.arc(bx,by-r,r+4,0,7);c.stroke();}c.globalAlpha=1;vis.push({o,r,a});}
+  // namn: ovanför varje klot som syns lagom stort, utan att krocka
+  c.font='800 15px "Baloo 2", sans-serif';c.textAlign='center';let lastY=1e9;
+  vis.slice().sort((A,B)=>A.r-B.r).forEach(({o,r,a})=>{if(r<3||a<.35)return;const ty=by-2*r-8;if(ty<16||ty>lastY-15)return;lastY=ty;
+    c.globalAlpha=a;c.fillStyle=o.typ==='bh'?'#FFB46B':o.typ==='bana'?'#C9D4F2':'#fff';c.strokeStyle='rgba(0,0,0,.7)';c.lineWidth=4;c.strokeText(o.n,bx,ty);c.fillText(o.n,bx,ty);c.globalAlpha=1;});
+  const tiny=GI.filter(o=>o.r*s<2&&o.typ!=='bana');if(tiny.length&&tiny.length<GI.length-3){c.fillStyle='#C9D4F2';c.font='700 13px "Baloo 2", sans-serif';c.fillText(`${tiny.length===1?tiny[0].n+' är':tiny.map(o=>o.n).slice(-2).join(' och ')+(tiny.length>2?' med flera är':' är')} för små för att synas`,w/2,h-8);}
+  if(gShow<.02){c.fillStyle='#FFC93C';c.font='800 15px "Baloo 2", sans-serif';c.fillText('Dra i reglaget eller tryck på Resa genom jättarna!',w/2,24);}}
+function gLoop(){if(cur!=='jattar'){gRaf=0;return;}
+  if(gTour){const n=performance.now(),T=gTour;if(n>T.next){T.i++;if(T.i>=T.list.length){gTour=null;$('gTour').textContent='▶ Resa genom jättarna';}else{const o=T.list[T.i];gZoom=gZoomFor(o,440);gSel=o;gUI();T.next=n+(o.typ==='bana'?2600:3800);}}}
+  const d=gZoom-gShow;if(Math.abs(d)>.0003){gShow+=d*.06+Math.sign(d)*.0004;if(Math.abs(gZoom-gShow)<.0005)gShow=gZoom;$('gZoom').value=gShow;drawGiants();}
+  gRaf=requestAnimationFrame(gLoop);}
+function gUI(){$('gPick').querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',GI[+b.dataset.i]===gSel));gText();}
+function gText(){const o=gSel;
+  if(!o){$('gBig').textContent='Hur stora är stjärnorna?';$('gTxt').textContent='Här är jorden, Jupiter och solen. Solen är en ganska vanlig stjärna. Dra i reglaget, så kommer jättarna, och allra sist de största svarta hålen.';$('gInfo').hidden=true;return;}
+  $('gBig').textContent=o.n+(o.typ==='bana'?'':o.r>=1.5?`: ${fmt(o.r,o.r<10?1:0)} gånger så bred som solen.`:'.');
+  $('gTxt').textContent=`${o.t?o.t+' ':''}Om solen var en fotboll skulle ${o.typ==='bana'?'banan vara':o.n==='Solen'?'den vara':o.n+' vara'} ${o.fb}.`;
+  $('gInfo').hidden=false;
+  const rows=[['Typ',o.typn],o.r>=1.5&&o.typ!=='bana'?['Bredd',`${fmt(o.r,o.r<10?1:0)} solar i rad`]:null,o.avst?['Avstånd från oss',o.avst]:null,o.temp?[o.typ==='bh'?'Tyngd':'Temperatur',o.temp]:null,['Om solen var en fotboll',o.fb]].filter(Boolean);
+  $('gDl').innerHTML=rows.map(([a,b])=>`<dt>${a}</dt><dd>${b}</dd>`).join('');
+  const tc=$('gThumb'),x=tc.getContext('2d');x.clearRect(0,0,240,240);x.fillStyle='#05070F';x.fillRect(0,0,240,240);
+  if(o.typ==='bana'){x.setLineDash([8,7]);x.strokeStyle='rgba(201,212,242,.85)';x.lineWidth=3;x.beginPath();x.arc(120,120,90,0,7);x.stroke();x.setLineDash([]);starBall(x,120,120,10,'rgb(255,200,60)',true);ball(x,210,120,7,BYID[o.n.startsWith('Jorden')?'jorden':o.n.startsWith('Jupiter')?'jupiter':'neptunus']);}
+  else gDrawObj(x,o,120,120,o.typ==='bh'?46:o.typ==='planet'?84:76);}
+function openGiants(){$('gPick').innerHTML=GI.map((o,i)=>`<button class="b" data-i="${i}">${o.typ==='bh'?'🕳️ ':o.typ==='bana'?'⭕ ':''}${o.n}</button>`).join('');
+  $('gPick').querySelectorAll('button').forEach(b=>b.onclick=()=>{gTour=null;$('gTour').textContent='▶ Resa genom jättarna';const o=GI[+b.dataset.i];gSel=o;gZoom=gZoomFor(o,440);gUI();});
+  $('gZoom').value=gShow;gUI();drawGiants();if(!gRaf)gRaf=requestAnimationFrame(gLoop);}
+$('gZoom').addEventListener('input',e=>{gTour=null;$('gTour').textContent='▶ Resa genom jättarna';gZoom=+e.target.value;gShow=gZoom;drawGiants();});
+$('gTour').onclick=()=>{if(gTour){gTour=null;$('gTour').textContent='▶ Resa genom jättarna';return;}
+  gTour={i:-1,next:0,list:GI.filter(o=>o.r>=1)};gZoom=0;gShow=0;gSel=null;gUI();gTour.next=performance.now()+1200;$('gTour').textContent='⏸ Stanna resan';};
 
 /* =====================================================================
    Svarta hål: gummiduken
