@@ -374,6 +374,7 @@ if(S.lpBlitz)show("bLilla",`⚡ Rekord: ${S.lpBlitz} rätt på 60 s`);else if(S.
 const np=get("np3-resultat");S.np=Object.values(np||{});
 /* Skattjakten (i Spelhörnan): en till tre stjärnor per nivå */
 {const sk=get("mattespel-sverigekartan-v1");S.stars+=sum((sk&&sk.stars)||{});} // Sverigekartan (Övriga ämnen)
+{const og=get("mattespel-ordgomma-v1");S.stars+=sum((og&&og.stars)||{});} // Ordgömman (Övriga ämnen)
 const sj=get("mattespel-skattjakten-v1");S.sj=sj||{};S.stars+=Object.values(S.sj.stars||{}).reduce((a,b)=>a+(+b||0),0);
 if(S.np.length){const last=S.np.slice().sort((a,b)=>b.d-a.d)[0];show("bNp",`Senast: ${last.r} av ${last.t} rätt`)}
 $("sStars").textContent=S.stars;
@@ -381,7 +382,7 @@ $("sStars").textContent=S.stars;
 /* ---------- Dagar i rad (en dag räknas när något har tränats) ---------- */
 const day=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const today=day(new Date()),yest=day(new Date(Date.now()-864e5));
-const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1"].map(k=>localStorage.getItem(k)||"").join("|");
+const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1"].map(k=>localStorage.getItem(k)||"").join("|");
 let fp=0;for(let i=0;i<snap.length;i++)fp=(fp*31+snap.charCodeAt(i))|0;
 const st=get("matteportalen-dagar")||{fp:null,days:[]};
 if(st.fp!==null&&st.fp!==fp&&!st.days.includes(today))st.days.push(today);
@@ -539,7 +540,7 @@ $("bubble").textContent=`${hi} ${msg}`;
 /* ============ Elevprofiler (allt sparas bara på den här enheten) ============ */
 (function(){
 const PKEYS=["mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
-  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
+  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const jGet=k=>{try{return JSON.parse(lsGet(k)||"null")}catch(e){return null}},jSet=(k,v)=>lsSet(k,JSON.stringify(v));
 const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};
