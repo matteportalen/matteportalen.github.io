@@ -68,8 +68,8 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
 .stage canvas{display:block;width:100%;touch-action:none}
 #c3d{height:min(62vh,560px)}
 @media(max-width:899px){#c3d{height:min(52vh,430px)}}
-.sunedge{position:absolute;left:0;top:0;bottom:0;width:20%;max-width:120px;pointer-events:none;background:linear-gradient(90deg,rgba(255,200,60,.55),rgba(255,200,60,0));z-index:1}
-.sunedge span{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-weight:800;font-size:.9rem;color:#FFE58A;text-shadow:0 1px 3px #000;line-height:1.15}
+.sunglow{position:absolute;left:0;top:0;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;pointer-events:none;z-index:1;background:radial-gradient(circle,rgba(255,215,90,.6),rgba(255,200,60,.22) 38%,rgba(255,200,60,0) 66%)}
+.sunlbl{position:absolute;left:0;top:0;pointer-events:none;z-index:2;font-weight:800;font-size:.9rem;color:#FFE58A;text-shadow:0 1px 3px #000;line-height:1.15;text-align:center;white-space:nowrap;transform:translate(-50%,-50%)}
 .sky{width:100%;height:auto;display:block;border-radius:14px}
 .skycap{font-weight:800;font-size:.95rem;color:var(--soft);margin:8px 0 4px}
 .facts{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
@@ -537,7 +537,7 @@ async function init3D(){if(T)return T;
   const host=document.createElement('div');host.style.cssText='position:absolute;inset:0;pointer-events:none';
   const L=(t)=>{const e=document.createElement('div');e.className='lbl3';e.textContent=t;host.appendChild(e);return e;};
   const lCity=L(''),lN=L('Nordpolen'),lSun=L('');lSun.hidden=true;
-  host.insertAdjacentHTML('afterbegin','<div class="sunedge"><span>☀️<br>Solljuset<br>kommer<br>härifrån</span></div>');
+  host.insertAdjacentHTML('afterbegin','<div class="sunglow"></div><div class="sunlbl">☀️<br>Solljuset<br>kommer härifrån</div>');
   T={THREE,renderer,scene,camera,controls,cv,earth,tiltG,ring,rg,dot,sph,SUNDIR,host,lCity,lN,lSun,npole,rayLbl,spin0:null,key:''};
   return T;}
 function size3D(){if(!T)return;const w=T.cv.clientWidth,h=T.cv.clientHeight;if(!w||!h)return;T.renderer.setSize(w,h,false);T.camera.aspect=w/h;T.camera.updateProjectionMatrix();}
@@ -579,6 +579,13 @@ function loop3(now){if(!mode3||!T)return;const dt=Math.min(.05,(now-last3)/1000)
   const put=(el,obj,txt,facing)=>{obj.getWorldPosition(v);const n=v.clone().normalize(),toCam=cam.clone().sub(v).normalize();const vis=!facing||n.dot(toCam)>.15;
     v.project(T.camera);el.style.display=vis&&v.z<1?'':'none';el.style.transform=`translate(${(v.x+1)/2*W}px,${(1-v.y)/2*H}px) translate(-50%,-130%)`;if(txt)el.textContent=txt;};
   put(T.lCity,T.dot,'📍 '+city.n,true);put(T.lN,T.npole,null,false);
+  // solskenet följer med när man vrider: det hamnar vid den kant av bilden där solen faktiskt är
+  {const sv=T.SUNDIR.clone().transformDirection(T.camera.matrixWorldInverse),dx=sv.x,dy=-sv.y,len=Math.hypot(dx,dy),gl=T.host.querySelector('.sunglow'),lb=T.host.querySelector('.sunlbl');
+    let gx=W/2,gy=H/2,lx,ly,txt='☀️<br>Solljuset<br>kommer härifrån';
+    if(len<.25){txt=sv.z>0?'☀️ Solen är rakt bakom dig':'☀️ Solen är rakt bakom jorden';lx=W/2;ly=H-28;if(sv.z<0){gx=W/2;gy=H/2;}else{gx=-999;}}
+    else{const ux=dx/len,uy=dy/len,m=Math.min((W/2)/Math.max(.001,Math.abs(ux)),(H/2)/Math.max(.001,Math.abs(uy)));gx=W/2+ux*m;gy=H/2+uy*m;
+      const mi=Math.min((W/2-60)/Math.max(.001,Math.abs(ux)),(H/2-40)/Math.max(.001,Math.abs(uy)));lx=W/2+ux*mi;ly=H/2+uy*mi;}
+    gl.style.transform=`translate(${gx}px,${gy}px)`;gl.style.opacity=gx<-900?0:1;lb.style.left=lx+'px';lb.style.top=ly+'px';if(lb.innerHTML!==txt)lb.innerHTML=txt;}
   raf3=requestAnimationFrame(loop3);}
 $('dTime').addEventListener('input',e=>{dClock=+e.target.value;dPlay=null;$('dPlay').textContent='▶ Spela ett dygn';upd3D(true);});
 $('dPlay').onclick=()=>{if(dPlay){dPlay=null;$('dPlay').textContent='▶ Spela ett dygn';return;}dPlay={left:1,end:dClock};$('dPlay').textContent='⏸ Pausa';};
