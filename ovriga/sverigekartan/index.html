@@ -34,9 +34,12 @@ h2{font-size:1.5rem;margin:0 0 6px;line-height:1.15}
 .map path.ls.g.kan{fill:var(--g)}.map path.ls.s.kan{fill:var(--s)}.map path.ls.n.kan{fill:var(--n)}
 .map path.ls.col.g{fill:var(--g)}.map path.ls.col.s{fill:var(--s)}.map path.ls.col.n{fill:var(--n)}
 .map path.ls.dim{opacity:.38}
+.map path.ls.blank{fill:#F1EAD6!important;stroke:#fff;stroke-width:.7} /* landskapsgränserna syns, men inga namn eller prickar */
+.map path.ls.blank.ans{stroke:#FF6A00;stroke-width:.9;fill:#FFE3C7!important}
 .map path.ls.dim2{fill-opacity:.55;stroke-width:.8}
 #homeMap{max-height:72vh;width:auto;max-width:100%;margin:0 auto}
 #gMap,#exMap{max-height:calc(100vh - 190px);width:auto;max-width:100%;margin:0 auto}
+@media(max-width:819px){#gMap{max-height:calc(100vh - 250px);max-height:calc(100dvh - 250px)}} /* hela Sverige ska synas utan att skrolla, även när frågan blir två rader */
 .map .pin{font-size:1px}
 .map path.ls.out{fill:#DCE3EE;opacity:.55;pointer-events:none}
 .map path.ls.hl{fill:var(--hl)!important;animation:pulse 1.1s ease-in-out infinite}
@@ -145,6 +148,8 @@ dialog ul{padding-left:1.1em;font-size:.85rem;max-height:55vh;overflow:auto}
       <div class="modes" id="modesSt" hidden>
         <button class="mode" data-m="exst"><span class="ic">🔍</span><span><b>Utforska städerna</b><small>Tryck på en prick och läs om staden.</small></span></button>
         <button class="mode" data-m="vilkenstad"><span class="ic">❓</span><span><b>Vilken stad?</b><small>Vad heter staden, och i vilket landskap ligger den?</small></span><span class="st" id="stVS"></span></button>
+        <button class="mode" data-m="nal"><span class="ic">📍</span><span><b>Sätt nålen</b><small>Var ligger staden? Sätt nålen på en tom karta och se hur nära du kom.</small></span><span class="st" id="stN"></span></button>
+        <button class="mode" data-m="provst"><span class="ic">🏆</span><span><b>Stora stadsprovet</b><small>Alla 31 städer på hela Sverigekartan. Hur många kan du?</small></span><span class="st" id="stPS"></span></button>
         <button class="mode" data-m="hittastad"><span class="ic">👆</span><span><b>Hitta staden</b><small>Var ligger den? Tryck på rätt prick.</small></span><span class="st" id="stHS"></span></button>
       </div>
       <div class="modes" id="modesAlv" hidden>
@@ -156,7 +161,7 @@ dialog ul{padding-left:1.1em;font-size:.85rem;max-height:55vh;overflow:auto}
         <button class="mode" data-m="ex"><span class="ic">🔍</span><span><b>Utforska</b><small>Tryck på ett landskap och se djur, blomma och vapen.</small></span></button>
         <button class="mode" data-m="vilket"><span class="ic">❓</span><span><b>Vilket landskap?</b><small>Ett landskap lyser. Vad heter det?</small></span><span class="st" id="stV"></span></button>
         <button class="mode" data-m="hitta"><span class="ic">👆</span><span><b>Hitta landskapet</b><small>Var ligger det? Tryck på kartan.</small></span><span class="st" id="stH"></span></button>
-        <button class="mode" data-m="nal"><span class="ic">📍</span><span><b>Sätt nålen</b><small>Var ligger staden? Sätt nålen i rätt landskap på hela Sverigekartan.</small></span><span class="st" id="stN"></span></button>
+        <button class="mode" data-m="provls"><span class="ic">🏆</span><span><b>Stora landskapsprovet</b><small>Alla 25 landskap på hela Sverigekartan. Hur många kan du?</small></span><span class="st" id="stPL"></span></button>
         <button class="mode" data-m="pussel"><span class="ic">🧩</span><span><b>Pusslet</b><small>Dra landskapen till rätt plats.</small></span><span class="st" id="stP"></span></button>
       </div>
       <p class="note" id="homeNote">Ett landskap blir färgat på kartan när du har svarat rätt på det två gånger i rad. Stjärnor: en för varje spel och landsdel. <button class="linkbtn" id="srcBtn">Bilder och källor</button></p>
@@ -354,7 +359,8 @@ function openHome(){G=null;if('speechSynthesis' in window)speechSynthesis.cancel
   // vald landsdel: tunn mörk kant
   L.forEach(o=>{if(part==='a'||inPart(o)){m.paths[o.id].style.stroke='#1D2B53';m.paths[o.id].style.strokeWidth='.5';}});
   ['stV','stH','stP','stVS','stHS','stN'].forEach((s,i)=>$(s).innerHTML=bits(part)&[1,2,4,8,16,32][i]?'⭐':'<span style="opacity:.25">⭐</span>');
-  ['stVA','stF'].forEach((s,i)=>$(s).innerHTML=bits(AP)&[64,128][i]?'⭐':'<span style="opacity:.25">⭐</span>');}
+  ['stVA','stF'].forEach((s,i)=>$(s).innerHTML=bits(AP)&[64,128][i]?'⭐':'<span style="opacity:.25">⭐</span>');
+  ['stPL','stPS'].forEach((s,i)=>$(s).innerHTML=bits('prov')&[256,512][i]?'⭐':'<span style="opacity:.25">⭐</span>');}
 const starHtml=n=>`<span class="stars">${[1,2,3,4,5,6].map(i=>i<=n?'★':'<span class="off">★</span>').join('')}</span>`;
 $('topic').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;topic=b.dataset.t;try{sessionStorage.setItem('mp-sverige-amne',topic);}catch(_){}openHome();};
 $('parts').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;part=b.dataset.p;try{sessionStorage.setItem('mp-sverige-del',part);}catch(_){}openHome();};
@@ -398,7 +404,12 @@ $('exBack').onclick=openHome;
 let G=null;
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
 const ST=m=>m==='vilkenstad'||m==='hittastad'||m==='nal';
+/* Stora proven: alla landskap eller alla städer, en gång var, på hela kartan. Fel kommer inte tillbaka (det är ett prov). */
+function startProv(kind){const st=kind==='provst',pool=st?CITIES:L;
+  G={mode:st?'hittastad':'hitta',prov:kind,pool,miss:0,i:0,first:true,busy:false,missed:[]};
+  G.queue=shuffle(pool.slice()).map(o=>({o}));G.n=G.queue.length;show('game');nextTask();}
 function startGame(mode){
+  if(mode==='provls'||mode==='provst')return startProv(mode);
   if(mode==='vilkenalv'||mode==='folj')return startAlv(mode);
   const pool=ST(mode)?CITIES.filter(cInPart):L.filter(inPart);
   G={mode,pool,miss:0,i:0,first:true,busy:false};
@@ -410,10 +421,10 @@ function nextTask(){if(!G)return;offPtr();if(scrollY>0)window.scrollTo(0,0); // 
   document.querySelector('.gwrap').classList.remove('pz');
   if(!G.queue.length)return finish();
   const it=G.queue.shift();G.t=it.o;G.first=!it.again;G.busy=false;$('prog').textContent=`${Math.min(G.n,G.i+1)} av ${G.n}`;
-  // Sätt nålen: alltid hela Sverige, inga prickar (de skulle avslöja svaret)
-  if(G.mode==='nal'){const m=drawMap($('gMap'),{col:true});G.paths=m.paths;Object.values(m.paths).forEach(p=>p.classList.add('in','dim2'));G.dots={};$('opts').innerHTML='';
-    G.ask=`Var ligger ${G.t.n}? Sätt nålen i rätt landskap.`;$('instr').textContent=G.ask;return;}
-  const m=drawMap($('gMap'),{focus:true});G.paths=m.paths;
+  // Sätt nålen: karta med landskapsgränser men utan namn, färger och prickar
+  if(G.mode==='nal'){const m=drawMap($('gMap'),{});G.paths=m.paths;Object.values(m.paths).forEach(p=>p.classList.add('blank'));$('gMap').querySelectorAll('.lake').forEach(x=>x.remove());G.dots={};$('opts').innerHTML='';
+    G.ask=`Var ligger ${G.t.n}? Sätt nålen på kartan.`;$('instr').textContent=G.ask;return;}
+  const m=G.prov?drawMap($('gMap'),{col:true}):drawMap($('gMap'),{focus:true});G.paths=m.paths;if(G.prov)Object.values(m.paths).forEach(p=>p.classList.add('in','dim2'));
   if(ST(G.mode)){G.dots=drawCities($('gMap'),G.pool,{});const c=G.t;
     if(G.mode==='hittastad'){$('opts').innerHTML='';G.ask=`Var ligger ${c.n}?`;$('instr').textContent=G.ask;return;}
     G.dots[c.n].classList.add('hl');G.dots[c.n].setAttribute('r',G.dots[c.n]._r*1.7);
@@ -438,8 +449,7 @@ function right(){G.busy=true;window.Ljud&&Ljud.ok&&Ljud.ok();G.i++;
   if(ST(G.mode)){const c=G.t;data.stad[c.n]=G.first?(data.stad[c.n]||0)+1:0;save();
     $('task').className='task ok';$('fb').textContent=`${G.first?'Rätt!':'Nu blev det rätt!'} ${c.n} ligger ${iLs(c.L)}.`;
     $('reward').innerHTML=`<div class="reward"><img src="${c.L.vImg}" alt=""><span>${c.f}</span></div>`;
-    if(G.mode==='nal'){G.paths[c.ls].classList.add('ok');G.dots=drawCities($('gMap'),[c],{});}
-    G.dots[c.n].classList.remove('hl');G.dots[c.n].classList.add('ok');if(G.mode!=='nal')G.paths[c.ls].classList.add('sel');cityNames($('gMap'),[c],true);
+    G.dots[c.n].classList.remove('hl');G.dots[c.n].classList.add('ok');G.paths[c.ls].classList.add('sel');cityNames($('gMap'),[c],true);
     const g=G;setTimeout(()=>{if(G===g)nextTask();},2200);return;}
   data.kan[G.t.id]=G.first?(data.kan[G.t.id]||0)+1:0;save();
   $('task').className='task ok';$('fb').textContent=G.first?`Rätt! Det är ${G.t.n}.`:`Nu blev det rätt: ${G.t.n}.`;reward(G.t);
@@ -447,6 +457,7 @@ function right(){G.busy=true;window.Ljud&&Ljud.ok&&Ljud.ok();G.i++;
   const g=G;setTimeout(()=>{if(G===g)nextTask();},1700);}
 function wrong(msg){window.Ljud&&Ljud.bad&&Ljud.bad();if(G.first){G.miss++;if(ST(G.mode))data.stad[G.t.n]=0;else data.kan[G.t.id]=0;save();}G.first=false;G.busy=true;
   $('task').className='task bad';$('fb').textContent=msg;$('next').hidden=false;
+  if(G.prov){G.missed.push(G.t.n);return;} // provet: ingen ny chans, men vi minns vad som var fel
   // uppgiften kommer tillbaka senare i rundan
   G.queue.splice(Math.min(2,G.queue.length),0,{o:G.t,again:true});G.n++;}
 function answerV(b){if(G.busy)return;const o=byId[b.dataset.id];
@@ -458,22 +469,25 @@ function answerS(b){if(G.busy)return;const v=b.dataset.id,c=G.t;
   b.classList.add('bad');$('opts').querySelectorAll('button').forEach(x=>{if(x.dataset.id===G.answer)x.classList.add('right');x.disabled=true;});
   G.paths[c.ls].classList.add('sel');cityNames($('gMap'),[c],true);
   wrong(G.kind==='namn'?`Det här är ${c.n}. Den ligger ${iLs(c.L)}.`:`${c.n} ligger ${iLs(c.L)}, som lyser orange.`);}
-// Sätt nålen: nålen hamnar där man trycker, rätt om det är stadens landskap
-$('gMap').addEventListener('click',e=>{if(!G||G.busy||G.mode!=='nal')return;const svg=$('gMap'),o=pick(svg,e,()=>true);if(!o)return;
+/* Sätt nålen: nålen hamnar där man trycker. Sedan visas staden, en streckad linje och avståndet i km.
+   Inom 75 km räknas som träff. Uppgiften kommer inte tillbaka (det handlar om att komma så nära som möjligt). */
+const NAL_KM=75;
+$('gMap').addEventListener('click',e=>{if(!G||G.busy||G.mode!=='nal')return;const svg=$('gMap');
   const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse()),vb=svg.viewBox.baseVal,fs=vb.width/12;
-  svg.querySelectorAll('.pin,.pinline').forEach(x=>x.remove());const pin=el('text',{x:q.x,y:q.y,'font-size':fs,'text-anchor':'middle',class:'pin'});pin.style.fontSize=fs+'px';pin.textContent='📍';svg.append(pin);
-  const c=G.t,d=pinKm(c,q.x,q.y);G.km=d;
-  // streckad linje från nålen till staden, så att man ser hur långt ifrån man var
+  const pin=el('text',{x:q.x,y:q.y,'font-size':fs,'text-anchor':'middle',class:'pin'});pin.style.fontSize=fs+'px';pin.textContent='📍';svg.append(pin);
+  const c=G.t,d=pinKm(c,q.x,q.y);G.busy=true;(G.kms=G.kms||[]).push(d);G.i++;
   const ln=el('line',{x1:q.x,y1:q.y,x2:c.x,y2:c.y,stroke:'#1D2B53','stroke-width':vb.width/250,'stroke-dasharray':`${vb.width/90} ${vb.width/140}`,class:'pinline'});svg.insertBefore(ln,pin);
-  const kmTxt=d<=10?`Nålen hamnade bara ${d} km från ${c.n}. Mitt i prick!`:`Nålen hamnade ${d.toLocaleString('sv-SE')} km från ${c.n}.`;
-  if(o.id===c.ls){right();$('fb').textContent+=' '+kmTxt;return;}
-  G.paths[o.id].classList.add('bad');G.paths[c.ls].classList.add('hl');G.dots=drawCities(svg,[c],{});showNames(svg,G.paths,true,x=>x===o||x===c.L);
-  wrong(`Nålen står i ${o.n}. ${c.n} ligger ${iLs(c.L)}, som lyser orange. ${kmTxt}`);});
+  G.paths[c.ls].classList.add('ans');G.dots=drawCities(svg,[c],{});cityNames(svg,[c],true);
+  const hit=d<=NAL_KM;data.stad[c.n]=hit?(data.stad[c.n]||0)+1:0;if(!hit)G.miss++;save();
+  const kmTxt=d<=10?`Bara ${d} km ifrån. Mitt i prick!`:`Nålen hamnade ${d.toLocaleString('sv-SE')} km från ${c.n}.`;
+  $('reward').innerHTML=`<div class="reward"><img src="${c.L.vImg}" alt=""><span>${c.n} ligger ${iLs(c.L)}.</span></div>`;
+  if(hit){window.Ljud&&Ljud.ok&&Ljud.ok();G.dots[c.n].classList.add('ok');$('task').className='task ok';$('fb').textContent=`${d<=10?'':'Bra nära! '}${kmTxt}`;const g=G;setTimeout(()=>{if(G===g)nextTask();},2600);}
+  else{window.Ljud&&Ljud.bad&&Ljud.bad();$('task').className='task bad';$('fb').textContent=`${kmTxt} Så här långt ifrån var det.`;$('next').hidden=false;}});
 $('gMap').addEventListener('click',e=>{if(!G||G.busy||G.mode!=='hittastad')return;const c=pickCity($('gMap'),e,G.pool);if(!c)return;
   if(c===G.t)return right();
   G.dots[c.n].classList.add('bad');G.dots[G.t.n].classList.add('hl');cityNames($('gMap'),[c,G.t],true);
   wrong(`Där ligger ${c.n}. ${G.t.n} blinkar orange.`);});
-$('gMap').addEventListener('click',e=>{if(!G||G.busy||G.mode!=='hitta')return;const o=pick($('gMap'),e,inPart);if(!o)return;
+$('gMap').addEventListener('click',e=>{if(!G||G.busy||G.mode!=='hitta')return;const o=pick($('gMap'),e,G.prov?()=>true:inPart);if(!o)return;
   if(o===G.t)return right();
   G.paths[o.id].classList.add('bad');G.paths[G.t.id].classList.add('hl');showNames($('gMap'),G.paths,true,x=>x===o||x===G.t);
   wrong(`Där ligger ${o.n}. ${G.t.n} lyser orange.`);});
@@ -549,15 +563,22 @@ function startPuzzle(){show('game');document.querySelector('.gwrap').classList.a
 }
 
 /* ---------- Resultat ---------- */
-function finish(){const g=G;if(!g)return;const bit={vilket:1,hitta:2,pussel:4,vilkenstad:8,hittastad:16,nal:32,vilkenalv:64,folj:128}[g.mode];
-  const P=bit>=64?AP:part,ok=g.mode==='pussel'||g.mode==='folj'||g.miss<=1,had=bits(P)&bit;
+function finish(){const g=G;if(!g)return;
+  if(g.prov){const bit=g.prov==='provst'?512:256,right=g.n-g.miss,ok=right>=Math.ceil(g.n*.9),had=bits('prov')&bit;
+    if(ok){data.klar.prov=bits('prov')|bit;data.stars.prov=[256,512].filter(b=>bits('prov')&b).length;save();}
+    $('rTitle').textContent=right===g.n?'Alla rätt!':ok?'Mycket bra!':'Provet är klart!';
+    $('rBig').textContent=`${right} av ${g.n}`;
+    $('rSub').textContent=(g.missed.length?`Öva mer på: ${g.missed.join(', ')}. `:'')+(ok?(had?'Du har redan stjärnan för provet.':'Du fick en stjärna!'):`Med minst ${Math.ceil(g.n*.9)} rätt får du en stjärna.`);
+    show('result');if(ok&&!had)confetti();return;}const bit={vilket:1,hitta:2,pussel:4,vilkenstad:8,hittastad:16,nal:32,vilkenalv:64,folj:128}[g.mode];
+  const P=bit>=64?AP:part,ok=g.mode==='pussel'||g.mode==='folj'||(g.mode==='nal'?g.miss<=2:g.miss<=1),had=bits(P)&bit;
   if(ok){data.klar[P]=bits(P)|bit;data.stars[P]=[1,2,4,8,16,32,64,128].filter(b=>bits(P)&b).length;save();}
-  $('rTitle').textContent=g.mode==='folj'?'Alla älvar har nått havet!':g.mode==='pussel'?'Pusslet är klart!':g.miss===0?'Alla rätt direkt!':ok?'Bra jobbat!':'Klart!';
+  $('rTitle').textContent=g.mode==='nal'?(g.miss===0?'Alla nålar nära!':ok?'Bra siktat!':'Klart!'):g.mode==='folj'?'Alla älvar har nått havet!':g.mode==='pussel'?'Pusslet är klart!':g.miss===0?'Alla rätt direkt!':ok?'Bra jobbat!':'Klart!';
   $('rBig').innerHTML=P===AP?`<span class="stars">${[64,128].map(b=>bits(AP)&b?'★':'<span class="off">★</span>').join('')}</span>`:starHtml(starN(part));
-  $('rSub').textContent=g.mode==='folj'?(had?'Du har redan stjärnan för Följ älven.':'Du fick en stjärna för Följ älven!'):g.mode==='pussel'?(had?'Du har redan stjärnan för pusslet här.':'Du fick en stjärna för pusslet!'):
+  const avg=g.kms&&g.kms.length?Math.round(g.kms.reduce((a,b)=>a+b,0)/g.kms.length):0;
+  $('rSub').textContent=g.mode==='nal'?`Nära (inom ${NAL_KM} km) på ${g.n-g.miss} av ${g.n}. I snitt ${avg} km ifrån. `+(ok?(had?'Du har redan den här stjärnan.':'Du fick en stjärna!'):'Kom nära på minst 8 av 10 så får du en stjärna.'):g.mode==='folj'?(had?'Du har redan stjärnan för Följ älven.':'Du fick en stjärna för Följ älven!'):g.mode==='pussel'?(had?'Du har redan stjärnan för pusslet här.':'Du fick en stjärna för pusslet!'):
     ok?(had?`${g.miss?'Bara ett fel!':'Inga fel!'} Du har redan den här stjärnan.`:'Du fick en stjärna!'):`${g.miss} fel. Klarar du det med högst ett fel får du en stjärna.`;
   show('result');if(ok&&!had)confetti();}
-$('rAgain').onclick=()=>startGame(G.mode);$('rHome').onclick=openHome;
+$('rAgain').onclick=()=>G.prov?startProv(G.prov):startGame(G.mode);$('rHome').onclick=openHome;
 function confetti(){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
   const cols=['#3D8BFD','#FF9F43','#2BB673','#FFC93C','#7B61FF','#FF6B6B'],c=$('fx'),x=c.getContext('2d'),dpr=devicePixelRatio||1,W=innerWidth,H=innerHeight;
   c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
