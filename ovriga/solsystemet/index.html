@@ -27,6 +27,10 @@ button:focus-visible{outline:3px solid #FFC93C;outline-offset:2px}
 .b:hover{background:rgba(255,255,255,.18)}
 .b[aria-pressed="true"]{background:#fff;color:var(--ink)}
 .b.go{background:var(--good);box-shadow:0 3px 0 var(--good-dark)}
+.spdw{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.08);border-radius:13px;padding:2px}
+.spd{min-width:8.6em;text-align:center;font-weight:800;font-size:.85rem;line-height:1.1;color:#FFE58A}
+.spd small{display:block;color:#C9D4F2;font-size:.75rem}
+.b:disabled{opacity:.35;cursor:default}
 .seg{display:flex;background:rgba(255,255,255,.08);border-radius:13px;padding:2px}
 .seg .b{background:none;min-width:0;padding:4px 10px}
 .seg .b[aria-pressed="true"]{background:#fff;color:var(--ink)}
@@ -76,7 +80,7 @@ dialog small{color:var(--muted)}
   <div class="ui bottom">
     <div class="bar">
       <button class="b" id="play" aria-label="Pausa">⏸</button>
-      <div class="seg" id="speedH"><button class="b" data-s="0">Långsamt</button><button class="b" data-s="1">Normalt</button><button class="b" data-s="2">Snabbt</button></div>
+      <div class="spdw"><button class="b" id="slowH" aria-label="Långsammare">🐢</button><span class="spd" id="spdH"></span><button class="b" id="fastH" aria-label="Snabbare">🐇</button></div>
       <button class="b" id="names" aria-pressed="true">Namn</button>
       <button class="b" id="now">Idag</button>
       <button class="b" id="about" aria-label="Om modellen">ℹ️</button>
@@ -99,7 +103,7 @@ dialog small{color:var(--muted)}
     <label class="slider"><span>🌑</span><input type="range" id="moonDay" min="0" max="29.5" step="0.05" aria-label="Månens dag"><span>🌕</span><span id="mdTxt"></span></label>
     <div class="bar">
       <button class="b" id="ePlay" aria-label="Pausa">⏸</button>
-      <div class="seg" id="speedE"><button class="b" data-s="0">Långsamt</button><button class="b" data-s="1">Normalt</button><button class="b" data-s="2">Snabbt</button></div>
+      <div class="spdw"><button class="b" id="slowE" aria-label="Långsammare">🐢</button><span class="spd" id="spdE"></span><button class="b" id="fastE" aria-label="Snabbare">🐇</button></div>
       <button class="b" data-jump="1">Ett dygn</button>
       <button class="b" data-jump="29.530588">En månad</button>
       <button class="b" data-jump="365.25">Ett år</button>
@@ -241,8 +245,10 @@ PL.forEach(p=>{
 bodies.push(sun);
 
 /* ---------- Tiden och lägena ---------- */
-let t=nowT(),playing=true,mode='home',focus=null,speedH=1,speedE=1,jump=null;
-const SPEEDS_H=[2,12,60],SPEEDS_E=[.04,.4,2.5]; // dygn per sekund
+/* Fart = hur mycket tid som går på en sekund. Det långsammaste steget är verklig fart (1 sekund = 1 sekund),
+   så att man förstår att allt annat är uppsnabbat. Dygn per sekund: */
+const REAL=1/86400,SPEEDS_H=[REAL,1/24,.5,2,5,12,30,60,120],SPEEDS_E=[REAL,1/60/24*10,1/24,1/4,.5,1,2.5,5];
+let t=nowT(),playing=true,mode='home',focus=null,speedH=5,speedE=4,jump=null;
 const ang=p=>(p.L0+360/p.P*t)*DEG;
 const at=(r,a)=>new THREE.Vector3(r*Math.cos(a),0,-r*Math.sin(a));
 const moonAge=()=>(((t-NEW0)%SYN)+SYN)%SYN;
@@ -253,7 +259,7 @@ function place(dt){
   // jorden snurrar ett varv per dygn: platsen där solen står högst = (12 − UTC-timme)·15°
   const h=((t+.5)%1+1)%1*24,sub=(12-h)*15*DEG;
   const spinReal=eA+Math.PI-sub;
-  const fast=mode==='home'&&SPEEDS_H[speedH]>1.5&&playing;
+  const fast=mode==='home'&&SPEEDS_H[speedH]>.2&&playing;
   earth.rotation.y=fast?earth.rotation.y+dt*.6:spinReal;clouds.rotation.y=earth.rotation.y+t*.02;
   // månen: vinkeln från solens riktning växer med månens ålder; samma sida vänd mot jorden
   const mA=eA+Math.PI+moonAge()/SYN*Math.PI*2;
@@ -345,9 +351,12 @@ $('moonDay').addEventListener('input',e=>{playing=false;setPlayBtns();setAge(+e.
 /* ---------- Knappar ---------- */
 function setPlayBtns(){[$('play'),$('ePlay')].forEach(b=>{b.textContent=playing?'⏸':'▶';b.setAttribute('aria-label',playing?'Pausa':'Spela');});}
 $('play').onclick=$('ePlay').onclick=()=>{playing=!playing;jump=null;setPlayBtns();};
-function seg(el,get,set){const r=()=>el.querySelectorAll('[data-s]').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s===get()));
-  el.onclick=e=>{const b=e.target.closest('[data-s]');if(!b)return;set(+b.dataset.s);playing=true;setPlayBtns();r();};r();}
-seg($('speedH'),()=>speedH,v=>speedH=v);seg($('speedE'),()=>speedE,v=>speedE=v);
+function speedTxt(d){if(d===REAL)return'1 sekund = 1 sekund<small>som i verkligheten</small>';
+  const m=d*1440;if(m<60)return`1 sekund = ${Math.round(m)} minuter`;if(d<1){const h=Math.round(d*24);return`1 sekund = ${h} ${h===1?'timme':'timmar'}`;}
+  return`1 sekund = ${d} ${d===1?'dygn':'dygn'}`;}
+function speedUI(){[['H',SPEEDS_H,speedH],['E',SPEEDS_E,speedE]].forEach(([k,L,i])=>{$('spd'+k).innerHTML=speedTxt(L[i]);$('slow'+k).disabled=i===0;$('fast'+k).disabled=i===L.length-1;});}
+const step=(k,d)=>()=>{if(k==='H')speedH=Math.max(0,Math.min(SPEEDS_H.length-1,speedH+d));else speedE=Math.max(0,Math.min(SPEEDS_E.length-1,speedE+d));playing=true;jump=null;setPlayBtns();speedUI();};
+$('slowH').onclick=step('H',-1);$('fastH').onclick=step('H',1);$('slowE').onclick=step('E',-1);$('fastE').onclick=step('E',1);speedUI();
 $('names').onclick=()=>{showNames=!showNames;$('names').setAttribute('aria-pressed',showNames);};
 $('now').onclick=$('eNow').onclick=()=>{t=nowT();jump=null;};
 $('about').onclick=()=>$('aboutDlg').showModal();
