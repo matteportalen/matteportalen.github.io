@@ -88,7 +88,12 @@
       if(hand==='m'){const nm=Math.round(p.a/(6*st))*st%60;const d=((nm-m)%60+90)%60-30;o.set(((T+d)%mod+mod)%mod);}
       else{const h=Math.floor(T/60),nh=((Math.round((p.a-m/2)/30))%12+12)%12;let NT=(h-h%12+nh)*60+m;const d=((NT-T)%720+1080)%720-360;o.set(((T+d)%mod+mod)%mod);}
       o.onMove&&o.onMove();};
-    svg.addEventListener('pointerdown',e=>{if(o.busy&&o.busy())return;const p=pt(e);hand=nearest(p);(hand==='h'?hh:mh).classList.add('grab');try{svg.setPointerCapture(e.pointerId);}catch(_){}moveTo(p);});
+    /* Bara inne i klockans cirkel flyttar man visarna. Utanför (marginalen, blockringen) går det att skrolla sidan som vanligt.
+       touch-action får vara på, och en beröring inne i cirkeln stoppar skrollningen i touchstart i stället. */
+    const inside=p=>Math.hypot(p.dx,p.dy)<=100;
+    svg.style.touchAction='manipulation';
+    svg.addEventListener('touchstart',e=>{const t=e.touches[0];if(t&&inside(pt(t))&&!(o.busy&&o.busy()))e.preventDefault();},{passive:false});
+    svg.addEventListener('pointerdown',e=>{if(o.busy&&o.busy())return;const p=pt(e);if(!inside(p))return;hand=nearest(p);(hand==='h'?hh:mh).classList.add('grab');try{svg.setPointerCapture(e.pointerId);}catch(_){}moveTo(p);});
     svg.addEventListener('pointermove',e=>{if(hand)moveTo(pt(e));});
     const end=()=>{hand=null;hh.classList.remove('grab');mh.classList.remove('grab');};svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
   }
