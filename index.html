@@ -20,23 +20,26 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 /* ---------- Rubrik ---------- */
 .hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#3D5AFE 0%,#3D8BFD 55%,#17AFC4 100%);color:#fff;
-  padding:calc(6px + env(safe-area-inset-top,0px)) 16px 28px}
-.hero::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:22px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
+  padding:calc(4px + env(safe-area-inset-top,0px)) 16px 18px}
+.hero::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:16px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
 .floaty{position:absolute;inset:0;pointer-events:none}
 .floaty span{position:absolute;font-weight:800;color:rgba(255,255,255,.16);animation:bob 6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-10px) rotate(var(--r))}}
 .hero-in{position:relative;z-index:1;max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px}
 .title{flex:1;min-width:0}
-.title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(1.9rem,8vw,2.7rem);letter-spacing:-1px;text-shadow:0 4px 0 rgba(0,0,0,.14)}
+.title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(1.7rem,7vw,2.3rem);letter-spacing:-1px;text-shadow:0 4px 0 rgba(0,0,0,.14)}
 .title h1 .p2{color:var(--sun);display:block}
 @media(min-width:370px){.title h1 .p2{display:inline}}
-.title p{margin:4px 0 0;font-size:clamp(.95rem,3.6vw,1.1rem);font-weight:700;opacity:.95}
-.owlwrap{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:clamp(78px,21vw,104px)}
-.bubble{position:relative;background:#fff;color:var(--ink);border-radius:14px;padding:5px 9px;font-weight:700;font-size:.78rem;line-height:1.25;text-align:center;box-shadow:0 4px 0 rgba(0,0,0,.12)}
-.bubble::after{content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);border:9px solid transparent;border-top-color:#fff;border-bottom:0}
+.title p{margin:2px 0 0;font-size:clamp(.88rem,3.3vw,1rem);font-weight:700;opacity:.95}
+.owlwrap{flex:none;display:flex;flex-direction:row;align-items:center;gap:12px}
+.owlwrap .owlbtn{width:clamp(62px,16vw,82px);flex:none}
+.bubble{position:relative;background:#fff;color:var(--ink);border-radius:14px;padding:4px 8px;font-weight:700;font-size:.72rem;line-height:1.25;text-align:center;box-shadow:0 4px 0 rgba(0,0,0,.12)}
+.bubble{max-width:170px}
+.bubble::after{content:"";position:absolute;right:-9px;top:50%;transform:translateY(-50%);border:9px solid transparent;border-left-color:#fff;border-right:0}
+@media(max-width:519px){.bubble{display:none}}
 .owlbtn{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;position:relative;font:inherit}
 .owl{width:100%;height:auto;display:block;animation:tilt 5s ease-in-out infinite;transform-origin:50% 90%}
-.owltag{position:absolute;right:-4px;bottom:6px;background:#fff;color:var(--ink);border-radius:999px;padding:0 8px;font-weight:800;font-size:.75rem;box-shadow:0 3px 0 rgba(0,0,0,.15)}
+.owltag{white-space:nowrap;position:absolute;right:-8px;bottom:2px;background:#fff;color:var(--ink);border-radius:999px;padding:0 8px;font-weight:800;font-size:.75rem;box-shadow:0 3px 0 rgba(0,0,0,.15)}
 @keyframes tilt{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 
 /* ---------- Framsteg ---------- */
@@ -190,7 +193,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   </div>
   <div class="hero-in">
     <div class="title">
-      <h1>Matte-<span class="p2">Portalen</span></h1>
+      <h1>Matte<span class="p2">Portalen</span></h1>
       <p>Välj en övning och börja träna!</p>
     </div>
     <div class="owlwrap">
