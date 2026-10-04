@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rymdlabbet – Övriga ämnen</title>
+<meta name="description" content="Rymdlabbet för lågstadiet: dag och natt, årstiderna, månens faser, förmörkelser, planeternas storlek och avstånd, ett år på varje planet och hur tung man är på planeterna.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#1D2B53;--muted:#56668F;--line:#C6D6F2;--good:#1E9E5E;--good-dark:#157548;--accent:#3D5AFE;--gold:#FFC93C;
+  --space:#0B1030;--glass:rgba(255,255,255,.08);--soft:#C9D4F2;--font:"Baloo 2","Trebuchet MS",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:radial-gradient(circle,rgba(255,255,255,.55) 1px,transparent 1.5px) 0 0/71px 67px,radial-gradient(circle,rgba(255,255,255,.3) 1px,transparent 1.4px) 30px 20px/43px 53px,var(--space);
+  color:#fff;font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1100px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+[hidden]{display:none !important}
+h1{font-size:clamp(2.1rem,7vw,2.8rem);line-height:1;margin:8px 0 4px;font-weight:800}
+h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
+.lead{margin:0 0 16px;color:var(--soft);font-size:1.08rem}
+.back{display:inline-flex;align-items:center;min-height:44px;border-radius:999px;padding:4px 14px;font-weight:800;background:#fff;color:var(--ink);box-shadow:0 3px 0 rgba(0,0,0,.35);margin-bottom:8px}
+/* menyn */
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.mode{display:flex;align-items:center;gap:12px;text-align:left;background:rgba(255,255,255,.07);border:2px solid rgba(255,255,255,.12);border-radius:20px;padding:12px;color:#fff;text-decoration:none;transition:transform .08s,background .15s}
+.mode:hover{background:rgba(255,255,255,.13);transform:translateY(-2px)}
+.mode:active{transform:translateY(2px)}
+.mode .ic{flex:none;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:2rem;background:var(--c)}
+.mode b{display:block;font-size:1.15rem;line-height:1.15}
+.mode small{display:block;color:var(--soft);font-size:.9rem;line-height:1.25;margin-top:2px}
+.grp{font-size:1.05rem;color:var(--gold);margin:18px 0 8px;letter-spacing:.3px}
+/* lägen */
+.lab{display:grid;gap:14px;align-items:start}
+@media(min-width:900px){.lab{grid-template-columns:minmax(0,1.35fr) minmax(0,1fr)}}
+.panel{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:20px;padding:12px}
+.say{display:flex;gap:10px;align-items:flex-start;background:#fff;color:var(--ink);border-radius:18px;padding:10px 12px;font-size:1.02rem;line-height:1.35}
+.say p{margin:0}
+.say p+p{margin-top:6px}
+.say .big{font-weight:800}
+.spk{flex:none;width:44px;height:44px;border-radius:50%;background:#EEF1FF;font-size:1.2rem;box-shadow:0 3px 0 var(--line)}
+.ctrl{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+.b{min-height:44px;border-radius:13px;padding:4px 12px;font-weight:800;font-size:.98rem;background:rgba(255,255,255,.12);color:#fff}
+.b:hover{background:rgba(255,255,255,.2)}
+.b[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.b.go{background:var(--good);box-shadow:0 3px 0 var(--good-dark)}
+.slider{display:flex;align-items:center;gap:10px;margin-top:10px;font-weight:800}
+.slider input{flex:1;accent-color:var(--gold);height:30px;min-width:0}
+.slider output{min-width:5.4em;text-align:right;color:var(--gold);font-size:1.15rem}
+.lbl3{position:absolute;left:0;top:0;pointer-events:none;font-weight:800;font-size:.85rem;white-space:nowrap;background:rgba(12,18,44,.7);border-radius:999px;padding:0 8px;transform:translate(-50%,-130%)}
+.stage{position:relative;border-radius:18px;overflow:hidden;background:#05070F}
+.stage canvas{display:block;width:100%;touch-action:none}
+#c3d{height:min(62vh,560px)}
+@media(max-width:899px){#c3d{height:min(52vh,430px)}}
+.sunedge{position:absolute;left:0;top:0;bottom:0;width:20%;max-width:120px;pointer-events:none;background:linear-gradient(90deg,rgba(255,200,60,.55),rgba(255,200,60,0));z-index:1}
+.sunedge span{position:absolute;left:8px;top:50%;transform:translateY(-50%);font-weight:800;font-size:.9rem;color:#FFE58A;text-shadow:0 1px 3px #000;line-height:1.15}
+.sky{width:100%;height:auto;display:block;border-radius:14px}
+.skycap{font-weight:800;font-size:.95rem;color:var(--soft);margin:8px 0 4px}
+.facts{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
+.facts li{background:rgba(255,255,255,.07);border-radius:12px;padding:6px 10px;font-size:.98rem}
+.facts b{color:var(--gold)}
+.note{color:var(--soft);font-size:.92rem;margin:10px 0 0}
+.scroll{overflow-x:auto;border-radius:16px;background:#05070F;-webkit-overflow-scrolling:touch}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips .b{padding:4px 10px}
+/* vikt och hopp */
+.vgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-top:10px}
+.vcard{background:rgba(255,255,255,.07);border-radius:16px;padding:8px;text-align:center}
+.vcard canvas{width:64px;height:64px;display:block;margin:0 auto 2px}
+.vcard b{display:block;font-size:1rem}
+.vcard .kg{font-size:1.5rem;font-weight:800;color:var(--gold);line-height:1.1}
+.vcard small{display:block;color:var(--soft);font-size:.8rem;line-height:1.2}
+.step{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.1);border-radius:14px;padding:3px}
+.step .b{min-width:44px;font-size:1.3rem;padding:0}
+.step output{min-width:4.2em;text-align:center;font-weight:800;font-size:1.3rem;color:var(--gold)}
+.lanes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.lane{position:relative;height:300px;border-radius:16px;overflow:hidden;background:linear-gradient(#0B1030,#1B2458)}
+.lane .gr{position:absolute;left:0;right:0;bottom:0;height:46px}
+.lane .pet{position:absolute;left:50%;bottom:46px;width:70px;margin-left:-35px;will-change:transform}
+.lane .pet svg{width:100%;height:auto;display:block}
+.lane .nm{position:absolute;left:8px;top:6px;font-weight:800;background:rgba(0,0,0,.35);border-radius:999px;padding:0 10px}
+.lane .hh{position:absolute;right:8px;top:6px;font-weight:800;color:var(--gold);background:rgba(0,0,0,.35);border-radius:999px;padding:0 10px}
+.lane .rul{position:absolute;left:0;top:0;bottom:46px;width:100%;pointer-events:none}
+.lane .rul i{position:absolute;left:0;right:0;border-top:1px dashed rgba(255,255,255,.25);font-style:normal;font-size:.75rem;color:var(--soft);padding-left:4px}
+.lane .max{position:absolute;left:30%;right:30%;border-top:3px solid var(--gold);opacity:0;transition:opacity .3s}
+/* år */
+.agelist{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin-top:10px}
+.agelist div{background:rgba(255,255,255,.07);border-radius:12px;padding:6px 10px}
+.agelist b{display:block}
+.agelist span{color:var(--gold);font-weight:800;font-size:1.2rem}
+.err{color:#FFB4B4}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.min.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div class="wrap">
+
+<!-- Menyn -->
+<section id="home" class="screen">
+  <h1>🔭 Rymdlabbet</h1>
+  <p class="lead">Utforska jorden, solen, månen och planeterna. Dra, snurra och prova själv, och tryck på 🔊 så läses förklaringen upp.</p>
+  <h3 class="grp">Jorden, solen och månen</h3>
+  <div class="modes">
+    <button class="mode" data-go="dag"><span class="ic" style="--c:linear-gradient(135deg,#FFB13D,#3D5AFE)">🌍</span><span><b>Dag och natt</b><small>Varför blir det natt? Snurra jorden och se solen gå upp hemma.</small></span></button>
+    <button class="mode" data-go="arstid"><span class="ic" style="--c:linear-gradient(135deg,#2BB673,#FF9F43)">🍂</span><span><b>Årstiderna</b><small>Varför är det sommar och vinter? Midnattssol och mörkertid.</small></span></button>
+    <a class="mode" href="../solsystemet/#jorden"><span class="ic" style="--c:linear-gradient(135deg,#40456B,#C9D4F2)">🌙</span><span><b>Månens faser</b><small>Varför ändrar månen form? Dra månen runt jorden.</small></span></a>
+    <button class="mode" data-go="morker"><span class="ic" style="--c:linear-gradient(135deg,#141B3D,#E5484D)">🌑</span><span><b>Förmörkelser</b><small>När månen skymmer solen, och när månen blir röd.</small></span></button>
+  </div>
+  <h3 class="grp">Planeterna</h3>
+  <div class="modes">
+    <a class="mode" href="../solsystemet/"><span class="ic" style="--c:linear-gradient(135deg,#141D3D,#3D5AFE)">🪐</span><span><b>Solsystemet i 3D</b><small>Planeterna där de är just nu. Tryck på en planet och flyg dit.</small></span></a>
+    <button class="mode" data-go="storlek"><span class="ic" style="--c:linear-gradient(135deg,#C9A27A,#FDB813)">📏</span><span><b>Hur stora är de?</b><small>Planeterna i rätt storlek, från lilla Merkurius till solen.</small></span></button>
+    <button class="mode" data-go="avstand"><span class="ic" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🛣️</span><span><b>Hur långt bort?</b><small>Res med ljusets fart från solen ut till Neptunus.</small></span></button>
+    <button class="mode" data-go="ar"><span class="ic" style="--c:linear-gradient(135deg,#7B61FF,#FF6B9A)">🔄</span><span><b>Ett år på varje planet</b><small>Hur lång tid tar ett varv runt solen? Och hur gammal är du där?</small></span></button>
+    <button class="mode" data-go="vikt"><span class="ic" style="--c:linear-gradient(135deg,#FF9F43,#E5484D)">⚖️</span><span><b>Väg dig och hoppa</b><small>Hur tung är du på månen? Hur högt kan du hoppa på Mars?</small></span></button>
+  </div>
+  <p class="note">Bilderna på planeterna kommer från Solar System Scope (CC BY 4.0), byggda på data från NASA.</p>
+</section>
+
+<!-- Dag och natt -->
+<section id="dag" class="screen" hidden>
+  <button class="back" data-home>← Rymdlabbet</button>
+  <div class="lab">
+    <div><div class="stage" id="host-dag"></div>
+      <div class="slider"><span>🕐</span><input type="range" id="dTime" min="0" max="24" step="0.25" aria-label="Klockan"><output id="dTimeO"></output></div>
+      <div class="ctrl"><button class="b go" id="dPlay">▶ Spela ett dygn</button><div class="chips" id="dDates"></div></div>
+    </div>
+    <div class="panel">
+      <div class="say"><div><p class="big" id="dBig"></p><p id="dTxt"></p></div><button class="spk" data-say="dag" aria-label="Läs upp">🔊</button></div>
+      <p class="skycap" id="dSkyCap"></p><canvas class="sky" id="dSky" width="640" height="300"></canvas>
+      <div class="ctrl"><span style="font-weight:800">Var bor du?</span><div class="chips cities" data-for="dag"></div></div>
+      <p class="note">Det är jorden som snurrar, inte solen som flyttar sig. Ett varv tar ett dygn, 24 timmar. Den gula delen av ringen runt jorden är dagen hemma, den blå är natten.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Årstiderna -->
+<section id="arstid" class="screen" hidden>
+  <button class="back" data-home>← Rymdlabbet</button>
+  <div class="lab">
+    <div><div class="stage" id="host-arstid"><canvas id="orbit" width="260" height="260" style="position:absolute;right:8px;top:8px;width:min(34%,150px);height:auto;z-index:2;border-radius:50%;background:rgba(5,7,15,.75)"></canvas></div>
+      <div class="slider"><span>📅</span><input type="range" id="aDay" min="1" max="365" step="1" aria-label="Datum"><output id="aDayO"></output></div>
+      <div class="ctrl"><div class="chips" id="aDates"></div><button class="b go" id="aPlay">▶ Spela ett år</button></div>
+    </div>
+    <div class="panel">
+      <div class="say"><div><p class="big" id="aBig"></p><p id="aTxt"></p></div><button class="spk" data-say="arstid" aria-label="Läs upp">🔊</button></div>
+      <p class="skycap" id="aSkyCap"></p><canvas class="sky" id="aSky" width="640" height="300"></canvas>
+      <div class="ctrl"><span style="font-weight:800">Var bor du?</span><div class="chips cities" data-for="arstid"></div></div>
+      <ul class="facts" id="aFacts"></ul>
+      <p class="note">Visste du? Jorden är faktiskt lite närmare solen i januari än i juli. Det är lutningen som gör årstiderna, inte avståndet.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Förmörkelser -->
+<section id="morker" class="screen" hidden>
+  <button class="back" data-home>← Rymdlabbet</button>
+  <div class="lab">
+    <div><div class="stage"><canvas id="ecl" width="1000" height="620"></canvas></div>
+      <div class="ctrl"><button class="b" id="eSol">🌑 Solförmörkelse</button><button class="b" id="eMan">🔴 Månförmörkelse</button><button class="b go" id="ePlay">▶ Låt månen gå runt</button></div>
+    </div>
+    <div class="panel">
+      <div class="say"><div><p class="big" id="eBig"></p><p id="eTxt"></p></div><button class="spk" data-say="morker" aria-label="Läs upp">🔊</button></div>
+      <p class="skycap">Så ser det ut från jorden</p><canvas class="sky" id="eSky" width="640" height="300"></canvas>
+      <p class="note">Dra månen runt jorden. Bilden är inte i skala: i verkligheten är solen mycket större och mycket längre bort. Förmörkelser händer inte varje månad, eftersom månens bana lutar lite. Oftast passerar månen strax ovanför eller under skuggan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Storlek -->
+<section id="storlek" class="screen" hidden>
+  <button class="back" data-home>← Rymdlabbet</button>
+  <h2>📏 Hur stora är de?</h2>
+  <div class="say" style="margin-bottom:10px"><div><p class="big" id="sBig"></p><p id="sTxt"></p></div><button class="spk" data-say="storlek" aria-label="Läs upp">🔊</button></div>
+  <div class="scroll" id="sScroll"><canvas id="sCv" height="380"></canvas></div>
+  <div class="slider"><span>🔍</span><input type="range" id="sZoom" min="0" max="1" step="0.001" aria-label="Zooma"><span>🔭</span></div>
+  <div class="ctrl"><button class="b" data-z="0">De små planeterna</button><button class="b" data-z=".55">Alla planeterna</button><button class="b" data-z="1">Med solen</button></div>
+  <p class="note">Här är storlekarna rätt i förhållande till varandra. Tryck på en planet.</p>
+</section>
+
+<!-- Avstånd -->
+<section id="avstand" class="screen" hidden>
+  <button class="back" data-home>← Rymdlabbet</button>
+  <h2>🛣️ Hur långt bort?</h2>
+  <div class="say" style="margin-bottom:10px"><div><p class="big" id="vBig"></p><p id="vTxt"></p></div><button class="spk" data-say="avstand" aria-label="Läs upp">🔊</button></div>
+  <div class="stage"><canvas id="vCv" height="300"></canvas></div>
+  <div class="ctrl"><button class="b go" id="vGo">⚡ Skicka ljus från solen</button><div class="chips" id="vSpd"></div><button class="b" id="vZoom" aria-pressed="false">🔍 Bara de inre planeterna</button></div>
+  <ul class="facts" id="vFacts"></ul>
+</section>
+
+<!-- Ett år -->
+<section id="ar" class="screen" hidden>
+  <button class="back" data-home>← Rymdlabbet</button>
+  <div class="lab">
+    <div><div class="stage"><canvas id="yCv" width="800" height="800" style="max-height:min(70vh,640px);margin:0 auto;width:auto;max-width:100%"></canvas></div>
+      <div class="ctrl"><button class="b go" id="yPlay">⏸ Pausa</button><div class="chips" id="ySpd"></div><button class="b" id="yReset">↺ Börja om</button></div>
+    </div>
+    <div class="panel">
+      <div class="say"><div><p class="big" id="yBig"></p><p id="yTxt"></p></div><button class="spk" data-say="ar" aria-label="Läs upp">🔊</button></div>
+      <ul class="facts" id="yList"></ul>
+      <p class="skycap" style="margin-top:14px">Hur gammal är du?</p>
+      <div class="step"><button class="b" id="ageM" aria-label="Yngre">−</button><output id="ageO"></output><button class="b" id="ageP" aria-label="Äldre">+</button></div>
+      <div class="agelist" id="ageList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- Vikt och hopp -->
+<section id="vikt" class="screen" hidden>
+  <button class="back" data-home>← Rymdlabbet</button>
+  <h2>⚖️ Väg dig och hoppa</h2>
+  <div class="say"><div><p class="big">Hur mycket väger du?</p><p id="wTxt">Ju större och tyngre en planet är, desto hårdare drar den i dig. Du är precis lika stor, men vågen visar olika mycket.</p></div><button class="spk" data-say="vikt" aria-label="Läs upp">🔊</button></div>
+  <div class="ctrl"><span style="font-weight:800">På jorden väger jag</span><div class="step"><button class="b" id="kgM" aria-label="Mindre">−</button><output id="kgO"></output><button class="b" id="kgP" aria-label="Mer">+</button></div></div>
+  <div class="vgrid" id="vGrid"></div>
+  <h2 style="margin-top:22px">🦘 Hur högt kan du hoppa?</h2>
+  <div class="say"><div><p class="big" id="jBig">Välj en planet och tryck på Hoppa!</p><p id="jTxt">Djuret hoppar lika hårt på båda ställena.</p></div><button class="spk" data-say="hopp" aria-label="Läs upp">🔊</button></div>
+  <div class="ctrl"><div class="chips" id="jPick"></div><button class="b go" id="jGo">🦘 Hoppa!</button></div>
+  <div class="lanes"><div class="lane" id="laneA"></div><div class="lane" id="laneB"></div></div>
+</section>
+
+</div>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Rymdlabbet" data-ikon="🔭" data-hem="../../" data-portal="ovriga"></script>
+<script type="module">
+const $=id=>document.getElementById(id);
+const DEG=Math.PI/180;
+const IMGDIR='../solsystemet/bilder/';
+/* ---------- Data (NASA): radie i km, avstånd i AE, omloppstid i dygn, dragningskraft jämfört med jorden ---------- */
+const PL=[
+  {id:'merkurius',n:'Merkurius',km:2440,au:.387,P:87.97,g:.38,img:'2k_mercury.jpg',c:'#9C8F84'},
+  {id:'venus',n:'Venus',km:6052,au:.723,P:224.7,g:.91,img:'2k_venus_atmosphere.jpg',c:'#E3C27A'},
+  {id:'jorden',n:'Jorden',km:6371,au:1,P:365.25,g:1,img:'2k_earth_daymap.jpg',c:'#3D7BD5'},
+  {id:'mars',n:'Mars',km:3390,au:1.524,P:686.98,g:.38,img:'2k_mars.jpg',c:'#C1440E'},
+  {id:'jupiter',n:'Jupiter',km:69911,au:5.203,P:4332.6,g:2.53,img:'2k_jupiter.jpg',c:'#C9A27A',gas:1},
+  {id:'saturnus',n:'Saturnus',km:58232,au:9.537,P:10759,g:1.07,img:'2k_saturn.jpg',c:'#D8C08A',gas:1,ring:1},
+  {id:'uranus',n:'Uranus',km:25362,au:19.19,P:30687,g:.89,img:'2k_uranus.jpg',c:'#9FD8E0',gas:1},
+  {id:'neptunus',n:'Neptunus',km:24622,au:30.07,P:60190,g:1.14,img:'2k_neptune.jpg',c:'#4B6FD8',gas:1}];
+const MANEN={id:'manen',n:'Månen',km:1737,g:.165,img:'2k_moon.jpg',c:'#BDBDBD'},SOLEN={id:'solen',n:'Solen',km:696340,g:27.9,img:'2k_sun.jpg',c:'#FDB813',sun:1};
+const BYID=Object.fromEntries([...PL,MANEN,SOLEN].map(p=>[p.id,p]));
+const fmt=(x,d=0)=>x.toLocaleString('sv-SE',{maximumFractionDigits:d,minimumFractionDigits:0});
+/* bilder laddas när de behövs */
+const IMG={};function img(p){if(!IMG[p.id]){const i=new Image();i.src=IMGDIR+p.img;i.onload=()=>redraw();IMG[p.id]=i;}return IMG[p.id];}
+function ball(ctx,x,y,r,p){const im=img(p);ctx.save();ctx.beginPath();ctx.arc(x,y,r,0,7);ctx.closePath();
+  if(im.complete&&im.naturalWidth){ctx.clip();ctx.drawImage(im,im.naturalWidth*.25,0,im.naturalWidth*.5,im.naturalHeight,x-r,y-r,2*r,2*r);}else{ctx.fillStyle=p.c;ctx.fill();}
+  if(!p.sun){const g=ctx.createRadialGradient(x-r*.45,y-r*.35,r*.1,x,y,r*1.05);g.addColorStop(0,'rgba(255,255,255,.12)');g.addColorStop(.6,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.55)');ctx.fillStyle=g;ctx.fillRect(x-r,y-r,2*r,2*r);}
+  ctx.restore();}
+function ringSat(ctx,x,y,r,front){ctx.save();ctx.translate(x,y);ctx.scale(1,.28);ctx.lineWidth=r*.32;ctx.strokeStyle='rgba(216,192,138,.75)';ctx.beginPath();
+  if(front)ctx.arc(0,0,r*1.75,0,Math.PI);else ctx.arc(0,0,r*1.75,Math.PI,2*Math.PI);ctx.stroke();ctx.lineWidth=r*.12;ctx.strokeStyle='rgba(240,225,190,.6)';ctx.beginPath();
+  if(front)ctx.arc(0,0,r*2.1,0,Math.PI);else ctx.arc(0,0,r*2.1,Math.PI,2*Math.PI);ctx.stroke();ctx.restore();}
+function fitCanvas(cv,h){const w=cv.clientWidth||cv.parentElement.clientWidth,d=Math.min(2,devicePixelRatio||1);cv.width=Math.round(w*d);cv.height=Math.round((h||cv.clientHeight)*d);const c=cv.getContext('2d');c.setTransform(d,0,0,d,0,0);return{c,w,h:h||cv.clientHeight};}
+
+/* ---------- Uppläsning (bara med 🔊) ---------- */
+let svVoice=null;const lv=()=>{try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null;}catch(e){}};
+if('speechSynthesis' in window){lv();speechSynthesis.onvoiceschanged=lv;}
+function speak(t){if(!('speechSynthesis' in window))return;lv();speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='sv-SE';if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
+const SAY={dag:()=>$('dBig').textContent+' '+$('dTxt').textContent,arstid:()=>$('aBig').textContent+' '+$('aTxt').textContent,morker:()=>$('eBig').textContent+' '+$('eTxt').textContent,
+  storlek:()=>$('sBig').textContent+' '+$('sTxt').textContent,avstand:()=>$('vBig').textContent+' '+$('vTxt').textContent,ar:()=>$('yBig').textContent+' '+$('yTxt').textContent,
+  vikt:()=>'Hur mycket väger du? '+$('wTxt').textContent,hopp:()=>$('jBig').textContent+' '+$('jTxt').textContent};
+document.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>speak(SAY[b.dataset.say]().replace(/[🌍☀️🌙🌑🔴⭐]/gu,'')));
+
+/* ---------- Skärmar ---------- */
+let cur='home';
+function show(id){if('speechSynthesis' in window)speechSynthesis.cancel();document.querySelectorAll('.screen').forEach(s=>s.hidden=s.id!==id);cur=id;window.scrollTo(0,0);if(window.MPS)MPS.visa(id);
+  if(id==='dag'||id==='arstid')open3D(id);else stop3D();
+  if(id==='morker')openEcl();if(id==='storlek')openSize();if(id==='avstand')openDist();if(id==='ar')openYear();if(id==='vikt')openWeight();}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>show(b.dataset.go));
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>show('home'));
+function redraw(){if(cur==='storlek')drawSize();if(cur==='avstand')drawDist();if(cur==='vikt')drawWeight();}
+addEventListener('resize',()=>{if(cur==='storlek')openSize(true);if(cur==='avstand')drawDist();if(cur==='morker')drawEcl();if(cur==='dag'||cur==='arstid')size3D();});
+
+/* =====================================================================
+   Sol, dygn och årstider: räknas för en plats i Sverige
+   ===================================================================== */
+const CITIES=[{n:'Malmö',lat:55.6,lon:13.0},{n:'Stockholm',lat:59.33,lon:18.07},{n:'Kiruna',lat:67.86,lon:20.23}];
+let city=CITIES[1];
+const now=new Date(),YEAR=now.getFullYear();
+const doyOf=d=>Math.round((Date.UTC(d.getFullYear(),d.getMonth(),d.getDate())-Date.UTC(d.getFullYear(),0,1))/864e5)+1;
+const MON=['januari','februari','mars','april','maj','juni','juli','augusti','september','oktober','november','december'];
+const dateOf=doy=>{const d=new Date(Date.UTC(YEAR,0,doy));return{d:d.getUTCDate(),m:d.getUTCMonth()};};
+const dateTxt=doy=>{const x=dateOf(doy);return`${x.d} ${MON[x.m]}`;};
+// solens deklination: hur långt norr (+) eller söder (−) om ekvatorn solen står rakt ovanför. Störst vid midsommar.
+const declin=doy=>Math.asin(Math.sin(23.44*DEG)*Math.cos(2*Math.PI*(doy-172)/365.25));
+// sommartid: sista söndagen i mars till sista söndagen i oktober
+function lastSun(m){const d=new Date(Date.UTC(YEAR,m+1,0));d.setUTCDate(d.getUTCDate()-d.getUTCDay());return doyOf(new Date(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));}
+const DST=[lastSun(2),lastSun(9)];
+const tzOf=doy=>doy>=DST[0]&&doy<DST[1]?2:1;
+const solarOf=(clock,doy,c)=>clock-tzOf(doy)+c.lon/15; // soltid: kl 12 står solen högst
+const clockOf=(solar,doy,c)=>solar+tzOf(doy)-c.lon/15;
+function sunPos(c,doy,solar){const d=declin(doy),f=c.lat*DEG,H=(solar-12)*15*DEG;
+  const alt=Math.asin(Math.sin(f)*Math.sin(d)+Math.cos(f)*Math.cos(d)*Math.cos(H));
+  const az=(Math.atan2(Math.sin(H),Math.cos(H)*Math.sin(f)-Math.tan(d)*Math.cos(f))/DEG+180+360)%360;return{alt:alt/DEG,az};}
+// solen räknas som uppe när mitten är 0,83° under horisonten (ljusets brytning), som i almanackan
+function dayInfo(c,doy){const d=declin(doy),f=c.lat*DEG,h0=-.833*DEG,x=(Math.sin(h0)-Math.sin(f)*Math.sin(d))/(Math.cos(f)*Math.cos(d));
+  if(x<=-1)return{mid:true,len:24};if(x>=1)return{polar:true,len:0};const H=Math.acos(x)/DEG/15;return{len:2*H,rise:12-H,set:12+H};}
+const hhmm=h=>{h=((h%24)+24)%24;let H=Math.floor(h),M=Math.round((h-H)*60);if(M===60){H=(H+1)%24;M=0;}return`${String(H).padStart(2,'0')}.${String(M).padStart(2,'0')}`;};
+const durTxt=h=>{const H=Math.floor(h),M=Math.round((h-H)*60);return M?`${H} timmar och ${M} minuter`:`${H} timmar`;};
+
+/* himlen hemma, mot söder: öster till vänster, väster till höger */
+function drawSky(cv,c,doy,solar,opt){const W=cv.width,H=cv.height,x=cv.getContext('2d');const hy=H*.78,top=14;
+  const ay=a=>hy-a/62*(hy-top),ax=az=>az/360*W;
+  const s=solar!=null?sunPos(c,doy,solar):null,alt=s?s.alt:sunPos(c,doy,12).alt;
+  const k=Math.max(0,Math.min(1,(alt+8)/14));
+  const g=x.createLinearGradient(0,0,0,hy);g.addColorStop(0,mix('#0A1030','#3D8BFD',k));g.addColorStop(1,mix('#1B2458',alt<4&&alt>-8?'#FFB46B':'#A9D4FF',k));x.fillStyle=g;x.fillRect(0,0,W,hy);
+  if(k<.6){x.fillStyle=`rgba(255,255,255,${(1-k/.6)*.8})`;for(let i=0;i<60;i++){const sx=(i*197)%W,sy=(i*83)%(hy-10);x.fillRect(sx,sy,2,2);}}
+  // banor: vald dag och (i årstider) midsommar och midvinter som jämförelse
+  const path=(dd,col,w,dash)=>{x.save();x.strokeStyle=col;x.lineWidth=w;x.setLineDash(dash||[]);x.beginPath();let pen=false;
+    for(let i=0;i<=288;i++){const p=sunPos(c,dd,i/12);if(p.alt<-1){pen=false;continue;}const px=ax(p.az),py=ay(p.alt);
+      if(pen&&Math.abs(px-lx)<W/2)x.lineTo(px,py);else x.moveTo(px,py);pen=true;var lx=px;}x.stroke();x.restore();};
+  if(opt&&opt.ghost){path(172,'rgba(255,214,90,.55)',3,[8,8]);path(355,'rgba(160,190,255,.6)',3,[8,8]);}
+  path(doy,'rgba(255,255,255,.9)',4,[2,9]);
+  // marken
+  const snow=(doy<75||doy>330)&&c.lat>57||(doy<60||doy>340);
+  x.fillStyle=snow?'#E8F0FA':'#4FA35E';x.fillRect(0,hy,W,H-hy);x.fillStyle=snow?'#C9D8EC':'#3C8A4B';x.fillRect(0,hy,W,6);
+  x.fillStyle=snow?'#1D2B53':'#fff';x.font=`800 ${Math.round(H*.075)}px Baloo 2, sans-serif`;x.textAlign='center';
+  [[90,'Öster'],[180,'Söder'],[270,'Väster']].forEach(([a,t])=>x.fillText(t,ax(a),hy+H*.13));
+  // solen
+  const sp=s||sunPos(c,doy,12);
+  if(sp.alt>-1){const px=ax(sp.az),py=ay(sp.alt),r=H*.07;const gg=x.createRadialGradient(px,py,r*.3,px,py,r*2.4);gg.addColorStop(0,'rgba(255,230,120,.9)');gg.addColorStop(1,'rgba(255,200,60,0)');
+    x.fillStyle=gg;x.beginPath();x.arc(px,py,r*2.4,0,7);x.fill();x.fillStyle='#FFD23F';x.beginPath();x.arc(px,py,r,0,7);x.fill();
+    if(opt&&opt.deg){x.fillStyle='#fff';x.font=`800 ${Math.round(H*.065)}px Baloo 2, sans-serif`;x.fillText(`${Math.round(sp.alt)}° upp`,px,py-r-8);}}
+  else{x.fillStyle='#fff';x.font=`800 ${Math.round(H*.07)}px Baloo 2, sans-serif`;x.fillText('Solen är under horisonten',W/2,H*.4);}}
+function mix(a,b,k){const p=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16)),A=p(a),B=p(b);return`rgb(${A.map((v,i)=>Math.round(v+(B[i]-v)*k)).join(',')})`;}
+
+/* ---------- Dag och natt: texter ---------- */
+let dDoy=doyOf(now),dClock=now.getHours()+now.getMinutes()/60,aDoy=doyOf(now),aSolar=12;
+function cityChips(){document.querySelectorAll('.cities').forEach(box=>{box.innerHTML=CITIES.map(c=>`<button class="b" aria-pressed="${c===city}" data-c="${c.n}">${c.n}</button>`).join('');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{city=CITIES.find(c=>c.n===b.dataset.c);cityChips();upd3D(true);});});}
+const D_DATES=[['Idag',doyOf(now)],['Midsommar',172],['Lucia',347]];
+function dateChips(){$('dDates').innerHTML=D_DATES.map(([t,d])=>`<button class="b" aria-pressed="${d===dDoy}" data-d="${d}">${t}</button>`).join('');
+  $('dDates').querySelectorAll('button').forEach(b=>b.onclick=()=>{dDoy=+b.dataset.d;dateChips();upd3D(true);});
+  const A=[['21 mars',80],['21 juni',172],['23 september',266],['21 december',355]];
+  $('aDates').innerHTML=A.map(([t,d])=>`<button class="b" aria-pressed="${d===aDoy}" data-d="${d}">${t}</button>`).join('');
+  $('aDates').querySelectorAll('button').forEach(b=>b.onclick=()=>{aDoy=+b.dataset.d;aPlay=false;$('aPlay').textContent='▶ Spela ett år';dateChips();upd3D(true);});}
+function textDag(){const solar=solarOf(dClock,dDoy,city),s=sunPos(city,dDoy,solar),di=dayInfo(city,dDoy),n=city.n;let big,t;
+  if(s.alt<-6){big=`Det är natt i ${n}.`;t=`${n} är på jordens mörka sida, bortvänd från solen. Jorden snurrar hela tiden, och om några timmar kommer ${n} in i solljuset igen.`;}
+  else if(s.alt<0){const morgon=solar<12;big=morgon?`Snart går solen upp i ${n}.`:`Solen har just gått ner i ${n}.`;t=morgon?`Jorden snurrar så att ${n} är på väg in på den ljusa sidan. Himlen börjar ljusna i öster.`:`Jorden har snurrat så att ${n} är på väg in på den mörka sidan. Det skymmer.`;}
+  else if(Math.abs(solar-12)<1.2){big=`Mitt på dagen i ${n}.`;t=`${n} är vänd rakt mot solen. Solen står som högst på himlen, i söder.`;}
+  else if(solar<12){big=`Det är förmiddag i ${n}.`;t=`Solen kom upp i öster och klättrar högre på himlen, eftersom jorden snurrar ${n} mot solen.`;}
+  else{big=`Det är eftermiddag i ${n}.`;t=`Solen går sakta mot väster. Jorden snurrar ${n} bort från solen, och snart blir det kväll.`;}
+  if(di.mid)t+=` Den här dagen går solen inte ner alls: midnattssol!`;else if(di.polar)t+=` Den här dagen kommer solen inte upp alls: mörkertid!`;
+  else t+=` Den här dagen går solen upp kl ${hhmm(clockOf(di.rise,dDoy,city))} och ner kl ${hhmm(clockOf(di.set,dDoy,city))}.`;
+  $('dBig').textContent=big;$('dTxt').textContent=t;$('dTimeO').textContent='kl '+hhmm(dClock);$('dTime').value=dClock;
+  $('dSkyCap').textContent=`Himlen i ${n} den ${dateTxt(dDoy)}, kl ${hhmm(dClock)}`;drawSky($('dSky'),city,dDoy,solar,{deg:true});}
+function textArstid(){const di=dayInfo(city,aDoy),n=city.n,m=dateOf(aDoy).m,dd=declin(aDoy)/DEG;let big,t;
+  const ss=m>=5&&m<=7,ww=m===11||m<=1;
+  if(Math.abs(dd)<4){big=m<6?'Vår: dag och natt är nästan lika långa.':'Höst: dag och natt är nästan lika långa.';t='Jorden lutar varken mot eller från solen. Därför är dag och natt ungefär lika långa överallt på jorden.';}
+  else if(dd>0){big=ss?'Sommar i Sverige!':m<6?'Det blir vår och försommar.':'Sensommar. Dagarna blir kortare.';t='Norra halvan av jorden, där Sverige ligger, lutar mot solen. Solen kommer högt upp på himlen och är uppe länge. Då hinner det bli varmt.';}
+  else{big=ww?'Vinter i Sverige.':m>6?'Det blir höst och sedan vinter.':'Senvinter. Dagarna blir längre.';t='Norra halvan av jorden lutar bort från solen. Solen står lågt och är uppe en kort stund. Solljuset kommer snett och värmer lite. Då blir det kallt.';}
+  $('aBig').textContent=big;$('aTxt').textContent=t;$('aDayO').textContent=dateTxt(aDoy);$('aDay').value=aDoy;
+  const noon=sunPos(city,aDoy,12).alt;
+  const li=[];
+  if(di.mid)li.push(`<b>Midnattssol i ${n}!</b> Solen går inte ner alls, inte ens mitt i natten.`);
+  else if(di.polar)li.push(`<b>Mörkertid i ${n}.</b> Solen kommer inte upp över horisonten på hela dagen.`);
+  else li.push(`I ${n} är solen uppe i <b>${durTxt(di.len)}</b>. Upp kl ${hhmm(clockOf(di.rise,aDoy,city))}, ner kl ${hhmm(clockOf(di.set,aDoy,city))}.`);
+  if(noon>0)li.push(`Mitt på dagen står solen <b>${Math.round(noon)}°</b> över horisonten.`);
+  const o=CITIES.filter(c=>c!==city).map(c=>{const x=dayInfo(c,aDoy);return`${c.n}: ${x.mid?'midnattssol':x.polar?'mörkertid':durTxt(x.len).replace(' och ',', ').replace(' minuter',' min').replace(' timmar',' tim')}`;}).join(' · ');
+  li.push(`Samma dag i ${o}.`);
+  $('aFacts').innerHTML=li.map(x=>`<li>${x}</li>`).join('');
+  $('aSkyCap').textContent=`Solens väg över himlen i ${n} den ${dateTxt(aDoy)} (streckat: midsommar och jul)`;
+  drawSky($('aSky'),city,aDoy,null,{ghost:true,deg:true});drawOrbit();}
+function drawOrbit(){const cv=$('orbit'),x=cv.getContext('2d'),W=cv.width,c=W/2,R=W*.36;x.clearRect(0,0,W,W);
+  x.strokeStyle='rgba(201,212,242,.5)';x.lineWidth=2;x.beginPath();x.arc(c,c,R,0,7);x.stroke();
+  x.fillStyle='#FFD23F';x.beginPath();x.arc(c,c,W*.07,0,7);x.fill();
+  x.fillStyle='#C9D4F2';x.font='700 20px Baloo 2, sans-serif';x.textAlign='center';x.textBaseline='middle';
+  // jorden i juni står till höger om solen så att lutningen (mot vänster i bilden) pekar mot solen
+  const ang=d=>2*Math.PI*(d-172)/365.25;
+  [['jun',172],['sep',266],['dec',355],['mar',80]].forEach(([t,d])=>{const a=ang(d);x.fillText(t,c+Math.cos(a)*(R+W*.1),c-Math.sin(a)*(R+W*.1));});
+  const a=ang(aDoy),ex=c+Math.cos(a)*R,ey=c-Math.sin(a)*R;
+  x.fillStyle='#3D7BD5';x.beginPath();x.arc(ex,ey,W*.05,0,7);x.fill();
+  // jordaxeln pekar alltid åt samma håll i rymden
+  x.strokeStyle='#fff';x.lineWidth=3;x.beginPath();x.moveTo(ex+W*.06,ey);x.lineTo(ex-W*.06,ey);x.stroke();
+  x.fillStyle='#fff';x.beginPath();x.arc(ex-W*.06,ey,3.5,0,7);x.fill();}
+
+/* =====================================================================
+   3D-jorden för Dag och natt och Årstiderna (three.js laddas först när den behövs)
+   ===================================================================== */
+let T=null,raf3=0,mode3=null,dPlay=null,aPlay=false;
+async function init3D(){if(T)return T;
+  const THREE=await import('three'),{OrbitControls}=await import('three/addons/controls/OrbitControls.js');
+  const cv=document.createElement('canvas');cv.id='c3d';cv.setAttribute('aria-label','Jorden i 3D');
+  const renderer=new THREE.WebGLRenderer({canvas:cv,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,2));renderer.outputColorSpace=THREE.SRGBColorSpace;
+  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(40,1,.05,500);
+  const controls=new OrbitControls(camera,cv);controls.enableDamping=true;controls.enablePan=false;controls.minDistance=2.2;controls.maxDistance=9;
+  const TL=new THREE.TextureLoader(),tx=f=>{const t=TL.load(IMGDIR+f);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;};
+  scene.add(new THREE.Mesh(new THREE.SphereGeometry(200,32,16),new THREE.MeshBasicMaterial({map:tx('2k_stars_milky_way.jpg'),side:THREE.BackSide,color:0x707890})));
+  const SUNDIR=new THREE.Vector3(-1,0,0); // solljuset kommer från vänster
+  const tiltG=new THREE.Group();scene.add(tiltG);
+  const mat=new THREE.ShaderMaterial({uniforms:{day:{value:tx('2k_earth_daymap.jpg')},night:{value:tx('2k_earth_nightmap.jpg')},sunDir:{value:SUNDIR}},
+    vertexShader:`varying vec2 vUv;varying vec3 vN;void main(){vUv=uv;vN=normalize(mat3(modelMatrix)*normal);gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`uniform sampler2D day;uniform sampler2D night;uniform vec3 sunDir;varying vec2 vUv;varying vec3 vN;
+      void main(){float d=dot(normalize(vN),sunDir);float k=smoothstep(-.08,.14,d);vec3 dc=texture2D(day,vUv).rgb*(.12+1.0*max(d,0.));
+        vec3 nc=texture2D(night,vUv).rgb*vec3(1.,.85,.6)*1.3+texture2D(day,vUv).rgb*.07;gl_FragColor=vec4(mix(nc,dc,k),1.);
+        #include <colorspace_fragment>
+      }`});
+  const earth=new THREE.Mesh(new THREE.SphereGeometry(1,96,48),mat);tiltG.add(earth);
+  const atmo=new THREE.Mesh(new THREE.SphereGeometry(1.05,64,32),new THREE.ShaderMaterial({transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide,
+    vertexShader:`varying vec3 vN;varying vec3 vP;void main(){vN=normalize(normalMatrix*normal);vec4 p=modelViewMatrix*vec4(position,1.);vP=p.xyz;gl_Position=projectionMatrix*p;}`,
+    fragmentShader:`varying vec3 vN;varying vec3 vP;void main(){float f=pow(clamp(1.-abs(dot(vN,normalize(-vP))),0.,1.),2.2);gl_FragColor=vec4(.35,.6,1.,1.)*f*.8;}`}));scene.add(atmo);
+  // jordaxeln och nordpolen
+  const axis=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-1.45,0),new THREE.Vector3(0,1.45,0)]),new THREE.LineBasicMaterial({color:0xffffff}));tiltG.add(axis);
+  const npole=new THREE.Object3D();npole.position.set(0,1.5,0);tiltG.add(npole);
+  // solljuset: gula pilar från vänster
+  const rays=new THREE.Group();scene.add(rays);
+  [[-.9,0],[0,-.9],[0,0],[0,.9],[.9,0],[.55,.55],[-.55,-.55]].forEach(([y,z],i)=>rays.add(new THREE.ArrowHelper(new THREE.Vector3(1,0,0),new THREE.Vector3(-3.6,y,z),i%2?1.1:1.4,0xFFD23F,.28,.18)));
+  const rayLbl=new THREE.Object3D();rayLbl.position.set(-2.9,1.25,0);scene.add(rayLbl);
+  // platsen: röd prick och ringen runt jorden på samma breddgrad (gul = dag, blå = natt)
+  const dot=new THREE.Mesh(new THREE.SphereGeometry(.032,16,8),new THREE.MeshBasicMaterial({color:0xFF3B3B}));earth.add(dot);
+  // ringen: en tjock torus på platsens breddgrad som färgas av solljuset (gul = dag, blå = natt)
+  const ringMat=new THREE.ShaderMaterial({uniforms:{sunDir:{value:SUNDIR}},
+    vertexShader:`varying vec3 vW;void main(){vW=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,
+    fragmentShader:`uniform vec3 sunDir;varying vec3 vW;void main(){float d=dot(normalize(vW),sunDir);vec3 c=d>-.0145?vec3(1.,.82,.2):vec3(.38,.55,1.);gl_FragColor=vec4(c,1.);
+      #include <colorspace_fragment>
+    }`});
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(1,.014,8,256),ringMat);ring.rotation.x=Math.PI/2;earth.add(ring);const rg=null;
+  const sph=(lat,lon,r)=>{const p=(lon+180)*DEG,f=lat*DEG;return new THREE.Vector3(-Math.cos(p)*Math.cos(f)*r,Math.sin(f)*r,Math.sin(p)*Math.cos(f)*r);};
+  // namnlappar
+  const host=document.createElement('div');host.style.cssText='position:absolute;inset:0;pointer-events:none';
+  const L=(t)=>{const e=document.createElement('div');e.className='lbl3';e.textContent=t;host.appendChild(e);return e;};
+  const lCity=L(''),lN=L('Nordpolen'),lSun=L('');lSun.hidden=true;
+  host.insertAdjacentHTML('afterbegin','<div class="sunedge"><span>☀️<br>Solljuset<br>kommer<br>härifrån</span></div>');
+  T={THREE,renderer,scene,camera,controls,cv,earth,tiltG,ring,rg,dot,sph,SUNDIR,host,lCity,lN,lSun,npole,rayLbl,spin0:null,key:''};
+  return T;}
+function size3D(){if(!T)return;const w=T.cv.clientWidth,h=T.cv.clientHeight;if(!w||!h)return;T.renderer.setSize(w,h,false);T.camera.aspect=w/h;T.camera.updateProjectionMatrix();}
+async function open3D(id){mode3=id;const host=$('host-'+id);
+  if(!T){host.insertAdjacentHTML('beforeend','<p id="load3" style="padding:30px;text-align:center;font-weight:800">Laddar jorden …</p>');
+    try{await init3D();}catch(e){const l=$('load3');if(l){l.className='err';l.textContent='Jorden i 3D behöver internet. Kontrollera uppkopplingen och ladda om sidan.';}return;}
+    const l=$('load3');if(l)l.remove();}
+  if(mode3!==id)return;
+  host.prepend(T.cv);host.appendChild(T.host);size3D();
+  if(id==='dag')T.camera.position.set(.4,3.7,2.5);else T.camera.position.set(0,2.75,3.6); // dag och natt: snett ovanifrån, så att Sverige syns hela dygnet
+  T.controls.target.set(0,0,0);T.controls.update();
+  cityChips();dateChips();upd3D(true);cancelAnimationFrame(raf3);last3=performance.now();raf3=requestAnimationFrame(loop3);}
+function stop3D(){mode3=null;cancelAnimationFrame(raf3);dPlay=null;aPlay=false;$('dPlay').textContent='▶ Spela ett dygn';$('aPlay').textContent='▶ Spela ett år';}
+/* lutning och snurr: solen står still till vänster, jordaxeln lutar 23,4° åt ett håll som vrider sig ett varv på ett år
+   (vid midsommar lutar norra halvan mot solen). Jorden snurrar så att platsen har rätt soltid. */
+function orient(doy,solar){const{THREE,tiltG,earth,sph,SUNDIR}=T;const psi=2*Math.PI*(doy-172)/365.25,e=23.44*DEG;
+  const dir=new THREE.Vector3(-Math.cos(psi),0,-Math.sin(psi)),axis=new THREE.Vector3(0,Math.cos(e),0).addScaledVector(dir,Math.sin(e)).normalize();
+  tiltG.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),axis);tiltG.updateMatrixWorld(true);
+  const key=doy+'|'+city.n;
+  if(T.key!==key){T.key=key;const pc=sph(city.lat,city.lon,1);let best=-9,bs=0;const q=tiltG.quaternion,v=new THREE.Vector3();
+    for(let i=0;i<720;i++){const s=i/720*2*Math.PI;v.copy(pc).applyAxisAngle(new THREE.Vector3(0,1,0),s).applyQuaternion(q);const d=v.dot(SUNDIR);if(d>best){best=d;bs=s;}}
+    T.spin0=bs;
+    // prick och breddgradsring för platsen
+    T.dot.position.copy(sph(city.lat,city.lon,1.008));const f=city.lat*DEG;T.ring.geometry.dispose();T.ring.geometry=new T.THREE.TorusGeometry(Math.cos(f)*1.006,.016,8,256);T.ring.position.set(0,Math.sin(f)*1.006,0);}
+  earth.rotation.y=T.spin0+(solar-12)*15*DEG;earth.updateMatrixWorld(true);}
+function upd3D(text){if(!T||!mode3)return;
+  if(mode3==='dag'){orient(dDoy,solarOf(dClock,dDoy,city));if(text)textDag();}
+  else{orient(aDoy,aSolar);if(text)textArstid();}}
+let last3=0,txtT=0;
+function loop3(now){if(!mode3||!T)return;const dt=Math.min(.05,(now-last3)/1000);last3=now;
+  if(mode3==='dag'&&dPlay){dClock+=dt*2;if(dClock>=24){dClock-=24;dPlay.left-=1;}if(dPlay&&dPlay.left<=0&&dClock>=dPlay.end){dPlay=null;$('dPlay').textContent='▶ Spela ett dygn';}}
+  if(mode3==='arstid'){aSolar=(aSolar+dt*3)%24;if(aPlay){aDoy=aDoy+dt*14;if(aDoy>365)aDoy-=365;}}
+  const dd=mode3==='arstid'?Math.max(1,Math.round(aDoy)):dDoy;
+  if(mode3==='arstid'){const save=aDoy;aDoy=dd;orient(dd,aSolar);aDoy=save;}else orient(dDoy,solarOf(dClock,dDoy,city));
+  if(now-txtT>200){txtT=now;if(mode3==='dag'&&dPlay)textDag();if(mode3==='arstid'&&aPlay){const s=aDoy;aDoy=dd;textArstid();aDoy=s;}}
+  T.controls.update();T.renderer.render(T.scene,T.camera);
+  // namnlappar
+  const W=T.cv.clientWidth,H=T.cv.clientHeight,v=new T.THREE.Vector3(),cam=T.camera.position.clone();
+  const put=(el,obj,txt,facing)=>{obj.getWorldPosition(v);const n=v.clone().normalize(),toCam=cam.clone().sub(v).normalize();const vis=!facing||n.dot(toCam)>.15;
+    v.project(T.camera);el.style.display=vis&&v.z<1?'':'none';el.style.transform=`translate(${(v.x+1)/2*W}px,${(1-v.y)/2*H}px) translate(-50%,-130%)`;if(txt)el.textContent=txt;};
+  put(T.lCity,T.dot,'📍 '+city.n,true);put(T.lN,T.npole,null,false);
+  raf3=requestAnimationFrame(loop3);}
+$('dTime').addEventListener('input',e=>{dClock=+e.target.value;dPlay=null;$('dPlay').textContent='▶ Spela ett dygn';upd3D(true);});
+$('dPlay').onclick=()=>{if(dPlay){dPlay=null;$('dPlay').textContent='▶ Spela ett dygn';return;}dPlay={left:1,end:dClock};$('dPlay').textContent='⏸ Pausa';};
+$('aDay').addEventListener('input',e=>{aDoy=+e.target.value;aPlay=false;$('aPlay').textContent='▶ Spela ett år';dateChips();upd3D(true);});
+$('aPlay').onclick=()=>{aPlay=!aPlay;$('aPlay').textContent=aPlay?'⏸ Pausa':'▶ Spela ett år';if(!aPlay){aDoy=Math.max(1,Math.round(aDoy));dateChips();upd3D(true);}};
+
+/* =====================================================================
+   Förmörkelser: sedd ovanifrån. Solen till vänster, jorden, och månen som man drar runt.
+   ===================================================================== */
+let eAng=60*DEG,eAnim=null,ePlaying=false,eDrag=false,eRaf=0;
+function eGeo(){const cv=$('ecl'),W=cv.width,H=cv.height;return{cv,W,H,ex:W*.6,ey:H*.5,R:Math.min(W*.27,H*.38),er:H*.085,mr:H*.035};}
+function drawEcl(){const{cv,W,H,ex,ey,R,er,mr}=eGeo(),x=cv.getContext('2d');x.clearRect(0,0,W,H);
+  x.fillStyle='#05070F';x.fillRect(0,0,W,H);
+  // solen och solstrålar
+  const sg=x.createRadialGradient(-H*.15,ey,H*.1,-H*.15,ey,H*.62);sg.addColorStop(0,'#FFF3B0');sg.addColorStop(.55,'#FFC93C');sg.addColorStop(1,'rgba(255,160,40,0)');x.fillStyle=sg;x.beginPath();x.arc(-H*.15,ey,H*.62,0,7);x.fill();
+  x.strokeStyle='rgba(255,210,63,.18)';x.lineWidth=2;for(let i=-4;i<=4;i++){x.beginPath();x.moveTo(H*.3,ey+i*H*.09);x.lineTo(W,ey+i*H*.09);x.stroke();}
+  x.fillStyle='#fff';x.font=`800 ${Math.round(H*.05)}px Baloo 2, sans-serif`;x.textAlign='left';x.fillText('Solen',H*.04,H*.1);
+  // jordens skugga (åt höger)
+  x.fillStyle='rgba(0,0,0,.75)';x.beginPath();x.moveTo(ex,ey-er);x.lineTo(W,ey-er*.7);x.lineTo(W,ey+er*.7);x.lineTo(ex,ey+er);x.fill();
+  // månens bana
+  x.strokeStyle='rgba(201,212,242,.45)';x.setLineDash([6,8]);x.lineWidth=2;x.beginPath();x.arc(ex,ey,R,0,7);x.stroke();x.setLineDash([]);
+  const mx=ex-Math.cos(eAng)*R,my=ey+Math.sin(eAng)*R; // eAng 0 = mellan solen och jorden
+  // månens skugga
+  const sh=ecState();
+  x.fillStyle='rgba(0,0,0,.8)';x.beginPath();const dx=ex-mx,dy=ey-my,dl=Math.hypot(dx,dy),nx=-dy/dl,ny=dx/dl;
+  // skuggan pekar bort från solen (åt höger)
+  const len=R*1.15,tx=mx+len,ty=my;x.moveTo(mx,my-mr);x.lineTo(tx,ty-mr*.15);x.lineTo(tx,ty+mr*.15);x.lineTo(mx,my+mr);x.fill();
+  // jorden
+  const eg=x.createLinearGradient(ex-er,0,ex+er,0);eg.addColorStop(0,'#5FA8FF');eg.addColorStop(.5,'#2E6FD0');eg.addColorStop(.52,'#16264F');eg.addColorStop(1,'#0E1838');
+  x.fillStyle=eg;x.beginPath();x.arc(ex,ey,er,0,7);x.fill();x.fillStyle='#4FB36A';x.beginPath();x.arc(ex-er*.35,ey-er*.2,er*.32,0,7);x.arc(ex-er*.05,ey+er*.35,er*.22,0,7);x.fill();
+  x.fillStyle='#fff';x.textAlign='center';x.fillText('Jorden',ex,ey+er+H*.07);
+  // månen: röd i jordens skugga
+  const red=sh.type==='man'?sh.k:0;
+  const mg=x.createLinearGradient(mx-mr,0,mx+mr,0);mg.addColorStop(0,mix('#EDEDED','#C2502A',red));mg.addColorStop(.5,mix('#CFCFCF','#9C3A1E',red));mg.addColorStop(.52,mix('#555555','#7A2A14',red));mg.addColorStop(1,mix('#333333','#5A1E0E',red));
+  x.fillStyle=mg;x.beginPath();x.arc(mx,my,mr,0,7);x.fill();x.strokeStyle=eDrag?'#FFC93C':'rgba(255,255,255,.6)';x.lineWidth=3;x.beginPath();x.arc(mx,my,mr+5,0,7);x.stroke();
+  x.fillStyle='#fff';x.fillText('Månen',mx,my-mr-H*.025);
+  if(sh.type==='sol'&&sh.k>.05){x.fillStyle='rgba(0,0,0,.85)';x.beginPath();x.arc(ex-er*.97,ey+(my-ey)*.4,er*.22*sh.k,0,7);x.fill();}
+  drawEclSky(sh);eclText(sh);}
+function ecState(){let a=((eAng/DEG)%360+360)%360;const ds=a>180?360-a:a,dm=Math.abs(a-180);
+  if(ds<9)return{type:'sol',k:1-ds/9,a};if(dm<11)return{type:'man',k:Math.min(1,1.25-dm/11*1.25),a};return{type:'',a};}
+function drawEclSky(sh){const cv=$('eSky'),W=cv.width,H=cv.height,x=cv.getContext('2d'),cx=W/2,cy=H/2,r=H*.3;
+  if(sh.type==='sol'){const tot=sh.k>.9;x.fillStyle=tot?'#070B1E':mix('#3D8BFD','#1B2458',sh.k);x.fillRect(0,0,W,H);
+    if(tot){const g=x.createRadialGradient(cx,cy,r*.9,cx,cy,r*2.2);g.addColorStop(0,'rgba(255,255,255,.95)');g.addColorStop(1,'rgba(255,255,255,0)');x.fillStyle=g;x.beginPath();x.arc(cx,cy,r*2.2,0,7);x.fill();
+      x.fillStyle='#fff';for(let i=0;i<30;i++)x.fillRect((i*131)%W,(i*71)%H,2,2);}
+    x.fillStyle='#FFD23F';x.beginPath();x.arc(cx,cy,r,0,7);x.fill();
+    const off=(1-sh.k)*r*2.1*(sh.a>180?-1:1);x.fillStyle='#0A0D1A';x.beginPath();x.arc(cx+off,cy,r*1.03,0,7);x.fill();return;}
+  x.fillStyle='#0A1030';x.fillRect(0,0,W,H);x.fillStyle='rgba(255,255,255,.8)';for(let i=0;i<40;i++)x.fillRect((i*197)%W,(i*83)%H,2,2);
+  if(sh.type==='man'){x.fillStyle='#E9E9E9';x.beginPath();x.arc(cx,cy,r,0,7);x.fill();
+    const off=(1-sh.k)*r*2.4*(sh.a>180?1:-1);x.save();x.beginPath();x.arc(cx,cy,r,0,7);x.clip();x.fillStyle=`rgba(150,45,20,${.55+.4*sh.k})`;x.beginPath();x.arc(cx+off,cy,r*2.3,0,7);x.fill();x.restore();return;}
+  // vanlig månfas: tilltagande = höger sida upplyst
+  const age=sh.a/360,ill=(1-Math.cos(age*2*Math.PI))/2;x.fillStyle='#2A2F45';x.beginPath();x.arc(cx,cy,r,0,7);x.fill();
+  x.fillStyle='#ECECEC';x.beginPath();const right=age<.5;x.arc(cx,cy,r,-Math.PI/2,Math.PI/2,!right);const ew=r*Math.abs(1-2*ill);
+  x.ellipse(cx,cy,ew,r,0,Math.PI/2,-Math.PI/2,ill>.5?!right:right);x.fill();}
+function eclText(sh){let big,t;
+  if(sh.type==='sol'){big=sh.k>.9?'🌑 Total solförmörkelse!':'Solförmörkelse!';t='Månen står precis mellan solen och jorden. Månen skymmer solen, och månens skugga faller på jorden. Där skuggan träffar blir det mörkt mitt på dagen.';}
+  else if(sh.type==='man'){big=sh.k>.9?'🔴 Total månförmörkelse: månen blir röd!':'Månförmörkelse!';t='Jorden står mellan solen och månen. Månen åker in i jordens skugga. Lite rött ljus böjs runt jorden genom luften, därför blir månen kopparröd.';}
+  else{const a=sh.a;big=a<170&&a>10?'Månen går runt jorden.':'Månen går runt jorden.';t='Dra månen så att den står precis mellan solen och jorden, eller precis bakom jorden. Månen lyser inte själv, den lyser för att solen lyser på den.';}
+  $('eBig').textContent=big;$('eTxt').textContent=t;}
+function openEcl(){const cv=$('ecl');const w=cv.clientWidth||600;cv.width=Math.round(w*1.5);cv.height=Math.round(w*1.5*.62);drawEcl();}
+function eFrom(e){const cv=$('ecl'),b=cv.getBoundingClientRect(),s=cv.width/b.width;return[(e.clientX-b.left)*s,(e.clientY-b.top)*s];}
+$('ecl').addEventListener('pointerdown',e=>{const[px,py]=eFrom(e),{ex,ey,R,mr}=eGeo(),mx=ex-Math.cos(eAng)*R,my=ey+Math.sin(eAng)*R;
+  if(Math.hypot(px-mx,py-my)<mr*3||Math.abs(Math.hypot(px-ex,py-ey)-R)<mr*2.5){eDrag=true;ePlaying=false;eAnim=null;$('ePlay').textContent='▶ Låt månen gå runt';$('ecl').setPointerCapture(e.pointerId);moveMoon(px,py);}});
+$('ecl').addEventListener('pointermove',e=>{if(!eDrag)return;const[px,py]=eFrom(e);moveMoon(px,py);});
+$('ecl').addEventListener('pointerup',()=>{eDrag=false;drawEcl();});
+function moveMoon(px,py){const{ex,ey}=eGeo();eAng=Math.atan2(py-ey,ex-px);drawEcl();}
+function eLoop(now){if(cur!=='morker'){eRaf=0;return;}if(eAnim){const k=Math.min(1,(now-eAnim.s)/1600),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;eAng=eAnim.f+(eAnim.t-eAnim.f)*e;if(k>=1)eAnim=null;}
+  else if(ePlaying)eAng+=.012;drawEcl();if(eAnim||ePlaying)eRaf=requestAnimationFrame(eLoop);else eRaf=0;}
+const eGo=()=>{if(!eRaf)eRaf=requestAnimationFrame(eLoop);};
+function eTo(deg){ePlaying=false;$('ePlay').textContent='▶ Låt månen gå runt';let f=eAng,tt=deg*DEG;while(tt-f>Math.PI)tt-=2*Math.PI;while(f-tt>Math.PI)tt+=2*Math.PI;eAnim={f,t:tt,s:performance.now()};eGo();}
+$('eSol').onclick=()=>eTo(0);$('eMan').onclick=()=>eTo(180);
+$('ePlay').onclick=()=>{ePlaying=!ePlaying;eAnim=null;$('ePlay').textContent=ePlaying?'⏸ Stanna månen':'▶ Låt månen gå runt';eGo();};
+
+/* =====================================================================
+   Hur stora är de?
+   ===================================================================== */
+const SZ=[SOLEN,...PL.slice(0,3),MANEN,...PL.slice(3)];
+let sZoom=0,sHit=[],sSel=null;
+function sScale(){// px per km: från "de små syns stora" till "solen får plats"
+  const H=380,a=H*.42/6371,b=H*.9/(2*SOLEN.km);return Math.exp(Math.log(a)+(Math.log(b)-Math.log(a))*sZoom);}
+function openSize(keep){if(!keep){sZoom=.0;sSel=null;}$('sZoom').value=sZoom;drawSize();sInfo();}
+function drawSize(){const cv=$('sCv'),H=380,s=sScale(),gap=26,vw=$('sScroll').clientWidth;
+  // bredd: alla klot på rad (solen först, men bara synlig när man zoomat ut)
+  let x=gap;const pos=[];SZ.forEach(p=>{const r=Math.max(1.2,p.km*s);if(p.sun){if(r>H*8)return;if(r>H*1.4){pos.push({p,x:-r+gap+H*.25,r,big:true});x=gap+H*.25+gap;return;}}
+    pos.push({p,x:x+r,r});x+=2*r+gap+(p.id==='saturnus'?r*1.4:0)+Math.max(0,64-2*r);});
+  const W=Math.max(vw,x+gap);const d=Math.min(2,devicePixelRatio||1);cv.style.width=W+'px';cv.style.height=H+'px';cv.width=Math.round(W*d);cv.height=Math.round(H*d);
+  const c=cv.getContext('2d');c.setTransform(d,0,0,d,0,0);c.fillStyle='#05070F';c.fillRect(0,0,W,H);
+  const cy=H*.47;sHit=[];
+  pos.forEach(({p,x,r,big})=>{if(p.id==='saturnus')ringSat(c,x,cy,r,false);ball(c,x,cy,r,p);if(p.id==='saturnus')ringSat(c,x,cy,r,true);
+    if(sSel===p){c.strokeStyle='#FFC93C';c.lineWidth=3;c.beginPath();c.arc(x,cy,r+6,0,7);c.stroke();}
+    c.fillStyle='#fff';c.font='800 15px Baloo 2, sans-serif';c.textAlign='center';
+    const lx=big?Math.min(x+r-60,W-60):x,ly=Math.min(H-12,cy+r+22);if(r<H*.6)c.fillText(p.n,lx,ly);else{c.fillText(p.n,Math.max(70,x+r-70),H-14);}
+    sHit.push({p,x,r});});}
+function sInfo(){const p=sSel;
+  if(!p){$('sBig').textContent='Planeterna i rätt storlek.';$('sTxt').textContent=sZoom<.3?'Jorden och Venus är nästan lika stora. Mars är ungefär hälften så bred som jorden, och månen är ännu mindre. Dra i reglaget för att se de stora planeterna och solen.':sZoom<.8?'Jupiter är den största planeten. Bredvid Jupiter ser jorden ut som en liten kula.':'Solen är så stor att alla planeterna ser ut som små prickar bredvid den. Den är 109 gånger bredare än jorden.';return;}
+  const k=p.km/6371,v=Math.pow(k,3);$('sBig').textContent=`${p.n}: ${fmt(p.km*2)} km bred.`;
+  $('sTxt').textContent=p.id==='jorden'?'Jorden är 12 742 km bred. Det skulle ta ungefär ett år att gå runt hela jorden.':
+    k>1?`${p.n} är ${fmt(k,k<3?1:0)} gånger bredare än jorden. ${fmt(v<20?v:Math.round(v/10)*10,v<20?1:0)} jordklot skulle få plats inuti ${p.id==='solen'?'solen (över en miljon)':p.n}.`.replace(/(\d[\d\s]*)\s+jordklot skulle få plats inuti solen \(över en miljon\)/,'Över en miljon jordklot skulle få plats inuti solen'):
+    `${p.n} är ${fmt(1/k,1)} gånger mindre än jorden. ${fmt(1/v,0)} sådana skulle behövas för att bli lika stora som jorden.`;}
+$('sZoom').addEventListener('input',e=>{sZoom=+e.target.value;drawSize();sInfo();});
+document.querySelectorAll('[data-z]').forEach(b=>b.onclick=()=>{const to=+b.dataset.z,from=sZoom,t0=performance.now();(function f(n){const k=Math.min(1,(n-t0)/900),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;sZoom=from+(to-from)*e;$('sZoom').value=sZoom;drawSize();sInfo();if(k<1)requestAnimationFrame(f);})(t0);});
+$('sCv').addEventListener('click',e=>{const b=$('sCv').getBoundingClientRect(),px=e.clientX-b.left,py=e.clientY-b.top,cy=380*.47;
+  const h=sHit.slice().sort((a,b)=>a.r-b.r).find(o=>Math.hypot(px-o.x,py-cy)<Math.max(o.r,18));sSel=h?h.p:null;drawSize();sInfo();});
+
+/* =====================================================================
+   Hur långt bort? Ljuset från solen ut till Neptunus
+   ===================================================================== */
+const AU_S=499; // ljuset tar 499 sekunder (8 min 19 s) från solen till jorden
+const V_SPD=[['1 sekund = 1 minut',60],['1 sekund = 10 minuter',600]];
+let vSpd=0,vZoom=false,vT=-1,vRaf=0,vLast=0;
+const tTxt=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),r=s%60;return h?`${h} tim ${m} min`:m?`${m} min ${r} s`:`${r} s`;};
+function openDist(){vT=-1;drawDist();vText();
+  $('vSpd').innerHTML=V_SPD.map((x,i)=>`<button class="b" aria-pressed="${i===vSpd}" data-i="${i}">${x[0]}</button>`).join('');
+  $('vSpd').querySelectorAll('button').forEach(b=>b.onclick=()=>{vSpd=+b.dataset.i;openDistKeep();});
+  const fb=.22/(2*SOLEN.km)*1000; // meter per km om solen är en fotboll (22 cm)
+  const m=au=>au*1.496e8*fb/1000;
+  $('vFacts').innerHTML=[`Om solen var en <b>fotboll</b> skulle jorden vara ett litet <b>pepparkorn</b> (2 mm) <b>${Math.round(m(1))} meter</b> bort. Neptunus skulle vara en ärta <b>${Math.round(m(30.07))} meter</b> bort!`,
+    `Med bil i 100 km/h skulle det ta <b>171 år</b> att köra till solen.`,`Ljuset är det snabbaste som finns. Det hinner sju varv runt jorden på en sekund.`].map(x=>`<li>${x}</li>`).join('');}
+function openDistKeep(){$('vSpd').querySelectorAll('button').forEach((b,i)=>b.setAttribute('aria-pressed',i===vSpd));}
+function vText(){const passed=PL.filter(p=>vT>=p.au*AU_S);
+  if(vT<0){$('vBig').textContent='Planeterna ligger jättelångt ifrån varandra.';$('vTxt').textContent='Här är avstånden rätt. Planeterna är ritade större än de är, annars skulle de inte synas. Tryck på ⚡ och följ ljuset från solen.';return;}
+  const last=passed[passed.length-1];
+  $('vBig').textContent=`Ljuset har varit på väg i ${tTxt(vT)}.`;
+  $('vTxt').textContent=last?`Det har passerat ${passed.map(p=>p.n).join(', ')}. ${last.id==='jorden'?'Solljuset du ser just nu lämnade solen för 8 minuter sedan!':last.id==='neptunus'?'Framme vid Neptunus efter drygt 4 timmar. Så långt bort är den!':''}`:'Ljuset rusar ut från solen …';}
+function drawDist(){const cv=$('vCv'),{c,w,h}=fitCanvas(cv,300),max=vZoom?1.7:31,x0=34,sx=au=>x0+au/max*(w-x0-30),cy=h*.5;
+  c.fillStyle='#05070F';c.fillRect(0,0,w,h);
+  const sg=c.createRadialGradient(0,cy,4,0,cy,44);sg.addColorStop(0,'#FFF3B0');sg.addColorStop(.6,'#FFC93C');sg.addColorStop(1,'rgba(255,160,40,0)');c.fillStyle=sg;c.beginPath();c.arc(0,cy,44,0,7);c.fill();
+  c.strokeStyle='rgba(201,212,242,.35)';c.lineWidth=2;c.beginPath();c.moveTo(x0,cy);c.lineTo(w-10,cy);c.stroke();
+  c.font='800 14px Baloo 2, sans-serif';c.textAlign='center';
+  const tight=sx(1.524)-sx(.387)<150;
+  if(tight){c.fillStyle='#fff';c.textAlign='left';c.fillText('Merkurius, Venus,',x0+2,cy-42);c.fillText('Jorden och Mars',x0+2,cy-24);c.textAlign='center';}
+  PL.forEach((p,i)=>{if(p.au>max)return;const x=sx(p.au),r=p.gas?9:6;if(p.id==='saturnus')ringSat(c,x,cy,r,false);ball(c,x,cy,r,p);if(p.id==='saturnus')ringSat(c,x,cy,r,true);
+    if(tight&&i<4)return;
+    const up=i%2===0;c.fillStyle=vT>=p.au*AU_S?'#FFC93C':'#fff';c.fillText(p.n,x,up?cy-24:cy+34);
+    if(vT>=p.au*AU_S){c.fillStyle='#C9D4F2';c.font='700 12px Baloo 2, sans-serif';c.fillText(tTxt(p.au*AU_S),x,up?cy-42:cy+52);c.font='800 14px Baloo 2, sans-serif';}});
+  if(vT>=0){const au=vT/AU_S;if(au<=max){const x=sx(au);const g=c.createRadialGradient(x,cy,1,x,cy,16);g.addColorStop(0,'#fff');g.addColorStop(.4,'#FFE58A');g.addColorStop(1,'rgba(255,229,138,0)');c.fillStyle=g;c.beginPath();c.arc(x,cy,16,0,7);c.fill();
+    c.strokeStyle='rgba(255,229,138,.6)';c.lineWidth=3;c.beginPath();c.moveTo(x0,cy);c.lineTo(x,cy);c.stroke();}}
+  c.fillStyle='#C9D4F2';c.font='700 13px Baloo 2, sans-serif';c.textAlign='right';c.fillText(vZoom?'Bara de inre planeterna':'Avstånden är rätt, planeterna är förstorade',w-10,h-10);}
+function vLoop(n){if(cur!=='avstand'){vRaf=0;return;}const dt=Math.min(.1,(n-vLast)/1000);vLast=n;vT+=dt*V_SPD[vSpd][1];const end=(vZoom?1.7:30.3)*AU_S;
+  if(vT>=end){vT=end;vRaf=0;drawDist();vText();$('vGo').textContent='⚡ Skicka ljus igen';return;}drawDist();vText();vRaf=requestAnimationFrame(vLoop);}
+$('vGo').onclick=()=>{vT=0;vLast=performance.now();$('vGo').textContent='⚡ Ljuset är på väg …';if(!vRaf)vRaf=requestAnimationFrame(vLoop);};
+$('vZoom').onclick=()=>{vZoom=!vZoom;$('vZoom').setAttribute('aria-pressed',vZoom);drawDist();};
+
+/* =====================================================================
+   Ett år på varje planet
+   ===================================================================== */
+const Y_SPD=[['1 sekund = 10 dygn',10],['1 sekund = 1 månad',30.4],['1 sekund = 1 år',365.25]];
+let yT=0,ySpd=1,yRun=true,yRaf=0,yLast=0,age=8;
+function openYear(){$('ySpd').innerHTML=Y_SPD.map((x,i)=>`<button class="b" aria-pressed="${i===ySpd}" data-i="${i}">${x[0]}</button>`).join('');
+  $('ySpd').querySelectorAll('button').forEach(b=>b.onclick=()=>{ySpd=+b.dataset.i;$('ySpd').querySelectorAll('button').forEach((x,i)=>x.setAttribute('aria-pressed',i===ySpd));});
+  ageUI();yLast=performance.now();if(!yRaf)yRaf=requestAnimationFrame(yLoop);}
+function yLoop(n){if(cur!=='ar'){yRaf=0;return;}const dt=Math.min(.1,(n-yLast)/1000);yLast=n;if(yRun)yT+=dt*Y_SPD[ySpd][1];drawYear();yRaf=requestAnimationFrame(yLoop);}
+let yTxtT=0;
+function drawYear(){const cv=$('yCv'),W=cv.width,c=cv.getContext('2d'),m=W/2;c.fillStyle='#05070F';c.fillRect(0,0,W,W);
+  const sg=c.createRadialGradient(m,m,4,m,m,40);sg.addColorStop(0,'#FFF3B0');sg.addColorStop(.6,'#FFC93C');sg.addColorStop(1,'rgba(255,160,40,0)');c.fillStyle=sg;c.beginPath();c.arc(m,m,40,0,7);c.fill();
+  PL.forEach((p,i)=>{const R=62+i*(W/2-82)/7;c.strokeStyle='rgba(201,212,242,.25)';c.lineWidth=2;c.beginPath();c.arc(m,m,R,0,7);c.stroke();
+    // startlinjen
+    if(i===7){c.strokeStyle='rgba(255,201,60,.5)';c.setLineDash([6,6]);c.beginPath();c.moveTo(m+44,m);c.lineTo(m+R+20,m);c.stroke();c.setLineDash([]);}
+    const a=yT/p.P*2*Math.PI,x=m+Math.cos(a)*R,y=m-Math.sin(a)*R,r=p.gas?20:14;
+    if(p.id==='saturnus')ringSat(c,x,y,r,false);ball(c,x,y,r,p);if(p.id==='saturnus')ringSat(c,x,y,r,true);
+    c.fillStyle='#fff';c.font='800 30px Baloo 2, sans-serif';c.textAlign='center';c.fillText(p.n,x,y-r-8);});
+  const n=performance.now();if(n-yTxtT>150){yTxtT=n;yText();}}
+function yText(){const yrs=yT/365.25,Y=Math.floor(yrs),M=Math.floor((yrs-Y)*12);
+  $('yBig').textContent=yT<1?'Alla planeter startar vid den streckade linjen.':yT<30.4?`Det har gått ${Math.floor(yT)} ${Math.floor(yT)===1?'dygn':'dygn'} på jorden.`:`Det har gått ${Y?Y+(Y===1?' år':' år'):''}${Y&&M?' och ':''}${M||!Y?M+(M===1?' månad':' månader'):''} på jorden.`;
+  $('yTxt').textContent='Ett år är den tid det tar för en planet att gå ett varv runt solen. Planeterna nära solen har en kort väg och går fort. Planeterna långt bort har en lång väg och går långsamt.';
+  $('yList').innerHTML=PL.map(p=>{const v=yT/p.P;return`<li>${p.n}: <b>${v<1?fmt(v*100,0)+' % av ett varv':fmt(Math.floor(v))+(Math.floor(v)===1?' varv':' varv')}</b> <span style="color:var(--soft)">· ett år = ${p.P<1000?fmt(Math.round(p.P))+' dygn':fmt(p.P/365.25,p.P<5000?1:0)+' jordår'}</span></li>`;}).join('');}
+$('yPlay').onclick=()=>{yRun=!yRun;$('yPlay').textContent=yRun?'⏸ Pausa':'▶ Spela';};
+$('yReset').onclick=()=>{yT=0;};
+function ageUI(){$('ageO').textContent=age+' år';$('ageList').innerHTML=PL.map(p=>{const v=age*365.25/p.P;return`<div><b>${p.n}</b><span>${v>=10?fmt(Math.round(v)):fmt(v,v<.1?3:v<1?2:1)} år</span></div>`;}).join('');}
+$('ageM').onclick=()=>{age=Math.max(1,age-1);ageUI();};$('ageP').onclick=()=>{age=Math.min(100,age+1);ageUI();};
+
+/* =====================================================================
+   Väg dig och hoppa
+   ===================================================================== */
+const W_LIST=[PL[0],PL[1],PL[2],MANEN,...PL.slice(3),SOLEN];
+let kg=30,jSel=MANEN,jBusy=false;
+function openWeight(){kgUI();const pick=[MANEN,PL[0],PL[1],PL[3],PL[4],PL[5],PL[6],PL[7]];
+  $('jPick').innerHTML=pick.map(p=>`<button class="b" aria-pressed="${p===jSel}" data-p="${p.id}">${p.n}</button>`).join('');
+  $('jPick').querySelectorAll('button').forEach(b=>b.onclick=()=>{jSel=BYID[b.dataset.p];$('jPick').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x.dataset.p===jSel.id));lanes();});
+  lanes();}
+function kgUI(){$('kgO').textContent=kg+' kg';
+  $('vGrid').innerHTML=W_LIST.map(p=>`<div class="vcard"><canvas width="128" height="128" data-b="${p.id}"></canvas><b>${p.n}</b><div class="kg">${fmt(kg*p.g,kg*p.g<10?1:0)} kg</div><small>${p.id==='jorden'?'Så mycket väger du hemma.':p.sun?'Men på solen kan ingen stå. Den är 5 500 grader varm!':p.gas?'Ingen mark att stå på, vi låtsas att du står på molnen.':p.g<1?`${fmt(1/p.g,1)} gånger lättare än på jorden.`:`${fmt(p.g,1)} gånger tyngre än på jorden.`}</small></div>`).join('');
+  drawWeight();}
+function drawWeight(){document.querySelectorAll('[data-b]').forEach(cv=>{const c=cv.getContext('2d');c.clearRect(0,0,128,128);const p=BYID[cv.dataset.b];if(p.id==='saturnus'){ringSat(c,64,64,34,false);ball(c,64,64,34,p);ringSat(c,64,64,34,true);}else ball(c,64,64,p.sun?60:52,p);});}
+$('kgM').onclick=()=>{kg=Math.max(5,kg-1);kgUI();};$('kgP').onclick=()=>{kg=Math.min(150,kg+1);kgUI();};
+const GROUND={jorden:'#4FA35E',manen:'#9A9A9A',merkurius:'#8C7E72',venus:'#C89B4E',mars:'#B5532A',jupiter:'#C9A27A',saturnus:'#D8C08A',uranus:'#8CCCD6',neptunus:'#3F5EC4'};
+const JUMP=.3,MAXH=2; // på jorden hoppar man ungefär 30 cm
+function lane(el,p){const pet=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):'🦉';const h=JUMP/p.g;
+  el.innerHTML=`<div class="rul">${[0.5,1,1.5,2].map(m=>`<i style="bottom:${m/MAXH*100*.76}%">${fmt(m,1)} m</i>`).join('')}</div><div class="max"></div><div class="gr" style="background:${GROUND[p.id]}"></div><div class="pet">${pet}</div><span class="nm">${p.n}</span><span class="hh">${fmt(h*100,0)} cm</span>`;}
+function lanes(){lane($('laneA'),PL[2]);lane($('laneB'),jSel);const h=JUMP/jSel.g;
+  $('jBig').textContent=`På ${jSel.n.toLowerCase()==='månen'?'månen':jSel.n} hoppar du ${fmt(h*100,0)} cm högt.`;
+  $('jTxt').textContent=jSel.g<1?`Det är ${fmt(1/jSel.g,1)} gånger så högt som på jorden, och det tar mycket längre tid att landa. ${jSel.n} drar inte lika hårt i dig.`:`Det är lägre än på jorden. ${jSel.n} drar hårdare i dig, så du kommer inte lika högt.${jSel.gas?' (Vi låtsas att det finns mark att stå på.)':''}`;}
+function hop(el,p,done){const petEl=el.querySelector('.pet'),laneH=el.clientHeight-46,h=JUMP/p.g,px=Math.min(1,h/MAXH)*laneH*.76;
+  const g=9.81*p.g,T=2*Math.sqrt(2*h/g)*1.0,t0=performance.now(),mx=el.querySelector('.max');mx.style.bottom=(46+px)+'px';mx.style.opacity=0;
+  (function f(n){const t=(n-t0)/1000;if(t>=T){petEl.style.transform='';mx.style.opacity=1;done&&done();return;}const y=4*px*(t/T)*(1-t/T);petEl.style.transform=`translateY(${-y}px)`;requestAnimationFrame(f);})(t0);}
+$('jGo').onclick=()=>{if(jBusy)return;jBusy=true;let n=0;const d=()=>{if(++n===2)jBusy=false;};window.Ljud&&Ljud.hop&&Ljud.hop();hop($('laneA'),PL[2],d);hop($('laneB'),jSel,d);};
+
+show('home');
+window.LAB={show,get T(){return T},sunPos,dayInfo,declin,get state(){return{dDoy,dClock,aDoy,city:city.n,eAng,sZoom,vT,yT}},set eAng(v){eAng=v;drawEcl();}};
+</script>
+</body>
+</html>

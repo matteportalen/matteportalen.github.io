@@ -393,6 +393,9 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 show('home');controls.minDistance=8;place(0);controls.update();setPlayBtns();
+// direktlänk från Rymdlabbet (Månens faser): jordvyn blir sidans första steg, och tillbaka går till Rymdlabbet
+if(location.hash==='#jorden'){if(window.MPS)MPS.start('earth');openEarth();$('eBack').textContent='← Rymdlabbet';
+  $('eBack').onclick=()=>{if(/rymdlabbet/.test(document.referrer))history.back();else location.href='../rymdlabbet/';};}
 requestAnimationFrame(frame);
 // för test
 window.SOL={get t(){return t},set t(v){t=v},openPlanet,openEarth,goHome,PL,SUN,phaseInfo,get mode(){return mode},camera,controls,setAge};
