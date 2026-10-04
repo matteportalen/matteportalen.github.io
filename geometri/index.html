@@ -927,7 +927,8 @@ $("pMirror").onclick=e=>{const b=e.target.closest("[data-m]");if(!b||PT.test)ret
 $("pUndoT").onclick=()=>$("pUndo").onclick();
 $("pUndo").onclick=()=>{if(PT.strokes.length)PT.strokes.pop();else if(PT.cleared){PT.strokes=PT.cleared;PT.cleared=null;}pRedraw();};
 $("pClear").onclick=()=>{if(!PT.strokes.length)return;PT.cleared=PT.strokes;PT.strokes=[];pRedraw();pSay("Ny duk! Ångra om du ångrar dig.");};
-$("pBack").onclick=()=>openHome();
+let fromTool=false; // öppnad från Verktygslådan: tillbaka går dit
+$("pBack").onclick=()=>fromTool?(/\/verktyg\/?$/.test(document.referrer.split("#")[0])?history.back():location.href="../verktyg/"):openHome();
 
 /* ---------- Galleriet ---------- */
 function pThumb(){const c=document.createElement("canvas");c.width=c.height=PS;const x=c.getContext("2d");x.drawImage(pcv,0,0);return c.toDataURL("image/jpeg",.85);}
@@ -1023,7 +1024,7 @@ function tangramDone(B,tips){
 }
 openHome();
 // direktlänk från Verktygslådan: geometri/#spegel
-if(location.hash==="#spegel"){history.replaceState(history.state,"",location.pathname);setTimeout(openPaint,0);}
+if(location.hash==="#spegel"){history.replaceState(history.state,"",location.pathname);fromTool=true;$("pBack").textContent="← Verktygslådan";setTimeout(()=>{if(window.MPS)MPS.start("paint");openPaint();},0);}
 </script>
 </body>
 </html>

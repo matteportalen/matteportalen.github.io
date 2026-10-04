@@ -102,6 +102,9 @@ body.mph-mini #quit{display:none}
   }
   window.MPS={
     huvud:h,
+    /* Direktlänk (t.ex. från Verktygslådan): skärmen id blir sidans första steg, så att bakåt lämnar sidan
+       i stället för att landa på sidans egen startskärm. Anropas före show(id). */
+    start(id){if(!navOn)return;const d=djup(id);cur={mp:id,d,i:0};st=[d];history.replaceState(cur,'');},
     visa(id){
       mode(id);if(!navOn)return;
       const d=djup(id);

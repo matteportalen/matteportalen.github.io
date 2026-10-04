@@ -340,10 +340,11 @@ function setTask(a,op,b){const ans=op==="+"?a+b:a-b;if(!(a>=1&&a<=100&&b>=1&&ans
 $("tGo").onclick=()=>setTask(+$("tA").value,$("tOp").textContent,+$("tB").value);
 $("tRand").onclick=()=>{const minus=Math.random()<.55;let a,b;if(minus){a=pickOne([100,rnd(41,99)]);b=rnd(11,Math.min(59,a-1));}else{a=rnd(11,60);b=rnd(11,Math.min(39,100-a));}setTask(a,minus?"−":"+",b);};
 $("openTool").onclick=()=>{drawTool();show("tool");};
-$("toolBack").onclick=()=>show("home");
+let fromTool=false; // öppnad från Verktygslådan: tillbaka går dit
+$("toolBack").onclick=()=>fromTool?(/\/verktyg\/?$/.test(document.referrer.split("#")[0])?history.back():location.href="../verktyg/"):show("home");
 $("toolClear").onclick=()=>{marks.clear();TL.start=null;TL.path=[];TL.task=null;drawTool();};
 // direktlänk från Verktygslådan: hundraruta/#verktyg
-if(location.hash==="#verktyg"){history.replaceState(history.state,"",location.pathname);TL.mode="hop";setTimeout(()=>{drawTool();show("tool");},0);}
+if(location.hash==="#verktyg"){history.replaceState(history.state,"",location.pathname);fromTool=true;$("toolBack").textContent="← Verktygslådan";TL.mode="hop";setTimeout(()=>{drawTool();if(window.MPS)MPS.start("tool");show("tool");},0);}
 $("areas").onclick=e=>{const b=e.target.closest("[data-a]");if(b)start(AREAS.find(a=>a.id===b.dataset.a));};
 
 /* ---------- Uppläsning ---------- */
