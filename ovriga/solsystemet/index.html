@@ -76,7 +76,7 @@ dialog small{color:var(--muted)}
 
 <!-- Översikten -->
 <section id="home" class="screen">
-  <div class="ui top"><span class="chip" id="date"></span><span class="hint" id="hHint">Dra för att vrida, nyp eller scrolla för att zooma. Tryck på en planet!</span></div>
+  <div class="ui top"><button class="back" id="hBack">← Rymdlabbet</button><span class="chip" id="date"></span><span class="hint" id="hHint">Dra för att vrida, nyp eller scrolla för att zooma. Tryck på en planet!</span></div>
   <div class="ui bottom">
     <div class="bar">
       <button class="b" id="play" aria-label="Pausa">⏸</button>
@@ -314,6 +314,9 @@ function openEarth(){focus=earth;show('earth');controls.minDistance=1.6;
   const hf=Math.atan(Math.tan(camera.fov/2*DEG)*camera.aspect);
   flyTo(earth,Math.max(10.5,(MOON_A+.9)/Math.tan(hf)),.75,side.multiplyScalar(-1));updatePhase();window.Ljud&&Ljud.chime&&Ljud.chime();}
 $('pBack').onclick=goHome;$('eBack').onclick=goHome;
+// tillbaka till Rymdlabbet: kom man därifrån går vi bakåt i historiken, annars öppnas labbet
+const toLab=()=>{if(/rymdlabbet/.test(document.referrer))history.back();else location.href='../rymdlabbet/';};
+$('hBack').onclick=toLab;
 
 /* ---------- Namnlappar ---------- */
 const LBL=[...PL.map(p=>({o:p.mesh,n:p.n,p})),{o:sun,n:'Solen',p:SUN,sun:true},{o:moon,n:'Månen',moon:true},{o:rayAnchor,n:'☀️ Solljus',ray:true,sun:true}];
@@ -395,7 +398,7 @@ function frame(now){
 show('home');controls.minDistance=8;place(0);controls.update();setPlayBtns();
 // direktlänk från Rymdlabbet (Månens faser): jordvyn blir sidans första steg, och tillbaka går till Rymdlabbet
 if(location.hash==='#jorden'){if(window.MPS)MPS.start('earth');openEarth();$('eBack').textContent='← Rymdlabbet';
-  $('eBack').onclick=()=>{if(/rymdlabbet/.test(document.referrer))history.back();else location.href='../rymdlabbet/';};}
+  $('eBack').onclick=toLab;}
 requestAnimationFrame(frame);
 // för test
 window.SOL={get t(){return t},set t(v){t=v},openPlanet,openEarth,goHome,PL,SUN,phaseInfo,get mode(){return mode},camera,controls,setAge};
