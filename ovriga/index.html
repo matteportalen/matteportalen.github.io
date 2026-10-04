@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Övriga ämnen – Matte-Portalen</title>
+<meta name="description" content="Övriga ämnen för lågstadiet: utforska solsystemet, jorden, solen och månen.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8F7EE; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#BFE3CF;
+  --good:#1E9E5E; --good-dark:#157548; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:820px;margin:0 auto;padding:16px 16px 48px}
+a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+h1{font-size:clamp(2.4rem,9vw,3.2rem);line-height:1;margin:14px 0 6px;font-weight:800;letter-spacing:-.5px}
+h1 span{color:var(--good)}
+.lead{margin:0 0 18px;color:var(--muted);font-size:1.15rem}
+.cards{display:grid;grid-template-columns:1fr;gap:14px}
+@media(min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.card{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:20px;padding:12px 14px 12px 12px;text-decoration:none;color:inherit;box-shadow:0 5px 0 var(--line);transition:transform .08s,box-shadow .08s}
+.card:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+@media(hover:hover){.card:hover{transform:translateY(-2px);box-shadow:0 7px 0 var(--line)}}
+.tile{flex:none;width:72px;height:72px;border-radius:18px;background:var(--c);display:grid;place-items:center;font-size:2.4rem;transform:rotate(-4deg);box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+.card .txt{flex:1;min-width:0}
+.card b{display:block;font-size:1.3rem;line-height:1.15}
+.card small{display:block;color:var(--muted);font-size:.95rem;line-height:1.3;margin-top:2px}
+.new{display:inline-block;background:var(--gold);color:var(--ink);border-radius:999px;padding:0 8px;font-size:.75rem;font-weight:800;margin-left:6px;vertical-align:middle;transform:rotate(-3deg)}
+.chev{flex:none;color:#A9CBB8;font-size:1.6rem;font-weight:800}
+.note{color:var(--muted);font-size:.95rem;margin-top:22px}
+@media (prefers-reduced-motion:reduce){.card{transition:none}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Övriga <span>ämnen</span></h1>
+  <p class="lead">Upptäck rymden och naturen. Tryck, vrid och titta närmare!</p>
+  <nav class="cards" aria-label="Övriga ämnen">
+    <a class="card" href="solsystemet/"><span class="tile" style="--c:linear-gradient(135deg,#141D3D,#3D5AFE)">🪐</span><span class="txt"><b>Solsystemet <span class="new">Nytt!</span></b><small>Solen och de åtta planeterna i 3D. Zooma in på jorden och se hur månens faser blir till.</small></span><span class="chev">›</span></a>
+  </nav>
+  <p class="note">Byt till Matte-Portalen med pilen ▾ bredvid loggan uppe till vänster.</p>
+</main>
+<script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-hem="../" data-nav="av" data-portal="ovriga"></script>
+</body>
+</html>

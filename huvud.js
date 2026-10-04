@@ -5,6 +5,8 @@
    data-nav       "av" för sidor med egen historik (NP3 med #-adresser) eller utan skärmar (startsidan, Tiobas)
    data-helskarm  skärmar där sidhuvudet göms helt (spel med egen ✕), t.ex. "game mem bub"
    data-liggande  "ja": göm sidhuvudet på mobil i liggande läge (Tiobas)
+   data-portal    "ovriga" på sidorna i Övriga ämnen (annan logga, färg och startsida). Standard: Matte-Portalen.
+   Ämnesväljaren (▾ bredvid loggan) byter mellan portalerna. Bara portaler med innehåll står i listan.
    Sidan anropar MPS.visa(id) varje gång den byter skärm (i sin show-funktion).
 
    Sidhuvudet: loggan Mattenyckeln (leder hem), sidans namn, profilens namn med elevens djur och stjärnor
@@ -32,7 +34,16 @@
 .mph-pet svg{width:34px;height:auto;display:block;flex:none}
 .mph-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:9em}
 .mph-snd{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18)!important;font-size:1.15rem;flex:none}
-.mph.mini .mph-logo,.mph.mini .mph-right,.mph.mini .mph-sep{display:none}
+.mph.ovriga{background:linear-gradient(110deg,#157548 0%,#1E9E5E 55%,#17AFC4 100%)}
+.mph-ptl{width:30px;height:40px;border-radius:10px;font-size:.95rem!important;font-weight:800;margin-left:-4px;flex:none;opacity:.9}
+.mph-ptl:hover,.mph-ptl[aria-expanded="true"]{background:rgba(255,255,255,.18)!important}
+.mph-menu{position:absolute;top:calc(100% + 6px);left:10px;background:#fff;color:#1D2B53;border-radius:18px;padding:6px;box-shadow:0 10px 30px rgba(29,43,83,.25),0 3px 0 #C6D6F2;min-width:240px;z-index:30}
+.mph-menu a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;font-weight:800;font-size:1.1rem}
+.mph-menu a:hover,.mph-menu a:focus-visible{background:#EAF3FF;outline:0}
+.mph-menu a[aria-current="true"]::after{content:"✓";margin-left:auto;color:#1E9E5E}
+.mph-menu .mph-mark{width:30px;height:30px;filter:none}
+.mph-menu small{display:block;font-weight:700;font-size:.8rem;color:#56668F}
+.mph.mini .mph-logo,.mph.mini .mph-right,.mph.mini .mph-sep,.mph.mini .mph-ptl{display:none}
 .mph.mini .mph-x{display:grid;place-items:center}
 .mph.dold{display:none}
 body.mph-mini #quit{display:none}
@@ -42,9 +53,13 @@ body.mph-mini #quit{display:none}
 @media print{.mph{display:none}}`;
   /* Loggan: Mattenyckeln, fyra räknesätt i färgade rutor */
   const LOGO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#FF6B6B"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><g stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M29.5 21v17M21 29.5h17M62 29.5h17M23.5 64.5l12 12M35.5 64.5l-12 12M62 70.5h17"/></g><circle cx="70.5" cy="62" r="3.6" fill="#fff"/><circle cx="70.5" cy="79" r="3.6" fill="#fff"/></svg>';
-  window.MPLogo=LOGO;
+  /* Loggan för Övriga ämnen: blad, vattendroppe, planet och sol i samma sorts rutor */
+  const LOGO_NO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#3D8BFD"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><path d="M21 39C21 26 29 20 39 20C39 32 33 39 21 39Z" fill="#fff"/><path d="M21 39L31 29" stroke="#2BB673" stroke-width="2.5" stroke-linecap="round"/><path d="M70.5 19C70.5 19 61 30 61 35.5A9.5 9.5 0 0 0 80 35.5C80 30 70.5 19 70.5 19Z" fill="#fff"/><circle cx="29.5" cy="70.5" r="7.5" fill="#fff"/><ellipse cx="29.5" cy="70.5" rx="14" ry="4.5" fill="none" stroke="#fff" stroke-width="2.6" transform="rotate(-20 29.5 70.5)"/><circle cx="70.5" cy="70.5" r="7" fill="#fff"/><g stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M70.5 56v4M70.5 81v4M56 70.5h4M81 70.5h4M60.3 60.3l2.8 2.8M77.9 77.9l2.8 2.8M60.3 80.7l2.8-2.8M77.9 63.1l2.8-2.8"/></g></svg>';
+  const PORTALER=[{id:'matte',a:'Matte-',b:'Portalen',sub:'Matte för åk 1–3',href:'',logo:LOGO},{id:'ovriga',a:'Övriga ',b:'ämnen',sub:'NO och mer',href:'ovriga/',logo:LOGO_NO}];
+  const PORTAL=PORTALER.find(p=>p.id===ds.portal)||PORTALER[0];
+  window.MPLogo=PORTAL.logo;
   // loggan som ikon i webbläsarfliken
-  if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(LOGO.replace(' class="mph-mark"','').replace(' aria-hidden="true"',''));document.head.appendChild(l);}
+  if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(PORTAL.logo.replace(' class="mph-mark"','').replace(' aria-hidden="true"',''));document.head.appendChild(l);}
 
   /* ---------- Stjärnor: samma regler som startsidan ---------- */
   const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
@@ -70,10 +85,11 @@ body.mph-mini #quit{display:none}
   /* ---------- Sidhuvudet ---------- */
   const hem=ds.hem||'../',titel=ds.titel||'',ikon=ds.ikon||'';
   if(!document.getElementById('mph-css')){const st=document.createElement('style');st.id='mph-css';st.textContent=CSS;document.head.appendChild(st);}
-  const h=document.createElement('header');h.className='mph'+(titel?' has-title':'')+(ds.liggande==='ja'?' liggande':'');
+  const h=document.createElement('header');h.className='mph'+(titel?' has-title':'')+(ds.liggande==='ja'?' liggande':'')+(PORTAL.id!=='matte'?' '+PORTAL.id:'');
   const pet=window.lasDjur&&window.owlSVG?owlSVG(lasDjur()):'',namn=profilnamn();
   h.innerHTML=`<button class="mph-x" aria-label="Avsluta">✕</button>
-    <a class="mph-logo" href="${hem}" aria-label="Matte-Portalen, till startsidan">${LOGO}<span class="t">Matte-<b>Portalen</b></span></a>
+    <a class="mph-logo" href="${hem}${PORTAL.href}" aria-label="${PORTAL.a}${PORTAL.b}, till startsidan">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span></a>
+    <button class="mph-ptl" aria-label="Byt ämne" aria-haspopup="true" aria-expanded="false">▾</button>
     <span class="mph-title">${titel?`<span class="mph-sep">›</span> ${ikon?ikon+' ':''}${esc(titel)}`:''}</span>
     <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
   document.body.prepend(h);
@@ -81,6 +97,15 @@ body.mph-mini #quit{display:none}
   snd.onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);label();if(Ljud.on&&Ljud.ok)Ljud.ok();document.dispatchEvent(new Event('mp-ljud'));};
   document.addEventListener('mp-ljud-andrat',label);
   h.querySelector('.mph-x').onclick=()=>history.back();
+  // ämnesväljaren
+  const ptl=h.querySelector('.mph-ptl');let meny=null;
+  const stang=()=>{if(meny){meny.remove();meny=null;ptl.setAttribute('aria-expanded','false');}};
+  ptl.onclick=e=>{e.stopPropagation();if(meny)return stang();
+    meny=document.createElement('nav');meny.className='mph-menu';meny.setAttribute('aria-label','Byt ämne');
+    meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p.a}${p.b}<small>${p.sub}</small></span></a>`).join('');
+    h.appendChild(meny);ptl.setAttribute('aria-expanded','true');meny.querySelector('a').focus({preventScroll:true});};
+  document.addEventListener('click',e=>{if(meny&&!meny.contains(e.target))stang();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape')stang();});
   // stjärnorna uppdateras när något sparas (i den här fliken eller en annan)
   let tmr=0;const upd=()=>{clearTimeout(tmr);tmr=setTimeout(()=>{h.querySelector('.mph-n').textContent=MPStjarnor();},60);};
   try{const orig=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){orig.call(this,k,v);if(this===window.localStorage&&/^(mattespel-|np3)/.test(k))upd();};}catch(e){}
