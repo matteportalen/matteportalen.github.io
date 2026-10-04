@@ -20,17 +20,18 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 /* ---------- Rubrik ---------- */
 .hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#3D5AFE 0%,#3D8BFD 55%,#17AFC4 100%);color:#fff;
-  padding:calc(18px + env(safe-area-inset-top,0px)) 16px 58px}
-.hero::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:44px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
+  padding:calc(10px + env(safe-area-inset-top,0px)) 16px 40px}
+.hero::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:30px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
 .floaty{position:absolute;inset:0;pointer-events:none}
 .floaty span{position:absolute;font-weight:800;color:rgba(255,255,255,.16);animation:bob 6s ease-in-out infinite}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-10px) rotate(var(--r))}}
-.hero-in{position:relative;z-index:1;max-width:760px;margin:0 auto;display:flex;align-items:center;gap:14px}
+.hero-in{position:relative;z-index:1;max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px}
 .title{flex:1;min-width:0}
-.title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(2.5rem,11vw,4.2rem);letter-spacing:-1px;text-shadow:0 4px 0 rgba(0,0,0,.14)}
+.title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(2.2rem,9.5vw,3.3rem);letter-spacing:-1px;text-shadow:0 4px 0 rgba(0,0,0,.14)}
 .title h1 .p2{color:var(--sun);display:block}
-.title p{margin:10px 0 0;font-size:clamp(1rem,4vw,1.2rem);font-weight:700;opacity:.95}
-.owlwrap{flex:none;display:flex;flex-direction:column;align-items:center;gap:6px;width:clamp(110px,30vw,160px)}
+@media(min-width:700px){.title h1 .p2{display:inline}}
+.title p{margin:6px 0 0;font-size:clamp(1rem,4vw,1.2rem);font-weight:700;opacity:.95}
+.owlwrap{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:clamp(96px,26vw,128px)}
 .bubble{position:relative;background:#fff;color:var(--ink);border-radius:16px;padding:8px 10px;font-weight:700;font-size:.85rem;line-height:1.25;text-align:center;box-shadow:0 4px 0 rgba(0,0,0,.12)}
 .bubble::after{content:"";position:absolute;left:50%;bottom:-9px;transform:translateX(-50%);border:9px solid transparent;border-top-color:#fff;border-bottom:0}
 .owlbtn{display:block;width:100%;padding:0;border:0;background:none;cursor:pointer;position:relative;font:inherit}
@@ -39,16 +40,28 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 @keyframes tilt{0%,100%{transform:rotate(-3deg)}50%{transform:rotate(3deg)}}
 
 /* ---------- Framsteg ---------- */
-.wrap{max-width:760px;margin:0 auto;padding:0 16px 40px}
-.stats{display:flex;gap:10px;margin:-6px 0 18px;position:relative;z-index:2}
-.stat{flex:1;background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line);display:flex;align-items:center;gap:10px;min-width:0}
-.stat .ic{font-size:1.8rem;line-height:1;flex:none}
-.stat b{display:block;font-size:1.4rem;line-height:1}
-.stat small{display:block;color:var(--muted);font-weight:700;font-size:.85rem;line-height:1.2}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px 40px}
+/* kompakt rad: stjärnor, garderoben och klistermärken */
+.mini{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;margin:0 0 6px;position:relative;z-index:2}
+@media(min-width:700px){.mini{display:flex;flex-wrap:wrap;justify-content:flex-start}}
+.mini>*{display:flex;align-items:center;gap:8px;background:var(--card);border:0;border-radius:14px;padding:6px 12px;box-shadow:0 3px 0 var(--line);font:inherit;color:inherit;text-align:left;min-width:0;min-height:48px}
+.mini button{cursor:pointer}
+.mini button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.mini .ic{font-size:1.35rem;line-height:1;flex:none}
+.mini b{display:block;font-size:.98rem;line-height:1.1;white-space:nowrap}
+.mini small{display:block;color:var(--muted);font-weight:700;font-size:.78rem;line-height:1.15}
+.mini .stars b{font-size:1.25rem}
+.mini>.whoami{background:none;box-shadow:none;padding:0;margin:0;grid-column:1/-1;justify-content:flex-end;min-height:0}
+@media(min-width:700px){.mini>.whoami{order:9;margin-left:auto}}
+@media(max-width:699px){.mini{margin-top:-14px}}
+@media(max-width:420px){.mini>*{padding:6px 8px;gap:6px}.mini b{font-size:.88rem}.mini small{font-size:.72rem}}
+/* rubriker för korten */
+.grp{display:flex;align-items:center;gap:8px;font-size:1.2rem;font-weight:800;margin:22px 0 10px;color:var(--ink)}
+.grp span{font-size:1.4rem}
 
 /* ---------- Övningar ---------- */
-.cards{display:grid;grid-template-columns:1fr;gap:14px}
-@media(min-width:620px){.cards{grid-template-columns:1fr 1fr}}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+@media(max-width:360px){.cards{grid-template-columns:1fr}}
 .card{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:20px;padding:12px 14px 12px 12px;text-decoration:none;
   box-shadow:0 5px 0 var(--line);transition:transform .08s,box-shadow .08s}
 .card:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
@@ -187,32 +200,46 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 </header>
 
 <main class="wrap">
-  <div class="whoami"><button class="chip" id="whoChip"></button></div>
-  <div class="stats">
-    <div class="stat"><span class="ic">⭐</span><span><b id="sStars">0</b><small>stjärnor och medaljer</small></span></div>
-    <div class="stat"><span class="ic">🔥</span><span><b id="sDays">0</b><small id="sDaysTxt">dagar i rad</small></span></div>
+  <div class="mini">
+    <div class="whoami"><button class="chip" id="whoChip"></button></div>
+    <div class="stars" title="Stjärnor och medaljer"><span class="ic">⭐</span><span><b id="sStars">0</b><small>stjärnor</small></span></div>
+    <button id="btnWard"><span class="ic">👗</span><span><b>Garderoben<span class="new" id="newWard" hidden>Nytt!</span></b><small id="wardInfo">Välj djur och kläder</small></span></button>
+    <button id="btnAlbum"><span class="ic">📒</span><span><b>Klistermärken<span class="new" id="newAlbum" hidden>Nytt!</span></b><small id="albumInfo">0 av 0</small></span></button>
   </div>
 
-  <div class="tools">
-    <button class="tool" id="btnWard"><span class="ic">👗</span><span><b>Garderoben<span class="new" id="newWard" hidden>Nytt!</span></b><small id="wardInfo">Välj djur och kläder</small></span></button>
-    <button class="tool" id="btnAlbum"><span class="ic">📒</span><span><b>Klistermärken<span class="new" id="newAlbum" hidden>Nytt!</span></b><small id="albumInfo">0 av 0</small></span></button>
-  </div>
-
-  <nav class="cards" aria-label="Övningar">
+  <h2 class="grp"><span aria-hidden="true">🎮</span>Spela och utforska</h2>
+  <nav class="cards" aria-label="Spela och utforska">
     <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Nio spel! Leta skatter i labyrinten, poppa bubblor, dra rep, kör, hoppa, bygg och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="verktyg/"><span class="tile" style="--c:linear-gradient(135deg,#FF9F43,#E5484D)">🧰</span><span class="txt"><b>Verktygslådan</b><small>Hundrarutan, kulramen, bråkväggen, klockan, tiobas och spegelmåla.</small></span><span class="chev">›</span></a>
+  </nav>
+
+  <h2 class="grp"><span aria-hidden="true">🔢</span>Räkna till 20</h2>
+  <nav class="cards" aria-label="Räkna till 20">
     <a class="card" href="lillaplus/"><span class="tile sm" style="--c:#2BB673">+ −</span><span class="txt"><b>Lilla plus &amp; minus</b><small>Huvudräkning med tal upp till 10.</small><span class="badge" id="bLilla" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="tiotal/"><span class="tile" style="--c:#3D8BFD">10</span><span class="txt"><b>Tiotalsövergång</b><small>Räkna via tiotalet med tioruta och tallinje.</small><span class="badge" id="bTiotal" hidden></span></span><span class="chev">›</span></a>
-    <a class="card" href="hundraruta/"><span class="tile" style="--c:#17AFC4"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="21" y="12" width="7.5" height="7.5" rx="1.5" fill="#FFC93C" opacity="1"/><rect x="30" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="3" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="30" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/></svg></span><span class="txt"><b>Hundrarutan</b><small>Steg åt sidan är ett, steg upp och ner är tio. Laga den trasiga hundrarutan!</small><span class="badge" id="bHundra" hidden></span></span><span class="chev">›</span></a>
+  </nav>
+
+  <h2 class="grp"><span aria-hidden="true">➕</span>De fyra räknesätten</h2>
+  <nav class="cards" aria-label="De fyra räknesätten">
     <a class="card" href="uppstallning/"><span class="tile" style="--c:#3D5AFE"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><g font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#fff" text-anchor="end"><text x="33" y="15" font-size="12">47</text><text x="33" y="27" font-size="12">+38</text></g><rect x="9" y="30" width="25" height="2.5" rx="1" fill="#fff"/><text x="33" y="39" text-anchor="end" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" font-size="8" fill="#FFE58A">85</text></svg></span><span class="txt"><b>Uppställning</b><small>Addition och subtraktion som i boken, med minnessiffra och växling. Upp till 100 eller 1000.</small><span class="badge" id="bUpp" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="multiplikation/"><span class="tile" style="--c:#7B61FF">×</span><span class="txt"><b>Multiplikation</b><small>Tabellerna 1–10. Samla medaljer!</small><span class="badge" id="bMulti" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="division/"><span class="tile" style="--c:#FF5FA2">÷</span><span class="txt"><b>Division</b><small>Dela lika, med och utan rest.</small><span class="badge" id="bDiv" hidden></span></span><span class="chev">›</span></a>
-    <a class="card" href="klockan/"><span class="tile" style="--c:#F7C531"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#fff" stroke="#1D2B53" stroke-width="3"/><line x1="20" y1="20" x2="20" y2="8" stroke="#3D5AFE" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="20" x2="28" y2="23" stroke="#1D2B53" stroke-width="3.5" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="#FFC93C"/></svg></span><span class="txt"><b>Klockan</b><small>Stationen: få tågen att gå i tid! Analog och digital tid, och att mäta tid.</small><span class="badge" id="bKlocka" hidden></span></span><span class="chev">›</span></a>
-    <a class="card" href="geometri/"><span class="tile" style="--c:#2BB673"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><polygon points="11,6 20,20 2,20" fill="#fff"/><rect x="22" y="6" width="14" height="14" rx="2" fill="#FFC93C"/><circle cx="12" cy="30" r="7" fill="#FF9F43"/><polygon points="24,24 36,24 36,36 24,36" fill="none" stroke="#fff" stroke-width="3"/></svg></span><span class="txt"><b>Geometri</b><small>Former, kroppar, punkt/linje/sträcka, symmetri och area.</small><span class="badge" id="bGeo" hidden></span></span><span class="chev">›</span></a>
+  </nav>
+
+  <h2 class="grp"><span aria-hidden="true">💯</span>Tal och mönster</h2>
+  <nav class="cards" aria-label="Tal och mönster">
+    <a class="card" href="hundraruta/"><span class="tile" style="--c:#17AFC4"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="21" y="12" width="7.5" height="7.5" rx="1.5" fill="#FFC93C" opacity="1"/><rect x="30" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="3" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="30" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/></svg></span><span class="txt"><b>Hundrarutan</b><small>Steg åt sidan är ett, steg upp och ner är tio. Laga den trasiga hundrarutan!</small><span class="badge" id="bHundra" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="brak/"><span class="tile" style="--c:#FF9F43"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#fff" stroke="#1D2B53" stroke-width="2.5"/><path d="M20 20 L20 4 A16 16 0 0 1 36 20 Z" fill="#FF5FA2" stroke="#1D2B53" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 20 L36 20 A16 16 0 0 1 20 36 Z" fill="#FF5FA2" stroke="#1D2B53" stroke-width="2.5" stroke-linejoin="round"/><path d="M4 20H36M20 4V36" stroke="#1D2B53" stroke-width="2.5"/></svg></span><span class="txt"><b>Bråk</b><small>Halvor, fjärdedelar och andra delar. Dela, färglägg och jämför.</small><span class="badge" id="bBrak" hidden></span></span><span class="chev">›</span></a>
   </nav>
 
-  <nav class="cards gap" aria-label="Fler övningar">
+  <h2 class="grp"><span aria-hidden="true">🕒</span>Klockan och geometri</h2>
+  <nav class="cards" aria-label="Klockan och geometri">
+    <a class="card" href="klockan/"><span class="tile" style="--c:#F7C531"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#fff" stroke="#1D2B53" stroke-width="3"/><line x1="20" y1="20" x2="20" y2="8" stroke="#3D5AFE" stroke-width="3" stroke-linecap="round"/><line x1="20" y1="20" x2="28" y2="23" stroke="#1D2B53" stroke-width="3.5" stroke-linecap="round"/><circle cx="20" cy="20" r="2.5" fill="#FFC93C"/></svg></span><span class="txt"><b>Klockan</b><small>Stationen: få tågen att gå i tid! Analog och digital tid, och att mäta tid.</small><span class="badge" id="bKlocka" hidden></span></span><span class="chev">›</span></a>
+    <a class="card" href="geometri/"><span class="tile" style="--c:#2BB673"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><polygon points="11,6 20,20 2,20" fill="#fff"/><rect x="22" y="6" width="14" height="14" rx="2" fill="#FFC93C"/><circle cx="12" cy="30" r="7" fill="#FF9F43"/><polygon points="24,24 36,24 36,36 24,36" fill="none" stroke="#fff" stroke-width="3"/></svg></span><span class="txt"><b>Geometri</b><small>Former, kroppar, punkt/linje/sträcka, symmetri och area.</small><span class="badge" id="bGeo" hidden></span></span><span class="chev">›</span></a>
+  </nav>
+
+  <h2 class="grp"><span aria-hidden="true">📝</span>Bedömning och prov</h2>
+  <nav class="cards" aria-label="Bedömning och prov">
     <a class="card" href="taluppfattning/"><span class="tile sm" style="--c:#FF9F43">123</span><span class="txt"><b>Bedömningsstöd i taluppfattning</b><small>Åk 1 och 2. Tallinjer, talföljder, dela upp och problemlösning.</small><span class="badge" id="bTal" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="np3/"><span class="tile sm" style="--c:#FF6B6B">NP</span><span class="txt"><b>Nationella prov</b><small>Träna inför proven i åk 3. Nya uppgifter varje gång.</small><span class="badge" id="bNp" hidden></span></span><span class="chev">›</span></a>
   </nav>
@@ -391,8 +418,6 @@ st.fp=fp;st.days=st.days.slice(-400);put("matteportalen-dagar",st);
 const daySet=new Set(st.days);
 let streak=0;{let d=new Date();if(!daySet.has(today))d=new Date(Date.now()-864e5);while(daySet.has(day(d))){streak++;d=new Date(d.getTime()-864e5)}}
 S.bestStreak=0;{let run=0,prev=null;st.days.slice().sort().forEach(x=>{const t=new Date(x+"T12:00");run=prev&&Math.round((t-prev)/864e5)===1?run+1:1;prev=t;S.bestStreak=Math.max(S.bestStreak,run)})}
-$("sDays").textContent=streak;
-$("sDaysTxt").textContent=streak===0?"dagar i rad. Börja idag!":streak===1?"dag i rad":"dagar i rad";
 
 /* ---------- Ugglan ---------- */
 const owlCfg=Object.assign({animal:"uggla",color:"lila",glasses:"runda",hat:"ingen",neck:"ingen",seen:[]},get("matteportalen-uggla")||{});
@@ -530,8 +555,6 @@ const hr=new Date().getHours();
 const hi=hr<5?"Hej nattuggla!":hr<10?"God morgon!":hr<17?"Hej!":"God kväll!";
 let msg;
 if(!$("newWard").hidden)msg="Det finns nya saker i garderoben! Tryck på mig.";
-else if(streak>=1&&!daySet.has(today))msg=`Träna idag så blir det ${streak+1} dagar i rad!`;
-else if(streak>=2)msg=`${streak} dagar i rad. Snyggt!`;
 else if(S.stars>0)msg=`Du har ${S.stars} ⭐. Vad tränar vi idag?`;
 else msg="Vad vill du träna idag?";
 $("bubble").textContent=`${hi} ${msg}`;

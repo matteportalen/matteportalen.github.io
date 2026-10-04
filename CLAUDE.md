@@ -19,7 +19,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 
 | Mapp | Innehåll | localStorage-nyckel |
 | --- | --- | --- |
-| `/` (`index.html`) | Startsidan: alla kort, stjärnor, dagar i rad, garderob, klistermärken, profiler, ljudknapp | `matteportalen-uggla`, `matteportalen-klister`, `matteportalen-dagar`, `matteportalen-ljud`, `mp-profiles`, `mp-owner`, `mp-bundle-<id>` (+ `sessionStorage` `mp-active`) |
+| `/` (`index.html`) | Startsidan: **låg rubrikruta** ("Matte-Portalen" på en rad på dator, mindre uggla), en **kompakt rad** med ⭐ stjärnor, 👗 Garderoben, 📒 Klistermärken och profilnamnet (till höger på dator); **dagar i rad visas inte längre** (eldlågan och ugglans tjat om dagar i rad togs bort, läraren; dagarna räknas fortfarande för klistermärkena Tre i rad och En hel vecka). **Korten under rubriker** (som i Rymdlabbet, upp till tre i bredd på dator): 🎮 Spela och utforska (Spelhörnan, Verktygslådan; först för att locka, lärarens val), 🔢 Räkna till 20 (Lilla plus & minus, Tiotalsövergång), ➕ De fyra räknesätten (Uppställning, Multiplikation, Division), 💯 Tal och mönster (Hundrarutan, Bråk), 🕒 Klockan och geometri, 📝 Bedömning och prov (Taluppfattning, Nationella prov). Profiler, ljudknapp | `matteportalen-uggla`, `matteportalen-klister`, `matteportalen-dagar`, `matteportalen-ljud`, `mp-profiles`, `mp-owner`, `mp-bundle-<id>` (+ `sessionStorage` `mp-active`) |
 | `lillaplus/` | Lilla plus & minus (0–10), **Hönsgården**: Öva, Racet (mot 🏡), Blixtrunda (äggkorgen), Mina svåra. Tioramen i hjälpen är en äggkartong (vita + bruna ägg; vid minus kläcks ägg till 🐣). Gårdsdjur flyttar in efter hur många uppgifter eleven kan. Öva blandar in `__ + 4 = 9`, `3 + __ = 7` och "Stämmer det?" (räknas inte). Djuret har keps. | `mattespel-lillaplus-v1` (läser även `matteportalen-uggla`) |
 | `tiotal/` | Tiotalsövergång, upp till 20 eller 100, med genomgången "Så här räknar du". **Bussen**: tiorutan är en buss med 10 platser, tiostavarna fulla bussar, busslinjen får hållplatser efter stjärnorna. Djuret (keps) kör. Inga blandade uppgifter (följer bokens steg). | `mattespel-tiotal-v1` (läser även `matteportalen-uggla`) |
 | `hundraruta/` | Hela hundrarutan (verktyg: **Markera** eller **Hoppa** med +10/−10/+1/−1, gröna pilar för plus och röda för minus, summering "3 tiohopp och 6 enhopp: 100 − 36 = 64", alltid 1 överst (100 överst valdes bort), uppgiftsläge där man skriver eller slumpar en uppgift och hoppar själv; direktlänk `hundraruta/#verktyg`), Tio hopp, Trasig hundraruta (med hjälpruta som kan visas/döljas) | `mattespel-hundraruta-v1` |
@@ -40,7 +40,7 @@ Publiceras med GitHub Pages på **matteportalen.github.io**. Allt språk på saj
 ### När en ny övning läggs till
 
 Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen inte med:
-1. Ett kort i `<nav class="cards">` med ett `badge`-element.
+1. Ett kort under rätt rubrik (`<h2 class="grp">` + `<nav class="cards">`) med ett `badge`-element.
 2. Stjärnorna räknas in i `S.stars` (läs nyckeln, summera `stars`).
 3. Nyckeln läggs i listan `snap` (dagar i rad) och i **`PKEYS`** i profilskriptet (profiler, flyttkod och inloggningskort).
 4. Gärna ett eller två klistermärken i `STICKERS`.
