@@ -128,7 +128,31 @@
         }},
       stop(quick){clearTimeout(this.timer);if(!this.g)return;const c=ac(),t=c.currentTime,g=this.g;g.gain.setTargetAtTime(0.0001,t,quick?.05:.4);this.nodes.forEach(x=>{try{x.stop(t+(quick?.3:2))}catch(e){}});this.g=null;}
     },
-    stopLoops(){this.engine.stop();this.space.stop();this.water.stop();this.ambient.stop(true);}
+    /* Rymdmatta för 3D-solsystemet: djupa toner, långsamma svävande ackord och lite glitter med eko */
+    rymd:{
+      start(){if(!isOn()||this.g)return;const c=ac();if(!c)return;
+        const g=c.createGain();g.gain.setValueAtTime(0.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(.55,c.currentTime+4);g.connect(c.destination);
+        const nodes=[],self=this;this.g=g;this.nodes=nodes;
+        /* eko för ackord och glitter */
+        const d=c.createDelay(2),fb=c.createGain(),eg=c.createGain();d.delayTime.value=.6;fb.gain.value=.45;eg.gain.value=.5;d.connect(fb).connect(d);d.connect(eg).connect(g);
+        /* djup grundton som andas långsamt */
+        const lp=c.createBiquadFilter();lp.type='lowpass';lp.frequency.value=240;lp.Q.value=.6;const dg=c.createGain();dg.gain.value=.05;lp.connect(dg).connect(g);
+        [55,55.4,82.4].forEach(fr=>{const o=c.createOscillator();o.type='triangle';o.frequency.value=fr;o.connect(lp);o.start();nodes.push(o);});
+        const l=c.createOscillator(),lg=c.createGain();l.frequency.value=.05;lg.gain.value=140;l.connect(lg).connect(lp.frequency);l.start();nodes.push(l);
+        /* ackord som kommer och går (Am9, Fmaj7, Cmaj7, Em7) */
+        const CH=[[220,261.6,329.6,493.9],[174.6,220,261.6,329.6],[130.8,196,246.9,329.6],[164.8,196,246.9,293.7]];let k=0;
+        const pad=()=>{if(self.g!==g)return;const t=c.currentTime;CH[k++%CH.length].forEach((fr,i)=>{[0,4].forEach(det=>{const o=c.createOscillator(),og=c.createGain();o.type='sine';o.frequency.value=fr*(1+det/1200);
+            og.gain.setValueAtTime(0.0001,t);og.gain.exponentialRampToValueAtTime(.018,t+3+i*.3);og.gain.exponentialRampToValueAtTime(0.0001,t+10);o.connect(og);og.connect(g);og.connect(d);o.start(t);o.stop(t+10.2);});});
+          self.timer=setTimeout(pad,8000);};
+        pad();
+        /* glitter: höga, mjuka toner med eko */
+        const glit=()=>{if(self.g!==g)return;const t=c.currentTime,fr=[1318.5,1568,1760,1975.5,2349.3][Math.floor(Math.random()*5)],o=c.createOscillator(),og=c.createGain();o.type='sine';o.frequency.value=fr;
+          og.gain.setValueAtTime(0.0001,t);og.gain.exponentialRampToValueAtTime(.012,t+.02);og.gain.exponentialRampToValueAtTime(0.0001,t+1.6);o.connect(og);og.connect(d);og.connect(g);o.start(t);o.stop(t+1.7);
+          self.timer2=setTimeout(glit,2500+Math.random()*5000);};
+        self.timer2=setTimeout(glit,3000);},
+      stop(){clearTimeout(this.timer);clearTimeout(this.timer2);if(!this.g)return;const c=ac(),t=c.currentTime;this.g.gain.setTargetAtTime(0.0001,t,.6);this.nodes.forEach(x=>{try{x.stop(t+3)}catch(e){}});this.g=null;}
+    },
+    stopLoops(){this.engine.stop();this.space.stop();this.water.stop();this.ambient.stop(true);this.rymd.stop();}
   };
   function croakPulse(c,start){
     const t=c.currentTime+start,o=c.createOscillator(),f=c.createBiquadFilter(),g=c.createGain(),am=c.createOscillator(),ag=c.createGain();

@@ -396,6 +396,11 @@ function frame(now){
   requestAnimationFrame(frame);
 }
 show('home');controls.minDistance=8;place(0);controls.update();setPlayBtns();
+// rymdmatta i bakgrunden (följer ljudknappen; webbläsaren kräver ett första tryck innan ljud får spelas)
+const rymd=()=>{if(window.Ljud&&Ljud.on&&!document.hidden)Ljud.rymd.start();};
+rymd();addEventListener('pointerdown',rymd,{passive:true});addEventListener('keydown',rymd);
+document.addEventListener('mp-ljud',()=>{if(window.Ljud&&Ljud.on)Ljud.rymd.start();else window.Ljud&&Ljud.rymd.stop();});
+document.addEventListener('visibilitychange',rymd);
 // direktlänk från Rymdlabbet (Månens faser): jordvyn blir sidans första steg, och tillbaka går till Rymdlabbet
 if(location.hash==='#jorden'){if(window.MPS)MPS.start('earth');openEarth();$('eBack').textContent='← Rymdlabbet';
   $('eBack').onclick=toLab;}

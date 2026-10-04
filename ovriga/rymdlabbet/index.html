@@ -31,6 +31,20 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
 .mode .ic{flex:none;width:58px;height:58px;border-radius:16px;display:grid;place-items:center;font-size:2rem;background:var(--c)}
 .mode b{display:block;font-size:1.15rem;line-height:1.15}
 .mode small{display:block;color:var(--soft);font-size:.9rem;line-height:1.25;margin-top:2px}
+.feature{display:flex;align-items:center;gap:16px;flex-wrap:wrap;margin:6px 0 4px;padding:18px 20px;border-radius:24px;text-decoration:none;color:#fff;
+  background:radial-gradient(ellipse at 80% 30%,rgba(123,97,255,.55),transparent 60%),radial-gradient(ellipse at 10% 90%,rgba(23,175,196,.35),transparent 55%),linear-gradient(135deg,#141B3D,#2A1F5C);
+  border:2px solid rgba(255,255,255,.18);box-shadow:0 6px 0 rgba(0,0,0,.35);transition:transform .1s}
+.feature:hover{transform:translateY(-2px)}
+.feature:active{transform:translateY(2px)}
+.fplan{display:flex;align-items:center;gap:10px;flex:0 1 auto}
+.fplan i{display:block;width:var(--s);height:var(--s);border-radius:50%;background:var(--c);box-shadow:0 0 12px rgba(255,255,255,.12);flex:none;position:relative}
+.fplan i:first-child{box-shadow:0 0 26px rgba(255,190,60,.8)}
+.fplan i.ring::after{content:"";position:absolute;left:-40%;right:-40%;top:42%;height:16%;border-radius:50%;border:3px solid rgba(240,225,190,.75);transform:rotate(-18deg)}
+.ftxt{flex:1;min-width:220px}
+.ftxt b{display:block;font-size:1.45rem;line-height:1.15}
+.ftxt small{display:block;color:var(--soft);font-size:.98rem;margin-top:2px}
+.fgo{flex:none;background:var(--gold);color:var(--ink);font-weight:800;border-radius:999px;padding:8px 18px;box-shadow:0 3px 0 rgba(0,0,0,.35)}
+@media(max-width:520px){.fplan{gap:6px}.fplan i{transform:scale(.8)}.fgo{width:100%;text-align:center}}
 .grp{font-size:1.05rem;color:var(--gold);margin:18px 0 8px;letter-spacing:.3px}
 /* lägen */
 .lab{display:grid;gap:14px;align-items:start}
@@ -108,6 +122,8 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
 <section id="home" class="screen">
   <h1>🔭 Rymdlabbet</h1>
   <p class="lead">Utforska jorden, solen, månen och planeterna. Dra, snurra och prova själv, och tryck på 🔊 så läses förklaringen upp.</p>
+  <a class="feature" href="../solsystemet/"><span class="fplan" aria-hidden="true"><i style="--s:46px;--c:radial-gradient(circle at 35% 35%,#FFF3B0,#FFC93C 45%,#FF8A00)"></i><i style="--s:12px;--c:radial-gradient(circle at 35% 35%,#ddd,#8C7E72)"></i><i style="--s:18px;--c:radial-gradient(circle at 35% 35%,#FFE8B0,#C89B4E)"></i><i style="--s:20px;--c:radial-gradient(circle at 35% 35%,#9BD0FF,#2E6FD0)"></i><i style="--s:14px;--c:radial-gradient(circle at 35% 35%,#FFB08A,#C1440E)"></i><i style="--s:34px;--c:radial-gradient(circle at 35% 35%,#F4DEC0,#C9A27A)"></i><i class="ring" style="--s:30px;--c:radial-gradient(circle at 35% 35%,#FFF0C8,#D8C08A)"></i><i style="--s:22px;--c:radial-gradient(circle at 35% 35%,#DFFBFF,#8CCCD6)"></i><i style="--s:21px;--c:radial-gradient(circle at 35% 35%,#B8C8FF,#3F5EC4)"></i></span>
+    <span class="ftxt"><b>🪐 Solsystemet i 3D</b><small>Solen och de åtta planeterna där de är just nu. Snurra, zooma och flyg till en planet.</small></span><span class="fgo">Starta ›</span></a>
   <h3 class="grp">Jorden, solen och månen</h3>
   <div class="modes">
     <button class="mode" data-go="dag"><span class="ic" style="--c:linear-gradient(135deg,#FFB13D,#3D5AFE)">🌍</span><span><b>Dag och natt</b><small>Varför blir det natt? Snurra jorden och se solen gå upp hemma.</small></span></button>
@@ -117,7 +133,6 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
   </div>
   <h3 class="grp">Planeterna</h3>
   <div class="modes">
-    <a class="mode" href="../solsystemet/"><span class="ic" style="--c:linear-gradient(135deg,#141D3D,#3D5AFE)">🪐</span><span><b>Solsystemet i 3D</b><small>Planeterna där de är just nu. Tryck på en planet och flyg dit.</small></span></a>
     <button class="mode" data-go="storlek"><span class="ic" style="--c:linear-gradient(135deg,#C9A27A,#FDB813)">📏</span><span><b>Hur stora är de?</b><small>Planeterna i rätt storlek, från lilla Merkurius till solen.</small></span></button>
     <button class="mode" data-go="avstand"><span class="ic" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🛣️</span><span><b>Hur långt bort?</b><small>Res med ljusets fart från solen ut till Neptunus.</small></span></button>
     <button class="mode" data-go="ar"><span class="ic" style="--c:linear-gradient(135deg,#7B61FF,#FF6B9A)">🔄</span><span><b>Ett år på varje planet</b><small>Hur lång tid tar ett varv runt solen? Och hur gammal är du där?</small></span></button>
