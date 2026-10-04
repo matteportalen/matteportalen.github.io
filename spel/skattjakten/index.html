@@ -118,6 +118,30 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
 @keyframes hover{0%,100%{translate:0 0}50%{translate:0 -10px}}
 .flyer.hov .spr{animation:hover .9s ease-in-out infinite}
 .flyer .cap{position:absolute;left:50%;top:100%;transform:translateX(-50%);white-space:nowrap;background:#FFF4CC;color:var(--ink);font-weight:800;border-radius:10px;padding:1px 8px;font-size:.85rem;margin-top:6px}
+.bag{display:flex;gap:5px;align-items:center}
+.bag .slot{min-width:44px;justify-content:center}
+.bag .slot.tom{background:rgba(255,255,255,.05);border:2px dashed rgba(255,255,255,.25);min-height:40px}
+.wallet{display:flex;align-items:center;gap:4px;background:#FFC93C;color:#1D2B53;border-radius:999px;padding:2px 12px;font-weight:800;font-size:1.1rem;flex:none}
+.wallet.bump{animation:bump .5s ease-out}
+.owned{display:flex;gap:2px;font-size:1.3rem;flex:none}
+@media (min-width:900px){.bag .slot{min-width:66px}.bag .slot.tom{min-height:62px}.wallet{font-size:1.3rem;padding:4px 16px}.owned{font-size:1.7rem}}
+/* affären */
+.shopsec{background:#F6F8FC;border-radius:16px;padding:8px 10px;margin-top:10px}
+.shopsec h3{margin:0 0 4px;font-size:1.05rem}
+.ptag{display:flex;flex-direction:column;align-items:center;background:#fff;border-radius:12px;padding:2px 8px 4px;box-shadow:0 2px 0 var(--line);--s:40px}
+.ptag b{background:#FFC93C;border-radius:999px;padding:0 8px;font-size:.95rem;line-height:1.4}
+.prods{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.prod{display:flex;align-items:center;gap:8px;text-align:left;background:#fff;border-radius:14px;padding:6px 8px;box-shadow:0 3px 0 var(--line);min-height:56px}
+.prod .pi{font-size:1.8rem;flex:none}
+.prod b{display:block;font-size:1rem;line-height:1.1}
+.prod small{display:block;color:var(--muted);font-size:.8rem;line-height:1.2}
+.prod .pr{margin-left:auto;background:#FFC93C;border-radius:999px;padding:0 8px;font-weight:800;white-space:nowrap;flex:none}
+.prod.kopt{opacity:.6;box-shadow:none}
+.prod.kopt .pr{background:#C9F0D9}
+.prod.viktig{outline:3px solid #FFC93C}
+.sellbtn{display:block;width:100%;margin-top:8px;padding:8px;border-radius:14px;background:var(--good);color:#fff;font-weight:800;box-shadow:0 3px 0 var(--good-dark)}
+.tags{display:flex;flex-wrap:wrap;gap:6px}.q .tags{margin-top:6px}
+@media (max-width:420px){.prods{grid-template-columns:1fr}}
 .chest-loot{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin-top:8px}
 .chest-loot span{display:flex;align-items:center;gap:2px;font-weight:800;font-size:1.25rem;--s:40px}
 
@@ -128,7 +152,7 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
 <div class="wrap" id="home">
   <a class="back" href="../">← Spelhörnan</a>
   <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
-    <div><h1>Skattjakten <span class="world">🗝️ Labyrint</span></h1><p class="lead" id="homeLead">Gå runt i labyrinten och leta skatter. Hindren släpper bara förbi den som löser deras uppgift.</p></div></div>
+    <div><h1>Skattjakten <span class="world">🗝️ Labyrint</span></h1><p class="lead" id="homeLead">Leta skatter i labyrinten och sälj dem i affären. Utgången är låst: köp nyckeln för att ta dig ut! Hindren släpper bara förbi den som löser deras uppgift.</p></div></div>
   <h2>Välj tema</h2>
   <div class="themes" id="themes"></div>
   <h2>Välj nivå</h2>
@@ -141,7 +165,7 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
   <div class="hud"><button class="quit" id="quit">← Avsluta</button><span class="lv" id="hudLv"></span>
     <span class="hl"><span id="hudChest"></span><button class="snd" id="snd" aria-label="Ljud av eller på">🔊</button></span></div>
   <div class="stage" id="stage"><canvas id="cv"></canvas><div class="hint" id="hint"></div></div>
-  <div class="lootbar" id="lootbar" aria-label="Skatter du har hittat"><span class="lbl">Skattraden</span><span class="slots" id="slots"></span></div>
+  <div class="lootbar" id="lootbar" aria-label="Ryggsäcken och dina mynt"><span class="lbl">🎒</span><span class="bag" id="slots"></span><span class="wallet" id="wallet">🪙 0</span><span class="owned" id="owned"></span></div>
   <div class="pad" id="pad" aria-label="Pilknappar">
     <button class="u" data-d="0,-1" aria-label="Upp">▲</button><button class="l" data-d="-1,0" aria-label="Vänster">◀</button>
     <button class="d" data-d="0,1" aria-label="Ner">▼</button><button class="r" data-d="1,0" aria-label="Höger">▶</button>
@@ -153,6 +177,7 @@ h2{font-size:1.25rem;margin:18px 0 8px;font-weight:800}
     <div class="who"><canvas id="dPic" width="64" height="64"></canvas>
       <div class="bubble"><div class="nm" id="dName"></div><div class="say" id="dSay"></div><div class="q" id="dQ"></div></div>
       <button class="spk" id="dSpk" aria-label="Läs upp">🔊</button></div>
+    <div id="shopMenu" hidden></div>
     <div class="ansrow"><span class="ans empty" id="dAns">?</span><b id="dUnit"></b></div>
     <div class="fb" id="dFb" aria-live="polite"></div>
     <div class="tip" id="dTip" hidden></div>
@@ -224,6 +249,14 @@ const TREASURE_BY_THEME={
 /* alla sorter i en lista, för skattkammaren (samma nyckel = samma skatt i alla teman) */
 const TREASURE=[];Object.values(TREASURE_BY_THEME).flat().forEach(t=>{if(!TREASURE.some(x=>x.k===t.k))TREASURE.push(t);});
 const TBY=Object.fromEntries(TREASURE.map(t=>[t.k,t]));
+/* Värde i mynt: vanliga skatter är värda lite, sällsynta mycket. Talen följer nivån (upp till 20, 100, 1000). */
+const VARDE={1:[1,2,3,4,5],2:[5,8,12,15,25],3:[40,75,120,150,250]};
+const niva=t=>t.rare?4:t.w>=20?0:t.w>=14?1:t.w>=10?2:3;
+const varde=t=>VARDE[data.level][niva(t)];
+const BAG=4;
+/* affärens varor */
+const VAROR=[{k:"nyckel",ikon:"🗝️",namn:"Nyckeln",def:"nyckeln",bes:"Låser upp utgången."},{k:"lykta",ikon:"🔦",namn:"Lyktan",def:"lyktan",bes:"Du ser längre i labyrinten."},
+  {k:"karta",ikon:"🗺️",namn:"Kartan",def:"kartan",bes:"Visar var kistorna och utgången finns."},{k:"skor",ikon:"👟",namn:"Snabbskorna",def:"snabbskorna",bes:"Du springer dubbelt så fort."}];
 const spr=(cell,s)=>`<span class="spr" style="--i:${cell}${s?`;--s:${s}px`:""}"></span>`;
 function rollTreasure(){const L=TREASURE_BY_THEME[data.theme]||TREASURE_BY_THEME.grottan;let r=Math.random()*L.reduce((a,t)=>a+t.w,0);for(const t of L){r-=t.w;if(r<=0)return t;}return L[0];}
 const IMG={};
@@ -316,7 +349,11 @@ function newGame(){
   const free=[];for(let y=1;y<n-1;y++)for(let x=1;x<n-1;x++)if(g[y][x]===0&&d[y][x]>3)free.push([x,y]);
   /* skatter i återvändsgränder, längst bort först */
   const ends=shuffle(free.filter(([x,y])=>degree(g,x,y)===1&&!used.has(x+","+y)));
-  for(const[x,y]of ends.slice(0,L.chests))put(x,y,{t:"chest"});
+  /* affären: i en återvändsgränd ungefär en tredjedel in. Man går in genom att gå mot den, som hos hindren. */
+  {const far=Math.max(...free.map(([x,y])=>d[y][x])),de=free.filter(([x,y])=>!used.has(x+","+y)&&degree(g,x,y)===1);
+   const cs=shuffle(de.filter(([x,y])=>d[y][x]>far*.2&&d[y][x]<far*.5));
+   const s=cs[0]||de.sort((a,b)=>Math.abs(d[a[1]][a[0]]-far*.35)-Math.abs(d[b[1]][b[0]]-far*.35))[0];put(s[0],s[1],{t:"shop"});var shopAt=s;}
+  for(const[x,y]of ends.filter(([x,y])=>!used.has(x+","+y)).slice(0,L.chests))put(x,y,{t:"chest"});
   let extraChests=L.chests-Object.values(objs).filter(o=>o.t==="chest").length;
   for(const[x,y]of shuffle(free.slice()))if(extraChests>0&&!used.has(x+","+y)&&degree(g,x,y)<=2){put(x,y,{t:"chest"});extraChests--;}
   /* fler hinder på andra vägar, ofta framför skatterna */
@@ -325,16 +362,23 @@ function newGame(){
   put(ex[0],ex[1],{t:"exit"});
   /* varje ruta får en egen variant av golv och vägg, som inte ändras */
   const look=Array.from({length:n},()=>Array.from({length:n},()=>Math.random()));
+  /* kistornas innehåll bestäms nu, så att nyckelns pris kan räknas fram ur hur mycket som finns */
+  let total=0;Object.values(objs).forEach(o=>{if(o.t!=="chest")return;const k=Math.random()<.45?1:Math.random()<.73?2:3;o.items=[];
+    for(let i=0;i<k;i++){const tr=rollTreasure();o.items.push({t:tr,cell:pick(tr.cells)});total+=varde(tr);}});
+  const steg=data.level===1?1:data.level===2?5:10,rund=v=>Math.max(steg,Math.round(v/steg)*steg);
+  const tak=data.level===1?[15,6]:data.level===2?[90,30]:[900,300];
+  const pris={nyckel:Math.min(tak[0],rund(total*.5)),lykta:Math.min(tak[1],rund(total*.13)),karta:Math.min(tak[1],rund(total*.16)),skor:Math.min(tak[1],rund(total*.1))};
   G={n,g,objs,look,th,sheet:sheetOf(data.theme),px:1,py:1,ax:1,ay:1,seen:Array.from({length:n},()=>Array(n).fill(false)),
-     chests:Object.values(objs).filter(o=>o.t==="chest").length,found:0,loot:{},solved:0,firstTry:0,busy:false,over:false,anim:null,sparks:[]};
+     chests:Object.values(objs).filter(o=>o.t==="chest").length,found:0,loot:{},solved:0,firstTry:0,busy:false,over:false,anim:null,sparks:[],
+     R:3.2,bag:[],coins:0,owned:{},pris,shop:shopAt,total,sold:0};
+  G.seen[shopAt[1]][shopAt[0]]=true; // affärens skylt lyser i mörkret
   reveal();
   $("hudLv").textContent=`${th.name} · Nivå ${data.level}`;updHud();
   $("home").hidden=true;$("win").hidden=true;$("game").hidden=false;if(window.MPS)MPS.visa("game");
   renderSlots();if(window.Ljud&&Ljud.ambient)Ljud.ambient.start(data.theme);sndIcon();
-  resize();hint(`Hitta utgången: ${th.exit.name.toLowerCase()}! Skatter finns ofta i återvändsgränder.`,4500);
+  resize();hint(`${th.exit.name} är låst. Leta skatter, sälj dem i affären 🏪 och köp nyckeln!`,5000);
 }
-const R=3.2;
-function reveal(){for(let y=0;y<G.n;y++)for(let x=0;x<G.n;x++)if(Math.hypot(x-G.px,y-G.py)<=R+.4)G.seen[y][x]=true;}
+function reveal(){for(let y=0;y<G.n;y++)for(let x=0;x<G.n;x++)if(Math.hypot(x-G.px,y-G.py)<=G.R+.4)G.seen[y][x]=true;}
 function updHud(){$("hudChest").innerHTML=`<small>Poäng</small> ${G.points||0} &nbsp;<small>Kistor</small> ${G.found}/${G.chests}`;}
 let hintT;function hint(t,ms){const h=$("hint");h.textContent=t;h.style.opacity=1;clearTimeout(hintT);hintT=setTimeout(()=>h.style.opacity=0,ms||2600);}
 
@@ -355,16 +399,27 @@ function draw(){
     tile(ctx,s,th.floor[Math.floor(lk*th.floor.length)],dx,dy,TS);
     if(G.g[y][x]===1)tile(ctx,s,th.walls[Math.floor(lk*th.walls.length)],dx,dy,TS);
     const o=G.objs[x+","+y];
+    if(o&&o.t==="shop")drawShop(dx,dy);
     if(o){if(o.t==="chest")tile(ctx,CHEST.s,CHEST.i,dx,dy,TS);else if(o.t==="exit")tile(ctx,th.exit.s,th.exit.i,dx,dy,TS);else if(o.t==="foe"&&!o.solved)tile(ctx,o.f.s,o.f.i,dx,dy,TS);}
   }
   /* allt utanför synfältet blir mörkare: man ser bara en bit runt sig */
   for(let y=y0;y<=y1;y++)for(let x=x0;x<=x1;x++){if(!G.seen[y][x])continue;const dd=Math.hypot(x-G.ax,y-G.ay);
-    if(dd>R){ctx.fillStyle="rgba(20,28,56,.62)";ctx.fillRect(Math.round(x*TS-camX),Math.round(y*TS-camY),TS,TS);}}
-  const grd=ctx.createRadialGradient(W/2,H/2,TS*2,W/2,H/2,TS*(R+1.4));grd.addColorStop(0,"rgba(20,28,56,0)");grd.addColorStop(1,"rgba(20,28,56,.55)");ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+    if(dd>G.R&&!(G.objs[x+","+y]&&G.objs[x+","+y].t==="shop")){ctx.fillStyle="rgba(20,28,56,.62)";ctx.fillRect(Math.round(x*TS-camX),Math.round(y*TS-camY),TS,TS);}}
+  const grd=ctx.createRadialGradient(W/2,H/2,TS*2,W/2,H/2,TS*(G.R+1.4));grd.addColorStop(0,"rgba(20,28,56,0)");grd.addColorStop(1,"rgba(20,28,56,.55)");ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
   /* elevens djur */
   if(petImg.complete){const pw=TS*1.05,ph=pw*280/240;ctx.imageSmoothingEnabled=true;ctx.drawImage(petImg,W/2-pw/2,H/2+TS/2-ph*.92,pw,ph);ctx.imageSmoothingEnabled=false;}
+  pilTillAffaren(camX,camY);
   G.sparks.forEach(p=>{ctx.globalAlpha=Math.max(0,p.l);ctx.font=`${Math.round(TS*.45)}px serif`;ctx.textAlign="center";ctx.fillText(p.e,p.x-camX,p.y-camY);});ctx.globalAlpha=1;
 }
+/* affären: en upplyst skylt som syns på avstånd */
+function drawShop(dx,dy){ctx.save();ctx.fillStyle="#FFE58A";ctx.globalAlpha=.35;ctx.beginPath();ctx.arc(dx+TS/2,dy+TS/2,TS*.75,0,7);ctx.fill();ctx.globalAlpha=1;
+  ctx.fillStyle="#FFF4CC";ctx.fillRect(dx+2,dy+2,TS-4,TS-4);ctx.font=`${Math.round(TS*.72)}px serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("🏪",dx+TS/2,dy+TS/2+2);ctx.restore();}
+/* pil vid skärmkanten som visar var affären ligger, när den inte syns */
+function pilTillAffaren(camX,camY){if(!G.shop)return;const sx=G.shop[0]*TS+TS/2-camX,sy=G.shop[1]*TS+TS/2-camY;if(sx>TS*.5&&sx<W-TS*.5&&sy>TS*.5&&sy<H-TS*.5)return;
+  const cx=W/2,cy=H/2,vx=sx-cx,vy=sy-cy,m=Math.max(Math.abs(vx)/(W/2-34),Math.abs(vy)/(H/2-34)),px=cx+vx/m,py=cy+vy/m,a=Math.atan2(vy,vx);
+  ctx.save();ctx.translate(px,py);ctx.fillStyle="rgba(255,244,204,.95)";ctx.beginPath();ctx.arc(0,0,22,0,7);ctx.fill();
+  ctx.rotate(a);ctx.fillStyle="#E8A100";ctx.beginPath();ctx.moveTo(30,0);ctx.lineTo(19,-8);ctx.lineTo(19,8);ctx.fill();ctx.rotate(-a);
+  ctx.font="22px serif";ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillText("🏪",0,1);ctx.restore();}
 function loop(){if(!G||G.over)return;let again=false;
   if(G.anim){const t=Math.min(1,(performance.now()-G.anim.t0)/G.anim.ms);const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
     G.ax=G.anim.fx+(G.px-G.anim.fx)*e;G.ay=G.anim.fy+(G.py-G.anim.fy)*e;if(t>=1){G.ax=G.px;G.ay=G.py;G.anim=null;arrive();}else again=true;}
@@ -379,17 +434,22 @@ function move(dx,dy){
   const x=G.px+dx,y=G.py+dy;if(G.g[y][x]===1){window.Ljud&&Ljud.clonk&&Ljud.clonk();return;}
   const o=G.objs[x+","+y];
   if(o&&o.t==="foe"&&!o.solved){openFoe(o,x,y);return;}
-  G.anim={fx:G.px,fy:G.py,t0:performance.now(),ms:reduced()?1:140};G.px=x;G.py=y;reveal();kick();
+  if(o&&o.t==="shop"){openShop();return;}
+  G.anim={fx:G.px,fy:G.py,t0:performance.now(),ms:reduced()?1:G.owned.skor?70:140};G.px=x;G.py=y;reveal();kick();
 }
 function arrive(){
   const k=G.px+","+G.py,o=G.objs[k];if(!o)return;
-  if(o.t==="chest"){delete G.objs[k];G.found++;openChest(G.px,G.py);updHud();kick();}
-  else if(o.t==="exit")win();
+  if(o.t==="chest"){openChest(o,k,G.px,G.py);updHud();kick();}
+  else if(o.t==="exit"){if(G.owned.nyckel)win();else hint(`${G.th.exit.name} är låst. Köp nyckeln i affären 🏪!`,3200);}
 }
 /* En kista innehåller en till tre blandade skatter. De hoppar ur kistan, svävar en stund och flyger till skattraden. */
-function openChest(cx,cy){
-  const n=Math.random()<.45?1:Math.random()<.73?2:3,got=[];
-  for(let i=0;i<n;i++){const t=rollTreasure(),cell=pick(t.cells),q=t.amt?rnd(t.amt[0],t.amt[1]):1;G.loot[t.k]=(G.loot[t.k]||0)+q;got.push({t,cell,q});}
+function openChest(o,k,cx,cy){
+  const plats=BAG-G.bag.length;
+  if(plats<=0){hint("Ryggsäcken är full! Sälj skatterna i affären 🏪 och kom tillbaka.",3200);window.Ljud&&Ljud.clonk&&Ljud.clonk();return;}
+  const got=o.items.splice(0,plats).map(x=>({...x,q:1}));
+  got.forEach(x=>{G.loot[x.t.k]=(G.loot[x.t.k]||0)+1;G.bag.push(x);});
+  if(!o.items.length){delete G.objs[k];G.found++;}
+  else setTimeout(()=>hint(`Ryggsäcken är full! ${o.items.length===1?"En skatt":o.items.length+" skatter"} ligger kvar i kistan.`,3200),got.length*420+600);
   window.Ljud&&(Ljud.kaching?Ljud.kaching():Ljud.ok());
   for(let i=0;i<5;i++)G.sparks.push({x:cx*TS+TS/2+rnd(-18,18),y:cy*TS+rnd(-4,10),l:1,e:"✨"});
   const r=cv.getBoundingClientRect(),sx=r.left+W/2+(cx-G.ax)*TS+TS/2,sy=r.top+H/2+(cy-G.ay)*TS+TS/2;
@@ -399,7 +459,7 @@ function openChest(cx,cy){
 }
 function flyTreasure(x,sx,sy,big,i,n){
   const el=document.createElement("div");el.className="flyer";el.style.setProperty("--s",big+"px");
-  el.innerHTML=`<span class="shine"></span>${spr(x.cell,big)}<span class="cap">${x.q>1?x.q+" "+x.t.many:"en "+x.t.one}</span>`;
+  el.innerHTML=`<span class="shine"></span>${spr(x.cell,big)}<span class="cap">en ${x.t.one} · ${varde(x.t)} 🪙</span>`;
   document.body.appendChild(el);const half=big/2;
   el.style.transform=`translate(${sx-half}px,${sy-half}px) scale(.2)`;el.style.opacity="0";
   if(reduced()){el.remove();bumpSlot(x.t.k);return;}
@@ -408,16 +468,16 @@ function flyTreasure(x,sx,sy,big,i,n){
   requestAnimationFrame(()=>{el.style.opacity="1";el.style.transform=`translate(${sx-half+spread}px,${up-half}px) scale(1)`;});
   /* 2: svävar en stund, 3: flyger ner till sin plats i skattraden */
   setTimeout(()=>el.classList.add("hov"),700);
-  setTimeout(()=>{renderSlots(x.t.k);const slot=document.querySelector(`.slot[data-k="${x.t.k}"]`),sr=slot?slot.getBoundingClientRect():{left:innerWidth/2,top:innerHeight-40,width:0,height:0};
+  setTimeout(()=>{renderSlots(x.t.k);const slot=[...document.querySelectorAll(`.slot[data-k="${x.t.k}"]`)].pop(),sr=slot?slot.getBoundingClientRect():{left:innerWidth/2,top:innerHeight-40,width:0,height:0};
     el.classList.remove("hov");el.querySelector(".cap").remove();
     const s=Math.max(.3,(sr.height||36)/big);el.style.transform=`translate(${sr.left+18-half}px,${sr.top+sr.height/2-half}px) scale(${s})`;
     setTimeout(()=>{el.remove();bumpSlot(x.t.k);},720);},1700);
 }
-function renderSlots(extra){
-  const ks=TREASURE.map(t=>t.k).filter(k=>G.loot[k]||k===extra);
-  $("slots").innerHTML=ks.length?ks.map(k=>`<span class="slot" data-k="${k}" title="${TBY[k].many}">${spr(TBY[k].cells[0])}<span>${G.loot[k]||0}</span></span>`).join(""):'<span class="empty">Inga skatter än. Leta i återvändsgränderna!</span>';
+function renderSlots(){
+  $("slots").innerHTML=Array.from({length:BAG},(_,i)=>{const x=G.bag[i];return x?`<span class="slot" data-k="${x.t.k}" data-i="${i}" title="${x.t.one}">${spr(x.cell)}</span>`:'<span class="slot tom"></span>';}).join("");
+  $("wallet").textContent="🪙 "+G.coins;$("owned").innerHTML=VAROR.filter(v=>G.owned[v.k]).map(v=>`<span title="${v.namn}">${v.ikon}</span>`).join("");
 }
-function bumpSlot(k){renderSlots();const s=document.querySelector(`.slot[data-k="${k}"]`);if(s){s.classList.remove("bump");void s.offsetWidth;s.classList.add("bump");}window.Ljud&&Ljud.ok&&Ljud.ok();}
+function bumpSlot(k){renderSlots();const s=[...document.querySelectorAll(`.slot[data-k="${k}"]`)].pop();if(s){s.classList.remove("bump");void s.offsetWidth;s.classList.add("bump");}window.Ljud&&Ljud.ok&&Ljud.ok();}
 const DIRS={ArrowUp:[0,-1],ArrowDown:[0,1],ArrowLeft:[-1,0],ArrowRight:[1,0],w:[0,-1],s:[0,1],a:[-1,0],d:[1,0],W:[0,-1],S:[0,1],A:[-1,0],D:[1,0]};
 document.addEventListener("keydown",e=>{
   if(!$("dlg").hidden){if(/^[0-9]$/.test(e.key))key(e.key);else if(e.key==="Backspace"){e.preventDefault();key("del");}else if(e.key==="Enter"){e.preventDefault();key("ok");}else if(e.key==="Escape")closeFoe();return;}
@@ -426,7 +486,7 @@ document.addEventListener("keydown",e=>{
 let holdT=null;
 document.querySelectorAll("#pad button").forEach(b=>{const[dx,dy]=b.dataset.d.split(",").map(Number);
   const stop=()=>{clearInterval(holdT);holdT=null;b.classList.remove("on");};
-  b.addEventListener("pointerdown",e=>{e.preventDefault();b.classList.add("on");move(dx,dy);clearInterval(holdT);holdT=setInterval(()=>move(dx,dy),170);});
+  b.addEventListener("pointerdown",e=>{e.preventDefault();b.classList.add("on");move(dx,dy);clearInterval(holdT);holdT=setInterval(()=>move(dx,dy),G&&G.owned.skor?100:170);});
   b.addEventListener("pointerup",stop);b.addEventListener("pointerleave",stop);b.addEventListener("pointercancel",stop);});
 /* svep på spelplanen */
 let sw=null;
@@ -437,17 +497,19 @@ cv.addEventListener("pointerup",e=>{if(!sw)return;const dx=e.clientX-sw.x,dy=e.c
 /* ---------- Hindret och uppgiften ---------- */
 let F=null;
 function openFoe(o,x,y){
-  if(!o.p)o.p=problem(data.level);o.tries=o.tries||0;F={o,x,y,input:""};
+  if(!o.p)o.p=problem(data.level);o.tries=o.tries||0;F={o,x,y,input:"",kind:"foe"};
+  $("shopMenu").hidden=true;$("dlg").classList.remove("meny");$("dBack").textContent="Gå tillbaka och ta en annan väg";
   const pc=$("dPic").getContext("2d");pc.imageSmoothingEnabled=false;pc.clearRect(0,0,64,64);pc.fillStyle=G.th.bg;pc.fillRect(0,0,64,64);tile(pc,G.sheet,G.th.floor[0],0,0,64);tile(pc,o.f.s,o.f.i,0,0,64);
   $("dName").textContent=o.f.name;$("dSay").textContent=o.f.say;$("dQ").textContent=o.p.q;$("dUnit").textContent=o.p.unit||"";
   $("dFb").textContent="";$("dFb").className="fb";$("dTip").hidden=!o.tries;if(o.tries)$("dTip").textContent="Tips: "+o.p.tip;
   showAns();$("toast").hidden=true;$("dlg").hidden=false;window.Ljud&&Ljud.chirp&&Ljud.chirp();
 }
 function showAns(){const a=$("dAns");a.textContent=F.input||"?";a.classList.toggle("empty",!F.input);}
-function key(k){if(!F||F.done)return;
+function key(k){if(!F||F.done||F.kind==="meny")return;
   if(k==="del")F.input=F.input.slice(0,-1);else if(k==="ok"){if(F.input)check();return;}else if(F.input.length<4)F.input+=k;showAns();}
 document.querySelectorAll("#dKeys button").forEach(b=>b.onclick=()=>key(b.dataset.k));
 function check(){
+  if(F.kind!=="foe")return checkShop();
   const o=F.o,ok=+F.input===o.p.a;
   if(ok){F.done=true;const pts=o.tries?5:10;G.points=(G.points||0)+pts;updHud();if(!o.tries)G.firstTry++;G.solved++;o.solved=true;$("dFb").textContent=pick(["Rätt!","Snyggt!","Klockrent!","Toppen!"])+` +${pts} poäng. ${o.f.name} släpper förbi dig.`;$("dFb").className="fb ok";
     window.Ljud&&Ljud.ok();for(let i=0;i<5;i++)G.sparks.push({x:F.x*TS+TS/2+rnd(-16,16),y:F.y*TS+rnd(0,12),l:1,e:"✨"});
@@ -456,9 +518,51 @@ function check(){
     if(o.tries>=2)$("dFb").textContent="Inte riktigt. Läs tipset och försök igen, eller ta en annan väg.";
     $("dTip").hidden=false;$("dTip").textContent="Tips: "+o.p.tip;F.input="";showAns();}
 }
-function closeFoe(){$("dlg").hidden=true;F=null;if("speechSynthesis" in window)speechSynthesis.cancel();}
-$("dBack").onclick=closeFoe;
-$("dSpk").onclick=()=>{if(F)speak(`${F.o.f.name} säger: ${F.o.f.say} ${F.o.p.q}`);};
+function closeFoe(){$("dlg").hidden=true;F=null;$("shopMenu").hidden=true;document.querySelector(".ansrow").hidden=false;$("dKeys").hidden=false;if("speechSynthesis" in window)speechSynthesis.cancel();}
+$("dBack").onclick=()=>{if(F&&(F.kind==="sell"||F.kind==="buy"))shopMeny();else closeFoe();};
+$("dSpk").onclick=()=>{if(!F)return;if(F.kind==="foe")speak(`${F.o.f.name} säger: ${F.o.f.say} ${F.o.p.q}`);else speak(F.las||"");};
+
+/* ---------- Affären: sälj skatterna och köp nyckeln (eleven räknar själv) ---------- */
+function shopPic(){const pc=$("dPic").getContext("2d");pc.clearRect(0,0,64,64);pc.fillStyle="#FFF4CC";pc.fillRect(0,0,64,64);pc.font="44px serif";pc.textAlign="center";pc.textBaseline="middle";pc.fillText("🏪",32,35);}
+const tagHTML=items=>`<div class="tags">${items.map(x=>`<span class="ptag" title="${x.t.one}">${spr(x.cell,40)}<b>${varde(x.t)} 🪙</b></span>`).join("")}</div>`;
+function openShop(){if(!$("dlg").hidden)return;$("toast").hidden=true;$("dlg").hidden=false;shopMeny(true);window.Ljud&&Ljud.chime&&Ljud.chime();}
+function shopMeny(forst){
+  F={kind:"meny",input:""};shopPic();$("dlg").classList.add("meny");
+  ["ansrow","dKeys"].forEach(()=>{});document.querySelector(".ansrow").hidden=true;$("dKeys").hidden=true;$("dTip").hidden=true;$("dFb").textContent="";$("dFb").className="fb";
+  $("dName").textContent="Affären";
+  const say=forst?"Välkommen! Jag köper skatter och säljer bra saker.":"Vad mer vill du göra?";
+  $("dSay").textContent=say;$("dQ").textContent=`Du har ${G.coins} mynt.`;
+  F.las=`Affären säger: ${say} Du har ${G.coins} mynt.`;
+  const sal=G.bag.length?`${tagHTML(G.bag)}<button class="sellbtn" id="sSell">Sälj ${G.bag.length===1?"skatten":"alla "+G.bag.length+" skatterna"}</button>`:`<p style="margin:0;color:var(--muted)">Ryggsäcken är tom. Leta skatter i kistorna!</p>`;
+  const kop=VAROR.map(v=>{const own=G.owned[v.k];return`<button class="prod${own?" kopt":""}${v.k==="nyckel"&&!own?" viktig":""}" data-v="${v.k}"><span class="pi">${v.ikon}</span><span><b>${v.namn}</b><small>${v.bes}</small></span><span class="pr">${own?"✓ Köpt":G.pris[v.k]+" 🪙"}</span></button>`;}).join("");
+  $("shopMenu").innerHTML=`<div class="shopsec"><h3>🎒 Sälj dina skatter</h3>${sal}</div><div class="shopsec"><h3>🛒 Köp</h3><div class="prods">${kop}</div></div>`;
+  $("shopMenu").hidden=false;$("dBack").textContent="Gå ut ur affären";
+  const sb=$("sSell");if(sb)sb.onclick=salj;
+  $("shopMenu").querySelectorAll(".prod").forEach(b=>b.onclick=()=>kop1(VAROR.find(v=>v.k===b.dataset.v)));
+}
+function fraga(kind,p,extra){F=Object.assign({kind,p,input:"",tries:0,las:p.las},extra||{});
+  $("shopMenu").hidden=true;document.querySelector(".ansrow").hidden=false;$("dKeys").hidden=false;$("dlg").classList.remove("meny");
+  $("dSay").textContent=p.say;$("dQ").innerHTML=p.html;$("dUnit").textContent="mynt";$("dTip").hidden=true;$("dFb").textContent="";$("dFb").className="fb";
+  $("dBack").textContent="Tillbaka till affären";showAns();}
+function salj(){const items=G.bag.slice(),vs=items.map(x=>varde(x.t)),sum=vs.reduce((a,b)=>a+b,0);
+  const namn=items.length===1?`en ${items[0].t.one}`:`${items.length} skatter`;
+  fraga("sell",{a:sum,say:"Jag köper gärna dina skatter!",html:`Du säljer ${namn}. Hur många mynt får du${items.length>1?" för allt":""}?${tagHTML(items)}`,
+    tip:items.length>1?`Lägg ihop: ${vs.join(" + ")}.`:`Titta på prislappen.`,las:`Du säljer ${namn}. Priserna är ${vs.join(", ")} mynt. Hur många mynt får du?`},{sum});}
+function kop1(v){if(G.owned[v.k]){$("dFb").textContent=`Du har redan ${v.def}.`;$("dFb").className="fb ok";return;}
+  const P=G.pris[v.k],W=G.coins;
+  if(W<P){$("dFb").textContent=`${v.namn} kostar ${P} mynt, men du har bara ${W}. Leta fler skatter!`;$("dFb").className="fb bad";window.Ljud&&Ljud.bad&&Ljud.bad();return;}
+  fraga("buy",{a:W-P,say:`${v.namn}? Ett bra val!`,html:`Du har ${W} mynt. ${v.namn} kostar ${P} mynt. Hur många mynt har du kvar?`,
+    tip:`Räkna ${W} − ${P}. Tänk: hur långt är det från ${P} upp till ${W}?`,las:`Du har ${W} mynt. ${v.namn} kostar ${P} mynt. Hur många mynt har du kvar?`},{v});}
+function checkShop(){const ok=+F.input===F.p.a;
+  if(!ok){F.tries++;window.Ljud&&Ljud.bad();$("dFb").textContent="Inte riktigt. Räkna en gång till!";$("dFb").className="fb bad";$("dTip").hidden=false;$("dTip").textContent="Tips: "+F.p.tip;F.input="";showAns();return;}
+  F.done=true;window.Ljud&&(Ljud.kaching?Ljud.kaching():Ljud.ok());
+  if(F.kind==="sell"){G.coins+=F.sum;G.sold+=G.bag.length;G.bag=[];$("dFb").textContent=`Rätt! Du får ${F.sum} mynt.`;}
+  else{const v=F.v;G.coins-=G.pris[v.k];G.owned[v.k]=true;$("dFb").textContent=`Rätt! Nu har du ${v.def}.`;
+    if(v.k==="lykta"){G.R=5.2;reveal();}
+    if(v.k==="karta"){Object.entries(G.objs).forEach(([k,o])=>{if(o.t==="chest"||o.t==="exit"){const[x,y]=k.split(",").map(Number);G.seen[y][x]=true;}});}}
+  $("dFb").className="fb ok";renderSlots();const w=$("wallet");w.classList.remove("bump");void w.offsetWidth;w.classList.add("bump");draw();
+  const kind=F.kind,v=F.v;setTimeout(()=>{if($("dlg").hidden)return;shopMeny();
+    if(kind==="buy"&&v.k==="nyckel"){$("dFb").textContent=`🗝️ Nu kan du låsa upp ${G.th.exit.name.toLowerCase()}!`;$("dFb").className="fb ok";}},1100);}
 $("dlg").addEventListener("click",e=>{if(e.target.id==="dlg")closeFoe();});
 
 /* ---------- Vinst ---------- */
@@ -468,7 +572,7 @@ function win(){
   Object.entries(G.loot).forEach(([k,v])=>data.chamber[k]=(data.chamber[k]||0)+v);data.runs++;const pts=G.points||0;data.points=(data.points||0)+pts;data.best=data.best||{};const rec=pts>(data.best[data.level]||0);if(rec)data.best[data.level]=pts;save();window.Ljud&&Ljud.ambient&&Ljud.ambient.stop();
   $("wTitle").textContent=all?"Alla skatter och utgången!":"Du hittade utgången!";
   $("wStars").innerHTML=[1,2,3].map(i=>i<=st?"★":'<span class="off">★</span>').join("");
-  $("wSub").textContent=`${pts} poäng${rec&&pts?" – nytt rekord!":data.best[data.level]?` (rekord ${data.best[data.level]}).`:"."} ${G.found} av ${G.chests} skattkistor. ${G.solved} ${G.solved===1?"hinder":"hinder"} löst${G.firstTry?`, ${G.firstTry} rätt direkt`:""}.`+(st<3?(half?" Hitta alla kistor för tre stjärnor.":" Hitta minst hälften av kistorna för två stjärnor."):"");
+  $("wSub").textContent=`Du köpte nyckeln och kom ut${G.coins?` med ${G.coins} mynt över`:""}! ${pts} poäng${rec&&pts?" – nytt rekord!":data.best[data.level]?` (rekord ${data.best[data.level]}).`:"."} ${G.found} av ${G.chests} skattkistor. ${G.solved} ${G.solved===1?"hinder":"hinder"} löst${G.firstTry?`, ${G.firstTry} rätt direkt`:""}.`+(st<3?(half?" Hitta alla kistor för tre stjärnor.":" Hitta minst hälften av kistorna för två stjärnor."):"");
   $("wLoot").innerHTML=lootHTML(G.loot)||"<span>Inga skatter den här gången.</span>";
   $("game").hidden=true;$("win").hidden=false;if(window.MPS)MPS.visa("win");window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();
 }
@@ -500,7 +604,7 @@ function openHome(){
   document.querySelectorAll(".lvl").forEach(b=>b.onclick=()=>{data.level=+b.dataset.l;save();openHome();});
   const ch=data.chamber;
   $("chamber").innerHTML=`<b>🏰 ${petName}s skattkammare</b><div class="chest-loot">${lootHTML(ch)||"<span style='font-size:1rem'>Tom än så länge. Hitta skatter i labyrinten!</span>"}</div>`+
-    `<small>${data.points?`${data.points} poäng totalt. `:""}${data.runs?`${data.runs} ${data.runs===1?"skattjakt":"skattjakter"} klara. `:""}Varje löst hinder ger 10 poäng, eller 5 om du behövde tipset. Ett stjärnmärke per nivå: hitta utgången ★, minst hälften av kistorna ★★, alla kistor ★★★.</small>`;
+    `<small>${data.points?`${data.points} poäng totalt. `:""}${data.runs?`${data.runs} ${data.runs===1?"skattjakt":"skattjakter"} klara. `:""}Sälj skatterna i affären 🏪 och köp nyckeln till utgången. Ryggsäcken rymmer ${BAG} skatter. Varje löst hinder ger 10 poäng, eller 5 om du behövde tipset. Ett stjärnmärke per nivå: ta dig ut ★, minst hälften av kistorna ★★, alla kistor ★★★.</small>`;
 }
 $("start").onclick=()=>{ready.then(newGame);};
 ready.then(openHome);openHome();
