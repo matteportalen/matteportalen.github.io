@@ -6,8 +6,8 @@
    data-helskarm  skärmar där sidhuvudet göms helt (spel med egen ✕), t.ex. "game mem bub"
    data-liggande  "ja": göm sidhuvudet på mobil i liggande läge (Tiobas)
    data-portal    "ovriga" på sidorna i Övriga ämnen (annan logga, färg och startsida). Standard: Matte-Portalen.
-   Ämnesväljaren (knappen "Matte-Portalen ▾" bredvid loggan) byter mellan portalerna. Bara portaler med innehåll står i listan.
-   Ämnesflikarna: en tom <div id="mp-flikar"></div> på startsidorna fylls med flikarna Matte | Övriga ämnen.
+   Loggan är en hamburgerknapp (☰): den öppnar menyn med portalerna (startsidan och Övriga ämnen).
+   Bara portaler med innehåll står i listan.
    Sidan anropar MPS.visa(id) varje gång den byter skärm (i sin show-funktion).
 
    Sidhuvudet: loggan Mattenyckeln (leder hem), sidans namn, profilens namn med elevens djur och stjärnor
@@ -24,8 +24,17 @@
   background:linear-gradient(110deg,#3D5AFE 0%,#3D8BFD 60%,#17AFC4 100%);color:#fff;font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;box-shadow:0 3px 0 rgba(29,43,83,.18);line-height:1.2;font-size:18px}
 .mph a{color:inherit;text-decoration:none}
 .mph button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
-.mph-logo{display:flex;align-items:center;gap:7px;font-weight:800;font-size:1.2rem;line-height:1;letter-spacing:-.3px;white-space:nowrap;min-height:44px}
+.mph-logo{position:relative;display:flex;align-items:center;gap:7px;font-weight:800;font-size:1.2rem!important;line-height:1;letter-spacing:-.3px;white-space:nowrap;min-height:44px;padding:3px 6px 3px 3px!important;border-radius:999px;background:rgba(255,255,255,.12)!important;flex:none;transition:background .2s}
 .mph-logo b{color:#FFC93C}
+.mph-logo .mph-mark{transition:transform .25s,filter .25s}
+.mph-burger{width:28px;height:28px;border-radius:50%;background:#FFC93C;color:#1D2B53;display:grid;place-items:center;font-size:1rem;line-height:1;box-shadow:0 2px 0 rgba(29,43,83,.25)}
+.mph-logo::before{content:"";position:absolute;inset:-3px;border-radius:inherit;padding:3px;background:conic-gradient(from var(--mph-a,0deg),transparent 0 55%,rgba(255,201,60,.0) 58%,#FFC93C 74%,#fff 82%,rgba(255,255,255,0) 90%,transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .25s;pointer-events:none}
+@property --mph-a{syntax:"<angle>";inherits:false;initial-value:0deg}
+@keyframes mph-varv{to{--mph-a:360deg}}
+.mph-logo:hover,.mph-logo:focus-visible,.mph-logo[aria-expanded="true"]{background:rgba(255,255,255,.24)!important;outline:0}
+.mph-logo:hover::before,.mph-logo:focus-visible::before,.mph-logo[aria-expanded="true"]::before,.mph-logo:active::before{opacity:1;animation:mph-varv 1.6s linear infinite}
+.mph-logo:hover .mph-mark,.mph-logo:focus-visible .mph-mark{transform:rotate(-6deg) scale(1.08);filter:drop-shadow(0 0 6px rgba(255,255,255,.9)) drop-shadow(0 2px 0 rgba(29,43,83,.25))}
+@media (prefers-reduced-motion:reduce){.mph-logo::before{animation:none!important}.mph-logo .mph-mark{transition:none}}
 .mph-mark{width:34px;height:34px;display:block;flex:none;filter:drop-shadow(0 2px 0 rgba(29,43,83,.25))}
 .mph-x{display:none;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.95)!important;color:#1D2B53!important;font-weight:800;font-size:1.2rem;box-shadow:0 3px 0 rgba(29,43,83,.25)}
 .mph-title{flex:1;min-width:0;font-weight:800;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
@@ -36,34 +45,19 @@
 .mph-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:9em}
 .mph-snd{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18)!important;font-size:1.15rem;flex:none}
 .mph.ovriga{background:linear-gradient(110deg,#157548 0%,#1E9E5E 55%,#17AFC4 100%)}
-.mph-ptl{display:flex;align-items:center;gap:7px;height:40px;padding:0 5px 0 12px!important;border-radius:999px;background:rgba(255,255,255,.16)!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6);font-weight:800;font-size:1.15rem!important;line-height:1;white-space:nowrap;flex:none;letter-spacing:-.3px}
-.mph-ptl b{color:#FFC93C}
-.mph-ptl i{font-style:normal;width:28px;height:28px;border-radius:50%;background:#FFC93C;color:#1D2B53;display:grid;place-items:center;font-size:.85rem;box-shadow:0 2px 0 rgba(29,43,83,.25)}
-.mph-ptl .krt,.mph-ptl .ik{display:none}
-.mph-ptl:hover,.mph-ptl[aria-expanded="true"]{background:rgba(255,255,255,.3)!important}
-.mpf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px;font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif}
-.mpf a{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:4px 10px;border-radius:18px;background:#fff;font-weight:800;font-size:1.2rem;line-height:1.1;text-align:center;text-decoration:none;box-shadow:0 4px 0 rgba(29,43,83,.14);transition:transform .08s,box-shadow .08s}
-.mpf a span{font-size:1.5rem;flex:none}
-.mpf-matte{color:#3D5AFE}.mpf-ovriga{color:#157548}
-.mpf a[aria-current]{color:#fff;box-shadow:0 4px 0 rgba(29,43,83,.25)}
-.mpf-matte[aria-current]{background:linear-gradient(110deg,#3D5AFE,#3D8BFD)}
-.mpf-ovriga[aria-current]{background:linear-gradient(110deg,#157548,#1E9E5E)}
-.mpf a:not([aria-current]):active{transform:translateY(3px);box-shadow:0 1px 0 rgba(29,43,83,.14)}
-@media(hover:hover){.mpf a:not([aria-current]):hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(29,43,83,.14)}}
-@media (prefers-reduced-motion:reduce){.mpf a{transition:none}}
-.mph-menu{position:absolute;top:calc(100% + 6px);left:10px;background:#fff;color:#1D2B53;border-radius:18px;padding:6px;box-shadow:0 10px 30px rgba(29,43,83,.25),0 3px 0 #C6D6F2;min-width:240px;z-index:30}
+.mph-menu{position:absolute;top:calc(100% + 6px);left:10px;animation:mph-ner .18s ease-out;background:#fff;color:#1D2B53;border-radius:18px;padding:6px;box-shadow:0 10px 30px rgba(29,43,83,.25),0 3px 0 #C6D6F2;min-width:240px;z-index:30}
 .mph-menu a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;font-weight:800;font-size:1.1rem}
 .mph-menu a:hover,.mph-menu a:focus-visible{background:#EAF3FF;outline:0}
 .mph-menu a[aria-current="true"]::after{content:"✓";margin-left:auto;color:#1E9E5E}
 .mph-menu .mph-mark{width:30px;height:30px;filter:none}
+@keyframes mph-ner{from{opacity:0;transform:translateY(-8px)}}
 .mph-menu small{display:block;font-weight:700;font-size:.8rem;color:#56668F}
-.mph.mini .mph-logo,.mph.mini .mph-right,.mph.mini .mph-sep,.mph.mini .mph-ptl{display:none}
+.mph.mini .mph-logo,.mph.mini .mph-right,.mph.mini .mph-sep{display:none}
 .mph.mini .mph-x{display:grid;place-items:center}
 .mph.dold{display:none}
 body.mph-mini #quit{display:none}
-@media (max-width:520px){.mph-ptl .lng{display:none}.mph-ptl .krt{display:inline}.mph-name{max-width:5em}
-  .mph.has-title .mph-ptl .krt,.mph.has-title .mph-name{display:none}.mph.has-title .mph-ptl .ik{display:inline}.mph.has-title .mph-ptl{padding-left:8px!important;gap:4px}}
-@media (max-width:360px){.mph-name{display:none}.mph.has-title .mph-ptl .ik{display:none}.mph.has-title .mph-ptl{padding:0 4px!important}}
+@media (max-width:520px){.mph-logo span.t{display:none}.mph-name{max-width:5em}.mph.has-title .mph-name{display:none}}
+@media (max-width:360px){.mph-name{display:none}}
 @media (orientation:landscape) and (max-height:500px){.mph.liggande{display:none}}
 @media print{.mph{display:none}}`;
   /* Loggan: Mattenyckeln, fyra räknesätt i färgade rutor */
@@ -103,23 +97,19 @@ body.mph-mini #quit{display:none}
   const h=document.createElement('header');h.className='mph'+(titel?' has-title':'')+(ds.liggande==='ja'?' liggande':'')+(PORTAL.id!=='matte'?' '+PORTAL.id:'');
   const pet=window.lasDjur&&window.owlSVG?owlSVG(lasDjur()):'',namn=profilnamn();
   h.innerHTML=`<button class="mph-x" aria-label="Avsluta">✕</button>
-    <a class="mph-logo" href="${hem}${PORTAL.href}" aria-label="${PORTAL.a}${PORTAL.b}, till startsidan">${PORTAL.logo}</a>
-    <button class="mph-ptl" aria-label="${PORTAL.a}${PORTAL.b}, byt ämne" aria-haspopup="true" aria-expanded="false"><span class="lng">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="krt">${PORTAL.id==='ovriga'?'Övriga':PORTAL.kort}</span><span class="ik" aria-hidden="true">${PORTAL.ikon}</span><i aria-hidden="true">▾</i></button>
+    <button class="mph-logo" aria-label="${PORTAL.a}${PORTAL.b}, meny" aria-haspopup="true" aria-expanded="false">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="mph-burger" aria-hidden="true">☰</span></button>
     <span class="mph-title">${titel?`<span class="mph-sep">›</span> ${ikon?ikon+' ':''}${esc(titel)}`:''}</span>
     <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
   document.body.prepend(h);
-  // ämnesflikarna på startsidorna
-  const fl=document.getElementById('mp-flikar');
-  if(fl){fl.outerHTML=`<nav class="mpf" aria-label="Ämnen">${PORTALER.map(p=>`<a class="mpf-${p.id}" href="${hem}${p.href}"${p===PORTAL?' aria-current="page"':''}><span aria-hidden="true">${p.ikon}</span>${p.kort}</a>`).join('')}</nav>`;}
   const snd=h.querySelector('.mph-snd'),label=()=>{snd.textContent=window.Ljud&&!Ljud.on?'🔇':'🔊';};label();
   snd.onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);label();if(Ljud.on&&Ljud.ok)Ljud.ok();document.dispatchEvent(new Event('mp-ljud'));};
   document.addEventListener('mp-ljud-andrat',label);
   h.querySelector('.mph-x').onclick=()=>history.back();
-  // ämnesväljaren
-  const ptl=h.querySelector('.mph-ptl');let meny=null;
+  // menyn bakom loggan
+  const ptl=h.querySelector('.mph-logo');let meny=null;
   const stang=()=>{if(meny){meny.remove();meny=null;ptl.setAttribute('aria-expanded','false');}};
   ptl.onclick=e=>{e.stopPropagation();if(meny)return stang();
-    meny=document.createElement('nav');meny.className='mph-menu';meny.setAttribute('aria-label','Byt ämne');
+    meny=document.createElement('nav');meny.className='mph-menu';meny.setAttribute('aria-label','Meny');
     meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p.a}${p.b}<small>${p.sub}</small></span></a>`).join('');
     h.appendChild(meny);ptl.setAttribute('aria-expanded','true');meny.querySelector('a').focus({preventScroll:true});};
   document.addEventListener('click',e=>{if(meny&&!meny.contains(e.target))stang();});
