@@ -6,7 +6,8 @@
    data-helskarm  skärmar där sidhuvudet göms helt (spel med egen ✕), t.ex. "game mem bub"
    data-liggande  "ja": göm sidhuvudet på mobil i liggande läge (Tiobas)
    data-portal    "ovriga" på sidorna i Övriga ämnen (annan logga, färg och startsida). Standard: Matte-Portalen.
-   Ämnesväljaren (▾ bredvid loggan) byter mellan portalerna. Bara portaler med innehåll står i listan.
+   Ämnesväljaren (knappen "Matte-Portalen ▾" bredvid loggan) byter mellan portalerna. Bara portaler med innehåll står i listan.
+   Ämnesflikarna: en tom <div id="mp-flikar"></div> på startsidorna fylls med flikarna Matte | Övriga ämnen.
    Sidan anropar MPS.visa(id) varje gång den byter skärm (i sin show-funktion).
 
    Sidhuvudet: loggan Mattenyckeln (leder hem), sidans namn, profilens namn med elevens djur och stjärnor
@@ -29,14 +30,27 @@
 .mph-x{display:none;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.95)!important;color:#1D2B53!important;font-weight:800;font-size:1.2rem;box-shadow:0 3px 0 rgba(29,43,83,.25)}
 .mph-title{flex:1;min-width:0;font-weight:800;font-size:1.05rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:.95}
 .mph-sep{opacity:.6;margin:0 2px}
-.mph-right{display:flex;align-items:center;gap:6px;flex:none}
-.mph-pet{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px 2px 2px;font-weight:800;min-height:40px}
+.mph-right{display:flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0}
+.mph-pet{min-width:0;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px 2px 2px;font-weight:800;min-height:40px}
 .mph-pet svg{width:34px;height:auto;display:block;flex:none}
 .mph-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:9em}
 .mph-snd{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18)!important;font-size:1.15rem;flex:none}
 .mph.ovriga{background:linear-gradient(110deg,#157548 0%,#1E9E5E 55%,#17AFC4 100%)}
-.mph-ptl{width:30px;height:40px;border-radius:10px;font-size:.95rem!important;font-weight:800;margin-left:-4px;flex:none;opacity:.9}
-.mph-ptl:hover,.mph-ptl[aria-expanded="true"]{background:rgba(255,255,255,.18)!important}
+.mph-ptl{display:flex;align-items:center;gap:7px;height:40px;padding:0 5px 0 12px!important;border-radius:999px;background:rgba(255,255,255,.16)!important;box-shadow:inset 0 0 0 2px rgba(255,255,255,.6);font-weight:800;font-size:1.15rem!important;line-height:1;white-space:nowrap;flex:none;letter-spacing:-.3px}
+.mph-ptl b{color:#FFC93C}
+.mph-ptl i{font-style:normal;width:28px;height:28px;border-radius:50%;background:#FFC93C;color:#1D2B53;display:grid;place-items:center;font-size:.85rem;box-shadow:0 2px 0 rgba(29,43,83,.25)}
+.mph-ptl .krt,.mph-ptl .ik{display:none}
+.mph-ptl:hover,.mph-ptl[aria-expanded="true"]{background:rgba(255,255,255,.3)!important}
+.mpf{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px;font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif}
+.mpf a{display:flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:4px 10px;border-radius:18px;background:#fff;font-weight:800;font-size:1.2rem;line-height:1.1;text-align:center;text-decoration:none;box-shadow:0 4px 0 rgba(29,43,83,.14);transition:transform .08s,box-shadow .08s}
+.mpf a span{font-size:1.5rem;flex:none}
+.mpf-matte{color:#3D5AFE}.mpf-ovriga{color:#157548}
+.mpf a[aria-current]{color:#fff;box-shadow:0 4px 0 rgba(29,43,83,.25)}
+.mpf-matte[aria-current]{background:linear-gradient(110deg,#3D5AFE,#3D8BFD)}
+.mpf-ovriga[aria-current]{background:linear-gradient(110deg,#157548,#1E9E5E)}
+.mpf a:not([aria-current]):active{transform:translateY(3px);box-shadow:0 1px 0 rgba(29,43,83,.14)}
+@media(hover:hover){.mpf a:not([aria-current]):hover{transform:translateY(-2px);box-shadow:0 6px 0 rgba(29,43,83,.14)}}
+@media (prefers-reduced-motion:reduce){.mpf a{transition:none}}
 .mph-menu{position:absolute;top:calc(100% + 6px);left:10px;background:#fff;color:#1D2B53;border-radius:18px;padding:6px;box-shadow:0 10px 30px rgba(29,43,83,.25),0 3px 0 #C6D6F2;min-width:240px;z-index:30}
 .mph-menu a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;font-weight:800;font-size:1.1rem}
 .mph-menu a:hover,.mph-menu a:focus-visible{background:#EAF3FF;outline:0}
@@ -47,15 +61,16 @@
 .mph.mini .mph-x{display:grid;place-items:center}
 .mph.dold{display:none}
 body.mph-mini #quit{display:none}
-@media (max-width:520px){.mph.has-title .mph-logo span.t{display:none}.mph-name{max-width:5em}}
-@media (max-width:360px){.mph-logo span.t,.mph-name{display:none}}
+@media (max-width:520px){.mph-ptl .lng{display:none}.mph-ptl .krt{display:inline}.mph-name{max-width:5em}
+  .mph.has-title .mph-ptl .krt,.mph.has-title .mph-name{display:none}.mph.has-title .mph-ptl .ik{display:inline}.mph.has-title .mph-ptl{padding-left:8px!important;gap:4px}}
+@media (max-width:360px){.mph-name{display:none}.mph.has-title .mph-ptl .ik{display:none}.mph.has-title .mph-ptl{padding:0 4px!important}}
 @media (orientation:landscape) and (max-height:500px){.mph.liggande{display:none}}
 @media print{.mph{display:none}}`;
   /* Loggan: Mattenyckeln, fyra räknesätt i färgade rutor */
   const LOGO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#FF6B6B"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><g stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M29.5 21v17M21 29.5h17M62 29.5h17M23.5 64.5l12 12M35.5 64.5l-12 12M62 70.5h17"/></g><circle cx="70.5" cy="62" r="3.6" fill="#fff"/><circle cx="70.5" cy="79" r="3.6" fill="#fff"/></svg>';
   /* Loggan för Övriga ämnen: blad, vattendroppe, planet och sol i samma sorts rutor */
   const LOGO_NO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#3D8BFD"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><path d="M21 39C21 26 29 20 39 20C39 32 33 39 21 39Z" fill="#fff"/><path d="M21 39L31 29" stroke="#2BB673" stroke-width="2.5" stroke-linecap="round"/><path d="M70.5 19C70.5 19 61 30 61 35.5A9.5 9.5 0 0 0 80 35.5C80 30 70.5 19 70.5 19Z" fill="#fff"/><circle cx="29.5" cy="70.5" r="7.5" fill="#fff"/><ellipse cx="29.5" cy="70.5" rx="14" ry="4.5" fill="none" stroke="#fff" stroke-width="2.6" transform="rotate(-20 29.5 70.5)"/><circle cx="70.5" cy="70.5" r="7" fill="#fff"/><g stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M70.5 56v4M70.5 81v4M56 70.5h4M81 70.5h4M60.3 60.3l2.8 2.8M77.9 77.9l2.8 2.8M60.3 80.7l2.8-2.8M77.9 63.1l2.8-2.8"/></g></svg>';
-  const PORTALER=[{id:'matte',a:'Matte-',b:'Portalen',sub:'Matte för åk 1–3',href:'',logo:LOGO},{id:'ovriga',a:'Övriga ',b:'ämnen',sub:'NO och mer',href:'ovriga/',logo:LOGO_NO}];
+  const PORTALER=[{id:'matte',a:'Matte-',b:'Portalen',sub:'Matte för åk 1–3',kort:'Matte',ikon:'🔢',href:'',logo:LOGO},{id:'ovriga',a:'Övriga ',b:'ämnen',sub:'NO och mer',kort:'Övriga ämnen',ikon:'🌍',href:'ovriga/',logo:LOGO_NO}];
   const PORTAL=PORTALER.find(p=>p.id===ds.portal)||PORTALER[0];
   window.MPLogo=PORTAL.logo;
   // loggan som ikon i webbläsarfliken
@@ -88,11 +103,14 @@ body.mph-mini #quit{display:none}
   const h=document.createElement('header');h.className='mph'+(titel?' has-title':'')+(ds.liggande==='ja'?' liggande':'')+(PORTAL.id!=='matte'?' '+PORTAL.id:'');
   const pet=window.lasDjur&&window.owlSVG?owlSVG(lasDjur()):'',namn=profilnamn();
   h.innerHTML=`<button class="mph-x" aria-label="Avsluta">✕</button>
-    <a class="mph-logo" href="${hem}${PORTAL.href}" aria-label="${PORTAL.a}${PORTAL.b}, till startsidan">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span></a>
-    <button class="mph-ptl" aria-label="Byt ämne" aria-haspopup="true" aria-expanded="false">▾</button>
+    <a class="mph-logo" href="${hem}${PORTAL.href}" aria-label="${PORTAL.a}${PORTAL.b}, till startsidan">${PORTAL.logo}</a>
+    <button class="mph-ptl" aria-label="${PORTAL.a}${PORTAL.b}, byt ämne" aria-haspopup="true" aria-expanded="false"><span class="lng">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="krt">${PORTAL.id==='ovriga'?'Övriga':PORTAL.kort}</span><span class="ik" aria-hidden="true">${PORTAL.ikon}</span><i aria-hidden="true">▾</i></button>
     <span class="mph-title">${titel?`<span class="mph-sep">›</span> ${ikon?ikon+' ':''}${esc(titel)}`:''}</span>
     <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
   document.body.prepend(h);
+  // ämnesflikarna på startsidorna
+  const fl=document.getElementById('mp-flikar');
+  if(fl){fl.outerHTML=`<nav class="mpf" aria-label="Ämnen">${PORTALER.map(p=>`<a class="mpf-${p.id}" href="${hem}${p.href}"${p===PORTAL?' aria-current="page"':''}><span aria-hidden="true">${p.ikon}</span>${p.kort}</a>`).join('')}</nav>`;}
   const snd=h.querySelector('.mph-snd'),label=()=>{snd.textContent=window.Ljud&&!Ljud.on?'🔇':'🔊';};label();
   snd.onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);label();if(Ljud.on&&Ljud.ok)Ljud.ok();document.dispatchEvent(new Event('mp-ljud'));};
   document.addEventListener('mp-ljud-andrat',label);
