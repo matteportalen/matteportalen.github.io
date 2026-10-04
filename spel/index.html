@@ -81,6 +81,9 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .spacebtns button{flex:1;height:64px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.7rem;font-weight:800}
 .spacebtns .fire{flex:1.4;background:#E5484D;color:#fff;box-shadow:0 4px 0 #B8323A;font-size:1.3rem}
 .spacebtns button:active{transform:translateY(3px)}
+/* håll inne en knapp på mobil: ingen textmarkering, ingen kopiera-meny och ingen förstoringslupp */
+#game,#game *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+#game button{touch-action:manipulation}
 .gamecard.frog{background:linear-gradient(135deg,#2BB673,#17AFC4);box-shadow:0 6px 0 #1E8A55;margin-top:14px}
 .gamecard.frog:active{box-shadow:0 3px 0 #1E8A55}
 .gamecard.tower{background:linear-gradient(180deg,#8FD3FF,#3D5AFE 60%,#141D3D);box-shadow:0 6px 0 #0B1026;margin-top:14px}
@@ -686,6 +689,8 @@ function fire(){
 cv.addEventListener("pointerdown",e=>{if(!A)return;const r=cv.getBoundingClientRect();aimAt((e.clientX-r.left)/r.width*W,(e.clientY-r.top)/r.height*H);fire();});
 const hold=(id,dir)=>{const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();if(A)A.turn=dir;});["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>{if(A)A.turn=0;}));};
 hold("aimL",-1);hold("aimR",1);$("fireBtn").onclick=fire;
+// långt tryck öppnar annars telefonens meny (kopiera, dela) i stället för att vrida kanonen
+document.getElementById("game").addEventListener("contextmenu",e=>e.preventDefault());
 document.addEventListener("keydown",e=>{if(!A||$("game").hidden)return;
   if(e.key==="ArrowLeft"){e.preventDefault();A.turn=-1;}else if(e.key==="ArrowRight"){e.preventDefault();A.turn=1;}else if(e.key===" "||e.key==="ArrowUp"){e.preventDefault();fire();}});
 document.addEventListener("keyup",e=>{if(A&&(e.key==="ArrowLeft"||e.key==="ArrowRight"))A.turn=0;});
