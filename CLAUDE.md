@@ -59,6 +59,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 ## Gemensam design
 
+- **Ingen ruta med nya klistermärken när startsidan öppnas** (läraren gillade inte popuppen); man går själv in i Klistermärken, som visar "Nytt!".
 - **Inga "Nytt!"-lappar på korten** (läraren: allt är nytt). Bara Garderoben och Klistermärken på startsidan visar "Nytt!" när det finns något nytt att hämta.
 
 - Färger: `--bg #EAF3FF`, `--ink #1D2B53`, `--muted #56668F`, `--card #FFFFFF`, `--line #C6D6F2`, `--good #1E9E5E`, `--good-dark #157548`, `--bad #E5484D`, `--accent #3D5AFE`, `--gold #F2B707`.

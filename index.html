@@ -344,14 +344,6 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <div class="stickers" id="albumGrid"></div>
 </div></div>
 
-<div class="modal" id="mNew" hidden><div class="sheet" role="dialog" aria-label="Nytt klistermärke" style="text-align:center">
-  <h2 id="newTitle">Nytt klistermärke!</h2>
-  <div class="newlist" id="newList"></div>
-  <p id="newMore" style="color:var(--muted);font-weight:700;margin:0"></p>
-  <button class="gobtn" id="newGo">Se albumet</button>
-  <button class="soundbtn" data-close style="margin-top:12px">Stäng</button>
-</div></div>
-
 <script src="ljud.js"></script>
 <script src="djur.js"></script>
 <script src="huvud.js" data-hem="./" data-nav="av"></script>
@@ -532,14 +524,7 @@ function openAlbum(){
   $("mAlbum").hidden=false;
 }
 $("btnAlbum").onclick=openAlbum;
-$("newGo").onclick=()=>{$("mNew").hidden=true;openAlbum();};
-if(fresh.length){
-  const list=STICKERS.filter(x=>fresh.includes(x[0]));
-  $("newTitle").textContent=list.length>1?"Nya klistermärken!":"Nytt klistermärke!";
-  $("newList").innerHTML=list.slice(0,3).map(x=>stkHTML(x,"fresh")).join("");
-  $("newMore").textContent=list.length>3?`… och ${list.length-3} till i albumet.`:"";
-  setTimeout(()=>{if(document.querySelector(".modal:not([hidden])"))return;$("mNew").hidden=false;window.Ljud&&Ljud.magic();},500);
-}
+// nya klistermärken visas inte i en ruta när sidan öppnas (lärarens val); knappen Klistermärken visar "Nytt!"
 
 /* ---------- Stäng rutor ---------- */
 document.querySelectorAll(".modal").forEach(m=>m.addEventListener("click",e=>{if(m.id==="mWho"||m.id==="mPin"||m.id==="mScan")return;if(e.target===m||e.target.closest("[data-close]"))m.hidden=true;}));
