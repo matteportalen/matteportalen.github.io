@@ -75,6 +75,7 @@ h2{font-size:1.5rem;margin:0 0 6px;line-height:1.15}
 .fact{background:#FFF4CC;border-radius:12px;padding:6px 10px;margin:10px 0 0;font-weight:700;font-size:1rem}
 .animals{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}
 .animals figure{margin:0;text-align:center;font-weight:800;font-size:.9rem}
+.animals figcaption small{display:block;font-weight:700;color:var(--muted);font-size:.78rem;line-height:1.2}
 .animals img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;box-shadow:0 3px 0 var(--line)}
 .hint{color:var(--muted);font-weight:700;font-size:.95rem;text-align:center;margin:6px 0 0}
 /* spel: frågan stor överst, kartan till vänster, panelen till höger */
@@ -243,7 +244,7 @@ const DJUR=[
   {k:'igelkott',n:'igelkotten',N:'Igelkott',d:'europa'},{k:'pingvin',n:'kejsarpingvinen',N:'Kejsarpingvin',d:'antarktis'}];
 DJUR.forEach(a=>a.img=`bilder/djur/${a.k}.jpg`);
 /* djur som lever i haven: bara i Utforska (många havsdjur simmar mellan haven, så det blir inget spel) */
-const HAVDJUR=[{"k": "isbjorn", "N": "Isbjörn", "h": "norra"}, {"k": "valross", "N": "Valross", "h": "norra"}, {"k": "narval", "N": "Narval", "h": "norra"}, {"k": "leopardsal", "N": "Leopardsäl", "h": "sodra"}, {"k": "adelie", "N": "Adéliepingvin", "h": "sodra"}, {"k": "krill", "N": "Krill", "h": "sodra"}, {"k": "lunnefagel", "N": "Lunnefågel", "h": "atlanten"}, {"k": "atlantlax", "N": "Atlantlax", "h": "atlanten"}, {"k": "torsk", "N": "Torsk", "h": "atlanten"}, {"k": "havsutter", "N": "Havsutter", "h": "stilla"}, {"k": "sjolejon", "N": "Kaliforniskt sjölejon", "h": "stilla"}, {"k": "dugong", "N": "Dugong", "h": "indiska"}, {"k": "kvastfening", "N": "Kvastfening", "h": "indiska"}];HAVDJUR.forEach(a=>a.img=`bilder/djur/${a.k}.jpg`);
+const HAVDJUR=[{"k": "isbjorn", "N": "Isbjörn", "h": "norra", "v": "på isen runt Nordpolen"}, {"k": "valross", "N": "Valross", "h": "norra", "v": "vid isen i norr"}, {"k": "narval", "N": "Narval", "h": "norra", "v": "kring Grönland och norra Kanada"}, {"k": "leopardsal", "N": "Leopardsäl", "h": "sodra", "v": "vid isen runt Antarktis"}, {"k": "adelie", "N": "Adéliepingvin", "h": "sodra", "v": "på Antarktis kuster"}, {"k": "krill", "N": "Krill", "h": "sodra", "v": "i det kalla havet runt Antarktis"}, {"k": "lunnefagel", "N": "Lunnefågel", "h": "atlanten", "v": "i norra Atlanten, t.ex. Island och Norge"}, {"k": "atlantlax", "N": "Atlantlax", "h": "atlanten", "v": "i norra Atlanten och i älvarna"}, {"k": "torsk", "N": "Torsk", "h": "atlanten", "v": "i norra Atlanten och Östersjön"}, {"k": "havsutter", "N": "Havsutter", "h": "stilla", "v": "längs kusten i norra Stilla havet"}, {"k": "sjolejon", "N": "Kaliforniskt sjölejon", "h": "stilla", "v": "vid Nordamerikas västkust"}, {"k": "dugong", "N": "Dugong", "h": "indiska", "v": "i varma, grunda kustvatten"}, {"k": "kvastfening", "N": "Kvastfening", "h": "indiska", "v": "i djupet utanför östra Afrika"}];HAVDJUR.forEach(a=>a.img=`bilder/djur/${a.k}.jpg`);
 const byId=Object.fromEntries(DELAR.map(d=>[d.id,d]));
 DELAR.forEach(d=>Object.assign(d,(d.typ==='k'?M.c:M.o)[d.id]));
 const KEY='mattespel-varlden-v1';
@@ -292,7 +293,7 @@ $('names').onclick=()=>{const on=$('names').getAttribute('aria-pressed')!=='true
 $('exMap').addEventListener('click',e=>{const d=pick($('exMap'),e);if(!d)return;Object.values(EX.paths).forEach(p=>p.classList.remove('sel'));EX.paths[d.id].classList.add('sel');
   const an=d.typ==='k'?DJUR.filter(a=>a.d===d.id):HAVDJUR.filter(a=>a.h===d.id);
   $('info').innerHTML=`<div class="head"><h2>${d.n}</h2><button class="spk" id="exSpk" aria-label="Läs upp">🔊</button></div><span class="tag" style="--c:${d.typ==='k'?`var(--${d.id})`:'#BFE0FF'}">${d.typ==='k'?'Världsdel':'Världshav'}</span><p class="fact">${d.f}</p>`+
-    (an.length?(d.typ==='h'?'<p class="hint" style="text-align:left;margin:10px 0 0">Här lever bland annat:</p>':'')+`<div class="animals">${an.map(a=>`<figure><img src="${a.img}" alt="${a.N}"><figcaption>${a.N}</figcaption></figure>`).join('')}</div>`:'');
+    (an.length?(d.typ==='h'?'<p class="hint" style="text-align:left;margin:10px 0 0">Här lever bland annat:</p>':'')+`<div class="animals">${an.map(a=>`<figure><img src="${a.img}" alt="${a.N}"><figcaption>${a.N}${a.v?`<small>${a.v}</small>`:''}</figcaption></figure>`).join('')}</div>`:'');
   $('info').hidden=false;$('exHint').textContent='Tryck på något annat på kartan.';window.Ljud&&Ljud.pop&&Ljud.pop(3);
   $('exSpk').onclick=()=>speak(`${d.n}. ${d.f}`);if(innerWidth<880)$('info').scrollIntoView({behavior:'smooth',block:'nearest'});});
 $('exBack').onclick=openHome;
