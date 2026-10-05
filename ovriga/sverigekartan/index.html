@@ -464,7 +464,7 @@ function startGame(mode){
   if(mode==='pussel')return startPuzzle();
   G.queue=shuffle(pool.slice()).slice(0,Math.min(10,pool.length)).map(o=>({o}));G.n=G.queue.length;
   show('game');nextTask();}
-function nextTask(){if(!G)return;offPtr();if(scrollY>0)window.scrollTo(0,0); // nästa fråga börjar högst upp (mobil: Fortsätt ligger under kartan)
+function nextTask(){if(!G)return;offPtr();$('gMap').style.touchAction='';if(scrollY>0)window.scrollTo(0,0); // nästa fråga börjar högst upp (mobil: Fortsätt ligger under kartan)
   $('task').className='task';$('fb').textContent='';$('reward').innerHTML='';$('next').hidden=true;
   document.querySelector('.gwrap').classList.remove('pz');
   if(!G.queue.length)return finish();
@@ -597,7 +597,7 @@ function answerAlv(b){if(G.busy)return;const a=G.t;
   G.queue.splice(Math.min(2,G.queue.length),0,{o:a,again:true});G.n++;}
 
 /* ---------- Pusslet: dra landskapen till rätt plats ---------- */
-function startPuzzle(){show('game');document.querySelector('.gwrap').classList.add('pz');$('instr').textContent='Dra landskapen till rätt plats på kartan.';$('opts').innerHTML='';$('fb').textContent='';$('reward').innerHTML='';$('next').hidden=true;$('task').className='task';
+function startPuzzle(){show('game');$('gMap').style.touchAction='none'; /* fingret ska flytta bitarna, inte skrolla sidan */document.querySelector('.gwrap').classList.add('pz');$('instr').textContent='Dra landskapen till rätt plats på kartan.';$('opts').innerHTML='';$('fb').textContent='';$('reward').innerHTML='';$('next').hidden=true;$('task').className='task';
   const svg=$('gMap'),wide=innerWidth>=820||innerWidth>innerHeight;
   const m=drawMap(svg,{focus:true,extra:b=>wide?{x:b.x,y:b.y,w:b.w*1.75,h:b.h}:{x:b.x,y:b.y,w:b.w,h:b.h*1.7}});
   G.paths=m.paths;G.left=G.pool.length;$('prog').textContent=`0 av ${G.pool.length}`;
@@ -624,7 +624,7 @@ function startPuzzle(){show('game');document.querySelector('.gwrap').classList.a
 }
 
 /* ---------- Resultat ---------- */
-function finish(){const g=G;if(!g)return;
+function finish(){const g=G;if(!g)return;$('gMap').style.touchAction='';
   if(g.prov){const bit=g.prov==='provst'?512:256,right=g.n-g.miss,ok=right>=Math.ceil(g.n*.9),had=bits('prov')&bit;
     if(ok){data.klar.prov=bits('prov')|bit;data.stars.prov=[256,512].filter(b=>bits('prov')&b).length;save();}
     $('rTitle').textContent=right===g.n?'Alla rätt!':ok?'Mycket bra!':'Provet är klart!';

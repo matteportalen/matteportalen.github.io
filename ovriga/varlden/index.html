@@ -306,7 +306,7 @@ function startGame(mode){
   G={mode,pool,miss:0,i:0,hist:[],prov:mode==='prov'};
   const list=shuffle(pool.slice());G.queue=(mode==='djur'?list.slice(0,10):mode==='hitta'||mode==='prov'?list:list.concat(shuffle(pool.slice())).slice(0,mode==='hav'?8:10)).map(o=>({o}));G.n=G.queue.length;
   show('game');$('gMap').classList.remove('tall');requestAnimationFrame(nextTask);}
-function nextTask(){if(!G)return;window.scrollTo(0,0);$('task').className='task';$('fb').textContent='';$('reward').innerHTML='';$('next').hidden=true;$('qphoto').hidden=true;$('qfSmall').hidden=true;$('opts').innerHTML='';
+function nextTask(){if(!G)return;window.scrollTo(0,0);$('gMap').style.touchAction='';$('task').className='task';$('fb').textContent='';$('reward').innerHTML='';$('next').hidden=true;$('qphoto').hidden=true;$('qfSmall').hidden=true;$('opts').innerHTML='';
   if(!G.queue.length)return finish();
   const it=G.queue.shift();G.t=it.o;G.first=!it.again;G.busy=false;G.rec=false;GM=drawMap($('gMap'),{});const t=G.t;
   if(G.mode==='vilken'||G.mode==='hav'){GM.paths[t.id].classList.add('hl');G.ask=G.mode==='vilken'?'Vilken världsdel lyser?':'Vilket hav lyser?';
@@ -350,6 +350,8 @@ function refreshSide(){const k=G&&HOWTO[G.mode],sh=!!(k&&!$('fb').textContent);$
 function startPuzzle(){const conts=DELAR.filter(d=>d.typ==='k');G={mode:'pussel',pool:conts,i:0,n:conts.length,hist:[],miss:0,left:conts.length};
   show('game');$('gMap').classList.add('tall');$('task').className='task';$('fb').textContent='';$('reward').innerHTML='';$('next').hidden=true;$('qphoto').hidden=true;$('qfSmall').hidden=true;$('opts').innerHTML='';
   G.ask='Dra världsdelarna till rätt plats.';$('instr').textContent=G.ask;$('prog').textContent=`0 av ${G.n}`;
+  // på mobil: fingret ska flytta bitarna, inte skrolla sidan
+  $('gMap').style.touchAction='none';
   requestAnimationFrame(()=>{const svg=$('gMap');const m=drawMap(svg,{extra:b=>({x:b.x,y:b.y,w:b.w,h:b.h*1.55})});GM=m;
     conts.forEach(d=>m.paths[d.id].classList.add('hole'));
     // bitarna ligger på rad under kartan
@@ -369,7 +371,7 @@ function startPuzzle(){const conts=DELAR.filter(d=>d.typ==='k');G={mode:'pussel'
     refreshSide();});}
 
 /* ---------- Resultat ---------- */
-function finish(){const g=G;if(!g)return;const svg=$('gMap');svg.onpointerdown=svg.onpointermove=svg.onpointerup=svg.onpointercancel=null;let ok,big,sub,title;
+function finish(){const g=G;if(!g)return;const svg=$('gMap');svg.style.touchAction='';svg.onpointerdown=svg.onpointermove=svg.onpointerup=svg.onpointercancel=null;let ok,big,sub,title;
   if(g.prov){const n=g.n,r=n-(g.missed||[]).length;ok=r>=Math.ceil(n*.9);const had=data.stars.prov;if(ok)data.stars.prov=1;save();
     title=ok?'Stora världsprovet klart!':'Bra kämpat!';big=`${r} av ${n}`;sub=(ok?(had?'Du har redan stjärnan.':'⭐ Du fick en stjärna!'):'Med 90 % rätt får du en stjärna.')+((g.missed||[]).length?` Öva mer på: ${g.missed.join(', ')}.`:' Alla rätt!');}
   else if(g.mode==='pussel'){const had=data.stars.pussel;data.stars.pussel=1;save();ok=true;title='Pusslet är klart!';big='<span class="stars">★</span>';sub=had?'Du har redan stjärnan. Snyggt igen!':'⭐ Du fick en stjärna!';}
