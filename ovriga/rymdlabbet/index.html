@@ -548,16 +548,16 @@ async function init3D(){if(T)return T;
   SEAS.forEach(([n,d0txt,a,b,col])=>{const t0=psiOf(a),t1=psiOf(b);const rg2=new THREE.RingGeometry(OR-.42,OR+.42,72,1,t0,t1-t0);rg2.rotateX(-Math.PI/2);
     os.add(new THREE.Mesh(rg2,new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.32,side:THREE.DoubleSide,depthWrite:false})));
     const mid=(t0+t1)/2,lp=new THREE.Vector3((OR+1.9)*Math.cos(mid),0,-(OR+1.9)*Math.sin(mid));const e=OL(n);e._p=lp;
-    const dp=new THREE.Vector3((OR+.95)*Math.cos(t0),0,-(OR+.95)*Math.sin(t0));const e2=OL(`<small>${d0txt}</small>`);e2._p=dp;});
+    const dp=new THREE.Vector3(OR*Math.cos(t0),0,-OR*Math.sin(t0));const e2=OL(`<small>${d0txt}</small>`);e2._p=dp;e2._under=true;});
   const eg=new THREE.Group();os.add(eg);const etilt=new THREE.Group();eg.add(etilt);
   const ax=new THREE.Vector3(-Math.sin(23.44*DEG),Math.cos(23.44*DEG),0).normalize();etilt.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),ax);
   const oMat=new THREE.ShaderMaterial({uniforms:{day:mat.uniforms.day,night:mat.uniforms.night,sunDir:{value:new THREE.Vector3(-1,0,0)}},vertexShader:mat.vertexShader,fragmentShader:mat.fragmentShader});
   const oEarth=new THREE.Mesh(new THREE.SphereGeometry(1.05,64,32),oMat); /* större än i verkligheten, så att lutningen syns */etilt.add(oEarth);
-  const oDot=new THREE.Mesh(new THREE.SphereGeometry(.07,12,6),new THREE.MeshBasicMaterial({color:0xFF3B3B}));oDot.position.copy(sph(59.33,18.07,1.07));oEarth.add(oDot);
+  const oDot=null;
   etilt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-1.9,0),new THREE.Vector3(0,1.9,0)]),new THREE.LineBasicMaterial({color:0xffffff})));
   const tip=new THREE.Mesh(new THREE.ConeGeometry(.12,.32,12),new THREE.MeshBasicMaterial({color:0xffffff}));tip.position.y=2.0;etilt.add(tip);
   const oN=new THREE.Object3D();oN.position.y=2.45;etilt.add(oN);const lAx=OL('Jordaxeln ↑ Polstjärnan','ax');lAx._o=oN;
-  const lSe=OL('📍 Sverige','ax');lSe._o=oDot;
+  const lSe=null;
   // solstråle från solen till jorden
   const beam=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]),new THREE.LineDashedMaterial({color:0xFFD23F,dashSize:.35,gapSize:.25,transparent:true,opacity:.8}));os.add(beam);
   Object.assign(T,{os,ocam,OR,posOf,psiOf,eg,oEarth,oMat,oDot,beam,olbls,lSe});
@@ -620,9 +620,10 @@ function drawOrbit3(d,dt){const p=T.posOf(d);T.eg.position.copy(p);T.oMat.unifor
   const bp=T.beam.geometry.attributes.position;bp.setXYZ(0,0,0,0);const q=p.clone().multiplyScalar(1-1.2/T.OR);bp.setXYZ(1,q.x,q.y,q.z);bp.needsUpdate=true;T.beam.computeLineDistances();
   T.controls.update();T.renderer.render(T.os,T.ocam);
   const W=T.cv.clientWidth,H=T.cv.clientHeight,v=new T.THREE.Vector3();
+  // hur stor jorden är på skärmen: datumen läggs strax under den
+  const c0=new T.THREE.Vector3().project(T.ocam),cy0=(1-c0.y)/2*H,a1=p.clone().project(T.ocam),a2=p.clone().add(new T.THREE.Vector3(0,1.3,0)).project(T.ocam),under=Math.abs(a2.y-a1.y)/2*H+12;
   T.olbls.forEach(e=>{if(e._o)e._o.getWorldPosition(v);else v.copy(e._p);
-    if(e===T.lSe){const n=v.clone().sub(p).normalize(),toCam=T.ocam.position.clone().sub(v).normalize();if(n.dot(toCam)<.1){e.style.display='none';return;}}
-    v.project(T.ocam);e.style.display=v.z<1?'':'none';e.style.left=Math.max(e.offsetWidth/2+4,Math.min(W-e.offsetWidth/2-4,(v.x+1)/2*W))+'px';e.style.top=((1-v.y)/2*H+(e===T.lSe?18:e._o?-14:0))+'px';});}
+    v.project(T.ocam);e.style.display=v.z<1?'':'none';e.style.left=Math.max(e.offsetWidth/2+4,Math.min(W-e.offsetWidth/2-4,(v.x+1)/2*W))+'px';{const sy=(1-v.y)/2*H;e.style.top=(sy+(e._under?(sy<cy0-8?-under:under):e._o?-14:0))+'px';}});}
 /* dra jorden runt solen */
 let oDrag=false;
 document.addEventListener('pointerdown',e=>{if(!T||mode3!=='arstid'||aView!=='orbit'||e.target!==T.cv)return;const r=T.cv.getBoundingClientRect(),n=new T.THREE.Vector2((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
