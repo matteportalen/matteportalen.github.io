@@ -191,7 +191,8 @@ dialog ul{padding-left:1.1em;font-size:.85rem;max-height:50vh;overflow:auto}
         <button class="tb" data-tm="gro">🧊 Grönland mot Afrika</button><button class="tb" data-tm="swe">🇸🇪 Sverige till ekvatorn</button>
         <button class="tb" data-tm="can">🍁 Kanada mot Brasilien</button><button class="tb" data-tm="rus">Ryssland mot Afrika</button></div></div>
       <div id="tLifted"></div>
-      <div class="tm"><button class="tb" id="tReal" aria-pressed="false">🌍 Visa karta med rätt storlekar</button><button class="tb" id="tClear">🧹 Rensa</button></div>
+      <div class="card"><b>Vilken karta?</b><div class="tm"><button class="tb" data-tk="merc" aria-pressed="true">🗺️ Som Google Maps</button><button class="tb" data-tk="ee" aria-pressed="false">🌍 Rätt storlekar</button></div></div>
+      <div class="tm"><button class="tb" id="tClear">🧹 Rensa</button></div>
     </div>
   </div>
 </section>
@@ -411,7 +412,7 @@ async function openTru(){show('tru');if(!TR){$('tSay').textContent='Laddar alla 
     TY0=MY(TR.lat1);TY1=MY(TR.lat0);TR.C.forEach(c=>c.area=areaKm(c));
     $('tList').innerHTML=TR.C.map(c=>`<option value="${c.n}">`).join('');}
   tSayDefault();requestAnimationFrame(drawTru);}
-function tSayDefault(){$('tSay').textContent=tReal?'Det här är en karta med rätt storlekar. Här ser Grönland lagom stort ut, och Afrika är jättestort.':'På vanliga kartor, som Google Maps, ser länder nära polerna mycket större ut än de är. Tryck på ett land för att lyfta upp det, och dra det mot ekvatorn.';}
+function tSayDefault(){$('tSay').textContent=tReal?'Det här är en karta där alla länder har rätt storlek i förhållande till varandra. Här ser Grönland lagom stort ut, och Afrika är jättestort.':'På kartor som Google Maps ser länder nära polerna mycket större ut än de är. Tryck på ett land för att lyfta upp det, och dra det mot ekvatorn.';}
 function drawTru(){const svg=$('tMap');svg.innerHTML='';const W=tReal?M.w:TW,H=tReal?M.h:TH;
   svg.append(el('image',{href:tReal?'bilder/varlden.jpg':'bilder/mercator.jpg',x:0,y:0,width:W,height:H,preserveAspectRatio:'none'}));
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
@@ -437,7 +438,7 @@ $('tMap').addEventListener('pointermove',e=>{if(!tDrag)return;const q=tPt(e),[lo
 $('tAdd').onclick=()=>{const c=findC($('tSearch').value.trim());if(!c){$('tSay').textContent='Hittade inget land med det namnet. Välj i listan.';return;}lift(c);$('tSearch').value='';tSayDefault();};
 $('tSearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('tAdd').click();});
 $('tClear').onclick=()=>{TL=[];drawTru();tSayDefault();};
-$('tReal').onclick=()=>{tReal=!tReal;$('tReal').setAttribute('aria-pressed',tReal);$('tReal').textContent=tReal?'🗺️ Visa vanlig karta':'🌍 Visa karta med rätt storlekar';tSayDefault();drawTru();};
+document.querySelectorAll('[data-tk]').forEach(b=>b.onclick=()=>{tReal=b.dataset.tk==='ee';document.querySelectorAll('[data-tk]').forEach(x=>x.setAttribute('aria-pressed',x===b));tSayDefault();drawTru();});
 function tGlide(o,tl,tb,ms){const fl=o.lon,fb=o.lat,t0=performance.now();cancelAnimationFrame(tAnim);(function f(n){const k=Math.min(1,(n-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;o.lon=fl+(tl-fl)*e;o.lat=fb+(tb-fb)*e;drawTru();if(k<1)tAnim=requestAnimationFrame(f);})(t0);}
 const TM={
   gro:()=>{TL=[];const af=lift(findC('Afrika (hela världsdelen)')),g=lift(findC('Grönland'));tGlide(g,22,8,2600);$('tSay').textContent='På kartan ser Grönland nästan lika stort ut som Afrika. Se vad som händer när det flyttas ner till Afrika! Afrika är 14 gånger större.';},
