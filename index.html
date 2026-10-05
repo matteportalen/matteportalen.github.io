@@ -48,7 +48,9 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .mini{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;margin:0 0 6px;position:relative;z-index:2}
 @media(min-width:700px){.mini{display:flex;flex-wrap:wrap;justify-content:flex-start}}
 .mini>*{display:flex;align-items:center;gap:8px;background:var(--card);border:0;border-radius:14px;padding:6px 12px;box-shadow:0 3px 0 var(--line);font:inherit;color:inherit;text-align:left;min-width:0;min-height:48px}
-.mini button{cursor:pointer}
+.mini button{cursor:pointer;position:relative}
+/* "Nytt!" sitter som en etikett på knappens hörn och tar ingen plats på raden */
+.mini .new{position:absolute;top:-9px;right:-6px;margin:0;transform:rotate(6deg);box-shadow:0 2px 0 rgba(29,43,83,.2);z-index:1}
 .mini button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .mini .ic{font-size:1.35rem;line-height:1;flex:none}
 .mini b{display:block;font-size:.98rem;line-height:1.1;white-space:nowrap}
