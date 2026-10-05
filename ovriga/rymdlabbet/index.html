@@ -553,7 +553,11 @@ async function init3D(){if(T)return T;
   const ax=new THREE.Vector3(-Math.sin(23.44*DEG),Math.cos(23.44*DEG),0).normalize();etilt.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),ax);
   const oMat=new THREE.ShaderMaterial({uniforms:{day:mat.uniforms.day,night:mat.uniforms.night,sunDir:{value:new THREE.Vector3(-1,0,0)}},vertexShader:mat.vertexShader,fragmentShader:mat.fragmentShader});
   const oEarth=new THREE.Mesh(new THREE.SphereGeometry(1.05,64,32),oMat); /* större än i verkligheten, så att lutningen syns */etilt.add(oEarth);
-  const oDot=null;
+  /* här bor vi: en röd knappnål i Sverige (utan text) */
+  const oDot=new THREE.Group();{const sv=sph(59.33,18.07,1),n=sv.clone().normalize();
+    const stem=new THREE.Mesh(new THREE.CylinderGeometry(.018,.018,.3,8),new THREE.MeshBasicMaterial({color:0xffffff}));stem.position.copy(n.clone().multiplyScalar(1.05+.15));stem.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),n);
+    const head=new THREE.Mesh(new THREE.SphereGeometry(.1,16,8),new THREE.MeshBasicMaterial({color:0xFF2E2E}));head.position.copy(n.clone().multiplyScalar(1.05+.34));
+    oDot.add(stem,head);oDot.userData.n=n;}oEarth.add(oDot);
   etilt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-1.9,0),new THREE.Vector3(0,1.9,0)]),new THREE.LineBasicMaterial({color:0xffffff})));
   const tip=new THREE.Mesh(new THREE.ConeGeometry(.12,.32,12),new THREE.MeshBasicMaterial({color:0xffffff}));tip.position.y=2.0;etilt.add(tip);
   const oN=new THREE.Object3D();oN.position.y=2.45;etilt.add(oN);const lAx=OL('Jordaxeln ↑ Polstjärnan','ax');lAx._o=oN;
@@ -616,7 +620,7 @@ function loop3(now){if(!mode3||!T)return;const dt=Math.min(.05,(now-last3)/1000)
       const mi=Math.min((W/2-60)/Math.max(.001,Math.abs(ux)),(H/2-40)/Math.max(.001,Math.abs(uy)));lx=W/2+ux*mi;ly=H/2+uy*mi;}
     gl.style.transform=`translate(${gx}px,${gy}px)`;gl.style.opacity=gx<-900?0:1;lb.style.left=lx+'px';lb.style.top=ly+'px';if(lb.innerHTML!==txt)lb.innerHTML=txt;}
   raf3=requestAnimationFrame(loop3);}
-function drawOrbit3(d,dt){const p=T.posOf(d);T.eg.position.copy(p);T.oMat.uniforms.sunDir.value.copy(p).multiplyScalar(-1).normalize();T.oEarth.rotation.y+=dt*1.2;
+function drawOrbit3(d,dt){const p=T.posOf(d);T.eg.position.copy(p);T.oMat.uniforms.sunDir.value.copy(p).multiplyScalar(-1).normalize();T.oEarth.rotation.y+=dt*1.2; /* jorden snurrar, nålen i Sverige följer med */
   const bp=T.beam.geometry.attributes.position;bp.setXYZ(0,0,0,0);const q=p.clone().multiplyScalar(1-1.2/T.OR);bp.setXYZ(1,q.x,q.y,q.z);bp.needsUpdate=true;T.beam.computeLineDistances();
   T.controls.update();T.renderer.render(T.os,T.ocam);
   const W=T.cv.clientWidth,H=T.cv.clientHeight,v=new T.THREE.Vector3();
