@@ -502,7 +502,7 @@ function openFoe(o,x,y){
   const pc=$("dPic").getContext("2d");pc.imageSmoothingEnabled=false;pc.clearRect(0,0,64,64);pc.fillStyle=G.th.bg;pc.fillRect(0,0,64,64);tile(pc,G.sheet,G.th.floor[0],0,0,64);tile(pc,o.f.s,o.f.i,0,0,64);
   $("dName").textContent=o.f.name;$("dSay").textContent=o.f.say;$("dQ").textContent=o.p.q;$("dUnit").textContent=o.p.unit||"";
   $("dFb").textContent="";$("dFb").className="fb";$("dTip").hidden=!o.tries;if(o.tries)$("dTip").textContent="Tips: "+o.p.tip;
-  showAns();$("toast").hidden=true;$("dlg").hidden=false;window.Ljud&&Ljud.chirp&&Ljud.chirp();
+  showAns();$("toast").hidden=true;$("dlg").hidden=false;dlgOpen();window.Ljud&&Ljud.chirp&&Ljud.chirp();
 }
 function showAns(){const a=$("dAns");a.textContent=F.input||"?";a.classList.toggle("empty",!F.input);}
 function key(k){if(!F||F.done||F.kind==="meny")return;
@@ -525,7 +525,7 @@ $("dSpk").onclick=()=>{if(!F)return;if(F.kind==="foe")speak(`${F.o.f.name} säge
 /* ---------- Affären: sälj skatterna och köp nyckeln (eleven räknar själv) ---------- */
 function shopPic(){const pc=$("dPic").getContext("2d");pc.clearRect(0,0,64,64);pc.fillStyle="#FFF4CC";pc.fillRect(0,0,64,64);pc.font="44px serif";pc.textAlign="center";pc.textBaseline="middle";pc.fillText("🏪",32,35);}
 const tagHTML=items=>`<div class="tags">${items.map(x=>`<span class="ptag" title="${x.t.one}">${spr(x.cell,40)}<b>${varde(x.t)} 🪙</b></span>`).join("")}</div>`;
-function openShop(){if(!$("dlg").hidden)return;$("toast").hidden=true;$("dlg").hidden=false;shopMeny(true);window.Ljud&&Ljud.chime&&Ljud.chime();}
+function openShop(){if(!$("dlg").hidden)return;$("toast").hidden=true;$("dlg").hidden=false;dlgOpen();shopMeny(true);window.Ljud&&Ljud.chime&&Ljud.chime();}
 function shopMeny(forst){
   F={kind:"meny",input:""};shopPic();$("dlg").classList.add("meny");
   ["ansrow","dKeys"].forEach(()=>{});document.querySelector(".ansrow").hidden=true;$("dKeys").hidden=true;$("dTip").hidden=true;$("dFb").textContent="";$("dFb").className="fb";
@@ -563,7 +563,16 @@ function checkShop(){const ok=+F.input===F.p.a;
   $("dFb").className="fb ok";renderSlots();const w=$("wallet");w.classList.remove("bump");void w.offsetWidth;w.classList.add("bump");draw();
   const kind=F.kind,v=F.v;setTimeout(()=>{if($("dlg").hidden)return;shopMeny();
     if(kind==="buy"&&v.k==="nyckel"){$("dFb").textContent=`🗝️ Nu kan du låsa upp ${G.th.exit.name.toLowerCase()}!`;$("dFb").className="fb ok";}},1100);}
-$("dlg").addEventListener("click",e=>{if(e.target.id==="dlg")closeFoe();});
+/* Bakgrunden runt rutan stänger den bara om trycket började på bakgrunden och rutan har varit öppen en stund.
+   (På mobil dyker rutan upp under fingret när man går in i ett hinder, och när man lyfter fingret
+   räknar telefonen det som ett tryck på det som ligger där, alltså bakgrunden.) */
+let dlgOpened=0,dlgDown=false;
+function dlgOpen(){dlgOpened=performance.now();dlgDown=false;dlgPress=false;clearInterval(holdT);holdT=null;document.querySelectorAll("#pad button.on").forEach(b=>b.classList.remove("on"));}
+let dlgPress=false; // har fingret tryckts ner inne i rutan efter att den öppnades?
+$("dlg").addEventListener("pointerdown",e=>{dlgPress=true;dlgDown=e.target.id==="dlg"&&performance.now()-dlgOpened>350;},true);
+// ett tryck som började utanför rutan (fingret som höll pilknappen) får inte trycka på något i rutan
+$("dlg").addEventListener("click",e=>{if(!dlgPress){e.stopPropagation();e.preventDefault();return;}dlgPress=false;},true);
+$("dlg").addEventListener("click",e=>{if(e.target.id==="dlg"&&dlgDown)closeFoe();dlgDown=false;});
 
 /* ---------- Vinst ---------- */
 function win(){
