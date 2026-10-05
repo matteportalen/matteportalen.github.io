@@ -70,6 +70,9 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
 @media(max-width:899px){#c3d{height:min(52vh,430px)}}
 .sunglow{position:absolute;left:0;top:0;width:300px;height:300px;margin:-150px 0 0 -150px;border-radius:50%;pointer-events:none;z-index:1;background:radial-gradient(circle,rgba(255,215,90,.6),rgba(255,200,60,.22) 38%,rgba(255,200,60,0) 66%)}
 .sunlbl{position:absolute;left:0;top:0;pointer-events:none;z-index:2;font-weight:800;font-size:.9rem;color:#FFE58A;text-shadow:0 1px 3px #000;line-height:1.15;text-align:center;white-space:nowrap;transform:translate(-50%,-50%)}
+.olbl{position:absolute;left:0;top:0;pointer-events:none;font-weight:800;font-size:.95rem;white-space:nowrap;transform:translate(-50%,-50%);text-shadow:0 1px 3px #000;text-align:center;line-height:1.1}
+.olbl small{display:block;font-size:.75rem;color:#C9D4F2;font-weight:700}
+.olbl.ax{font-size:.8rem;color:#fff;background:rgba(12,18,44,.7);border-radius:999px;padding:1px 8px;text-shadow:none}
 .sky{width:100%;height:auto;display:block;border-radius:14px}
 .skycap{font-weight:800;font-size:.95rem;color:var(--soft);margin:8px 0 4px}
 .facts{margin:10px 0 0;padding:0;list-style:none;display:grid;gap:6px}
@@ -170,8 +173,9 @@ h2{font-size:1.6rem;line-height:1.1;margin:4px 0 6px}
 <section id="arstid" class="screen" hidden>
   <button class="back" data-home>← Rymdlabbet</button>
   <div class="lab">
-    <div><div class="stage" id="host-arstid"><canvas id="orbit" width="260" height="260" style="position:absolute;right:8px;top:8px;width:min(34%,150px);height:auto;z-index:2;border-radius:50%;background:rgba(5,7,15,.75)"></canvas></div>
+    <div><div class="stage" id="host-arstid"></div>
       <div class="slider"><span>📅</span><input type="range" id="aDay" min="1" max="365" step="1" aria-label="Datum"><output id="aDayO"></output></div>
+      <div class="ctrl"><div class="chips" id="aView"><button class="b" data-v="orbit" aria-pressed="true">🌞 Runt solen</button><button class="b" data-v="near" aria-pressed="false">🌍 Nära jorden</button></div></div>
       <div class="ctrl"><div class="chips" id="aDates"></div><button class="b go" id="aPlay">▶ Spela ett år</button></div>
     </div>
     <div class="panel">
@@ -475,21 +479,12 @@ function textArstid(){const di=dayInfo(city,aDoy),n=city.n,m=dateOf(aDoy).m,dd=d
   if(noon>0)li.push(`Mitt på dagen står solen <b>${Math.round(noon)}°</b> över horisonten.`);
   const o=CITIES.filter(c=>c!==city).map(c=>{const x=dayInfo(c,aDoy);return`${c.n}: ${x.mid?'midnattssol':x.polar?'mörkertid':durTxt(x.len).replace(' och ',', ').replace(' minuter',' min').replace(' timmar',' tim')}`;}).join(' · ');
   li.push(`Samma dag i ${o}.`);
+  li.push(`🇦🇺 I Australien, på södra halvan av jorden, är det tvärtom: där är det <b>${MOTSATS[arstidNamn(aDoy)]}</b> nu.`);
   $('aFacts').innerHTML=li.map(x=>`<li>${x}</li>`).join('');
   $('aSkyCap').textContent=`Solens väg över himlen i ${n} den ${dateTxt(aDoy)} (streckat: midsommar och jul)`;
-  drawSky($('aSky'),city,aDoy,null,{ghost:true,deg:true});drawOrbit();}
-function drawOrbit(){const cv=$('orbit'),x=cv.getContext('2d'),W=cv.width,c=W/2,R=W*.36;x.clearRect(0,0,W,W);
-  x.strokeStyle='rgba(201,212,242,.5)';x.lineWidth=2;x.beginPath();x.arc(c,c,R,0,7);x.stroke();
-  x.fillStyle='#FFD23F';x.beginPath();x.arc(c,c,W*.07,0,7);x.fill();
-  x.fillStyle='#C9D4F2';x.font='700 20px "Baloo 2", sans-serif';x.textAlign='center';x.textBaseline='middle';
-  // jorden i juni står till höger om solen så att lutningen (mot vänster i bilden) pekar mot solen
-  const ang=d=>2*Math.PI*(d-172)/365.25;
-  [['jun',172],['sep',266],['dec',355],['mar',80]].forEach(([t,d])=>{const a=ang(d);x.fillText(t,c+Math.cos(a)*(R+W*.1),c-Math.sin(a)*(R+W*.1));});
-  const a=ang(aDoy),ex=c+Math.cos(a)*R,ey=c-Math.sin(a)*R;
-  x.fillStyle='#3D7BD5';x.beginPath();x.arc(ex,ey,W*.05,0,7);x.fill();
-  // jordaxeln pekar alltid åt samma håll i rymden
-  x.strokeStyle='#fff';x.lineWidth=3;x.beginPath();x.moveTo(ex+W*.06,ey);x.lineTo(ex-W*.06,ey);x.stroke();
-  x.fillStyle='#fff';x.beginPath();x.arc(ex-W*.06,ey,3.5,0,7);x.fill();}
+  drawSky($('aSky'),city,aDoy,null,{ghost:true,deg:true});}
+const arstidNamn=d=>d>=80&&d<172?'vår':d>=172&&d<266?'sommar':d>=266&&d<355?'höst':'vinter';
+const MOTSATS={'vår':'höst','sommar':'vinter','höst':'vår','vinter':'sommar'};
 
 /* =====================================================================
    3D-jorden för Dag och natt och Årstiderna (three.js laddas först när den behövs)
@@ -539,8 +534,41 @@ async function init3D(){if(T)return T;
   const lCity=L(''),lN=L('Nordpolen'),lSun=L('');lSun.hidden=true;
   host.insertAdjacentHTML('afterbegin','<div class="sunglow"></div><div class="sunlbl">☀️<br>Solljuset<br>kommer härifrån</div>');
   T={THREE,renderer,scene,camera,controls,cv,earth,tiltG,ring,rg,dot,sph,SUNDIR,host,lCity,lN,lSun,npole,rayLbl,spin0:null,key:''};
+  /* Vyn Runt solen: jorden åker runt solen, jordaxeln pekar alltid åt samma håll (mot Polstjärnan) */
+  const os=new THREE.Scene(),ocam=new THREE.PerspectiveCamera(40,1,.1,900);ocam.position.set(0,9.5,13.5);
+  os.add(new THREE.Mesh(new THREE.SphereGeometry(400,32,16),new THREE.MeshBasicMaterial({map:tx('2k_stars_milky_way.jpg'),side:THREE.BackSide,color:0x707890})));
+  const OR=7,psiOf=d=>2*Math.PI*(d-172)/365.25,posOf=d=>{const a=psiOf(d);return new THREE.Vector3(OR*Math.cos(a),0,-OR*Math.sin(a));};
+  const sunM=new THREE.Mesh(new THREE.SphereGeometry(1.25,48,24),new THREE.MeshBasicMaterial({map:tx('2k_sun.jpg')}));os.add(sunM);
+  {const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d'),gr=g.createRadialGradient(128,128,0,128,128,128);gr.addColorStop(0,'rgba(255,215,120,.95)');gr.addColorStop(.3,'rgba(255,190,80,.55)');gr.addColorStop(1,'rgba(255,140,0,0)');g.fillStyle=gr;g.fillRect(0,0,256,256);
+    const st=new THREE.CanvasTexture(c);st.colorSpace=THREE.SRGBColorSpace;const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:st,blending:THREE.AdditiveBlending,depthWrite:false,transparent:true}));sp.scale.set(6.5,6.5,1);sunM.add(sp);}
+  {const pts=[];for(let i=0;i<=256;i++){const a=i/256*2*Math.PI;pts.push(new THREE.Vector3(OR*Math.cos(a),0,-OR*Math.sin(a)));}os.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts),new THREE.LineBasicMaterial({color:0xC9D4F2,transparent:true,opacity:.55})));}
+  // årstiderna som färgade bitar längs banan (norra halvan av jorden, där Sverige ligger)
+  const SEAS=[['🌷 Vår','20 mars',80,172,0x7CD992],['☀️ Sommar','21 juni',172,266,0xFFD23F],['🍂 Höst','23 september',266,355,0xFF9F43],['❄️ Vinter','21 december',355,445,0x7FB2FF]];
+  const olbls=[];const OL=(html,cls)=>{const e=document.createElement('div');e.className='olbl'+(cls?' '+cls:'');e.innerHTML=html;host.appendChild(e);olbls.push(e);return e;};
+  SEAS.forEach(([n,d0txt,a,b,col])=>{const t0=psiOf(a),t1=psiOf(b);const rg2=new THREE.RingGeometry(OR-.42,OR+.42,72,1,t0,t1-t0);rg2.rotateX(-Math.PI/2);
+    os.add(new THREE.Mesh(rg2,new THREE.MeshBasicMaterial({color:col,transparent:true,opacity:.32,side:THREE.DoubleSide,depthWrite:false})));
+    const mid=(t0+t1)/2,lp=new THREE.Vector3((OR+1.9)*Math.cos(mid),0,-(OR+1.9)*Math.sin(mid));const e=OL(n);e._p=lp;
+    const dp=new THREE.Vector3((OR+.95)*Math.cos(t0),0,-(OR+.95)*Math.sin(t0));const e2=OL(`<small>${d0txt}</small>`);e2._p=dp;});
+  const eg=new THREE.Group();os.add(eg);const etilt=new THREE.Group();eg.add(etilt);
+  const ax=new THREE.Vector3(-Math.sin(23.44*DEG),Math.cos(23.44*DEG),0).normalize();etilt.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),ax);
+  const oMat=new THREE.ShaderMaterial({uniforms:{day:mat.uniforms.day,night:mat.uniforms.night,sunDir:{value:new THREE.Vector3(-1,0,0)}},vertexShader:mat.vertexShader,fragmentShader:mat.fragmentShader});
+  const oEarth=new THREE.Mesh(new THREE.SphereGeometry(1.05,64,32),oMat); /* större än i verkligheten, så att lutningen syns */etilt.add(oEarth);
+  const oDot=new THREE.Mesh(new THREE.SphereGeometry(.07,12,6),new THREE.MeshBasicMaterial({color:0xFF3B3B}));oDot.position.copy(sph(59.33,18.07,1.07));oEarth.add(oDot);
+  etilt.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0,-1.9,0),new THREE.Vector3(0,1.9,0)]),new THREE.LineBasicMaterial({color:0xffffff})));
+  const tip=new THREE.Mesh(new THREE.ConeGeometry(.12,.32,12),new THREE.MeshBasicMaterial({color:0xffffff}));tip.position.y=2.0;etilt.add(tip);
+  const oN=new THREE.Object3D();oN.position.y=2.45;etilt.add(oN);const lAx=OL('Jordaxeln ↑ Polstjärnan','ax');lAx._o=oN;
+  const lSe=OL('📍 Sverige','ax');lSe._o=oDot;
+  // solstråle från solen till jorden
+  const beam=new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]),new THREE.LineDashedMaterial({color:0xFFD23F,dashSize:.35,gapSize:.25,transparent:true,opacity:.8}));os.add(beam);
+  Object.assign(T,{os,ocam,OR,posOf,psiOf,eg,oEarth,oMat,oDot,beam,olbls,lSe});
   return T;}
-function size3D(){if(!T)return;const w=T.cv.clientWidth,h=T.cv.clientHeight;if(!w||!h)return;T.renderer.setSize(w,h,false);T.camera.aspect=w/h;T.camera.updateProjectionMatrix();}
+function size3D(){if(!T)return;const w=T.cv.clientWidth,h=T.cv.clientHeight;if(!w||!h)return;T.renderer.setSize(w,h,false);[T.camera,T.ocam].forEach(c=>{c.aspect=w/h;c.updateProjectionMatrix();});if(mode3==='arstid'&&aView==='orbit')fitOrbitCam();}
+let aView='orbit';
+// avstånd så att hela banan med årstiderna får plats, även i en smal bild
+function fitOrbitCam(){const asp=T.ocam.aspect||1,d=(T.OR+2.6)/Math.tan(20*DEG)/Math.min(1,asp)*1.02;T.ocam.position.set(0,d*.55,d*.84);T.ocam.lookAt(0,0,0);}
+function setCam(){const orb=mode3==='arstid'&&aView==='orbit';if(orb)fitOrbitCam();T.controls.object=orb?T.ocam:T.camera;T.controls.minDistance=orb?6:2.2;T.controls.maxDistance=orb?40:9;T.controls.target.set(0,0,0);T.controls.update();
+  T.host.querySelectorAll('.lbl3,.sunglow,.sunlbl').forEach(e=>e.style.visibility=orb?'hidden':'');T.olbls.forEach(e=>e.style.visibility=orb?'':'hidden');}
+document.querySelectorAll('#aView button').forEach(b=>b.onclick=()=>{aView=b.dataset.v;document.querySelectorAll('#aView button').forEach(x=>x.setAttribute('aria-pressed',x===b));if(T)setCam();});
 async function open3D(id){mode3=id;const host=$('host-'+id);
   if(!T){host.insertAdjacentHTML('beforeend','<p id="load3" style="padding:30px;text-align:center;font-weight:800">Laddar jorden …</p>');
     try{await init3D();}catch(e){const l=$('load3');if(l){l.className='err';l.textContent='Jorden i 3D behöver internet. Kontrollera uppkopplingen och ladda om sidan.';}return;}
@@ -548,7 +576,7 @@ async function open3D(id){mode3=id;const host=$('host-'+id);
   if(mode3!==id)return;
   host.prepend(T.cv);host.appendChild(T.host);size3D();
   if(id==='dag')T.camera.position.set(.4,3.7,2.5);else T.camera.position.set(0,2.75,3.6); // dag och natt: snett ovanifrån, så att Sverige syns hela dygnet
-  T.controls.target.set(0,0,0);T.controls.update();
+  T.controls.target.set(0,0,0);T.controls.update();setCam();
   cityChips();dateChips();upd3D(true);cancelAnimationFrame(raf3);last3=performance.now();raf3=requestAnimationFrame(loop3);}
 function stop3D(){mode3=null;cancelAnimationFrame(raf3);dPlay=null;aPlay=false;$('dPlay').textContent='▶ Spela ett dygn';$('aPlay').textContent='▶ Spela ett år';}
 /* lutning och snurr: solen står still till vänster, jordaxeln lutar 23,4° åt ett håll som vrider sig ett varv på ett år
@@ -573,6 +601,7 @@ function loop3(now){if(!mode3||!T)return;const dt=Math.min(.05,(now-last3)/1000)
   const dd=mode3==='arstid'?Math.max(1,Math.round(aDoy)):dDoy;
   if(mode3==='arstid'){const save=aDoy;aDoy=dd;orient(dd,aSolar);aDoy=save;}else orient(dDoy,solarOf(dClock,dDoy,city));
   if(now-txtT>200){txtT=now;if(mode3==='dag'&&dPlay)textDag();if(mode3==='arstid'&&aPlay){const s=aDoy;aDoy=dd;textArstid();aDoy=s;}}
+  if(mode3==='arstid'&&aView==='orbit'){drawOrbit3(dd,dt);raf3=requestAnimationFrame(loop3);return;}
   T.controls.update();T.renderer.render(T.scene,T.camera);
   // namnlappar
   const W=T.cv.clientWidth,H=T.cv.clientHeight,v=new T.THREE.Vector3(),cam=T.camera.position.clone();
@@ -587,6 +616,21 @@ function loop3(now){if(!mode3||!T)return;const dt=Math.min(.05,(now-last3)/1000)
       const mi=Math.min((W/2-60)/Math.max(.001,Math.abs(ux)),(H/2-40)/Math.max(.001,Math.abs(uy)));lx=W/2+ux*mi;ly=H/2+uy*mi;}
     gl.style.transform=`translate(${gx}px,${gy}px)`;gl.style.opacity=gx<-900?0:1;lb.style.left=lx+'px';lb.style.top=ly+'px';if(lb.innerHTML!==txt)lb.innerHTML=txt;}
   raf3=requestAnimationFrame(loop3);}
+function drawOrbit3(d,dt){const p=T.posOf(d);T.eg.position.copy(p);T.oMat.uniforms.sunDir.value.copy(p).multiplyScalar(-1).normalize();T.oEarth.rotation.y+=dt*1.2;
+  const bp=T.beam.geometry.attributes.position;bp.setXYZ(0,0,0,0);const q=p.clone().multiplyScalar(1-1.2/T.OR);bp.setXYZ(1,q.x,q.y,q.z);bp.needsUpdate=true;T.beam.computeLineDistances();
+  T.controls.update();T.renderer.render(T.os,T.ocam);
+  const W=T.cv.clientWidth,H=T.cv.clientHeight,v=new T.THREE.Vector3();
+  T.olbls.forEach(e=>{if(e._o)e._o.getWorldPosition(v);else v.copy(e._p);
+    if(e===T.lSe){const n=v.clone().sub(p).normalize(),toCam=T.ocam.position.clone().sub(v).normalize();if(n.dot(toCam)<.1){e.style.display='none';return;}}
+    v.project(T.ocam);e.style.display=v.z<1?'':'none';e.style.left=Math.max(e.offsetWidth/2+4,Math.min(W-e.offsetWidth/2-4,(v.x+1)/2*W))+'px';e.style.top=((1-v.y)/2*H+(e===T.lSe?18:e._o?-14:0))+'px';});}
+/* dra jorden runt solen */
+let oDrag=false;
+document.addEventListener('pointerdown',e=>{if(!T||mode3!=='arstid'||aView!=='orbit'||e.target!==T.cv)return;const r=T.cv.getBoundingClientRect(),n=new T.THREE.Vector2((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  const rc=new T.THREE.Raycaster();rc.setFromCamera(n,T.ocam);if(rc.intersectObject(T.oEarth,false).length){oDrag=true;T.controls.enabled=false;aPlay=false;$('aPlay').textContent='▶ Spela ett år';T.cv.setPointerCapture(e.pointerId);}});
+document.addEventListener('pointermove',e=>{if(!oDrag)return;const r=T.cv.getBoundingClientRect(),n=new T.THREE.Vector2((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);
+  const rc=new T.THREE.Raycaster();rc.setFromCamera(n,T.ocam);const hit=new T.THREE.Vector3();if(!rc.ray.intersectPlane(new T.THREE.Plane(new T.THREE.Vector3(0,1,0),0),hit))return;
+  const a=Math.atan2(-hit.z,hit.x);let d=172+a/(2*Math.PI)*365.25;d=((d-1)%365+365)%365+1;aDoy=Math.round(d);$('aDay').value=aDoy;$('aDayO').textContent=dateTxt(aDoy);});
+document.addEventListener('pointerup',()=>{if(!oDrag)return;oDrag=false;T.controls.enabled=true;dateChips();upd3D(true);});
 $('dTime').addEventListener('input',e=>{dClock=+e.target.value;dPlay=null;$('dPlay').textContent='▶ Spela ett dygn';upd3D(true);});
 $('dPlay').onclick=()=>{if(dPlay){dPlay=null;$('dPlay').textContent='▶ Spela ett dygn';return;}dPlay={left:1,end:dClock};$('dPlay').textContent='⏸ Pausa';};
 $('aDay').addEventListener('input',e=>{aDoy=+e.target.value;aPlay=false;$('aPlay').textContent='▶ Spela ett år';dateChips();upd3D(true);});
