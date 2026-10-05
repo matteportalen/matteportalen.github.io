@@ -113,6 +113,13 @@ h2{font-size:1.5rem;margin:0 0 6px;line-height:1.15}
 .hist:empty{display:none}
 .hist span{background:var(--card);border-radius:999px;padding:1px 10px;font-weight:800;font-size:.85rem;box-shadow:0 2px 0 var(--line)}
 .hist .h-ok{color:var(--good-dark)}.hist .h-bad{color:var(--bad)}
+.map .lift{fill-opacity:.55;stroke-width:3;cursor:grab;stroke-linejoin:round}
+.srch{display:flex;gap:8px}.srch input{flex:1;min-width:0;font:inherit;font-weight:700;border:2px solid var(--line);border-radius:12px;padding:6px 10px}
+.tm{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.lifted{display:flex;align-items:center;gap:8px;background:var(--card);border-radius:14px;padding:6px 10px;box-shadow:0 3px 0 var(--line);margin-bottom:6px}
+.lifted i{width:16px;height:16px;border-radius:5px;flex:none}.lifted span{flex:1;line-height:1.2}.lifted small{display:block;color:var(--muted);font-weight:700}
+.lifted button{width:34px;height:34px;border-radius:50%;background:var(--bg);font-weight:800}
+.cmp{background:#FFF4CC;border-radius:12px;padding:6px 10px;margin:4px 0 0;font-weight:700}
 .result{text-align:center;padding-top:16px}
 .rbig{font-size:clamp(3rem,15vw,4.4rem);font-weight:800;line-height:1;margin:6px 0}
 .big{display:block;width:100%;max-width:420px;margin:10px auto 0;padding:12px;border-radius:18px;background:var(--card);font-weight:800;font-size:1.15rem;box-shadow:0 4px 0 var(--line)}
@@ -139,6 +146,7 @@ dialog ul{padding-left:1.1em;font-size:.85rem;max-height:50vh;overflow:auto}
       <button class="mode" data-m="pussel"><span class="ic">🧩</span><span><b>Pusslet</b><small>Dra världsdelarna till rätt plats.</small></span><span class="st" id="st-pussel"></span></button>
       <button class="mode" data-m="djur"><span class="ic">🐾</span><span><b>Var bor djuret?</b><small>Dra djuret till världsdelen där det bor.</small></span><span class="st" id="st-djur"></span></button>
       <button class="mode" data-m="prov"><span class="ic">🏆</span><span><b>Stora världsprovet</b><small>Alla världsdelar och hav. Hur många kan du?</small></span><span class="st" id="st-prov"></span></button>
+      <button class="mode" data-m="tru"><span class="ic">📐</span><span><b>Lurad av kartan?</b><small>Dra Grönland till Afrika. Hur stora är länderna egentligen?</small></span></button>
       <p class="note">En världsdel eller ett hav blir färgat på kartan när du har svarat rätt två gånger i rad. <button class="linkbtn" id="srcBtn">Bilder och källor</button></p>
     </div>
   </div>
@@ -166,6 +174,24 @@ dialog ul{padding-left:1.1em;font-size:.85rem;max-height:50vh;overflow:auto}
       <div id="reward"></div>
       <button class="go" id="next" hidden>Fortsätt</button>
       <div class="hist" id="hist" aria-label="Rundans svar"></div>
+    </div>
+  </div>
+</section>
+
+<section id="tru" class="screen" hidden>
+  <button class="back" id="tBack">← Tillbaka</button>
+  <h2>📐 Lurad av kartan?</h2>
+  <div class="gwrap">
+    <div class="card" style="padding:6px"><svg class="map" id="tMap" style="touch-action:none;height:auto;aspect-ratio:auto"></svg></div>
+    <div class="side">
+      <div class="reward" id="tSay" style="color:var(--ink)"></div>
+      <div class="card"><div class="srch"><input id="tSearch" list="tList" placeholder="Sök ett land, t.ex. Grönland" autocomplete="off"><button class="tb" id="tAdd">Lyft upp</button></div><datalist id="tList"></datalist>
+        <p class="hint" style="text-align:left;margin-top:6px">…eller tryck på ett land på kartan.</p></div>
+      <div class="card"><b>Prova:</b><div class="tm">
+        <button class="tb" data-tm="gro">🧊 Grönland mot Afrika</button><button class="tb" data-tm="swe">🇸🇪 Sverige till ekvatorn</button>
+        <button class="tb" data-tm="can">🍁 Kanada mot Brasilien</button><button class="tb" data-tm="rus">Ryssland mot Afrika</button></div></div>
+      <div id="tLifted"></div>
+      <div class="tm"><button class="tb" id="tReal" aria-pressed="false">🌍 Visa karta med rätt storlekar</button><button class="tb" id="tClear">🧹 Rensa</button></div>
     </div>
   </div>
 </section>
@@ -254,7 +280,7 @@ function openHome(){G=null;if('speechSynthesis' in window)speechSynthesis.cancel
   requestAnimationFrame(()=>{const m=drawMap($('homeMap'),{kan:true});names($('homeMap'),DELAR.filter(kan));});
   $('kanTxt').textContent=`Du kan ${DELAR.filter(kan).length} av ${DELAR.length}: världsdelar och hav`;}
 $('srcBtn').onclick=()=>{$('srcList').innerHTML=CRED.map(c=>`<li>${c.n}: ${c.artist}, ${c.lic}, Wikimedia Commons</li>`).join('');$('srcDlg').showModal();};
-document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const m=b.dataset.m;if(m==='ex')openExplore();else startGame(m);});
+document.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{const m=b.dataset.m;if(m==='ex')openExplore();else if(m==='tru')openTru();else startGame(m);});
 
 /* ---------- Utforska ---------- */
 let EX=null;
@@ -353,8 +379,76 @@ function confetti(){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();if(matchMedia('(pr
   const P=Array.from({length:140},()=>({x:W/2+(Math.random()-.5)*120,y:H*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:cols[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.4}));
   const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
     if(now-t0<2600)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);}
+
+/* =====================================================================
+   Lurad av kartan? Vanliga kartor (Mercator, som Google Maps) gör länder nära polerna för stora.
+   Man lyfter upp ett land och drar det: det behåller sin riktiga storlek på jordklotet,
+   så på kartan krymper det mot ekvatorn och växer mot polerna.
+   ===================================================================== */
+const TW=2048,TH=1223;let TR=null,TL=[],tReal=false,tDrag=null,tAnim=0;
+const D2R=Math.PI/180,MY=la=>Math.log(Math.tan(Math.PI/4+la*D2R/2));let TY0=0,TY1=0;
+const TCOL=['#E5484D','#3D8BFD','#FFB020','#2BB673','#7B61FF','#FF6B9A','#17AFC4','#C2410C'];
+/* Equal Earth (rätt ytor), samma som Världskartans bild */
+const EEA=[1.340264,-0.081106,0.000893,0.003796],EEM=Math.sqrt(3)/2,EER=6371007.2,EEX0=-17243959.06,EEY1=8392927.6,EEU=20000;
+function eeF(lon,lat){const p=lat*D2R,l=lon*D2R,t=Math.asin(EEM*Math.sin(p)),t2=t*t,t6=t2*t2*t2;
+  const x=l*Math.cos(t)/(EEM*(EEA[0]+3*EEA[1]*t2+t6*(7*EEA[2]+9*EEA[3]*t2))),y=t*(EEA[0]+EEA[1]*t2+t6*(EEA[2]+EEA[3]*t2));return[(x*EER-EEX0)/EEU,(EEY1-y*EER)/EEU];}
+function eeI(X,Y){const x=(X*EEU+EEX0)/EER,y=(EEY1-Y*EEU)/EER;let t=y;for(let i=0;i<8;i++){const t2=t*t,t6=t2*t2*t2,f=t*(EEA[0]+EEA[1]*t2+t6*(EEA[2]+EEA[3]*t2))-y,df=EEA[0]+3*EEA[1]*t2+t6*(7*EEA[2]+9*EEA[3]*t2);t-=f/df;}
+  const t2=t*t,t6=t2*t2*t2,lat=Math.asin(Math.sin(t)/EEM)/D2R,lon=EEM*x*(EEA[0]+3*EEA[1]*t2+t6*(7*EEA[2]+9*EEA[3]*t2))/Math.cos(t)/D2R;return[lon,lat];}
+const mF=(lon,lat)=>[(lon+180)/360*TW,(TY0-MY(Math.max(-85,Math.min(85,lat))))/(TY0-TY1)*TH];
+const mI=(x,y)=>[x/TW*360-180,(2*Math.atan(Math.exp(TY0-y/TH*(TY0-TY1)))-Math.PI/2)/D2R];
+const PF=(lon,lat)=>tReal?eeF(lon,lat):mF(lon,lat),PI=(x,y)=>tReal?eeI(x,y):mI(x,y);
+/* flytta landet på jordklotet: först runt jordaxeln (longitud), sedan längs meridianen (latitud) */
+function moved(c,tl,tb){const[cl,cb]=c.c,dl=(tl-cl)*D2R,db=(tb-cb)*D2R,ax=[-Math.sin(tl*D2R),Math.cos(tl*D2R),0];
+  return c.r.map(r=>{const out=[];for(let i=0;i<r.length;i+=2){let l=r[i]*D2R+dl,b=r[i+1]*D2R;let v=[Math.cos(b)*Math.cos(l),Math.cos(b)*Math.sin(l),Math.sin(b)];
+    const a=-db,ca=Math.cos(a),sa=Math.sin(a),k=ax,kv=[k[1]*v[2]-k[2]*v[1],k[2]*v[0]-k[0]*v[2],k[0]*v[1]-k[1]*v[0]],kd=k[0]*v[0]+k[1]*v[1]+k[2]*v[2];
+    v=[v[0]*ca+kv[0]*sa+k[0]*kd*(1-ca),v[1]*ca+kv[1]*sa+k[1]*kd*(1-ca),v[2]*ca+kv[2]*sa+k[2]*kd*(1-ca)];
+    let lon=Math.atan2(v[1],v[0])/D2R;lon=tl+(((lon-tl)+540)%360-180);out.push([lon,Math.asin(Math.max(-1,Math.min(1,v[2])))/D2R]);}return out;});}
+/* riktig yta på jordklotet, i km² */
+function areaKm(c){const R=6371;let A=0;c.r.forEach(r=>{let s=0;for(let i=0;i<r.length;i+=2){const j=(i+2)%r.length;s+=((r[j]-r[i])*D2R)*(2+Math.sin(r[i+1]*D2R)+Math.sin(r[j+1]*D2R));}A+=Math.abs(s)*R*R/2;});return A;}
+const kmTxt=a=>a>=1e6?`${fmtSv(a/1e6,1)} miljoner km²`:`${fmtSv(Math.round(a/1000)*1000,0)} km²`;
+const fmtSv=(x,d)=>x.toLocaleString('sv-SE',{maximumFractionDigits:d});
+async function openTru(){show('tru');if(!TR){$('tSay').textContent='Laddar alla länder …';try{TR=await (await fetch('bilder/lander.json')).json();}catch(e){$('tSay').textContent='Kunde inte ladda länderna. Kontrollera uppkopplingen.';return;}
+    TY0=MY(TR.lat1);TY1=MY(TR.lat0);TR.C.forEach(c=>c.area=areaKm(c));
+    $('tList').innerHTML=TR.C.map(c=>`<option value="${c.n}">`).join('');}
+  tSayDefault();requestAnimationFrame(drawTru);}
+function tSayDefault(){$('tSay').textContent=tReal?'Det här är en karta med rätt storlekar. Här ser Grönland lagom stort ut, och Afrika är jättestort.':'På vanliga kartor, som Google Maps, ser länder nära polerna mycket större ut än de är. Tryck på ett land för att lyfta upp det, och dra det mot ekvatorn.';}
+function drawTru(){const svg=$('tMap');svg.innerHTML='';const W=tReal?M.w:TW,H=tReal?M.h:TH;
+  svg.append(el('image',{href:tReal?'bilder/varlden.jpg':'bilder/mercator.jpg',x:0,y:0,width:W,height:H,preserveAspectRatio:'none'}));
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  if(!tReal){const eq=mF(0,0)[1];svg.append(el('line',{x1:0,y1:eq,x2:W,y2:eq,stroke:'rgba(255,255,255,.7)','stroke-width':2,'stroke-dasharray':'10 8'}));const t=el('text',{x:14,y:eq-10,'font-size':38,class:'olbl'});t.textContent='Ekvatorn';svg.append(t);}
+  TL.forEach(o=>{const rings=moved(o.c,o.lon,o.lat);let d='';rings.forEach(r=>{d+='M'+r.map(([l,b])=>PF(l,b).map(v=>v.toFixed(1)).join(' ')).join('L')+'Z';});
+    const p=el('path',{d,'fill-rule':'evenodd',class:'lift'});p.style.fill=o.col;p.style.stroke=o.col;p.dataset.i=TL.indexOf(o);svg.append(p);
+    const[cx,cy]=PF(o.lon,o.lat),t=el('text',{x:cx,y:cy,'font-size':tReal?30:46,'text-anchor':'middle',class:'lbl'});t.textContent=o.c.n;svg.append(t);});
+  tList();}
+function tList(){const box=$('tLifted');if(!TL.length){box.innerHTML='';return;}
+  box.innerHTML=TL.map((o,i)=>{const s=1/Math.pow(Math.cos(o.lat*D2R),2);return`<div class="lifted"><i style="background:${o.col}"></i><span><b>${o.c.n}</b><small>${kmTxt(o.c.area)}${!tReal&&s>1.6?` · här ser det ${fmtSv(s,s<10?1:0)} gånger så stort ut som det är`:''}</small></span><button data-i="${i}" aria-label="Ta bort">✕</button></div>`;}).join('')+
+    (TL.length>=2?(()=>{const a=TL.slice().sort((x,y)=>y.c.area-x.c.area),k=a[0].c.area/a[a.length-1].c.area;return`<p class="cmp">${a[0].c.n} är <b>${fmtSv(k,k<10?1:0)} gånger större</b> än ${a[a.length-1].c.n} på riktigt.</p>`;})():'');
+  box.querySelectorAll('button').forEach(b=>b.onclick=()=>{TL.splice(+b.dataset.i,1);drawTru();});}
+function lift(c,at){if(TL.length>=8)TL.shift();const o={c,lon:at?at[0]:c.c[0],lat:at?at[1]:c.c[1],col:TCOL[(TL.length+TL.reduce((s,x)=>s+1,0))%TCOL.length]};TL.push(o);window.Ljud&&Ljud.pop&&Ljud.pop(4);drawTru();return o;}
+const findC=q=>TR&&TR.C.find(c=>c.n.toLowerCase()===q.toLowerCase());
+function inPoly(c,lon,lat){for(const r of c.r)for(const L of[lon,lon+360,lon-360]){let inside=false;for(let i=0,j=r.length-2;i<r.length;j=i,i+=2){const xi=r[i],yi=r[i+1],xj=r[j],yj=r[j+1];if(((yi>lat)!==(yj>lat))&&(L<(xj-xi)*(lat-yi)/(yj-yi)+xi))inside=!inside;}if(inside)return true;}return false;}
+const tPt=e=>{const svg=$('tMap'),pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(svg.getScreenCTM().inverse());};
+$('tMap').addEventListener('pointerdown',e=>{if(!TR)return;const p=e.target.closest('.lift');const q=tPt(e),[lon,lat]=PI(q.x,q.y);
+  if(p){const o=TL[+p.dataset.i];cancelAnimationFrame(tAnim);tDrag={o,dl:o.lon-lon,db:o.lat-lat};$('tMap').setPointerCapture(e.pointerId);e.preventDefault();return;}
+  // tryck på kartan: lyft upp landet som ligger där
+  const c=TR.C.find(c=>c.id!=='AFR'&&inPoly(c,lon,lat));if(c){lift(c);const o=TL[TL.length-1];tDrag={o,dl:o.lon-lon,db:o.lat-lat};$('tMap').setPointerCapture(e.pointerId);}});
+$('tMap').addEventListener('pointermove',e=>{if(!tDrag)return;const q=tPt(e),[lon,lat]=PI(q.x,q.y);tDrag.o.lon=lon+tDrag.dl;tDrag.o.lat=Math.max(-75,Math.min(80,lat+tDrag.db));drawTru();});
+['pointerup','pointercancel'].forEach(ev=>$('tMap').addEventListener(ev,()=>{tDrag=null;}));
+$('tAdd').onclick=()=>{const c=findC($('tSearch').value.trim());if(!c){$('tSay').textContent='Hittade inget land med det namnet. Välj i listan.';return;}lift(c);$('tSearch').value='';tSayDefault();};
+$('tSearch').addEventListener('keydown',e=>{if(e.key==='Enter')$('tAdd').click();});
+$('tClear').onclick=()=>{TL=[];drawTru();tSayDefault();};
+$('tReal').onclick=()=>{tReal=!tReal;$('tReal').setAttribute('aria-pressed',tReal);$('tReal').textContent=tReal?'🗺️ Visa vanlig karta':'🌍 Visa karta med rätt storlekar';tSayDefault();drawTru();};
+function tGlide(o,tl,tb,ms){const fl=o.lon,fb=o.lat,t0=performance.now();cancelAnimationFrame(tAnim);(function f(n){const k=Math.min(1,(n-t0)/ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;o.lon=fl+(tl-fl)*e;o.lat=fb+(tb-fb)*e;drawTru();if(k<1)tAnim=requestAnimationFrame(f);})(t0);}
+const TM={
+  gro:()=>{TL=[];const af=lift(findC('Afrika (hela världsdelen)')),g=lift(findC('Grönland'));tGlide(g,22,8,2600);$('tSay').textContent='På kartan ser Grönland nästan lika stort ut som Afrika. Se vad som händer när det flyttas ner till Afrika! Afrika är 14 gånger större.';},
+  swe:()=>{TL=[];const s=lift(findC('Sverige'));tGlide(s,20,0,2400);$('tSay').textContent='Sverige ligger långt norrut och ser stort ut på kartan. Vid ekvatorn syns hur stort det egentligen är.';},
+  can:()=>{TL=[];lift(findC('Brasilien'));const c=lift(findC('Kanada'));tGlide(c,-55,-10,2600);$('tSay').textContent='Kanada ser jättestort ut, men flyttat ner till Brasilien är de två nästan lika stora.';},
+  rus:()=>{TL=[];lift(findC('Afrika (hela världsdelen)'));const r=lift(findC('Ryssland'));tGlide(r,25,3,2800);$('tSay').textContent='Ryssland är världens största land, men Afrika är nästan dubbelt så stort.';}};
+document.querySelectorAll('[data-tm]').forEach(b=>b.onclick=()=>{if(TR)TM[b.dataset.tm]();});
+$('tBack').onclick=openHome;
+
 openHome();
-window.VW={DELAR,DJUR,G:()=>G,startGame,data:()=>data,pick};
+window.VW={get TL(){return TL},get TR(){return TR},openTru,lift,findC,mF,eeF,moved,TM,DELAR,DJUR,G:()=>G,startGame,data:()=>data,pick};
 </script>
 </body>
 </html>
