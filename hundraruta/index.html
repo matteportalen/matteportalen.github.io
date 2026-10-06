@@ -122,6 +122,9 @@ body.tool .wrap{max-width:1200px}
 @media(min-width:880px){.tlayout{grid-template-columns:auto 330px;justify-content:center}
   #toolGrid .h100{width:min(calc(100vh - 200px),640px);max-width:none}
   #toolGrid .h100 i{font-size:min(1.35rem,calc((100vh - 200px)/32))}}
+.tclear{height:42px;padding:0 14px;border-radius:14px;background:var(--card);font-weight:800;font-size:1rem;color:var(--ink);box-shadow:0 0 0 2px var(--line) inset,0 4px 0 var(--line)}
+.tclear:active{transform:translateY(3px);box-shadow:0 0 0 2px var(--line) inset}
+@media(hover:hover){.tclear:hover{background:var(--bg)}}
 .tside{display:flex;flex-direction:column;gap:10px}
 .tlead{margin:0;font-size:1rem}
 .hopbar{display:flex;flex-direction:column;gap:10px}
@@ -188,8 +191,8 @@ body.tool .wrap{max-width:1200px}
   <p class="note">Tre stjärnor får du om alla tio uppgifter blir rätt direkt. I Trasig hundraruta kan du ta fram en hel hundraruta som hjälp, eller dölja den för att utmana dig själv.</p>
 </section>
 <section id="tool" class="screen" hidden>
-  <div class="gtop"><button class="back" id="toolBack">← Tillbaka</button><button class="hbtn" id="toolClear">Rensa</button></div>
-  <div class="ttitle"><h2>Hundrarutan</h2><div class="seg2" id="toolMode"><button data-m="mark">🖍️ Markera</button><button data-m="hop">🦘 Hoppa</button></div></div>
+  <div class="gtop"><button class="back" id="toolBack">← Tillbaka</button></div>
+  <div class="ttitle"><h2>Hundrarutan</h2><div class="seg2" id="toolMode"><button data-m="mark">🖍️ Markera</button><button data-m="hop">🦘 Hoppa</button></div><button class="tclear" id="toolClear">🧹 Rensa</button></div>
   <div class="tlayout">
     <div id="toolGrid"></div>
     <div class="tside">
