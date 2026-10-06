@@ -1654,7 +1654,7 @@ function bResize(){
   bcv.width=Math.round(W*dpr);bcv.height=Math.round(H*dpr);bx.setTransform(dpr,0,0,dpr,0,0);
   const D=Math.min((W-12)/BCOLS,58,(H-14)/((BLIM-1)*.866+3.3)),R=D/2,rowH=D*.866,left=(W-D*BCOLS)/2,top=6;
   const Rs=R*1.62,Rn=R*1.15;
-  BL={W,H,D,R,rowH,left,top,deadY:top+(BLIM-1)*rowH+D+3,shX:W/2,shY:H-Rs-10,Rs,Rn,dpr};bSpr={};havInit();
+  BL={W,H,D,R,rowH,left,top,deadY:top+(BLIM-1)*rowH+D+3,shX:W/2,shY:H-Rs-10,Rs,Rn,dpr};bSpr={};vInit();
 }
 window.addEventListener("resize",()=>{if(B&&!$("bub").hidden)bResize();});
 
@@ -1735,15 +1735,15 @@ function startBub(){
   stopBub();const r=bRec(),from=data.bubFrom==="cont"&&r.bana?r.bana+1:1;
   data.bubbelPlayed=(data.bubbelPlayed||0)+1;save();
   B={pts:0,prevBest:r.best||0,right:0,wrong:0,over:false,petJ:0,shake:0,tip:true,ang:Math.PI/2,aiming:false,last:null};
-  showOnly("bub");bResize();bLevelStart(from);window.Ljud&&Ljud.ambient.start("havet");
+  showOnly("bub");bResize();bLevelStart(from);
   cancelAnimationFrame(braf);braf=requestAnimationFrame(bFrame);
 }
 function bLevelStart(l){
   const P=bLevel(l);
-  B.colMap=new Map();Object.assign(B,{lvl:l,P,g:bBuild(l),shots:P.miss,drop:0,dropA:0,since:0,added:0,state:"aim",fly:null,pops:[],falls:[],parts:[],labels:[],cur:null,next:null,last:null});
+  vSet(l);B.colMap=new Map();Object.assign(B,{lvl:l,P,g:bBuild(l),shots:P.miss,drop:0,dropA:0,since:0,added:0,state:"aim",fly:null,pops:[],falls:[],parts:[],labels:[],cur:null,next:null,last:null});
   B.init=bAll().length;bFix();bHud();$("bubMsg").hidden=true;
   const tip=BL.W>BL.H&&BL.H<520?"<small>Håll mobilen upprätt så blir bubblorna större.</small>":"";
-  bBanner(`Bana ${l}`+(P.drop?`<small>Taket sjunker var ${P.drop}:e skott!</small>`:"<small>Poppa alla bubblor! Bara fel skott kostar en miss.</small>")+tip,P.drop?2600:1800);
+  bBanner(`Bana ${l} · ${VW0.ico} ${VW0.namn}`+(P.drop?`<small>Taket sjunker var ${P.drop}:e skott!</small>`:"<small>Poppa alla bubblor! Bara fel skott kostar en miss.</small>")+tip,P.drop?2600:1800);
 }
 function bSwap(){if(!B||B.state!=="aim"||!B.next)return;[B.cur,B.next]=[B.next,B.cur];B.swapA=1;window.Ljud&&Ljud.slurp();}
 function bFire(){
@@ -1838,7 +1838,7 @@ function bFrame(now){
   if(!B)return;const dt=Math.min(.05,(now-(B.t0||now))/1000);B.t0=now;B.dtD=dt;
   if(B.fly){B.fly.s+=BL.D*24*dt;if(B.fly.s>=B.fly.len)bLand();}
   B.dropA+=(B.drop-B.dropA)*Math.min(1,dt*7);
-  B.pops.forEach(p=>{const was=p.t;p.t+=dt;if(was<=0&&p.t>0)havScare(p.x,p.y);});B.pops=B.pops.filter(p=>p.t<.3);
+  B.pops.forEach(p=>{const was=p.t;p.t+=dt;if(was<=0&&p.t>0)vScare(p.x,p.y);});B.pops=B.pops.filter(p=>p.t<.3);
   B.falls.forEach(p=>{p.t+=dt;p.vy+=1500*dt;p.x+=p.vx*dt;p.y+=p.vy*dt;});B.falls=B.falls.filter(p=>p.y<BL.H+BL.D);
   B.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=500*dt;p.life-=dt;});B.parts=B.parts.filter(p=>p.life>0);
   B.labels.forEach(l=>l.t+=dt);B.labels=B.labels.filter(l=>l.t<(l.kind==="fact"?2.2:1.1));
@@ -1847,67 +1847,157 @@ function bFrame(now){
   bDraw();braf=requestAnimationFrame(bFrame);
 }
 
-/* ---------- Havet: Bubbeljaktens värld ----------
-   Grafik: "Fish Pack" av Kenney (CC0) i spel/bilder/hav/hav.png (rutor om 128 px, 8 per rad, i ordningen i HAVN).
-   Bakgrunden ritas en gång per storlek; solstrålar, fiskar, sjögräs och luftbubblor rör sig ovanpå. */
-const HAVN="fish_blue,fish_green,fish_orange,fish_pink,fish_red,fish_brown,fish_grey,fish_grey_long_a,fish_grey_long_b,seaweed_green_a,seaweed_green_b,seaweed_green_c,seaweed_green_d,seaweed_pink_a,seaweed_pink_b,seaweed_pink_c,seaweed_pink_d,seaweed_orange_a,seaweed_orange_b,seaweed_grass_a,seaweed_grass_b,rock_a,rock_b,background_rock_a,background_rock_b,background_seaweed_a,background_seaweed_b,background_seaweed_c,background_seaweed_d,background_seaweed_e,background_seaweed_f,background_seaweed_g,background_seaweed_h,background_terrain,background_terrain_top,terrain_sand_top_a,terrain_sand_top_b,terrain_sand_top_c,terrain_sand_top_d,terrain_sand_top_e,terrain_sand_top_f,terrain_sand_top_g,terrain_sand_top_h,terrain_sand_a,terrain_sand_b,terrain_sand_c,terrain_sand_d,terrain_dirt_a,terrain_dirt_b,terrain_dirt_c,terrain_dirt_d,terrain_dirt_top_a,terrain_dirt_top_b,terrain_dirt_top_c,terrain_dirt_top_d,terrain_dirt_top_e,terrain_dirt_top_f,terrain_dirt_top_g,terrain_dirt_top_h,bubble_a,bubble_b,bubble_c".split(","),havImg=new Image();havImg.src="bilder/hav/hav.png";
-let HAV=null;
-havImg.onload=()=>{if(BL)havInit();};
-function havPut(ctx,n,x,y,w,h,flipX,flipY){const i=HAVN.indexOf(n);if(i<0||!havImg.complete||!havImg.naturalWidth)return;
-  ctx.save();ctx.translate(x+(flipX?w:0),y+(flipY?h:0));ctx.scale(flipX?-1:1,flipY?-1:1);ctx.drawImage(havImg,(i%8)*128,Math.floor(i/8)*128,128,128,0,0,w,h);ctx.restore();}
-function havInit(){
-  const {W,H,D,dpr,shX,Rs}=BL,rnd=(a,b)=>a+Math.random()*(b-a),pick=a=>a[Math.floor(Math.random()*a.length)];
-  const S=Math.max(46,Math.min(84,D*1.5)),floor=H-S*.55,still=matchMedia("(prefers-reduced-motion: reduce)").matches;
-  // stilla bakgrund: vatten, bleka klippor och sjögräs längre bort, sandbotten
+/* ---------- Bubbeljaktens världar ----------
+   En ny värld för varje bana (bana 1 Havet, 2 Djungeln, 3 Godislandet, 4 Isvärlden, 5 Vulkanön, 6 Slottet, sedan om igen).
+   Grafik från Kenney (CC0): Fish Pack, Platformer Art Deluxe/Candy/Winter, Platformer Pack Medieval, Background Elements Remastered
+   och Animal Pack Remastered, ihopsatt till ett bildark per värld i spel/bilder/varldar/<id>.png. VRECT = [x, y, bredd, höjd] för varje bild.
+   Bakgrunden ritas en gång per storlek; djur, växter, partiklar och ljus rör sig ovanpå. */
+const VRECT={"hav":{"terrain_sand_top_a":[0,0,128,128],"terrain_sand_top_b":[130,0,128,128],"terrain_sand_top_c":[260,0,128,128],"terrain_sand_a":[390,0,128,128],"terrain_sand_b":[520,0,128,128],"terrain_sand_c":[650,0,128,128],"terrain_sand_d":[780,0,128,128],"terrain_dirt_a":[0,130,128,128],"terrain_dirt_b":[130,130,128,128],"terrain_dirt_top_a":[260,130,128,128],"terrain_dirt_top_b":[390,130,128,128],"terrain_dirt_top_c":[520,130,128,128],"seaweed_grass_a":[650,130,94,115],"background_seaweed_g":[746,130,94,115],"seaweed_green_a":[842,130,89,114],"seaweed_pink_a":[933,130,89,114],"background_seaweed_a":[0,260,89,114],"fish_brown":[91,260,106,103],"seaweed_grass_b":[199,260,50,90],"background_seaweed_h":[251,260,50,90],"fish_red":[303,260,112,88],"seaweed_green_c":[417,260,70,84],"seaweed_pink_c":[489,260,70,84],"background_seaweed_c":[561,260,70,84],"seaweed_green_b":[633,260,53,80],"seaweed_pink_b":[688,260,53,80],"background_seaweed_b":[743,260,53,80],"fish_green":[798,260,108,76],"seaweed_orange_b":[908,260,82,71],"background_seaweed_f":[0,376,82,71],"seaweed_green_d":[84,376,57,69],"seaweed_pink_d":[143,376,57,69],"background_seaweed_d":[202,376,57,69],"fish_blue":[261,376,114,64],"rock_b":[377,376,102,64],"background_rock_b":[481,376,102,64],"rock_a":[585,376,106,60],"background_rock_a":[693,376,106,60],"fish_orange":[801,376,108,58],"seaweed_orange_a":[911,376,58,58],"background_seaweed_e":[0,449,58,58],"bubble_c":[60,449,48,48],"fish_pink":[110,449,78,46]},"djungel":{"treePalm":[0,0,185,220],"treeLong":[187,0,72,220],"tree":[261,0,101,220],"treeSmall_green2":[364,0,46,136],"snake":[412,0,115,128],"frog":[529,0,116,128],"parrot":[647,0,128,127],"gorilla":[777,0,128,127],"sloth":[0,222,128,127],"crocodile":[130,222,128,127],"bush1":[260,222,220,110],"bushAlt2":[482,222,90,110],"bushAlt3":[574,222,87,105],"bush3":[663,222,117,104],"monkey":[782,222,128,94],"bush4":[912,222,100,92],"bush2":[0,351,105,88],"treeSmall_green1":[107,351,40,86],"treeSmall_greenAlt1":[149,351,40,86],"bushAlt1":[191,351,220,74],"grassMid":[413,351,70,70],"grassCenter":[485,351,70,70],"dirtCenter":[557,351,70,70],"plant":[629,351,32,38],"mushroomRed":[663,351,40,30],"mushroomBrown":[705,351,40,30],"plantPurple":[747,351,54,27],"bush":[803,351,70,26]},"godis":{"cakeMid":[0,0,70,70],"cakeCenter":[72,0,70,70],"chocoMid":[144,0,70,70],"chocoCenter":[216,0,70,70],"lollipopBase":[288,0,8,70],"lollipopBasePink":[298,0,50,70],"lollipopBaseBeige":[350,0,8,70],"lollipopRed":[360,0,70,70],"lollipopGreen":[432,0,70,70],"lollipopWhiteRed":[504,0,70,70],"lollipopWhiteGreen":[576,0,70,70],"lollipopFruitRed":[648,0,70,70],"lollipopFruitGreen":[720,0,70,70],"lollipopFruitYellow":[792,0,70,70],"canePink":[864,0,20,70],"canePinkTop":[886,0,70,70],"canePinkTopAlt":[0,72,70,70],"hillCanePink":[72,72,70,70],"hillCanePinkTop":[144,72,70,70],"hillCaneGreen":[216,72,70,70],"hillCaneGreenTop":[288,72,70,70],"hillCaneRed":[360,72,70,70],"hillCaneRedTop":[432,72,70,70],"cupCake":[504,72,70,70],"cherry":[576,72,55,65],"creamPink":[633,72,70,55],"creamVanilla":[705,72,70,55],"creamChoco":[777,72,70,55],"cookieBrown":[849,72,70,40],"cookieChoco":[921,72,70,40],"cookiePink":[0,144,70,40],"heart":[72,144,45,37],"candyBlue":[119,144,50,36],"candyGreen":[171,144,50,36],"candyRed":[223,144,50,36],"candyYellow":[275,144,50,36]},"is":{"treePineSnow":[0,0,94,220],"treePineFrozen":[96,0,91,220],"treeSnow":[189,0,96,220],"treeFrozen":[287,0,89,220],"treeLongSnow":[378,0,75,220],"treeLongFrozen":[455,0,83,220],"walrus":[540,0,119,128],"narwhal":[661,0,114,128],"owl":[777,0,128,128],"rabbit":[907,0,94,128],"penguin":[0,222,128,117],"tundraMid":[130,222,70,70],"tundraCenter":[202,222,70,70],"iceBlock":[274,222,70,70],"iceBlockAlt":[346,222,70,70],"spikesTop":[418,222,70,70],"spikesTopAlt":[490,222,70,70],"igloo":[562,222,70,70],"iglooDoor":[634,222,70,70],"iglooRoofLeft":[706,222,70,70],"iglooRoofRight":[778,222,70,70],"iglooRoof":[850,222,70,70],"caneRed":[922,222,20,70],"caneRedTop":[944,222,70,70],"pineSapling":[0,341,55,69],"pineSaplingAlt":[57,341,51,69],"rockAlt":[110,341,57,49],"rock":[169,341,70,41],"snowBallBigGround":[241,341,70,39],"plant":[313,341,32,38],"plantAlt":[347,341,54,27],"snowBallGround":[403,341,29,17]},"vulkan":{"treeDead":[0,0,153,220],"cactus1":[155,0,152,220],"cactus2":[309,0,115,220],"snake":[426,0,115,128],"frog":[543,0,116,128],"crocodile":[661,0,128,127],"stoneMid":[791,0,70,70],"stoneCenter":[863,0,70,70],"liquidLava":[935,0,70,70],"liquidLavaTop_mid":[0,222,70,70],"rockHillLeft":[72,222,70,70],"rockHillRight":[144,222,70,70],"rock":[216,222,70,41],"bush":[288,222,70,26]},"slott":{"tower":[0,0,66,220],"towerAlt":[68,0,66,220],"tree":[136,0,101,220],"towerSmall":[239,0,76,180],"cloud2":[317,0,220,175],"castleSmall":[539,0,216,170],"castleSmallAlt":[757,0,216,170],"cloud3":[0,222,220,142],"cloud1":[222,222,220,131],"cloud5":[444,222,220,131],"owl":[666,222,128,128],"horse":[796,222,117,128],"rabbit":[915,222,94,128],"duck":[0,366,128,127],"castleWall":[130,366,120,120],"castleWallAlt":[252,366,120,120],"goat":[374,366,128,119],"bush1":[504,366,220,110],"bush2":[726,366,105,88],"treeSmall_green1":[833,366,40,86],"bushAlt1":[0,495,220,74],"064":[222,495,70,70],"065":[294,495,70,70],"018":[366,495,70,70],"019":[438,495,70,70],"143":[510,495,65,70],"144":[577,495,70,70],"166":[649,495,65,70],"167":[716,495,70,70],"071":[788,495,70,70],"074":[860,495,70,70],"047":[932,495,70,70],"050":[0,571,70,70],"grassMid":[72,571,70,70],"grassCenter":[144,571,70,70],"187":[216,571,46,63],"188":[264,571,46,60]}};
+const vPk=a=>a[Math.floor(Math.random()*a.length)],vRn=(a,b)=>a+Math.random()*(b-a);
+// en del i en sammansatt sak: [bild, x i förhållande till mitten, nederkant (negativ = uppåt), höjd]; allt i sakens storlek
+const P1=n=>[[n,0,0,1]];
+const VARLD=[
+ {id:"hav",namn:"Havet",ico:"🐠",ljud:"havet",sky:["#7FD3F4","#3FA4DE","#1F74B8"],hill:"#A2D6E6",tint:"rgba(162,214,230,.35)",farA:.55,rays:"rgba(255,255,255,",
+  far:["background_seaweed_a","background_seaweed_b","background_seaweed_c","background_seaweed_d","background_seaweed_e","background_seaweed_f","background_seaweed_g","background_seaweed_h","background_rock_a","background_rock_b"],farH:[.9,1.5],
+  ground:{top:["terrain_sand_top_a","terrain_sand_top_b","terrain_sand_top_c"],fill:["terrain_sand_a","terrain_sand_b","terrain_sand_c","terrain_sand_d"]},
+  props:[{p:"seaweed_green_a seaweed_green_b seaweed_green_c seaweed_green_d seaweed_pink_a seaweed_pink_b seaweed_pink_c seaweed_pink_d seaweed_orange_a seaweed_orange_b seaweed_grass_a seaweed_grass_b".split(" ").map(P1),h:[.85,1.35],sway:1,w:4},{p:["rock_a","rock_b"].map(P1),h:[.55,.8],w:1}],
+  movers:{n:["fish_blue","fish_green","fish_orange","fish_pink","fish_red","fish_brown"],kind:"swim",count:5,sz:[.8,1.5]},parts:"bubbles",
+  ceil:{fill:["terrain_dirt_a","terrain_dirt_b"],edge:["terrain_dirt_top_a","terrain_dirt_top_b","terrain_dirt_top_c"],flip:1},panel:"rgba(10,45,95,.28)",bubble:1},
+ {id:"djungel",namn:"Djungeln",ico:"🌴",ljud:"djungel",sky:["#CFF3C9","#7CCB8A","#2F8A57"],hill:"#3E9C62",tint:"rgba(120,200,140,.45)",farA:.6,rays:"rgba(255,250,200,",
+  far:["treePalm","treeLong","tree","treeSmall_green1","treeSmall_greenAlt1","bush1","bushAlt2"],farH:[1.4,2.8],
+  ground:{top:["grassMid"],fill:["grassCenter"]},
+  props:[{p:[P1("treePalm")],h:[2.4,3.4],sway:.5,w:1.2},{p:"bush1 bush2 bush3 bush4 bushAlt1 bushAlt2 bushAlt3".split(" ").map(P1),h:[.7,1.1],w:3},{p:["plant","plantPurple","bush","mushroomRed"].map(P1),h:[.6,.9],sway:1,w:2}],
+  movers:{n:["parrot","monkey","gorilla","snake","sloth","frog"],kind:"peek",count:3,sz:[1,1.4]},parts:"leaves",
+  ceil:{fill:["dirtCenter"],edge:["grassMid"],flip:1},panel:"rgba(10,60,30,.3)"},
+ {id:"godis",namn:"Godislandet",ico:"🍭",ljud:"godis",sky:["#FFF0F7","#FFC9E3","#F59BC8"],hill:"#FBD7EA",tint:"rgba(255,215,235,.5)",farA:.55,
+  far:["hillCanePink","hillCaneGreen","hillCaneRed","cupCake","creamPink","lollipopFruitRed","lollipopWhiteGreen"],farH:[.9,1.6],
+  ground:{top:["cakeMid"],fill:["cakeCenter"]},
+  props:[{p:[["lollipopRed","lollipopGreen","lollipopWhiteRed","lollipopWhiteGreen","lollipopFruitRed","lollipopFruitGreen","lollipopFruitYellow"].map(t=>[["lollipopBase",0,0,1.1],[t,0,-.95,.8]])].flat(),h:[1.2,1.8],sway:.6,w:3},
+    {p:["canePinkTop","canePinkTopAlt","hillCanePink","hillCaneGreen","hillCaneRed"].map(P1),h:[.8,1.2],w:2},
+    {p:[[["cupCake",0,0,.7],["creamPink",0,-.62,.6]],[["cupCake",0,0,.7],["creamVanilla",0,-.62,.6]],[["cupCake",0,0,.7],["creamChoco",0,-.62,.6]]],h:[.9,1.1],w:1.5}],
+  movers:{n:["candyBlue","candyGreen","candyRed","candyYellow","heart","cherry","cookiePink","cookieChoco"],kind:"float",count:5,sz:[.45,.8]},parts:"sprinkles",
+  ceil:{fill:["chocoCenter"],edge:["chocoMid"],flip:1},panel:"rgba(150,40,100,.2)"},
+ {id:"is",namn:"Isvärlden",ico:"❄️",ljud:"vintern",sky:["#1C2D63","#3F66A8","#A9D4F0"],hill:"#E3F3FC",tint:"rgba(200,230,250,.45)",farA:.7,aurora:1,
+  far:["treePineSnow","treePineFrozen","treeSnow","treeFrozen","treeLongSnow","treeLongFrozen"],farH:[1.4,2.6],
+  ground:{top:["tundraMid"],fill:["tundraCenter"]},
+  props:[{p:["pineSapling","pineSaplingAlt"].map(P1),h:[.9,1.4],sway:.3,w:2.5},{p:["plant","plantAlt","rock","rockAlt","snowBallBigGround","snowBallGround"].map(P1),h:[.5,.8],w:2.5}],
+  movers:{n:["penguin","walrus","owl","rabbit"],kind:"peek",count:3,sz:[1,1.3]},parts:"snow",
+  ceil:{fill:["iceBlock","iceBlockAlt"],edge:["spikesTop","spikesTopAlt"],flip:0},panel:"rgba(10,30,70,.32)"},
+ {id:"vulkan",namn:"Vulkanön",ico:"🌋",ljud:"vulkan",sky:["#2A1430","#7A2B33","#E8743A"],hill:"#4A2626",tint:"rgba(90,40,40,.5)",farA:.75,volcano:1,
+  far:["treeDead","cactus1","cactus2"],farH:[1.2,2],
+  ground:{top:["stoneMid"],fill:["stoneCenter"]},lava:1,dark:"rgba(120,60,55,1)",
+  props:[{p:["rock"].map(P1),h:[.5,.75],w:1.5},{p:[P1("treeDead")],h:[1.6,2.4],w:1},{p:[P1("bush")],h:[.6,.8],w:1}],
+  movers:{n:["crocodile","snake","frog"],kind:"peek",count:2,sz:[1,1.3]},parts:"embers",
+  ceil:{fill:["stoneCenter"],edge:["stoneMid"],flip:1,dark:"rgba(120,60,55,1)"},panel:"rgba(30,5,5,.38)"},
+ {id:"slott",namn:"Slottet",ico:"🏰",ljud:"slott",sky:["#CDEBFF","#94CFF4","#6CB3E3"],hill:"#9CCF8E",tint:"rgba(190,225,245,.45)",farA:.75,sun:1,
+  far:["castleWall","castleWallAlt","tower","towerAlt","towerSmall","castleSmall","castleSmallAlt","tree"],farH:[1.5,2.8],
+  ground:{top:["grassMid"],fill:["grassCenter"]},
+  props:[{p:[[["187",0,0,1]],[["188",0,0,1]]],h:[.7,.85],flicker:1,w:1.5},{p:["143","144","166","167"].map(P1),h:[.75,.95],sway:.5,w:1.2},{p:["071","074"].map(P1),h:[.7,.85],w:.8},{p:["bush1","bush2","bushAlt1","treeSmall_green1"].map(P1),h:[.7,1.1],w:2}],
+  movers:{n:["cloud1","cloud2","cloud3","cloud5"],kind:"drift",count:3,sz:[2.5,4]},peek:{n:["owl","horse","rabbit","goat","duck"],count:2,sz:[1,1.3]},parts:"none",
+  ceil:{fill:["064","065"],edge:["018","019"],flip:1},panel:"rgba(20,40,80,.24)"}];
+const vImg={};let VW0=VARLD[0],VS=null;
+function vLoad(id){if(!vImg[id]){const im=new Image();im.onload=()=>{if(BL&&VW0.id===id)vInit();};im.src=`bilder/varldar/${id}.png`;vImg[id]=im;}return vImg[id];}
+function vPut(ctx,n,x,y,w,h,fx,fy){const r=VRECT[VW0.id][n],im=vImg[VW0.id];if(!r||!im||!im.complete||!im.naturalWidth)return;if(h==null)h=w*r[3]/r[2];if(w==null)w=h*r[2]/r[3];
+  ctx.save();ctx.translate(x+(fx?w:0),y+(fy?h:0));ctx.scale(fx?-1:1,fy?-1:1);ctx.drawImage(im,r[0],r[1],r[2],r[3],0,0,w,h);ctx.restore();}
+// en sammansatt sak med nederkanten mitt på (0,0) och storleken u
+function vParts(ctx,parts,u,fl){parts.forEach(([n,dx,dy,hh])=>{const r=VRECT[VW0.id][n];if(!r)return;const h=hh*u,w=h*r[2]/r[3];vPut(ctx,n,(fl?-dx:dx)*u-w/2,dy*u-h,w,h,fl);});}
+function vSet(lvl){VW0=VARLD[(lvl-1)%VARLD.length];VARLD.forEach(w=>vLoad(w.id));if(BL)vInit();if(window.Ljud&&B&&!B.over)Ljud.ambient.start(VW0.ljud);}
+function vInit(){
+  const w=VW0,{W,H,D,dpr,shX,Rs}=BL,S=Math.max(46,Math.min(84,D*1.5)),floor=H-S*.55,still=matchMedia("(prefers-reduced-motion: reduce)").matches;
   const c=document.createElement("canvas");c.width=Math.max(1,Math.round(W*dpr));c.height=Math.max(1,Math.round(H*dpr));const x=c.getContext("2d");x.scale(dpr,dpr);
-  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"#7FD3F4");g.addColorStop(.45,"#3FA4DE");g.addColorStop(1,"#1F74B8");x.fillStyle=g;x.fillRect(0,0,W,H);
-  // bleka saker längre bort ritas fullt på en egen duk och läggs på genomskinligt, så att överlapp inte syns
+  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,w.sky[0]);g.addColorStop(.45,w.sky[1]);g.addColorStop(1,w.sky[2]);x.fillStyle=g;x.fillRect(0,0,W,H);
+  if(w.sun){const sx=W*.82,sy=H*.14,sg=x.createRadialGradient(sx,sy,0,sx,sy,S*1.6);sg.addColorStop(0,"rgba(255,250,215,1)");sg.addColorStop(.35,"rgba(255,245,190,.9)");sg.addColorStop(1,"rgba(255,245,190,0)");x.fillStyle=sg;x.beginPath();x.arc(sx,sy,S*1.6,0,7);x.fill();}
+  if(w.volcano){const vx=W*.72,top=floor-Math.min(H*.42,S*5.5),bw=Math.min(W*.7,S*9);x.fillStyle="#3A1C22";x.beginPath();x.moveTo(vx-bw/2,floor);x.lineTo(vx-S*.7,top);x.quadraticCurveTo(vx,top+S*.35,vx+S*.7,top);x.lineTo(vx+bw/2,floor);x.closePath();x.fill();
+    x.strokeStyle="#FF7A2E";x.lineWidth=S*.12;x.lineCap="round";x.beginPath();x.moveTo(vx-S*.2,top+S*.25);x.quadraticCurveTo(vx-S*.6,top+S*1.6,vx-S*.4,top+S*2.6);x.stroke();x.beginPath();x.moveTo(vx+S*.3,top+S*.22);x.quadraticCurveTo(vx+S*.7,top+S*1.4,vx+S*1.1,top+S*2.1);x.stroke();}
+  // bleka saker längre bort: ritas fullt på en egen duk, tonas mot himlen och läggs på genomskinligt
   const fc=document.createElement("canvas");fc.width=c.width;fc.height=c.height;const fx=fc.getContext("2d");fx.scale(dpr,dpr);
-  for(let i=0;i<Math.ceil(W/(S*1.1))+1;i++){const n=pick(["background_seaweed_a","background_seaweed_b","background_seaweed_c","background_seaweed_d","background_seaweed_e","background_seaweed_f","background_seaweed_g","background_seaweed_h","background_rock_a","background_rock_b"]),sz=S*rnd(.9,1.5);
-    havPut(fx,n,i*S*1.1+rnd(-S*.3,S*.3),floor-S*.55-sz,sz,sz,Math.random()<.5);}
-  for(let px=-S*.3;px<W;px+=S*.9)havPut(fx,"background_terrain_top",px,floor-S*.6,S,S);
-  x.globalAlpha=.55;x.drawImage(fc,0,0,W,H);x.globalAlpha=1;
-  for(let px=0;px<W;px+=S)havPut(x,pick(["terrain_sand_top_a","terrain_sand_top_b","terrain_sand_top_c","terrain_sand_top_a"]),px,floor,S+1,S+1);
-  for(let px=0;px<W;px+=S)havPut(x,pick(["terrain_sand_a","terrain_sand_b","terrain_sand_a","terrain_sand_c","terrain_sand_a","terrain_sand_d"]),px,floor+S,S+1,S+1);
-  // stenar och sjögräs på botten, inte mitt bakom skjutbubblan
-  const free=px=>Math.abs(px-shX)>Rs+D*2.6,weeds=[];
-  for(let px=S*.2;px<W;px+=S*rnd(.55,.95)){if(!free(px))continue;const rock=Math.random()<.2;
-    const n=rock?pick(["rock_a","rock_b"]):pick(["seaweed_green_a","seaweed_green_b","seaweed_green_c","seaweed_green_d","seaweed_pink_a","seaweed_pink_b","seaweed_pink_c","seaweed_pink_d","seaweed_orange_a","seaweed_orange_b","seaweed_grass_a","seaweed_grass_b"]);
-    const sz=S*(rock?rnd(.7,.95):rnd(.85,1.35));
-    if(rock)havPut(x,n,px-sz/2,floor+S*.18-sz,sz,sz,Math.random()<.5);else weeds.push({n,x:px,y:floor+S*.2,sz,ph:rnd(0,7),sp:rnd(.6,1.1),fl:Math.random()<.5});}
-  const fish=[];for(let i=0;i<5;i++)fish.push(havFish(true));
-  HAV={bg:c,S,floor,weeds,fish,ups:[],upT:0,still,t:0};
+  for(let i=0;i<Math.ceil(W/(S*1.15))+1;i++){const n=vPk(w.far),sz=S*vRn(w.farH[0],w.farH[1]);vPut(fx,n,i*S*1.15+vRn(-S*.4,S*.4)-sz*.3,floor-S*.35-sz,null,sz,Math.random()<.5);}
+  fx.globalCompositeOperation="source-atop";fx.fillStyle=w.tint;fx.fillRect(0,0,W,H);fx.globalCompositeOperation="source-over";
+  fx.fillStyle=w.hill;fx.beginPath();fx.moveTo(0,H);for(let px=0;px<=W+8;px+=8)fx.lineTo(px,floor-S*.42+Math.sin(px/(S*1.7))*S*.13+Math.sin(px/(S*.73))*S*.05);fx.lineTo(W,H);fx.closePath();fx.fill();
+  x.globalAlpha=w.farA;x.drawImage(fc,0,0,W,H);x.globalAlpha=1;
+  // marken
+  for(let px=0;px<W;px+=S)vPut(x,vPk(w.ground.top),px,floor,S+1,S+1);
+  for(let py=floor+S;py<H;py+=S)for(let px=0;px<W;px+=S)vPut(x,vPk(w.ground.fill),px,py,S+1,S+1);
+  if(w.dark){x.save();x.globalCompositeOperation="multiply";x.fillStyle=w.dark;x.fillRect(0,floor,W,H-floor);x.restore();}
+  if(w.lava){for(let px=S*.5;px<W;px+=S*vRn(2.5,4)){if(Math.abs(px-shX)<Rs+S)continue;const lw=S*vRn(1,1.6);x.fillStyle="#FF7A1A";x.beginPath();x.ellipse(px,floor+S*.42,lw/2,S*.13,0,0,7);x.fill();x.fillStyle="#FFC23A";x.beginPath();x.ellipse(px,floor+S*.4,lw*.3,S*.06,0,0,7);x.fill();}}
+  // saker på marken, inte mitt bakom skjutbubblan; de som rör sig ritas varje gång
+  const free=px=>Math.abs(px-shX)>Rs+D*2.6,props=[],tot=w.props.reduce((a,p)=>a+p.w,0),used=new Set();
+  for(let px=S*.3;px<W;px+=S*vRn(.6,1)){if(!free(px))continue;let k=Math.random()*tot,p=w.props[0];for(const q of w.props){if((k-=q.w)<=0){p=q;break;}}
+    if(p.once&&used.has(p))p=w.props[w.props.length-1];used.add(p);
+    const o={parts:vPk(p.p),u:S*vRn(p.h[0],p.h[1]),x:px,y:floor+S*.22,fl:Math.random()<.5,sway:p.sway||0,flicker:p.flicker,ph:vRn(0,7),sp:vRn(.6,1.1)};
+    if(o.sway||o.flicker)props.push(o);else{x.save();x.translate(o.x,o.y);vParts(x,o.parts,o.u,o.fl);x.restore();}
+    if(p.h[1]>2)px+=S*.8;}
+  const mv=w.movers,movers=[];
+  VS={bg:c,S,floor,props,movers,peeks:[],parts:[],pT:0,still,t:0};
+  for(let i=0;i<mv.count;i++)movers.push(vMover(mv,true));
+  if(w.peek)for(let i=0;i<w.peek.count;i++)VS.peeks.push(vMover(Object.assign({kind:"peek"},w.peek),true));
 }
-function havFish(anywhere){const {W,H,D,deadY}=BL,dir=Math.random()<.5?1:-1,sz=D*(.8+Math.random()*.7);
-  return{n:["fish_blue","fish_green","fish_orange","fish_pink","fish_red","fish_brown"][Math.floor(Math.random()*6)],dir,sz,x:anywhere?Math.random()*W:dir>0?-sz:W+sz,
-    y:H*.08+Math.random()*Math.max(10,deadY-H*.08),v:D*(.5+Math.random()*.7),boost:0,ph:Math.random()*7};}
-// fiskarna simmar iväg fort när bubblor spricker nära dem
-function havScare(px,py){if(!HAV)return;HAV.fish.forEach(f=>{if(Math.hypot(f.x-px,f.y-py)<BL.D*4){f.dir=f.x>px?1:-1;f.boost=Math.max(f.boost,4);}});}
-function havBack(dt){
-  const {W,H,D}=BL,h=HAV;if(!h)return;h.t+=dt;
+function vMover(m,first){const {W,H,D,deadY}=BL,sz=D*vRn(m.sz[0],m.sz[1]),n=vPk(m.n),dir=Math.random()<.5?1:-1,S=VS?VS.S:D*1.5,floor=VS?VS.floor:H-S*.55;
+  if(m.kind==="peek"){let px;for(let k=0;k<20;k++){px=vRn(sz,W-sz);if(Math.abs(px-BL.shX)>BL.Rs+D*2.2&&px>BL.left+D*2.2)break;}
+    return{m,n,sz,x:px,base:floor+S*.25,up:0,st:"vila",tm:first?vRn(.5,4):vRn(2,6),fl:Math.random()<.5};}
+  if(m.kind==="float")return{m,n,sz,x:vRn(0,W),y:first?vRn(H*.1,H):H+sz,v:D*vRn(.25,.55),ph:vRn(0,7),rot:vRn(-.4,.4)};
+  if(m.kind==="drift")return{m,n,sz,dir,x:first?vRn(0,W):dir>0?-sz:W+sz,y:vRn(H*.04,H*.3),v:D*vRn(.12,.3),boost:0,ph:0};
+  return{m,n,sz,dir,x:first?vRn(0,W):dir>0?-sz:W+sz,y:H*.08+vRn(0,Math.max(10,deadY-H*.08)),v:D*vRn(.5,1.2),boost:0,ph:vRn(0,7)};}
+// djuren blir rädda när bubblor spricker nära: fiskar och moln simmar iväg, djuren på marken dyker ner
+function vScare(px,py){if(!VS)return;VS.movers.concat(VS.peeks).forEach(f=>{if(f.m.kind==="peek"){if(f.st!=="vila"&&Math.abs(f.x-px)<BL.D*5){f.st="ner";}return;}
+  if(f.m.kind==="swim"&&Math.hypot(f.x-px,f.y-py)<BL.D*4){f.dir=f.x>px?1:-1;f.boost=Math.max(f.boost,4);}});}
+function vMove(f,dt,i,list){const {W,H,D}=BL,h=VS;
+  if(f.m.kind==="peek"){f.tm-=dt;const top=f.sz*1.02;
+    if(f.st==="vila"&&f.tm<=0){f.st="upp";}
+    if(f.st==="upp"){f.up=Math.min(top,f.up+top*dt*2);if(f.up>=top){f.st="titta";f.tm=vRn(2,4.5);}}
+    else if(f.st==="titta"&&f.tm<=0)f.st="ner";
+    else if(f.st==="ner"){f.up=Math.max(0,f.up-top*dt*2.5);if(f.up<=0)list[i]=vMover(f.m,false);}
+    return;}
+  if(f.m.kind==="float"){f.y-=f.v*dt;f.x+=Math.sin(h.t*.8+f.ph)*D*.25*dt;if(f.y<-f.sz*2)list[i]=vMover(f.m,false);return;}
+  f.x+=f.dir*f.v*(1+f.boost)*dt;f.boost=Math.max(0,f.boost-dt*3);if(f.x<-f.sz*1.6||f.x>W+f.sz*1.6)list[i]=vMover(f.m,false);}
+function vDrawMover(f){const h=VS,D=BL.D;
+  if(f.m.kind==="peek"){if(f.up<=0)return;const wob=h.still?0:Math.sin(h.t*3+f.x)*.06;bx.save();bx.beginPath();bx.rect(0,0,BL.W,f.base-f.sz*.05);bx.clip();
+    bx.translate(f.x,f.base-f.up+f.sz*.5);bx.rotate(wob);vPut(bx,f.n,-f.sz/2,-f.sz/2,f.sz,null,f.fl);bx.restore();return;}
+  if(f.m.kind==="float"){bx.save();bx.translate(f.x,f.y);bx.rotate(f.rot+(h.still?0:Math.sin(h.t+f.ph)*.2));vPut(bx,f.n,-f.sz/2,-f.sz/2,f.sz,null);bx.restore();return;}
+  const bob=h.still||f.m.kind==="drift"?0:Math.sin(h.t*1.6+f.ph)*D*.12;bx.globalAlpha=f.m.kind==="drift"?.95:.9;vPut(bx,f.n,f.x-f.sz/2,f.y-f.sz/2+bob,f.sz,null,f.dir<0&&f.m.kind!=="drift");bx.globalAlpha=1;}
+function vBack(dt){
+  const {W,H,D}=BL,h=VS,w=VW0;if(!h)return;h.t+=dt;
   bx.drawImage(h.bg,0,0,W,H);
-  // solstrålar uppifrån
-  const sw=h.still?0:Math.sin(h.t*.25)*W*.04;
-  for(let i=0;i<4;i++){const x0=W*(.08+i*.27)+sw*(i%2?1:-1),w0=W*.07,g=bx.createLinearGradient(0,0,0,H*.8);
-    g.addColorStop(0,`rgba(255,255,255,${.15+.05*Math.sin(h.t*.6+i*1.7)})`);g.addColorStop(1,"rgba(255,255,255,0)");bx.fillStyle=g;
-    bx.beginPath();bx.moveTo(x0,0);bx.lineTo(x0+w0,0);bx.lineTo(x0+w0*2.6+W*.12,H*.8);bx.lineTo(x0+W*.12,H*.8);bx.closePath();bx.fill();}
-  // fiskar
-  h.fish.forEach((f,i)=>{if(!h.still){f.x+=f.dir*f.v*(1+f.boost)*dt;f.boost=Math.max(0,f.boost-dt*3);}
-    if(f.x<-f.sz*1.5||f.x>W+f.sz*1.5){h.fish[i]=havFish(false);return;}
-    const bob=h.still?0:Math.sin(h.t*1.6+f.ph)*D*.12;bx.globalAlpha=.9;havPut(bx,f.n,f.x-f.sz/2,f.y-f.sz/2+bob,f.sz,f.sz,f.dir<0);bx.globalAlpha=1;});
-  // luftbubblor som stiger från botten
-  if(!h.still){h.upT-=dt;if(h.upT<=0&&h.weeds.length){h.upT=.25+Math.random()*.5;const wd=h.weeds[Math.floor(Math.random()*h.weeds.length)];
-      h.ups.push({x:wd.x+(Math.random()-.5)*wd.sz*.4,y:wd.y-wd.sz*.4,r:D*(.06+Math.random()*.12),v:D*(1+Math.random()*.9),ph:Math.random()*7});}
-    h.ups.forEach(b=>{b.y-=b.v*dt;b.x+=Math.sin(h.t*3+b.ph)*D*.3*dt;});h.ups=h.ups.filter(b=>b.y>-10);}
-  h.ups.forEach(b=>havPut(bx,"bubble_c",b.x-b.r*2.6,b.y-b.r*2.6,b.r*5.3,b.r*5.3));
-  // sjögräset vajar
-  h.weeds.forEach(wd=>{const a=h.still?0:Math.sin(h.t*wd.sp+wd.ph)*.07;bx.save();bx.translate(wd.x,wd.y);bx.rotate(a);havPut(bx,wd.n,-wd.sz/2,-wd.sz,wd.sz,wd.sz,wd.fl);bx.restore();});
+  // norrsken
+  if(w.aurora){for(let k=0;k<3;k++){const a=.16+.08*Math.sin(h.t*.4+k*2);bx.fillStyle=k===1?`rgba(160,120,255,${a*.8})`:`rgba(90,255,180,${a})`;bx.beginPath();
+    const y0=H*(.1+k*.07);bx.moveTo(0,y0);for(let px=0;px<=W;px+=12)bx.lineTo(px,y0+Math.sin(px/(W*.18)+h.t*(h.still?0:.3)+k)*H*.04);
+    for(let px=W;px>=0;px-=12)bx.lineTo(px,y0+H*.09+Math.sin(px/(W*.22)+h.t*(h.still?0:.25)+k*1.3)*H*.05);bx.closePath();bx.fill();}}
+  // vulkanen glöder och ryker
+  if(w.volcano){const vx=W*.72,top=h.floor-Math.min(H*.42,h.S*5.5),gl=bx.createRadialGradient(vx,top,0,vx,top,h.S*2.2);gl.addColorStop(0,`rgba(255,140,40,${.55+.2*Math.sin(h.t*2)})`);gl.addColorStop(1,"rgba(255,90,20,0)");bx.fillStyle=gl;bx.beginPath();bx.arc(vx,top,h.S*2.2,0,7);bx.fill();
+    for(let k=0;k<5;k++){const ph=((h.still?k*.2:h.t*.12)+k/5)%1;bx.fillStyle=`rgba(80,60,70,${.28*(1-ph)})`;bx.beginPath();bx.arc(vx+Math.sin(ph*5+k)*h.S*.6+ph*h.S*1.5,top-ph*H*.35,h.S*(.35+ph*1.1),0,7);bx.fill();}}
+  // solstrålar
+  if(w.rays){const sw=h.still?0:Math.sin(h.t*.25)*W*.04;for(let i=0;i<4;i++){const x0=W*(.08+i*.27)+sw*(i%2?1:-1),w0=W*.07,g=bx.createLinearGradient(0,0,0,H*.8);
+    g.addColorStop(0,w.rays+(.15+.05*Math.sin(h.t*.6+i*1.7))+")");g.addColorStop(1,w.rays+"0)");bx.fillStyle=g;
+    bx.beginPath();bx.moveTo(x0,0);bx.lineTo(x0+w0,0);bx.lineTo(x0+w0*2.6+W*.12,H*.8);bx.lineTo(x0+W*.12,H*.8);bx.closePath();bx.fill();}}
+  // djur och saker som rör sig
+  if(!h.still){h.movers.forEach((f,i,l)=>vMove(f,dt,i,l));h.peeks.forEach((f,i,l)=>vMove(f,dt,i,l));}
+  h.movers.forEach(vDrawMover);h.peeks.forEach(vDrawMover);
+  // partiklar
+  if(!h.still&&w.parts!=="none"){h.pT-=dt;const P=h.parts;
+    if(h.pT<=0){
+      if(w.parts==="bubbles"&&h.props.length){h.pT=vRn(.25,.75);const wd=vPk(h.props);P.push({k:"b",x:wd.x+vRn(-.2,.2)*wd.u,y:wd.y-wd.u*.4,r:D*vRn(.06,.18),vx:0,vy:-D*vRn(1,1.9),ph:vRn(0,7)});}
+      else if(w.parts==="snow"){h.pT=.05;P.push({k:"s",x:vRn(0,W),y:-6,r:vRn(1.5,3.8),vx:0,vy:vRn(25,55),ph:vRn(0,7)});}
+      else if(w.parts==="leaves"){h.pT=vRn(.5,1.2);P.push({k:"l",x:vRn(0,W),y:-10,r:D*vRn(.12,.2),vx:0,vy:vRn(30,55),ph:vRn(0,7),c:vPk(["#3FA34D","#6CC24A","#2E8B57","#A6D96A"])});}
+      else if(w.parts==="embers"){h.pT=vRn(.05,.15);P.push({k:"e",x:vRn(0,W),y:h.floor+vRn(0,h.S*.5),r:vRn(1.5,3.2),vx:0,vy:-vRn(30,80),ph:vRn(0,7),life:vRn(2,4)});}
+      else if(w.parts==="sprinkles"){h.pT=vRn(.12,.3);P.push({k:"p",x:vRn(0,W),y:-8,r:D*vRn(.08,.12),vx:0,vy:vRn(35,60),ph:vRn(0,7),c:vPk(["#FF5FA2","#3D8BFD","#FFC93C","#2BB673","#fff","#7B61FF"])});}}
+    P.forEach(p=>{p.y+=p.vy*dt;p.x+=Math.sin(h.t*(p.k==="b"?3:1.3)+p.ph)*D*(p.k==="b"?.3:.6)*dt;if(p.life)p.life-=dt;});
+    h.parts=P.filter(p=>p.y>-20&&p.y<H+20&&(p.life===undefined||p.life>0));}
+  h.parts.forEach(p=>{
+    if(p.k==="b")vPut(bx,"bubble_c",p.x-p.r*2.6,p.y-p.r*2.6,p.r*5.3,p.r*5.3);
+    else if(p.k==="s"){bx.fillStyle="rgba(255,255,255,.9)";bx.beginPath();bx.arc(p.x,p.y,p.r,0,7);bx.fill();}
+    else if(p.k==="e"){bx.fillStyle=`rgba(255,${150+Math.round(60*Math.sin(p.ph+h.t*5))},60,${Math.min(1,p.life/1.5)})`;bx.beginPath();bx.arc(p.x,p.y,p.r,0,7);bx.fill();}
+    else{bx.save();bx.translate(p.x,p.y);bx.rotate(h.t*2+p.ph);bx.fillStyle=p.c;if(p.k==="l"){bx.beginPath();bx.ellipse(0,0,p.r,p.r*.45,0,0,7);bx.fill();}else{bRR(-p.r,-p.r*.3,p.r*2,p.r*.6,p.r*.3);bx.fill();}bx.restore();}});
+  // saker som vajar eller fladdrar
+  h.props.forEach(o=>{bx.save();bx.translate(o.x,o.y);if(!h.still){if(o.sway)bx.rotate(Math.sin(h.t*o.sp+o.ph)*.07*o.sway);if(o.flicker){const k=1+Math.sin(h.t*13+o.ph)*.03+Math.sin(h.t*7.3)*.02;bx.scale(1,k);}}
+    vParts(bx,o.parts,o.u,o.fl);bx.restore();
+    if(o.flicker){const fy=o.y-o.u*.8,gl=bx.createRadialGradient(o.x,fy,0,o.x,fy,o.u*.9);gl.addColorStop(0,`rgba(255,190,80,${.3+.08*Math.sin(h.t*9+o.ph)})`);gl.addColorStop(1,"rgba(255,190,80,0)");bx.fillStyle=gl;bx.beginPath();bx.arc(o.x,fy,o.u*.9,0,7);bx.fill();}});
 }
-// taket är en klippa av jord som växer nedåt när taket sjunker
-function havCeil(x0,y0,w,y1){const T=Math.max(28,BL.D*1.1);bx.save();bx.beginPath();bx.rect(x0,y0,w,y1-y0+T*.2);bx.clip();
+// taket: världens eget material som växer nedåt när taket sjunker
+function vCeil(x0,y0,w,y1){const c=VW0.ceil,T=Math.max(28,BL.D*1.1);bx.save();bx.beginPath();bx.rect(x0,y0,w,y1-y0+T*.2);bx.clip();
   for(let px=x0,i=0;px<x0+w;px+=T,i++){
-    for(let py=y1-T*.8-T,j=0;py>y0-T;py-=T,j++)havPut(bx,["terrain_dirt_a","terrain_dirt_b"][(i+j)%2],px,py,T+1,T+1);
-    havPut(bx,["terrain_dirt_top_a","terrain_dirt_top_b","terrain_dirt_top_c"][i%3],px,y1-T*.8,T+1,T,false,true);}
+    for(let py=y1-T*.8-T,j=0;py>y0-T;py-=T,j++)vPut(bx,c.fill[(i+j)%c.fill.length],px,py,T+1,T+1);
+    vPut(bx,c.edge[i%c.edge.length],px,y1-T*.8,T+1,T,false,!!c.flip);}
+  if(c.dark){bx.globalCompositeOperation="multiply";bx.fillStyle=c.dark;bx.fillRect(x0,y0,w,y1-y0+T*.2);bx.globalCompositeOperation="source-over";}
   bx.restore();}
 
 /* ---------- Ritning (Bubbeljakten) ---------- */
@@ -1952,13 +2042,13 @@ function bFact(l){
 }
 function bDraw(){
   if(!BL)return;const {W,H,D,R,left,top,deadY,shX,shY,Rs,Rn}=BL,bw=BCOLS*D,cy=bCeil();
-  bx.clearRect(0,0,W,H);havBack(B.dtD||0);
+  bx.clearRect(0,0,W,H);vBack(B.dtD||0);
   bx.save();if(B.shake)bx.translate((Math.random()-.5)*8*B.shake,0);
   // spelplanen: mörkare glas så att talen syns mot havet
-  bx.fillStyle="rgba(10,45,95,.28)";bRR(left-5,top-5,bw+10,deadY-top+8,14);bx.fill();bx.strokeStyle="rgba(255,255,255,.3)";bx.lineWidth=2;bx.stroke();
+  bx.fillStyle=VW0.panel;bRR(left-5,top-5,bw+10,deadY-top+8,14);bx.fill();bx.strokeStyle="rgba(255,255,255,.3)";bx.lineWidth=2;bx.stroke();
   // taket (sjunker från bana 3 och skakar strax innan)
   const warn=B.P.drop&&B.since>=B.P.drop-1&&B.state==="aim",wob=warn?Math.sin(performance.now()/40)*1.5:0;
-  havCeil(left-5,top-5+wob,bw+10,Math.max(top+3,cy-2)+wob);
+  vCeil(left-5,top-5+wob,bw+10,Math.max(top+3,cy-2)+wob);
   // strecket som bubblorna inte får nå
   bx.strokeStyle="rgba(255,120,128,.9)";bx.lineWidth=3;bx.setLineDash([10,8]);bx.beginPath();bx.moveTo(left,deadY);bx.lineTo(left+bw,deadY);bx.stroke();bx.setLineDash([]);
   // bubblorna
@@ -1984,7 +2074,7 @@ function bDraw(){
   // elevens djur, skotten kvar, skjutbubblan och nästa uppgift
   const ps=Math.min(D*1.8,80),hop=Math.sin(B.petJ*Math.PI)*D*.6;
   if(avImg.complete)bx.drawImage(avImg,Math.max(4,left),shY-ps*.75-hop,ps,ps*1.167);
-  {const cx0=Math.max(4,left)+ps/2,cy0=shY-ps*.75-hop+ps*.6,rr=ps*.66,g=bx.createRadialGradient(cx0-rr*.3,cy0-rr*.35,rr*.1,cx0,cy0,rr);
+  if(VW0.bubble){const cx0=Math.max(4,left)+ps/2,cy0=shY-ps*.75-hop+ps*.6,rr=ps*.66,g=bx.createRadialGradient(cx0-rr*.3,cy0-rr*.35,rr*.1,cx0,cy0,rr);
     g.addColorStop(0,"rgba(255,255,255,.18)");g.addColorStop(.75,"rgba(190,235,255,.12)");g.addColorStop(1,"rgba(255,255,255,.45)");
     bx.fillStyle=g;bx.beginPath();bx.arc(cx0,cy0,rr,0,7);bx.fill();bx.strokeStyle="rgba(255,255,255,.75)";bx.lineWidth=2;bx.stroke();
     bx.fillStyle="rgba(255,255,255,.7)";bx.beginPath();bx.ellipse(cx0-rr*.45,cy0-rr*.5,rr*.22,rr*.11,-.7,0,7);bx.fill();}
