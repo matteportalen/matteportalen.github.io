@@ -210,6 +210,15 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .towerpad .dropbtn{height:auto;position:absolute;inset:0 12px;border-radius:20px;background:linear-gradient(180deg,#FFC93C,#FF9F43);color:#1D2B53;font-size:2.2rem;font-weight:800;box-shadow:0 6px 0 #C96A0C;animation:dpulse 1s ease-in-out infinite}
 .towerpad .dropbtn:active{transform:translateY(4px);box-shadow:0 2px 0 #C96A0C}
 @keyframes dpulse{50%{filter:brightness(1.08)}}
+/* Tornbyggets manöverbord: gula byggknappar ur Kenneys "UI Pack" (CC0) i spel/bilder/kontroller/ (border-image, så att de kan ha valfri storlek) */
+#game.bygg .towerpad{margin:0 auto;padding:18px 12px 12px;background:linear-gradient(#323642,#20232B);border-radius:0 0 20px 20px;box-shadow:0 5px 0 #121419;gap:9px}
+#game.bygg .towerpad::before{content:"";position:absolute;left:0;right:0;top:0;height:9px;background:repeating-linear-gradient(-45deg,#FFC93C 0 10px,#1D2B53 10px 20px)}
+#game.bygg .towerpad button{height:54px;border-radius:0;background:none;box-shadow:none;border-style:solid;border-width:10px 10px 15px;border-image:url(bilder/kontroller/gul.png) 34 34 44 34 fill stretch;color:#5A3A00;padding:0;line-height:1;text-shadow:0 1px 0 rgba(255,255,255,.5)}
+#game.bygg .towerpad button:active{transform:translateY(3px);filter:brightness(.95)}
+#game.bygg .towerpad [data-k="del"]{border-image-source:url(bilder/kontroller/gra.png);color:#1D2B53}
+#game.bygg .towerpad .okb{border-image-source:url(bilder/kontroller/gron.png);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+#game.bygg .towerpad .dropbtn{inset:18px 12px 12px;height:auto;border-width:14px 18px 22px;border-image:url(bilder/kontroller/gul_bred.png) 34 50 46 50 fill stretch;font-size:2.3rem;color:#5A3A00;letter-spacing:1px}
+#game.bygg .towerpad .dropbtn:active{transform:translateY(4px)}
 .towerpad .okb{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.3rem}
 .tans{display:inline-block;min-width:1.6em;padding:0 .15em;border-radius:12px;border:3px solid var(--accent);color:var(--accent);background:#EEF1FF;line-height:1.1}
 .gamecard.kiosk{background:linear-gradient(135deg,#FF5FA2,#7B61FF);box-shadow:0 6px 0 #4B3AA8;margin-top:14px}
@@ -383,7 +392,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="stage"><canvas id="cv" aria-label="Spelplan"></canvas><div class="overlay" id="count" hidden></div></div>
   <div class="carbtns" id="carBtns" hidden><button class="lane" id="carL" aria-label="Byt fil åt vänster"><i></i></button><button class="turbo" id="carTurbo" aria-label="Turbo"><i></i>TURBO</button><button class="lane" id="carR" aria-label="Byt fil åt höger"><i></i></button></div>
   <div class="spacebtns" id="spaceBtns" hidden><button id="aimL" aria-label="Vrid kanonen åt vänster"><i></i></button><button class="fire" id="fireBtn" aria-label="Skjut"><i></i>SKJUT!</button><button id="aimR" aria-label="Vrid kanonen åt höger"><i></i></button></div>
-  <div class="towerpad" id="towerPad" hidden><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okb">OK</button><button class="dropbtn" id="dropBtn" hidden>Släpp! 🏗️</button></div>
+  <div class="towerpad" id="towerPad" hidden><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okb">OK</button><button class="dropbtn" id="dropBtn" hidden>⬇ SLÄPP!</button></div>
   <p class="hint" id="hint">Tryck högt, i mitten eller lågt för att flyga dit.</p>
 </div>
 
@@ -1140,7 +1149,7 @@ const MATTER_URL="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.20.0/matter
 const MATTER_SRI="sha512-6+7rTBmR6pRFe9fa0vCFjFaHZj/XYa7774bEBzRtxgdpIJOS++R3cKd6Prg/eJmxtsJotd8KAg4g57uuVQsZKA==";
 const crewImg=new Image();crewImg.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(Object.assign({},owlCfg,{hat:"bygg"}),"",true));
 function loadMatter(){return new Promise((ok,no)=>{if(window.Matter)return ok();const s=document.createElement("script");s.src=MATTER_URL;s.integrity=MATTER_SRI;s.crossOrigin="anonymous";s.referrerPolicy="no-referrer";s.onload=()=>ok();s.onerror=no;document.head.appendChild(s);});}
-function stopTower(){if(T)T.over=true;cancelAnimationFrame(traf);clearTimeout(chirpT);if(T&&T.tm)T.tm.forEach(clearTimeout);T=null;$("towerPad").hidden=true;$("dropBtn").hidden=true;$("game").classList.remove("tower");window.Ljud&&Ljud.space.stop();}
+function stopTower(){if(T)T.over=true;cancelAnimationFrame(traf);clearTimeout(chirpT);if(T&&T.tm)T.tm.forEach(clearTimeout);T=null;$("towerPad").hidden=true;$("dropBtn").hidden=true;$("game").classList.remove("tower","bygg");window.Ljud&&Ljud.space.stop();}
 let chirpT=0;
 function chirpLoop(){clearTimeout(chirpT);if(!T||T.over)return;const z=T.n;if(z>=5&&z<=11&&!document.hidden)window.Ljud&&Ljud.chirp();chirpT=setTimeout(chirpLoop,1800+Math.random()*2500);}
 const tLater=(f,ms)=>{const g=T;const id=setTimeout(()=>{if(T===g&&!g.over)f();},ms);g.tm.push(id);};
@@ -1153,7 +1162,7 @@ const topW=n=>-FH-n*BH; // världens y för tornets topp med n balkar
 
 async function startTower(){
   if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
-  OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=false;$("game").classList.add("tower");
+  OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=false;$("game").classList.add("tower","bygg");
   $("hint").textContent="Svara rätt, så hämtar kranen en balk. Tryck Släpp! när balken är rakt ovanför tornet.";
   showOnly("game");resize();
   const me={};T=me;
