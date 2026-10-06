@@ -199,6 +199,28 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .hbub::after{content:"";position:absolute;right:26px;top:100%;border:7px solid transparent;border-top-color:#4B5BD6}
 .howl{margin-top:58px}
 @media(max-width:619px){.hvis{justify-content:space-between}}
+.hrbtn{height:40px;border-radius:999px;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:1rem;padding:0 12px;color:var(--ink);margin-left:6px}
+.hrbtn[aria-expanded="true"]{background:var(--ink);color:#fff}
+@media(max-width:420px){.hrbtn span{display:none}}
+.hrpanel{position:fixed;z-index:30;background:var(--card);box-shadow:0 10px 30px rgba(29,43,83,.3),0 0 0 1px rgba(29,43,83,.08);padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
+@media(min-width:900px){body.hropen{padding-right:384px}.hrpanel{right:16px;top:76px;width:360px;border-radius:20px;max-height:calc(100vh - 92px);overflow:auto}}
+@media(max-width:899px){.hrhops button{height:38px}.hrpanel{gap:6px;left:0;right:0;bottom:0;border-radius:20px 20px 0 0;max-height:74vh;overflow:auto;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}}
+.hrhead{display:flex;align-items:center;justify-content:space-between}
+.hrtask{margin-left:6px;background:var(--bg);border-radius:999px;padding:1px 10px;font-size:.95rem;color:var(--ink)}
+.hrx{width:36px;height:36px;border-radius:50%;background:var(--bg);font-weight:800}
+.hrgrid{display:grid;grid-template-columns:repeat(10,1fr);gap:2px;background:var(--line);border-radius:10px;padding:2px}
+.hrgrid i{font-style:normal;background:#fff;aspect-ratio:1;display:grid;place-items:center;font-weight:800;font-size:clamp(.72rem,2.6vw,.95rem);border-radius:4px;cursor:pointer;user-select:none;color:var(--ink)}
+.hrgrid i.st{background:#3D8BFD;color:#fff}
+.hrgrid i.on-p{background:#C9F0D9}.hrgrid i.on-m{background:#FBD3D4}
+.hrgrid i.end{box-shadow:0 0 0 3px #1D2B53 inset}
+.hrhops{display:grid;grid-template-columns:repeat(3,1fr);grid-template-areas:". up ." "lf un rt" ". dn .";gap:6px;max-width:260px;margin:0 auto;width:100%}
+.hrhops button{height:44px;border-radius:12px;font-weight:800;font-size:1.05rem;background:#fff}
+.hrhops .pl{box-shadow:0 0 0 2px #2BB673 inset,0 3px 0 #157548;color:#157548;background:#EFFAF4}
+.hrhops .mi{box-shadow:0 0 0 2px #E5484D inset,0 3px 0 #B8323A;color:#B8323A;background:#FDEFEF}
+.hrhops .un{box-shadow:0 0 0 2px var(--line) inset,0 3px 0 var(--line);color:var(--muted)}
+.hrhops button:active{transform:translateY(2px)}
+.hrhops .up{grid-area:up}.hrhops .dn{grid-area:dn}.hrhops .lf{grid-area:lf}.hrhops .rt{grid-area:rt}.hrhops .un{grid-area:un}
+.hrsum{text-align:center;font-weight:800;color:var(--muted);font-size:.95rem;min-height:1.3em}
 .qbtn{width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:1.25rem;color:#4B5BD6}
 .hmodal{position:fixed;inset:0;background:rgba(29,43,83,.55);display:grid;place-items:center;z-index:9;padding:12px}
 .hmodal[hidden]{display:none}
@@ -252,7 +274,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Spel -->
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><button class="qbtn" id="qbtn" aria-label="Så här räknar du">?</button><span class="gright"><span class="info" id="info"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></span></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><button class="qbtn" id="qbtn" aria-label="Så här räknar du">?</button><button class="hrbtn" id="hrBtn" aria-expanded="false">💯<span> Hundrarutan</span></button><span class="gright"><span class="info" id="info"></span><span class="hpet pet" id="hpet" aria-hidden="true"></span></span></div>
   <div id="raceBox" hidden>
     <div class="track">
       <div class="lane"><span class="who">Du</span><span class="flag" title="Hållplatsen">🚏</span><div class="car" id="carMe"></div></div>
@@ -276,6 +298,14 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okbtn">OK</button>
   </div>
 </section>
+
+<!-- Hundrarutan som hjälp (visar aldrig svaret; eleven hoppar själv) -->
+<div class="hrpanel" id="hrPanel" hidden role="dialog" aria-label="Hundrarutan">
+  <div class="hrhead"><b>💯 Hundrarutan <span class="hrtask" id="hrTask"></span></b><button class="hrx" id="hrClose" aria-label="Stäng">✕</button></div>
+  <div class="hrgrid" id="hrGrid"></div>
+  <div class="hrhops"><button data-h="-10" class="mi up">↑ −10</button><button data-h="-1" class="mi lf">← −1</button><button data-h="undo" class="un">↶</button><button data-h="1" class="pl rt">+1 →</button><button data-h="10" class="pl dn">+10 ↓</button></div>
+  <div class="hrsum" id="hrSum"></div>
+</div>
 
 <!-- Resultat -->
 <section id="result" class="screen result" hidden>
@@ -345,7 +375,7 @@ function levelInfo(lv){
   if(lv===3)return['Hela strategin',p?'Addera först tiokompisarna, sedan resten.':'Subtrahera först ner till tiotalet, sedan resten.'];
   return['Racet',`${RACE_LEN} uppgifter utan stöd. Kör mot ditt spöke.`];
 }
-function openHome(){
+function openHome(){hrOpen(false);
   G=null;if(window.tioHowtoHome)tioHowtoHome();
   $$('#segRange button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===set.range));
   $$('#segOp button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===set.op));
@@ -529,8 +559,25 @@ function nextTask(){
   G.t=G.tasks[G.i];G.P=plan(G.t,G.lv);G.steps=G.P.steps;G.si=0;G.tries=0;G.taskMissed=false;G.tStart=performance.now();
   prevCells=null;$('#info').textContent=G.race?`${G.correct} / ${G.total}`:`Uppgift ${G.i+1} av ${G.total}`;
   if(!G.race)renderVisual();
+  hrReset();
   startStep();
 }
+/* ---------- Hundrarutan som hjälp: börjar på uppgiftens första tal, eleven hoppar själv (visar aldrig svaret) ---------- */
+const HR={start:null,path:[]};
+function hrRows(){return set.range===20?2:10;}
+function hrReset(){if(!G||!G.t)return;HR.start=G.t.a;HR.path=[G.t.a];hrDraw();}
+function hrDraw(){if($('#hrPanel').hidden)return;if(G&&G.t)$('#hrTask').textContent=`${G.t.a} ${G.t.op==='minus'?'−':'+'} ${G.t.b}`;const n=hrRows()*10,end=HR.path[HR.path.length-1],on=new Map();
+  HR.path.forEach((v,i)=>{if(i)on.set(v,v>HR.path[i-1]?'on-p':'on-m');});
+  $('#hrGrid').innerHTML=Array.from({length:n},(_,i)=>{const v=i+1;let c=v===HR.start?'st':on.get(v)||'';if(v===end&&HR.path.length>1)c+=' end';return`<i class="${c}" data-n="${v}">${v}</i>`;}).join('');
+  const steps=HR.path.length-1,ten=HR.path.slice(1).filter((v,i)=>Math.abs(v-HR.path[i])===10).length,one=steps-ten;
+  $('#hrSum').textContent=steps?`Du har hoppat ${ten?ten+(ten===1?' tiohopp':' tiohopp'):''}${ten&&one?' och ':''}${one?one+(one===1?' enhopp':' enhopp'):''} och står på ${end}.`:`Du står på ${HR.start}. Hoppa med knapparna.`;}
+function hrOpen(on){$('#hrPanel').hidden=!on;document.body.classList.toggle('hropen',on);$('#hrBtn').setAttribute('aria-expanded',on);if(on){if(HR.start==null||!HR.path.length)hrReset();hrDraw();}}
+$('#hrBtn').onclick=()=>hrOpen($('#hrPanel').hidden);$('#hrClose').onclick=()=>hrOpen(false);
+$('#hrGrid').addEventListener('click',e=>{const c=e.target.closest('i');if(!c)return;HR.start=+c.dataset.n;HR.path=[HR.start];hrDraw();});
+$$('.hrhops button').forEach(b=>b.onclick=()=>{const h=b.dataset.h,cur=HR.path[HR.path.length-1];
+  if(h==='undo'){if(HR.path.length>1)HR.path.pop();hrDraw();return;}
+  const nx=cur+(+h),max=hrRows()*10;if(nx<1||nx>max){$('#hrSum').textContent=nx>max?`Hundrarutan tar slut vid ${max}.`:'Hundrarutan börjar på 1.';return;}
+  HR.path.push(nx);window.Ljud&&Ljud.pop&&Ljud.pop(Math.min(12,HR.path.length));hrDraw();});
 function startStep(){G.input='';G.tries=0;G.busy=false;$('#qbox').className='qbox';$('#feedback').textContent='';renderRows();}
 function boxHtml(k){const idx=G.steps.findIndex(s=>s.k===k),done=idx<G.si,act=idx===G.si;
   const val=done?G.steps[idx].v:act?(G.input||'?'):'?';return`<span class="box${done?' done':''}${act?' act':''}">${val}</span>`;}
@@ -604,7 +651,7 @@ document.addEventListener('keydown',e=>{
 $('#quit').onclick=()=>{if(G){G.over=true;cancelAnimationFrame(G.raf);}$('#count').hidden=true;openHome();};
 
 /* ---------- Resultat ---------- */
-function finish(){
+function finish(){hrOpen(false);
   if(!G||G.over)return;G.over=true;cancelAnimationFrame(G.raf);
   let party=false;$('#rUnlock').hidden=true;$('#rNext').hidden=true;$('#rSlow').hidden=true;
   if(G.race){
