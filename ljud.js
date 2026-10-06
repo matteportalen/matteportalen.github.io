@@ -100,7 +100,7 @@
         Object.assign(this,{g,nodes:[n,l]});this.timer=setTimeout(bub,900);},
       stop(){if(!this.g)return;clearTimeout(this.timer);const c=ac(),t=c.currentTime;this.g.gain.setTargetAtTime(0.0001,t,.25);this.nodes.forEach(x=>{try{x.stop(t+1.2)}catch(e){}});this.g=null;}
     },
-    /* Bakgrundsljud för Skattjakten: start('tradgarden' | 'grottan' | 'vintern'), stop() */
+    /* Bakgrundsljud för Skattjakten och Bubbeljakten: start('tradgarden' | 'grottan' | 'vintern' | 'havet'), stop() */
     ambient:{
       start(kind){if(!isOn())return;this.stop(true);const c=ac();if(!c)return;
         const g=c.createGain();g.gain.setValueAtTime(0.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(1,c.currentTime+2);g.connect(c.destination);
@@ -122,6 +122,10 @@
           /* droppar med eko */
           const d=c.createDelay(1.5),fb=c.createGain(),eg=c.createGain();d.delayTime.value=.42;fb.gain.value=.38;eg.gain.value=.6;d.connect(fb).connect(d);d.connect(eg).connect(g);
           later(()=>{const fr=1300+Math.random()*900;blip(fr,0,.09,.06,fr*.45);blip(fr,0,.09,.05,fr*.45,d);},1400,4200);
+        }else if(kind==='havet'){
+          /* Bubbeljakten under vatten: dovt brus som sväller och små bubblor */
+          wind('lowpass',300,.6,.035,.06,110);
+          later(()=>{const n=1+Math.floor(Math.random()*4);for(let i=0;i<n;i++){const fr=420+Math.random()*600;blip(fr,i*.09,.07,.02,fr*2.1);}},1500,4500);
         }else{
           wind('bandpass',700,.8,.05,.11,450);
           later(()=>{const fr=2800+Math.random()*1600;blip(fr,0,.5,.012);blip(fr*1.5,.07,.45,.008);},4000,9000);
