@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tallinjen – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1200px;margin:0 auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+.ttitle{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:4px 0 10px}
+.ttitle h1{font-size:2rem;line-height:1;margin:0;font-weight:800}
+.seg{display:flex;background:var(--card);border-radius:14px;padding:3px;box-shadow:0 3px 0 var(--line)}
+.seg button{border-radius:11px;padding:7px 12px;font-weight:800;font-size:.95rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.tclear{height:42px;padding:0 14px;border-radius:14px;background:var(--card);font-weight:800;font-size:1rem;box-shadow:0 0 0 2px var(--line) inset,0 4px 0 var(--line)}
+.tclear:active{transform:translateY(3px);box-shadow:0 0 0 2px var(--line) inset}
+/* tallinjen */
+.linecard{background:var(--card);border-radius:22px;box-shadow:0 5px 0 var(--line);padding:6px 8px}
+.scroller{overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+body.wide #nl{width:980px;max-width:none}
+#nl{display:block;width:100%;height:auto;touch-action:manipulation;user-select:none;-webkit-user-select:none;cursor:pointer}
+#nl text{font-family:var(--font)}
+.hint{color:var(--muted);font-weight:700;font-size:.95rem;text-align:center;margin:2px 0 4px}
+/* panelerna under linjen */
+.panels{display:grid;gap:12px;margin-top:12px}
+@media(min-width:900px){.panels{grid-template-columns:1fr 1.15fr 1fr;align-items:stretch}}
+.tcard{background:var(--card);border-radius:18px;padding:10px 12px 12px;box-shadow:0 4px 0 var(--line)}
+.tcap{font-weight:800;font-size:.8rem;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.htask{display:flex;gap:8px;align-items:center;justify-content:center}
+.htask input,.own input{width:74px;height:52px;border-radius:14px;border:2px solid var(--line);background:#F7FAFF;font:inherit;font-weight:800;font-size:1.55rem;text-align:center;color:var(--ink)}
+.htask input:focus,.own input:focus{outline:0;border-color:var(--accent);background:#fff}
+.opb{width:52px;height:52px;border-radius:50%;background:var(--bg);font-size:1.6rem;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.tbtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.tbtns button{height:44px;border-radius:14px;font-weight:800}
+#tGo{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark)}
+#tRand{background:var(--card);box-shadow:0 0 0 2px var(--line) inset,0 4px 0 var(--line)}
+.tbtns button:active{transform:translateY(3px);box-shadow:none}
+.hops{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.hops button{height:56px;border-radius:16px;font-weight:800;font-size:1.3rem;background:var(--card);box-shadow:0 0 0 2px var(--c) inset,0 4px 0 var(--cd);color:var(--cd)}
+.hops .pl{--c:#2BB673;--cd:#157548;background:#EFFAF4}.hops .mi{--c:#E5484D;--cd:#B8323A;background:#FDEFEF}.hops .un{--c:var(--line);--cd:#8FA0BF;color:var(--muted);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1}.hops .un small{font-size:.7rem}
+.hops button:active{transform:translateY(3px)}
+@media(hover:hover){.hops .pl:hover,.hops .mi:hover{background:var(--c);color:#fff}}
+.own{display:flex;gap:8px;align-items:center;justify-content:center;margin-top:10px;flex-wrap:wrap;font-weight:800}
+.own input{width:64px;height:46px;font-size:1.3rem}
+.own button{height:46px;border-radius:14px;font-weight:800;padding:0 12px}
+@media(max-width:520px){.own span{flex-basis:100%;text-align:center;margin-bottom:-4px}.own button{padding:0 10px}}
+.own .pl{background:#EFFAF4;color:#157548;box-shadow:0 0 0 2px #2BB673 inset,0 4px 0 #157548}
+.own .mi{background:#FDEFEF;color:#B8323A;box-shadow:0 0 0 2px #E5484D inset,0 4px 0 #B8323A}
+.hsum{font-weight:800;font-size:1.1rem;text-align:center;line-height:1.35}
+.hsum .big{display:block;font-size:1.7rem;color:var(--accent);margin-top:4px}
+.hsum.ok{color:var(--good-dark)}.hsum.ok .big{color:var(--good)}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:14px;font-weight:800;z-index:9}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <a class="back" href="../">← Verktygslådan</a>
+  <div class="ttitle"><h1>📏 Tallinjen</h1>
+    <div class="seg" id="seg"><button data-m="10">0–10</button><button data-m="20">0–20</button><button data-m="100">0–100</button></div>
+    <button class="tclear" id="clear">🧹 Rensa</button></div>
+  <div class="linecard"><div class="scroller" id="scr"><svg id="nl" viewBox="0 0 1000 240" aria-label="Tallinjen"></svg></div><p class="hint" id="hint"></p></div>
+  <div class="panels">
+    <div class="tcard"><div class="tcap">Uppgift</div>
+      <div class="htask"><input id="tA" inputmode="numeric" maxlength="3" aria-label="Första talet"><button class="opb" id="tOp" aria-label="Plus eller minus">+</button><input id="tB" inputmode="numeric" maxlength="3" aria-label="Andra talet"></div>
+      <div class="tbtns"><button id="tGo">▶ Starta</button><button id="tRand">🎲 Ny uppgift</button></div></div>
+    <div class="tcard"><div class="tcap">Hoppa</div>
+      <div class="hops"><button class="mi" data-h="-10">−10</button><button class="mi" data-h="-1">−1</button><button class="un" data-h="undo" aria-label="Ångra"><span>↶</span><small>Ångra</small></button><button class="pl" data-h="1">+1</button><button class="pl" data-h="10">+10</button></div>
+      <div class="own"><span>Hoppa med</span><input id="own" inputmode="numeric" maxlength="2" value="2" aria-label="Hur långt hoppet är"><button class="mi" id="ownM">− bakåt</button><button class="pl" id="ownP">+ framåt</button></div></div>
+    <div class="tcard"><div class="tcap">Så här hoppade du</div><div class="hsum" id="sum"></div></div>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Tallinjen" data-ikon="📏" data-hem="../../" data-nav="av"></script>
+<script>
+/* Tallinjen: tryck på ett tal för att börja, hoppa fram (gröna bågar) och tillbaka (röda bågar), alla ovanför linjen.
+   Inget sparas, utom vilken tallinje man valde (sessionStorage). */
+const $=id=>document.getElementById(id);
+let MAX=+(sessionStorage.getItem('mp-tallinje')||20),start=null,path=[],task=null;
+const NS='http://www.w3.org/2000/svg',el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+let VW=1000,L=40,R=960,Y=180;const X=n=>L+(R-L)*n/MAX;
+function fit(){const wide=innerWidth<600&&MAX===100;document.body.classList.toggle('wide',wide);const nv=innerWidth<600&&!wide?440:1000;if(nv===VW)return false;VW=nv;L=VW<1000?20:40;R=VW-30;Y=VW<1000?140:180;$('nl').setAttribute('viewBox',`0 0 ${VW} ${VW<1000?180:240}`);return true;}
+let tT;function toast(m){const t=$('toast');t.textContent=m;t.hidden=false;clearTimeout(tT);tT=setTimeout(()=>t.hidden=true,2200);}
+function draw(){const s=$('nl');s.innerHTML='';
+  // linjen med pil
+  s.append(el('line',{x1:L-20,y1:Y,x2:R+24,y2:Y,stroke:'#1D2B53','stroke-width':4,'stroke-linecap':'round'}));
+  s.append(el('path',{d:`M${R+30} ${Y} l-14 -9 v18z`,fill:'#1D2B53'}));
+  const end=path.length?path[path.length-1]:null;
+  for(let n=0;n<=MAX;n++){const x=X(n),big=MAX<=20||n%10===0,mid=MAX===100&&n%5===0&&!big;
+    s.append(el('line',{x1:x,y1:Y-(big?16:mid?11:7),x2:x,y2:Y+(big?16:mid?11:7),stroke:'#1D2B53','stroke-width':big?3:2}));
+    const near=MAX===100&&n%10===0&&[start,end].some(v=>v!=null&&v%10&&Math.abs(v-n)<=(VW<1000?5:3));
+    if(big&&!near){const t=el('text',{x,y:Y+(VW<1000?36:46),'text-anchor':'middle','font-size':VW<1000?(MAX===100?22:MAX===20?15:22):(MAX===100?26:MAX===20?24:30),'font-weight':800,fill:n===start?'#3D5AFE':n===end&&path.length>1?'#1D2B53':'#56668F'});t.textContent=n;s.append(t);}}
+  // hoppen: bågar ovanför linjen, gröna framåt och röda bakåt; hopp över samma sträcka staplas högre
+  const used=[],labs=[];
+  for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],d=b-a,fw=d>0,x1=X(a),x2=X(b),lo=Math.min(x1,x2),hi=Math.max(x1,x2);
+    let lv=0;while(used.some(u=>u.lv===lv&&u.lo<hi-1&&u.hi>lo+1))lv++;used.push({lo,hi,lv});
+    const h=Math.min(Y-35,Math.min(VW<1000?80:110,26+Math.sqrt(hi-lo)*4.2)+lv*30),cy=Y-6-2*h,cx=(x1+x2)/2,col=fw?'#2BB673':'#E5484D',y0=Y-6;
+    s.append(el('path',{d:`M${x1} ${y0} Q${cx} ${cy} ${x2} ${y0}`,fill:'none',stroke:col,'stroke-width':hi-lo<20?3:4,'stroke-linecap':'round'}));
+    const tx=x2-cx,ty=y0-cy,len=Math.hypot(tx,ty),ux=tx/len,uy=ty/len,px=-uy,py=ux,k=Math.min(13,(hi-lo)*.5+5);
+    s.append(el('path',{d:`M${x2} ${y0} L${x2-ux*k+px*k*.55} ${y0-uy*k+py*k*.55} L${x2-ux*k-px*k*.55} ${y0-uy*k-py*k*.55}Z`,fill:col}));
+    // små hopp i rad med samma längd får en gemensam etikett ("5 hopp +1")
+    const lab=(fw?'+':'−')+Math.abs(d),small=hi-lo<34,last=labs[labs.length-1];
+    if(small&&last&&last.small&&last.d===d&&last.i===i-1){last.n++;last.i=i;last.lo=Math.min(last.lo,lo);last.hi=Math.max(last.hi,hi);last.top=Math.min(last.top,y0-h);}
+    else labs.push({d,lab,col,small,n:1,i,lo,hi,top:y0-h});}
+  labs.forEach(o=>{const txt=o.n>1?`${o.n} hopp ${o.lab}`:o.lab,fs=o.small&&o.n===1?17:20,w=txt.length*fs*.55+12,cx=(o.lo+o.hi)/2,ly=o.top-6;
+    s.append(el('rect',{x:cx-w/2,y:ly-fs*.8,width:w,height:fs*1.1,rx:fs*.55,fill:'#fff',opacity:.9}));
+    const t=el('text',{x:cx,y:ly+fs*.1,'text-anchor':'middle','font-size':fs,'font-weight':800,fill:o.col});t.textContent=txt;s.append(t);});
+  // startpunkt och där man står nu
+  if(start!=null){s.append(el('circle',{cx:X(start),cy:Y,r:12,fill:'#3D5AFE',stroke:'#fff','stroke-width':3}));}
+  if(end!=null&&path.length>1){s.append(el('circle',{cx:X(end),cy:Y,r:12,fill:'#fff',stroke:'#1D2B53','stroke-width':5}));
+    if(MAX===100&&end%10){const t=el('text',{x:X(end),y:Y+(VW<1000?36:46),'text-anchor':'middle','font-size':VW<1000?22:26,'font-weight':800,fill:'#1D2B53'});t.textContent=end;s.append(t);}}
+  if(start!=null&&MAX===100&&start%10&&!(path.length>1&&end%10&&Math.abs(end-start)<(VW<1000?6:4))){const t=el('text',{x:X(start),y:Y+(VW<1000?36:46),'text-anchor':'middle','font-size':VW<1000?22:26,'font-weight':800,fill:'#3D5AFE'});t.textContent=start;s.append(t);}
+  const tg=start!=null?path[path.length-1]:task?task.a:null;
+  if(document.body.classList.contains('wide')&&tg!=null){const sc=$('scr'),cur=tg,px=X(cur)/VW*s.getBoundingClientRect().width;sc.scrollTo({left:px-sc.clientWidth/2,behavior:matchMedia('(prefers-reduced-motion: reduce)').matches?'auto':'smooth'});}
+  summary();}
+function summary(){const el2=$('sum');el2.className='hsum';
+  if(start==null){el2.innerHTML=task?`Uppgift: <span class="big">${task.a} ${task.op} ${task.b}</span>Tryck på ${task.a} på tallinjen.`:'Tryck på ett tal på tallinjen för att börja.';$('hint').textContent='Tryck på tallinjen där du vill börja.'+(document.body.classList.contains('wide')?' Svep för att se hela.':'');return;}
+  const end=path[path.length-1],hops=path.slice(1).map((v,i)=>v-path[i]);
+  if(!hops.length){el2.innerHTML=`Du står på ${start}.<span class="big">${start}</span>`;$('hint').textContent='Hoppa med knapparna. Gröna bågar går framåt, röda bakåt.';return;}
+  const both=hops.some(h=>h>0)&&hops.some(h=>h<0),sz=new Map();hops.forEach(h=>sz.set(h,(sz.get(h)||0)+1));
+  const nm=k=>k===10?'tiohopp':k===1?'enhopp':`hopp med ${k}`;
+  const words=[...sz].map(([h,c])=>`${c} ${nm(Math.abs(h))}${both?(h>0?' framåt':' bakåt'):''}`).join(', ').replace(/, ([^,]*)$/,' och $1');
+  const tot=end-start,expr=`${start} ${tot>=0?'+':'−'} ${Math.abs(tot)} = ${end}`;
+  let txt=`${words}: <span class="big">${expr}</span>`;
+  if(task&&task.a===start){if(end===task.answer){el2.classList.add('ok');txt=`Rätt! 🎉 ${words}: <span class="big">${task.a} ${task.op} ${task.b} = ${end}</span>`;if(!task.done){task.done=true;window.Ljud&&Ljud.ok&&Ljud.ok();}}}
+  el2.innerHTML=txt;$('hint').textContent='Tryck på ett annat tal för att börja om där.';}
+function hop(d){if(start==null){toast('Tryck först på ett tal på tallinjen.');return;}const cur=path[path.length-1],nx=cur+d;
+  if(nx<0||nx>MAX){toast(nx<0?'Tallinjen börjar på 0.':`Tallinjen slutar på ${MAX}.`);return;}path.push(nx);window.Ljud&&Ljud.pop&&Ljud.pop(Math.min(12,path.length));draw();}
+document.querySelectorAll('.hops button').forEach(b=>b.onclick=()=>{const h=b.dataset.h;if(h==='undo'){if(path.length>1){path.pop();if(task)task.done=false;}else{start=null;path=[];}draw();return;}hop(+h);});
+const ownN=()=>{const n=parseInt($('own').value,10);if(!n||n<1){toast('Skriv hur långt hoppet ska vara.');return 0;}return n;};
+$('ownP').onclick=()=>{const n=ownN();if(n)hop(n);};$('ownM').onclick=()=>{const n=ownN();if(n)hop(-n);};
+// tryck på tallinjen: börja på närmaste tal
+$('nl').addEventListener('click',e=>{const s=$('nl'),pt=s.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(s.getScreenCTM().inverse());
+  const n=Math.round((q.x-L)/(R-L)*MAX);if(n<0||n>MAX)return;
+  if(task&&!task.done&&start==null&&n!==task.a){toast(`Uppgiften börjar på ${task.a}.`);return;}
+  start=n;path=[n];if(task&&n!==task.a)task=null;window.Ljud&&Ljud.pop&&Ljud.pop(2);draw();});
+function setTask(a,op,b){if(!(a>=0)||!(b>=0)||isNaN(a)||isNaN(b)){toast('Skriv två tal.');return;}
+  const ans=op==='+'?a+b:a-b;if(a>MAX||ans<0||ans>MAX){toast(`Uppgiften måste få plats på tallinjen 0–${MAX}.`);return;}
+  task={a,op,b,answer:ans,done:false};start=null;path=[];$('tA').value=a;$('tB').value=b;$('tOp').textContent=op;draw();}
+$('tOp').onclick=()=>{$('tOp').textContent=$('tOp').textContent==='+'?'−':'+';};
+$('tGo').onclick=()=>setTask(parseInt($('tA').value,10),$('tOp').textContent,parseInt($('tB').value,10));
+$('tRand').onclick=()=>{const r=(a,b)=>a+Math.floor(Math.random()*(b-a+1));let a,b,op=Math.random()<.5?'+':'−';
+  if(MAX===10){a=r(1,9);b=op==='+'?r(1,10-a):r(1,a);}else if(MAX===20){a=op==='+'?r(3,15):r(8,20);b=op==='+'?r(3,Math.min(9,20-a)):r(3,Math.min(9,a));}
+  else{a=op==='+'?r(12,75):r(30,98);b=op==='+'?r(5,Math.min(39,100-a)):r(5,Math.min(39,a));}setTask(a,op,b);};
+$('clear').onclick=()=>{start=null;path=[];task=null;$('tA').value='';$('tB').value='';draw();};
+function setMax(m){MAX=m;fit();try{sessionStorage.setItem('mp-tallinje',m);}catch(e){}document.querySelectorAll('#seg button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.m===m));
+  if(start!=null&&(path.some(v=>v>m))){start=null;path=[];}if(task&&(task.a>m||task.answer>m)){task=null;$('tA').value='';$('tB').value='';}draw();}
+document.querySelectorAll('#seg button').forEach(b=>b.onclick=()=>setMax(+b.dataset.m));
+setMax(MAX);
+addEventListener('resize',()=>{if(fit())draw();});
+window.TL={hop,setTask,get path(){return path},get start(){return start},setMax};
+</script>
+</body>
+</html>
