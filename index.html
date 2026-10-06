@@ -136,9 +136,14 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .who{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:12px;margin-top:10px}
 .who button{border:0;border-radius:18px;background:var(--bg);padding:8px 6px 10px;font:inherit;font-weight:800;color:var(--ink);cursor:pointer;box-shadow:0 4px 0 var(--line)}
 .who button svg{width:80px;height:auto;display:block;margin:0 auto}
-.who button.add{border:3px dashed var(--line);background:#fff;box-shadow:none;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:130px;font-size:1rem}
-.who button.add span{font-size:2.4rem;line-height:1}
 .pnote{color:var(--muted);font-size:.9rem;text-align:center;margin:10px 0 0}
+.newbtn{font-size:1.3rem;padding:14px}
+.qrbtn{display:block;width:100%;margin-top:12px;border:0;border-radius:16px;padding:11px 12px;background:#fff;color:#2A3FB8;font:inherit;font-weight:800;font-size:1.05rem;box-shadow:0 0 0 2px #3D5AFE inset,0 4px 0 #C6D0FF;cursor:pointer}
+.qrbtn:active,.newbtn:active{transform:translateY(3px)}
+.pinfo{display:flex;gap:10px;align-items:flex-start;margin-top:14px;background:#EAF3FF;border-radius:14px;padding:10px 12px;text-align:left}
+.pinfo span{font-size:1.2rem;line-height:1.3}
+.pinfo p{margin:0;color:var(--ink);font-size:.88rem;font-weight:600;line-height:1.35}
+.guestlink{display:block;margin:12px auto 0;border:0;background:none;font:inherit;font-weight:700;font-size:.95rem;color:var(--muted);text-decoration:underline;cursor:pointer;padding:6px 10px}
 .dots4{display:flex;justify-content:center;gap:14px;margin:10px 0 4px}
 .dots4 i{width:20px;height:20px;border-radius:50%;border:3px solid var(--ink);display:block}
 .dots4 i.on{background:var(--ink)}
@@ -263,9 +268,10 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 <div class="modal" id="mWho" hidden><div class="sheet" role="dialog" aria-label="Vem tränar?">
   <h2 style="text-align:center">Vem tränar idag?</h2>
   <div class="who" id="whoGrid"></div>
-  <p class="pnote">Profilerna finns bara på den här enheten.</p>
-  <button class="gobtn" id="scanBtn" style="background:#3D5AFE;box-shadow:0 5px 0 #2A3FB8">📷 Logga in med QR-kod</button>
-  <button class="soundbtn" id="guestBtn" style="display:block;margin:10px auto 0">Fortsätt som gäst</button>
+  <button class="gobtn newbtn" id="whoNew">＋ Skapa ny profil</button>
+  <button class="qrbtn" id="scanBtn">📷 Jag har ett inloggningskort (QR-kod)</button>
+  <div class="pinfo"><span aria-hidden="true">ℹ️</span><p>Din profil sparas bara i den här webbläsaren. Flera kan ha egna profiler här. Vill du spela på en annan dator eller iPad? Välj <b>Ta med min profil</b> under din profil, skriv ut inloggningskortet med QR-koden och skanna det där.</p></div>
+  <button class="guestlink" id="guestBtn">Fortsätt som gäst</button>
 </div></div>
 
 <div class="modal" id="mPin" hidden><div class="sheet" role="dialog" aria-label="Kod" style="text-align:center;max-width:380px">
@@ -606,11 +612,12 @@ document.addEventListener("keydown",e=>{if($("mPin").hidden)return;if(/^\d$/.tes
 /* ---------- Välja profil ---------- */
 function openWho(){
   const ps=list();
-  $("whoGrid").innerHTML=ps.map(p=>`<button data-id="${p.id}">${owlOf(p.id)}${esc(p.name)}</button>`).join("")+`<button class="add" id="whoAdd"><span>＋</span>Ny profil</button>`;
+  $("whoGrid").innerHTML=ps.map(p=>`<button data-id="${p.id}">${owlOf(p.id)}${esc(p.name)}</button>`).join("");$("whoGrid").hidden=!ps.length;
   $("guestBtn").hidden=false;openM("mWho");
 }
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-$("whoGrid").onclick=e=>{const b=e.target.closest("button");if(!b)return;if(b.id==="whoAdd")return openNew();
+$("whoNew").onclick=()=>openNew();
+$("whoGrid").onclick=e=>{const b=e.target.closest("button");if(!b)return;
   const p=byId(b.dataset.id);askPin(`Hej ${p.name}! Skriv din kod.`,owlOf(p.id),v=>{if(hash(v+p.salt)!==p.pinH){$("pinMsg").textContent="Fel kod. Försök igen.";return false;}switchTo(p.id);return true;},
     {cancel:openWho,forgot:()=>adultReset(p)});};
 $("guestBtn").onclick=()=>{if(!list().length&&!owner()){closeAll();return;}switchTo("gast");};

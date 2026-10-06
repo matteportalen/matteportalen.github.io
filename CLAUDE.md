@@ -92,7 +92,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 - Fyrsiffrig kod (FNV-hash med salt, inget riktigt säkerhetsskydd och det behövs inte). "Glömt koden?": en vuxen svarar på en multiplikation.
 - **Flyttkod:** hela profilen komprimerad (`CompressionStream deflate-raw`, base64url) i en länk `#flytta=…`, som QR-kod, text eller fil.
 - **Inloggningskort ("Ta med min profil"):** QR-kod med **användarnamnet under**. Innehåller en **kompakt** version (`cardData()`: stjärnor, medaljer, rekord, klistermärken, djur och dagar, ingen detaljhistorik) så att koden går att skanna även med enkla webbkameror. Utskrift: en A4-sida, QR ca 10 cm. Skanning loggar in **utan kod**. Vid inloggning slås data ihop och **den version som kommit längst behålls per övning** (`mergeBundles`), så ett gammalt kort tar aldrig bort framsteg.
-- Knappen uppe till höger öppnar alltid "Vem tränar idag?" (Ny profil, Logga in med QR-kod, Fortsätt som gäst). Utan profiler får "Fortsätt som gäst" bara stänga rutan, så att gästens framsteg inte försvinner.
+- Knappen uppe till höger öppnar alltid "Vem tränar idag?". **Rutan gjordes tydligare** (en elev och en förälder hittade inte "Ny profil", som var en blek streckad ruta bredvid en stor blå QR-knapp): profilerna överst (om det finns några), en stor grön knapp **"＋ Skapa ny profil"**, en vit knapp med blå kant **"📷 Jag har ett inloggningskort (QR-kod)"**, en **ℹ️-ruta** ("Din profil sparas bara i den här webbläsaren. Flera kan ha egna profiler här. Vill du spela på en annan dator eller iPad? Välj Ta med min profil …") och "Fortsätt som gäst" som en liten länk. Utan profiler får "Fortsätt som gäst" bara stänga rutan, så att gästens framsteg inte försvinner.
 
 ## Så vill läraren jobba
 
