@@ -67,6 +67,43 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gveh button[aria-pressed="true"]{outline:3px solid var(--ink);background:#FFF4CC}
 .gveh button.locked img{filter:grayscale(1) brightness(.8);opacity:.6}
 .spelToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:30;max-width:90vw;text-align:center}
+/* Racerbanans meny: mörk "depå" med banor som bilder, garage och färgprickar */
+#choose.car{--pit:#2A2E39;--pit2:#363B48;--gold:#FFC93C}
+.carhero{position:relative;display:flex;align-items:center;gap:14px;margin:6px 0 14px;padding:18px 16px 14px;border-radius:20px;color:#fff;overflow:hidden;
+  background:linear-gradient(90deg,rgba(255,255,255,.08) 0 2px,transparent 2px) 0 50%/44px 6px repeat-x,linear-gradient(#3A3F4C,#22252E);box-shadow:0 5px 0 #121419}
+.carhero::before,.carhero::after{content:"";position:absolute;left:0;right:0;height:8px;background:repeating-conic-gradient(#fff 0 25%,#1D2B53 0 50%) 0 0/16px 16px}
+.carhero::before{top:0}.carhero::after{bottom:0}
+.carhero img{height:70px;width:auto;transform:rotate(90deg);filter:drop-shadow(0 4px 4px rgba(0,0,0,.5));margin:0 6px}
+.carhero b{display:block;font-size:1.6rem;line-height:1.05}
+.carhero small{color:#C9D2E6;font-weight:700}
+.carhero .coins{margin-left:auto;background:rgba(0,0,0,.35);border:2px solid var(--gold);color:var(--gold);border-radius:999px;padding:4px 12px;font-weight:800;white-space:nowrap}
+#choose.car .laneopt,#choose.car .garage{background:var(--pit);color:#fff;box-shadow:0 5px 0 #15171D}
+#choose.car .laneopt p,#choose.car .garage .ghead b{color:#fff}
+#choose.car .garage .ghead small{color:#C9D2E6}
+.trk{display:grid!important;grid-template-columns:1fr 1fr;gap:10px}
+.trk button{position:relative;height:92px!important;border-radius:16px!important;padding:0!important;overflow:hidden;background:var(--img) center/64px!important;color:#fff;border:3px solid transparent;display:flex;align-items:flex-end;justify-content:center}
+.trk button::before{content:"";position:absolute;top:0;bottom:0;left:32%;right:32%;background:repeating-linear-gradient(transparent 0 6px,#fff 6px 16px) center/3px 100% no-repeat,linear-gradient(90deg,#fff 0 3px,#5B606C 3px calc(100% - 3px),#fff 0)}
+.trk button span{position:relative;margin-bottom:6px;background:rgba(20,22,28,.82);border-radius:999px;padding:2px 10px;font-size:.95rem;font-weight:800;white-space:nowrap}
+.trk button[aria-pressed="true"]{border-color:var(--gold);background:var(--img) center/64px!important;box-shadow:0 0 0 3px rgba(255,201,60,.35)}
+.trk button[aria-pressed="true"]::after{content:"✓";position:absolute;top:6px;right:6px;width:26px;height:26px;border-radius:50%;background:var(--gold);color:#1D2B53;display:grid;place-items:center;font-size:1rem;font-weight:800}
+#choose.car .gveh button{background:var(--pit2);color:#fff}
+#choose.car .gveh button small{color:var(--gold)}
+#choose.car .gveh button[aria-pressed="true"]{outline:3px solid var(--gold);background:#4A4230}
+#choose.car .gveh button.locked small::before{content:"🔒 "}
+.swatches{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.swatches button{width:48px;height:48px;border-radius:50%;background:var(--sw);border:3px solid rgba(255,255,255,.85);box-shadow:0 3px 0 rgba(0,0,0,.35);position:relative}
+.swatches button[aria-pressed="true"]{outline:3px solid var(--gold);outline-offset:3px}
+.swatches button[aria-pressed="true"]::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#fff;font-weight:800;font-size:1.3rem;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.swatches small{color:#C9D2E6;font-weight:700;margin-left:4px}
+#choose.car #laneChips{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+#choose.car #laneChips button{height:auto;padding:10px 8px;background:var(--pit2);color:#fff;font-size:1rem;display:flex;flex-direction:column;align-items:center;gap:6px;border:3px solid transparent}
+#choose.car #laneChips button[aria-pressed="true"]{border-color:var(--gold);background:#4A4230}
+.ld{display:block;width:70px;height:44px;border-radius:6px;border:3px solid #fff;border-top:0;border-bottom:0;background:#5B606C}
+.ld.l3{background:repeating-linear-gradient(90deg,#5B606C 0 calc(33.33% - 1px),#fff calc(33.33% - 1px) 33.33%)}
+.ld.l4{background:repeating-linear-gradient(90deg,#5B606C 0 calc(25% - 1px),#fff calc(25% - 1px) 25%)}
+#choose.car #btnStart{position:relative;overflow:hidden;background:linear-gradient(#24B36B,#1E9E5E)}
+#choose.car #btnStart::before,#choose.car #btnStart::after{content:"";position:absolute;top:0;bottom:0;width:22px;background:repeating-conic-gradient(#fff 0 25%,#1D2B53 0 50%) 0 0/11px 11px;opacity:.9}
+#choose.car #btnStart::before{left:0}#choose.car #btnStart::after{right:0}
 .laneopt{margin:16px 0 0;background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line)}
 .laneopt p{margin:0 0 8px;font-weight:800}
 /* Racerbanans instrumentbräde: knappar ur Kenneys "Mobile Controls" (CC0) i spel/bilder/kontroller/ */
@@ -130,6 +167,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 #bub{position:fixed;inset:0;display:flex;flex-direction:column;background:#7FD3F4;z-index:5;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
 .bubbar{display:flex;align-items:center;gap:10px;padding:8px 10px;width:100%;max-width:640px;margin:0 auto}
 .bubbar .quit{width:42px;height:42px;flex:none;border-radius:50%;background:var(--card);box-shadow:0 3px 0 rgba(29,43,83,.25);font-size:1.2rem;font-weight:800}
+.bubbar .bubsnd{font-size:1.15rem}
 .bublvl{flex:none;text-align:center;font-weight:800;line-height:1.05;font-size:1.05rem}
 .bublvl .stars{font-size:.95rem;display:block}
 .bubmeter{flex:1;height:16px;border-radius:9px;background:rgba(29,43,83,.22);overflow:hidden;box-shadow:inset 0 2px 0 rgba(0,0,0,.12)}
@@ -262,13 +300,14 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <div class="wrap" id="choose" hidden>
   <button class="back" id="backMenu">← Tillbaka</button>
+  <div class="carhero" id="carHero" hidden></div>
   <h2>Vad vill du räkna med?</h2>
   <div class="cats" id="cats"></div>
   <div class="tables" id="tables" hidden><p id="tablesTitle">Vilka tabeller?</p><div class="chips" id="chips"></div></div>
   <div class="laneopt" id="frogOpt" hidden><p>Hur är vattnet?</p><div class="chips" id="frogChips"><button data-m="lugnt">Lugnt vatten</button><button data-m="strom">Strömt vatten (svårare)</button></div></div>
-  <div class="laneopt" id="trackOpt" hidden><p>Vilken bana?</p><div class="chips" id="trackChips"></div></div>
+  <div class="laneopt" id="trackOpt" hidden><p>Vilken bana?</p><div class="chips trk" id="trackChips"></div></div>
   <div class="garage" id="garage" hidden></div>
-  <div class="laneopt" id="laneOpt" hidden><p>Hur många filer?</p><div class="chips" id="laneChips"><button data-l="3">3 filer</button><button data-l="4">4 filer (svårare)</button></div></div>
+  <div class="laneopt" id="laneOpt" hidden><p>Hur många filer?</p><div class="chips" id="laneChips"><button data-l="3"><span class="ld l3"></span>3 filer</button><button data-l="4"><span class="ld l4"></span>4 filer (svårare)</button></div></div>
   <div class="laneopt" id="memOpt" hidden><p>Vem spelar?</p><div class="chips" id="memChips"><button data-m="solo">Själv</button><button data-m="vs">Mot en vän</button></div></div>
   <div class="laneopt" id="bubOpt" hidden><p>Var vill du börja?</p><div class="chips" id="bubChips"></div></div>
   <button class="go" id="btnStart">Flyg iväg! 🦉</button>
@@ -292,7 +331,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 </div>
 
 <div id="bub" hidden>
-  <div class="bubbar"><button class="quit" id="bubQuit" aria-label="Avsluta">✕</button><span class="bublvl"><span id="bubLvl">Bana 1</span><span id="bubStars"></span></span><div class="bubmeter" aria-hidden="true"><i id="bubFill"></i></div><span class="bubpts" id="bubPts" aria-label="Poäng">0</span></div>
+  <div class="bubbar"><button class="quit" id="bubQuit" aria-label="Avsluta">✕</button><span class="bublvl"><span id="bubLvl">Bana 1</span><span id="bubStars"></span></span><div class="bubmeter" aria-hidden="true"><i id="bubFill"></i></div><span class="bubpts" id="bubPts" aria-label="Poäng">0</span><button class="quit bubsnd" id="bubSnd" aria-label="Ljud av eller på"></button></div>
   <div class="bubstage"><canvas id="bcv" aria-label="Bubbelplanen. Sikta med fingret, musen eller piltangenterna."></canvas>
     <div class="bubban" id="bubBan"></div>
     <div class="bubmsg" id="bubMsg" hidden><div class="box"><h3 id="bmT"></h3><p id="bmP"></p><button class="go" id="bmGo">Nästa bana ▶</button></div></div>
@@ -459,17 +498,19 @@ const VEH=[
   {id:"4",name:"Pickupen",price:60},{id:"5",name:"Racern",price:80},{id:"mc",name:"Motorcykeln",price:120}
 ];
 const VCOL=[["red","Orange"],["blue","Blå"],["green","Grön"],["yellow","Gul"],["black","Svart"]];
+const VSW={red:"#F0782A",blue:"#3D8BFD",green:"#2BB673",yellow:"#F7C531",black:"#3A3F4B"};
 const vSprite=(v,c)=>v==="mc"?`motorcycle_${c}`:`car_${c}_${v}`;
 const fmtT=s=>{const m=Math.floor(s/60),r=(s-m*60).toFixed(1).replace(".",",");return m?`${m}:${r.padStart(4,"0")}`:`${r} s`;};
 function garageData(){data.carOwned=data.carOwned||["1"];data.carSel=data.carSel||{v:"1",c:"red"};data.carCoins=data.carCoins||0;}
 
 /* Garaget på valskärmen: välj fordon och färg, köp nya fordon för mynt */
 function renderGarage(){
-  garageData();const g=$("garage");if(game!=="car"){g.hidden=true;return;}g.hidden=false;
+  garageData();const g=$("garage");$("choose").classList.toggle("car",game==="car");if(game!=="car"){g.hidden=true;$("carHero").hidden=true;return;}g.hidden=false;
   const sel=data.carSel;
   g.innerHTML=`<div class="ghead"><img src="bilder/racing/${vSprite(sel.v,sel.c)}.png" alt=""><div><b>Garaget</b><small>${VEH.find(v=>v.id===sel.v).name} · du har 🪙 ${data.carCoins} mynt</small></div></div>
     <div class="gveh">${VEH.map(v=>{const own=data.carOwned.includes(v.id);return`<button data-v="${v.id}" aria-pressed="${sel.v===v.id}" class="${own?"":"locked"}"><img src="bilder/racing/${vSprite(v.id,sel.c)}.png" alt=""><span>${v.name}</span><small>${own?(sel.v===v.id?"Vald":"Din"):`🪙 ${v.price}`}</small></button>`;}).join("")}</div>
-    <div class="chips gcol">${VCOL.map(([c,n])=>`<button data-c="${c}" aria-pressed="${sel.c===c}">${n}</button>`).join("")}</div>`;
+    <div class="swatches gcol">${VCOL.map(([c,n])=>`<button data-c="${c}" aria-pressed="${sel.c===c}" aria-label="${n}" title="${n}" style="--sw:${VSW[c]}"></button>`).join("")}<small>${Object.fromEntries(VCOL)[sel.c]}</small></div>`;
+  const h=$("carHero");h.hidden=false;h.innerHTML=`<img src="bilder/racing/${vSprite(sel.v,sel.c)}.png" alt=""><div><b>Racerbanan</b><small>${VEH.find(v=>v.id===sel.v).name}</small></div><span class="coins">🪙 ${data.carCoins}</span>`;
 }
 $("garage").onclick=e=>{
   garageData();const vb=e.target.closest("[data-v]"),cb=e.target.closest("[data-c]");
@@ -481,7 +522,7 @@ $("garage").onclick=e=>{
   if(cb){data.carSel.c=cb.dataset.c;save();renderGarage();}
 };
 $("trackChips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;data.carTrack=b.dataset.t;save();renderChoose();};
-function renderTrackOpt(){$("trackOpt").hidden=game!=="car";$("trackChips").innerHTML=Object.entries(TRACKS).map(([k,t])=>`<button data-t="${k}" aria-pressed="${(data.carTrack||"race")===k}">${t.ic} ${t.name}</button>`).join("");}
+function renderTrackOpt(){$("trackOpt").hidden=game!=="car";$("trackChips").innerHTML=Object.entries(TRACKS).map(([k,t])=>`<button data-t="${k}" aria-pressed="${(data.carTrack||"race")===k}" style="--img:${t.ground?`url(bilder/racing/${t.ground}.png)`:"linear-gradient(#F4FAFF,#DCEBF7)"}"><span>${t.ic} ${t.name}</span></button>`).join("");}
 let toastSpelT=0;function toastSpel(m){const t=$("spelToast");t.textContent=m;t.hidden=false;clearTimeout(toastSpelT);toastSpelT=setTimeout(()=>t.hidden=true,2600);}
 
 /* Geometri: vägen i mitten, filerna, bilens plats. Avstånd räknas i skärmhöjder (u). */
@@ -1750,7 +1791,7 @@ function startBub(){
   stopBub();const r=bRec(),from=data.bubFrom==="cont"&&r.bana?r.bana+1:1;
   data.bubbelPlayed=(data.bubbelPlayed||0)+1;save();
   B={pts:0,prevBest:r.best||0,right:0,wrong:0,over:false,petJ:0,shake:0,tip:true,ang:Math.PI/2,aiming:false,last:null};
-  showOnly("bub");bResize();bLevelStart(from);
+  showOnly("bub");bubSndLabel();bResize();bLevelStart(from);
   cancelAnimationFrame(braf);braf=requestAnimationFrame(bFrame);
 }
 function bLevelStart(l){
@@ -1826,6 +1867,8 @@ function bEnd(why){
     showOnly("result");if(rec&&pts){window.Ljud&&Ljud.fanfare();confetti();}
   },1500);
 }
+function bubSndLabel(){const on=!window.Ljud||Ljud.on;$("bubSnd").textContent=on?"🔊":"🔇";$("bubSnd").setAttribute("aria-pressed",String(!on));}
+$("bubSnd").onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);bubSndLabel();if(Ljud.on){Ljud.ok&&Ljud.ok();if(B&&!B.over)Ljud.ambient.start(VW0.ljud);}document.dispatchEvent(new Event("mp-ljud-andrat"));};
 $("bubQuit").onclick=()=>{if(B)bSaveBest();stopBub();renderChoose();showOnly("choose");};
 
 /* Sikta: dra med fingret och släpp, eller peka med musen och klicka. */
