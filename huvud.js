@@ -28,8 +28,16 @@
 .mph button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
 .mph-logo{position:relative;display:flex;align-items:center;gap:7px;font-weight:800;font-size:1.2rem!important;line-height:1;letter-spacing:-.3px;white-space:nowrap;min-height:44px;padding:3px 6px 3px 3px!important;border-radius:999px;background:rgba(255,255,255,.12)!important;flex:none;transition:background .2s}
 .mph-logo b{color:#FFC93C}
+.mph-burger em{display:none;font-style:normal;font-size:.9rem;font-weight:800;letter-spacing:0}
+@media (min-width:700px){.mph-burger{padding:0 11px 0 9px}.mph-burger em{display:inline}}
+/* tipslappen vid menyn (visas några gånger på startsidorna tills man har öppnat menyn) */
+.mph-tips{position:absolute;top:calc(100% + 10px);left:10px;z-index:25;display:flex;align-items:center;gap:8px;background:#FFC93C;color:#1D2B53;font-weight:800;font-size:1rem;padding:8px 8px 8px 14px;border-radius:16px;box-shadow:0 6px 18px rgba(29,43,83,.25),0 3px 0 #E0A800;animation:mph-ner .25s ease-out,mph-gung 2.4s ease-in-out .4s infinite}
+.mph-tips::before{content:"";position:absolute;top:-8px;left:28px;border:9px solid transparent;border-top:0;border-bottom-color:#FFC93C}
+.mph-tips button{width:30px;height:30px;border-radius:50%;background:rgba(29,43,83,.12);font-size:.9rem;font-weight:800;color:#1D2B53;display:grid;place-items:center}
+@keyframes mph-gung{0%,100%{transform:translateY(0)}50%{transform:translateY(3px)}}
+@media (prefers-reduced-motion:reduce){.mph-tips{animation:none}}
 .mph-logo .mph-mark{transition:transform .25s,filter .25s}
-.mph-burger{width:28px;height:28px;border-radius:50%;background:#FFC93C;color:#1D2B53;display:grid;place-items:center;font-size:1rem;line-height:1;box-shadow:0 2px 0 rgba(29,43,83,.25)}
+.mph-burger{min-width:28px;height:28px;border-radius:999px;gap:5px;grid-auto-flow:column;background:#FFC93C;color:#1D2B53;display:grid;place-items:center;font-size:1rem;line-height:1;box-shadow:0 2px 0 rgba(29,43,83,.25)}
 .mph-logo::before{content:"";position:absolute;inset:-3px;border-radius:inherit;padding:3px;background:conic-gradient(from var(--mph-a,0deg),transparent 0 55%,rgba(255,201,60,.0) 58%,#FFC93C 74%,#fff 82%,rgba(255,255,255,0) 90%,transparent);-webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;opacity:0;transition:opacity .25s;pointer-events:none}
 @property --mph-a{syntax:"<angle>";inherits:false;initial-value:0deg}
 @keyframes mph-varv{to{--mph-a:360deg}}
@@ -103,7 +111,7 @@ body.mph-mini #quit{display:none}
   const pet=window.lasDjur&&window.owlSVG?owlSVG(lasDjur()):'',namn=profilnamn();
   const hemUrl=new URL(hem+PORTAL.href,location.href),paStart=hemUrl.pathname.replace(/index\.html$/,'')===location.pathname.replace(/index\.html$/,'');
   h.innerHTML=`${paStart?'':'<button class="mph-bk" aria-label="Tillbaka">←</button>'}<button class="mph-x" aria-label="Avsluta">✕</button>
-    <button class="mph-logo" aria-label="${PORTAL.a}${PORTAL.b}, meny" aria-haspopup="true" aria-expanded="false">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="mph-burger" aria-hidden="true">☰</span></button>
+    <button class="mph-logo" aria-label="${PORTAL.a}${PORTAL.b}, meny" aria-haspopup="true" aria-expanded="false">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="mph-burger" aria-hidden="true"><i style="font-style:normal">☰</i><em>Ämnen</em></span></button>
     <span class="mph-title">${titel?`<span class="mph-sep">›</span> ${ikon?ikon+' ':''}${esc(titel)}`:''}</span>
     <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
   document.body.prepend(h);
@@ -124,6 +132,16 @@ body.mph-mini #quit{display:none}
     meny=document.createElement('nav');meny.className='mph-menu';meny.setAttribute('aria-label','Meny');
     meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p===PORTAL?`🏠 Startsidan<small>${p.a}${p.b}</small>`:`${p.a}${p.b}<small>${p.sub}</small>`}</span></a>`).join('');
     h.appendChild(meny);ptl.setAttribute('aria-expanded','true');meny.querySelector('a').focus({preventScroll:true});};
+  // tipslappen: på startsidorna de första fem gångerna, tills man har öppnat menyn eller stängt lappen
+  const TK='mp-meny-tips',tipsN=()=>{try{return +localStorage.getItem(TK)||0}catch(e){return 99}},tipsSet=n=>{try{localStorage.setItem(TK,n)}catch(e){}};
+  let tips=null;const tipsBort=()=>{if(tips){tips.remove();tips=null;}tipsSet(99);};
+  if(paStart&&tipsN()<5){tipsSet(tipsN()+1);tips=document.createElement('div');tips.className='mph-tips';tips.setAttribute('role','note');
+    tips.innerHTML=`<span>${PORTAL.id==='matte'?'🌍 Fler ämnen finns här!':'🔢 Matten finns här!'}</span><button aria-label="Stäng tipset">✕</button>`;
+    tips.querySelector('button').onclick=e=>{e.stopPropagation();tipsBort();};h.appendChild(tips);
+    // pilen pekar på ☰-knappen
+    const rikta=()=>{if(!tips)return;const br=h.querySelector('.mph-burger').getBoundingClientRect(),hr=h.getBoundingClientRect();tips.style.left=Math.max(8,br.left-hr.left+br.width/2-37)+'px';};
+    rikta();addEventListener('resize',rikta);if(document.fonts)document.fonts.ready.then(rikta);}
+  ptl.addEventListener('click',()=>{if(tips)tipsBort();else tipsSet(99);});
   document.addEventListener('click',e=>{if(meny&&!meny.contains(e.target))stang();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')stang();});
   // stjärnorna uppdateras när något sparas (i den här fliken eller en annan)
