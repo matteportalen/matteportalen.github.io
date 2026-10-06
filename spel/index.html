@@ -67,6 +67,35 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gveh button[aria-pressed="true"]{outline:3px solid var(--ink);background:#FFF4CC}
 .gveh button.locked img{filter:grayscale(1) brightness(.8);opacity:.6}
 .spelToast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:30;max-width:90vw;text-align:center}
+/* Spelhörnan på dator: vita kort i rutnät som på startsidan, spelets färg i ikonrutan */
+.gamecard.bub{--g:linear-gradient(135deg,#17AFC4,#2F8FD8 55%,#1F64AE)}.gamecard.tower{--g:linear-gradient(180deg,#8FD3FF,#3D5AFE 60%,#141D3D)}
+.gamecard.jakt{--g:linear-gradient(135deg,#2BB673,#1D2B53)}.gamecard.mem{--g:linear-gradient(135deg,#FF5FA2,#FF9F43)}.gamecard.tugc{--g:linear-gradient(135deg,#FF9F43,#E5484D)}
+.gamecard.car{--g:linear-gradient(135deg,#1D2B53,#3D5AFE)}.gamecard.space{--g:linear-gradient(135deg,#141D3D,#7B61FF)}.gamecard.frog{--g:linear-gradient(135deg,#2BB673,#17AFC4)}.gamecard.kiosk{--g:linear-gradient(135deg,#FF5FA2,#7B61FF)}
+@media (min-width:760px){
+  #menu{max-width:1140px}
+  .glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+  .glist .gamecard{margin-top:0!important;background:var(--card)!important;color:var(--ink);box-shadow:0 4px 0 var(--line)!important;border-radius:20px;padding:12px 40px 12px 12px;position:relative;text-decoration:none}
+  .glist .gamecard:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)!important}
+  .glist .gamecard::after{content:"›";position:absolute;right:16px;top:50%;transform:translateY(-50%);color:#B4C0D8;font-size:1.6rem;font-weight:800}
+  .glist .gamecard .pic{width:72px;height:72px;border-radius:18px;background:var(--g);display:grid;place-items:center;font-size:2.4rem;transform:rotate(-4deg);box-shadow:0 3px 0 rgba(29,43,83,.18)}
+  .glist .gamecard:nth-child(even) .pic{transform:rotate(4deg)}
+  .glist .gamecard b{font-size:1.3rem;line-height:1.15}
+  .glist .gamecard small{color:var(--muted);font-size:.95rem;line-height:1.3;opacity:1;margin-top:2px}
+  .glist .gamecard .pair{top:8px;right:8px;font-size:1rem;padding:0 7px;box-shadow:0 0 0 2px var(--line)}
+  #menu .soon{max-width:none}
+}
+/* Tornbyggets meny: himmel, lyftkran och hur långt det är kvar till månen */
+.towhero{position:relative;margin:6px 0 14px;padding:16px 16px 26px;border-radius:20px;color:#fff;overflow:hidden;background:linear-gradient(180deg,#8FD3FF,#3D5AFE 62%,#141D3D);box-shadow:0 5px 0 #0B1026}
+.towhero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:12px;background:repeating-linear-gradient(-45deg,#FFC93C 0 12px,#1D2B53 12px 24px)}
+.towhero .top{display:flex;align-items:center;gap:12px}
+.towhero .top .ic{font-size:2.8rem;line-height:1}
+.towhero b{display:block;font-size:1.6rem;line-height:1.05;text-shadow:0 2px 0 rgba(0,0,0,.2)}
+.towhero small{color:#EAF3FF;font-weight:700}
+.towhero .moon{margin-left:auto;font-size:2.4rem;line-height:1;filter:drop-shadow(0 0 10px rgba(255,240,180,.8))}
+.towbar{margin-top:12px;display:flex;align-items:center;gap:10px;font-weight:800}
+.towbar .tbar{flex:1;height:14px;border-radius:7px;background:rgba(0,0,0,.3);overflow:hidden}
+.towbar .tbar i{display:block;height:100%;background:linear-gradient(90deg,#FFC93C,#FF9F43);border-radius:7px}
+#choose.tower #btnStart{background:repeating-linear-gradient(-45deg,#FFC93C 0 14px,#F2B707 14px 28px);color:#1D2B53;box-shadow:0 5px 0 #B98A00}
 /* Bubbeljaktens meny: havsrubrik och världarna man reser genom */
 .bubhero{position:relative;margin:6px 0 14px;padding:16px 16px 14px;border-radius:20px;color:#fff;overflow:hidden;
   background:radial-gradient(circle at 12% 30%,rgba(255,255,255,.35) 0 7px,transparent 8px),radial-gradient(circle at 22% 70%,rgba(255,255,255,.25) 0 4px,transparent 5px),radial-gradient(circle at 88% 25%,rgba(255,255,255,.3) 0 9px,transparent 10px),radial-gradient(circle at 78% 75%,rgba(255,255,255,.2) 0 5px,transparent 6px),linear-gradient(135deg,#17AFC4,#2F8FD8 55%,#1F64AE);box-shadow:0 5px 0 #164A86}
@@ -304,6 +333,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <div class="wrap" id="menu">
   <h1>Spelhörnan</h1>
   <p class="lead">Spela och räkna samtidigt!</p>
+  <div class="glist">
   <button class="gamecard bub" id="btnBub"><span class="pic cards3">🐠</span><span><b>Bubbeljakten</b><small>Sikta och skjut uppgiften mot bubblan med rätt svar. Poppa hela planen!</small></span></button>
   <button class="gamecard tower" id="btnTower"><span class="pic cards3">🏗️</span><span><b>Tornbygget</b><small>Svara rätt, släpp balken från lyftkranen och bygg ända till månen. Prick rakt, annars rasar tornet!</small></span></button>
   <a class="gamecard jakt" href="skattjakten/"><span class="pic cards3">🗝️</span><span><b>Skattjakten</b><small>Utforska labyrinten, lös hindrens textuppgifter och fyll skattkammaren!</small></span></a>
@@ -315,6 +345,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard space" id="btnSpace"><span class="pic cards3">🚀</span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic cards3">🐸</span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
   <button class="gamecard kiosk" id="btnKiosk"><span class="pic cards3">🏪</span><span><b>Kiosken</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
+  </div>
   <div class="soon">Fler spel kommer!</div>
 </div>
 
@@ -322,6 +353,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="back" id="backMenu">← Tillbaka</button>
   <div class="carhero" id="carHero" hidden></div>
   <div class="bubhero" id="bubHero" hidden></div>
+  <div class="towhero" id="towHero" hidden></div>
   <h2>Vad vill du räkna med?</h2>
   <div class="cats" id="cats"></div>
   <div class="tables" id="tables" hidden><p id="tablesTitle">Vilka tabeller?</p><div class="chips" id="chips"></div></div>
@@ -330,7 +362,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="garage" id="garage" hidden></div>
   <div class="laneopt" id="laneOpt" hidden><p>Hur många filer?</p><div class="chips" id="laneChips"><button data-l="3"><span class="ld l3"></span>3 filer</button><button data-l="4"><span class="ld l4"></span>4 filer (svårare)</button></div></div>
   <div class="laneopt" id="memOpt" hidden><p>Vem spelar?</p><div class="chips" id="memChips"><button data-m="solo">Själv</button><button data-m="vs">Mot en vän</button></div></div>
-  <div class="laneopt" id="bubOpt" hidden><p>Var vill du börja?</p><div class="chips" id="bubChips"></div></div>
+  <div class="laneopt" id="bubOpt" hidden><p>Vilken bana vill du spela?</p><div class="chips" id="bubChips"></div></div>
   <button class="go" id="btnStart">Flyg iväg! 🦉</button>
 </div>
 
@@ -476,10 +508,15 @@ function renderChoose(){
   const C=CATS.find(c=>c.id===cat);$("tables").hidden=!C.tables;
   const bs=game==="bub"&&store[cat];$("bubOpt").hidden=!(bs&&bs.bana);
   $("choose").classList.toggle("bub",game==="bub");$("bubHero").hidden=game!=="bub";
+  $("choose").classList.toggle("tower",game==="tower");$("towHero").hidden=game!=="tower";
+  if(game==="tower"){const tr=store[cat]||{},best=tr.best||0;
+    $("towHero").innerHTML=`<div class="top"><span class="ic">🏗️</span><div><b>Tornbygget</b><small>Bygg ända till månen: 20 våningar!</small></div><span class="moon">🌕</span></div>
+      <div class="towbar"><span>${best?`Rekord: ${best} ${best===1?"våning":"våningar"}`:"Inget rekord än"}</span><div class="tbar"><i style="width:${Math.min(100,best/20*100)}%"></i></div><span>🌕</span></div>`;}
   if(game==="bub"){const nx=((bs&&bs.bana)||0)+1;
     $("bubHero").innerHTML=`<div class="top"><span class="ic">🫧</span><div><b>Bubbeljakten</b><small>En ny värld för varje bana!</small></div>${bs&&bs.best?`<div class="rec"><span>Rekord</span>${bs.best} p</div>`:""}</div>
       <div class="bubworlds">${VARLD.map((w,i)=>{const n=i+1,cls=n<nx?"":n===nx?"now":"lock";return`<div class="${cls}"><i>${w.ico}</i><b>${w.namn}</b><small>${n<nx?"✓ Bana "+n:n===nx?"Bana "+n:"🔒 Bana "+n}</small></div>`;}).join("")}</div>`;}
-  if(bs&&bs.bana){const f=data.bubFrom==="cont"?"cont":"1";$("bubChips").innerHTML=`<button data-f="1" aria-pressed="${f==="1"}">Bana 1</button><button data-f="cont" aria-pressed="${f==="cont"}">Fortsätt på bana ${bs.bana+1}</button>`;}
+  if(bs&&bs.bana){const top=bs.bana+1,f=bubStart(bs);
+    $("bubChips").innerHTML=Array.from({length:top},(_,i)=>i+1).map(n=>`<button data-f="${n===top?"cont":n}" aria-pressed="${f===n}">${VARLD[(n-1)%VARLD.length].ico} ${n===top?`Fortsätt på bana ${n}`:`Bana ${n}`}</button>`).join("");}
   if(C.tables){
     $("tablesTitle").textContent=cat==="multi"?"Vilka tabeller?":"Vilka tal vill du dela med?";
     $("chips").innerHTML=`<button data-t="0" aria-pressed="${!tables.size}">Alla</button>`+[1,2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${tables.has(t)}">${t}</button>`).join("");
@@ -1811,9 +1848,11 @@ function bHud(){
 }
 function bBanner(html,ms){const b=$("bubBan");b.innerHTML=html;b.classList.add("show");clearTimeout(bBanT);bBanT=setTimeout(()=>b.classList.remove("show"),ms||1800);}
 
+// vilken bana man börjar på: en klarad bana, eller fortsätt på nästa ("cont")
+function bubStart(r){const top=((r&&r.bana)||0)+1,f=data.bubFrom;if(f==="cont"||f==null)return top;const n=+f;return n>=1&&n<=top?n:1;}
 function stopBub(){if(B&&window.Ljud)Ljud.ambient.stop();if(B)B.over=true;cancelAnimationFrame(braf);clearTimeout(bT);B=null;$("bubBan").classList.remove("show");$("bubMsg").hidden=true;}
 function startBub(){
-  stopBub();const r=bRec(),from=data.bubFrom==="cont"&&r.bana?r.bana+1:1;
+  stopBub();const r=bRec(),from=bubStart(r);
   data.bubbelPlayed=(data.bubbelPlayed||0)+1;save();
   B={pts:0,prevBest:r.best||0,right:0,wrong:0,over:false,petJ:0,shake:0,tip:true,ang:Math.PI/2,aiming:false,last:null};
   showOnly("bub");bubSndLabel();bResize();bLevelStart(from);
