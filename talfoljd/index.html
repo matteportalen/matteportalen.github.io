@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Talföljder – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E4F5EA; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#BFE0CB;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:linear-gradient(#E9F8EE,#D8F0E0 70%,#CDEBD7);background-attachment:fixed;color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:640px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.6rem;line-height:1;margin:14px 0 4px;font-weight:800}
+h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
+.lead{margin:0 0 16px;color:var(--muted);font-size:1.1rem}
+.stars{color:var(--gold);letter-spacing:1px}
+.stars .off{color:#CFE3D6}
+/* startskärmen */
+.demo{margin:0 0 18px}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lcard{background:var(--card);border-radius:18px;padding:12px 12px 10px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.lcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lcard .ex{font-weight:800;font-size:1.05rem;color:#fff;background:var(--c);border-radius:12px;padding:2px 10px;margin-bottom:4px;white-space:nowrap}
+.lcard b{font-size:1.2rem;line-height:1.15}
+.lcard small{color:var(--muted);font-size:.85rem;line-height:1.2}
+.note{color:var(--muted);font-size:.95rem;margin-top:18px}
+/* spelet */
+.gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.info{font-weight:800;font-size:1.2rem}
+.progress{height:10px;border-radius:5px;background:var(--card);overflow:hidden;margin-top:6px;box-shadow:inset 0 0 0 2px var(--line)}
+.progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.instr{display:flex;gap:10px;align-items:center;font-weight:700;font-size:1.15rem;line-height:1.3;margin:10px 0 8px}
+.spk{flex:none;width:46px;height:46px;border-radius:50%;background:var(--card);font-size:1.4rem;box-shadow:0 3px 0 var(--line)}
+/* bäcken */
+.stream{position:relative;height:178px;border-radius:22px;overflow:hidden;box-shadow:0 5px 0 #4C93C4;
+  background:radial-gradient(ellipse 26px 6px at 50% 50%,rgba(255,255,255,.35) 60%,transparent 64%) 0 0/74px 34px,
+             radial-gradient(ellipse 18px 5px at 50% 50%,rgba(255,255,255,.25) 60%,transparent 64%) 37px 17px/74px 34px,
+             linear-gradient(#9AD8F8,#5FB4EA)}
+.bank{position:absolute;top:0;bottom:0;width:24px;background:linear-gradient(90deg,#6CC35E,#58B04B)}
+.bank.l{left:0;border-radius:0 40% 40% 0/0 50% 50% 0}
+.bank.r{right:0;background:linear-gradient(270deg,#6CC35E,#58B04B);border-radius:40% 0 0 40%/50% 0 0 50%}
+.stones{position:absolute;left:28px;right:28px;bottom:20px;display:flex;gap:6px;align-items:flex-end}
+.stone{flex:1;min-width:0;height:58px;border-radius:50%/46%;background:radial-gradient(circle at 35% 28%,#EEF1F5,#B4BECB 70%);box-shadow:0 6px 0 #74839A,0 9px 10px rgba(0,40,80,.25);
+  display:grid;place-items:center;font-weight:800;font-size:clamp(1.05rem,4.6vw,1.5rem);line-height:1;padding:0 2px;white-space:nowrap;letter-spacing:-.5px}
+.stone.blank span{display:grid;place-items:center;min-width:72%;height:34px;border:2.5px dashed #7E8CA3;border-radius:10px;background:rgba(255,255,255,.55);color:var(--accent)}
+.stone.blank.sel span{border:3px solid var(--accent);background:#fff;box-shadow:0 0 0 4px rgba(61,90,254,.25)}
+.stone.blank.bad span{border-color:var(--bad);background:#FFE3E5;color:var(--bad)}
+.stone.filled{color:var(--good-dark)}
+.stone.shown{color:#B8323A}
+#arcs{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+#arcs text{font-family:var(--font)}
+.frog{position:absolute;left:0;top:0;font-size:42px;line-height:1;pointer-events:none;will-change:transform;filter:drop-shadow(0 3px 2px rgba(0,40,20,.3))}
+/* regeln */
+.rule{display:flex;align-items:center;justify-content:center;gap:10px;margin:14px 0 0;background:var(--card);border-radius:18px;padding:10px;box-shadow:0 4px 0 var(--line);flex-wrap:wrap}
+.rule .lab{font-weight:800;font-size:1.15rem}
+.ops{display:flex;gap:6px}
+.ops button{width:54px;height:54px;border-radius:14px;font-size:1.9rem;font-weight:800;background:#F3FBF6;box-shadow:0 0 0 2px var(--line) inset,0 4px 0 var(--line)}
+.ops button[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 4px 0 #0E1735}
+.rbox{min-width:76px;height:54px;border-radius:14px;border:3px solid var(--accent);display:grid;place-items:center;font-weight:800;font-size:1.7rem;padding:0 10px;background:#fff}
+.rule.done .rbox{border-color:var(--good);color:var(--good-dark)}
+.rule.bad .rbox{border-color:var(--bad);background:#FFE3E5}
+.feedback{min-height:1.5em;font-weight:800;font-size:1.08rem;margin:10px 0;text-align:center;color:var(--good-dark);line-height:1.3}
+.feedback.hint{background:#FFE9EC;color:#9B2C3A;border-radius:14px;padding:8px 12px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pad button{height:54px;border-radius:16px;background:var(--card);font-size:1.8rem;font-weight:800;box-shadow:0 4px 0 var(--line)}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.4rem}
+.go{display:block;width:100%;padding:14px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.35rem;margin-top:6px}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
+.result{text-align:center;padding-top:20px}
+.rbig{font-size:clamp(3.2rem,16vw,4.6rem);font-weight:800;line-height:1;margin:6px 0}
+.rsub{color:var(--muted);font-size:1.15rem;margin:0 0 14px}
+.big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
+@media(max-width:420px){.stones{left:20px;right:20px;gap:4px}.bank{width:17px}.pad{gap:8px}.pad button{height:50px}}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen">
+  <h1>🐸 Talföljder</h1>
+  <p class="lead">Hjälp grodan över bäcken! Varje sten har ett tal. Hitta mönstret, fyll i talen som fattas och skriv regeln.</p>
+  <div class="levels" id="levels"></div>
+  <p class="note">Tre stjärnor får du om alla åtta talföljder blir rätt direkt.</p>
+</section>
+<section id="game" class="screen" hidden>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="progress"><i id="prog"></i></div>
+  <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
+  <div class="stream" id="stream">
+    <div class="bank l"></div><div class="bank r"></div>
+    <svg id="arcs" aria-hidden="true"></svg>
+    <div class="stones" id="stones"></div>
+    <div class="frog" id="frog" aria-hidden="true">🐸</div>
+  </div>
+  <div class="rule" id="rule" hidden><span class="lab">Regeln:</span><div class="ops" id="ops"></div><div class="rbox" id="rbox" aria-live="polite"></div></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="pad" id="pad">
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+    <button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okbtn">OK</button>
+  </div>
+  <button class="go" id="next" hidden>Nästa ➜</button>
+</section>
+<section id="result" class="screen result" hidden>
+  <h2 id="rTitle"></h2>
+  <div class="rbig" id="rBig"></div>
+  <p class="rsub" id="rSub"></p>
+  <button class="go" id="rAgain">Spela igen</button>
+  <button class="big" id="rHome">Välj en annan nivå</button>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Talföljder" data-ikon="🐸"></script>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const KEY="mattespel-talfoljd-v1";
+const data=(()=>{try{return Object.assign({stars:{}},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{}}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const ROUND=8,N=6;
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const opTxt=op=>op==="·"?"·":op==="−"?"−":"+";
+
+/* ---------- Talföljderna ----------
+   1 Framåt: +1, +2, +3, +5, +10, de tre sista talen fattas.
+   2 Bakåt: samma hopp, framåt eller bakåt.
+   3 Luckor: talen fattas mitt i, hopp med 2, 3, 4, 5 och 10, upp till 100.
+   4 Stora tal: upp till 1000 (±10, ±20, ±25, ±50, ±100) och dubbelt (·2). */
+const LAST="000111",GAPS=["010101","001011","010011","100101","010110","001101","101011"];
+function arith(d,back,max,align){let a;
+  const room=max-(N-1)*d;
+  if(back){a=rnd((N-1)*d,max);if(align&&a%align)a-=a%align;if(a<(N-1)*d)a+=align;}
+  else{a=rnd(0,room);if(align)a-=a%align;}
+  const seq=[];for(let i=0;i<N;i++)seq.push(back?a-i*d:a+i*d);return seq;}
+function gen(level){let seq,op,d,pat=LAST;
+  if(level===1){d=pickOne([1,2,3,5,10]);op="+";seq=arith(d,false,d===10?59:50,d>=5&&Math.random()<.5?d:0);}
+  else if(level===2){d=pickOne([1,2,3,5,10]);const back=Math.random()<.6;op=back?"−":"+";seq=arith(d,back,d===10?99:50,d>=5&&Math.random()<.5?d:0);}
+  else if(level===3){d=pickOne([2,3,4,4,3,5,10]);const back=Math.random()<.45;op=back?"−":"+";seq=arith(d,back,100,0);pat=pickOne(GAPS);}
+  else{if(Math.random()<.25){op="·";d=2;const a=pickOne([1,2,3,4,5,10]);seq=[];for(let i=0;i<N;i++)seq.push(a*2**i);pat=pickOne([LAST,LAST,"001011"]);}
+    else{d=pickOne([10,20,25,50,100,20,25,50]);const back=Math.random()<.45;op=back?"−":"+";
+      seq=arith(d,back,1000,d===25?25:d===100?0:d===10?0:5);pat=Math.random()<.5?LAST:pickOne(GAPS);}}
+  return{seq,op,d,blank:[...pat].map(c=>c==="1")};}
+
+/* ---------- Skärmar ---------- */
+const LEVELS=[
+  {n:1,name:"Framåt",desc:"Hopp med 1, 2, 3, 5 och 10",ex:"2, 4, 6, …",c:"#2BB673"},
+  {n:2,name:"Bakåt",desc:"Talen blir större eller mindre",ex:"30, 27, 24, …",c:"#3D8BFD"},
+  {n:3,name:"Luckor",desc:"Talen fattas mitt i. Hopp med 3 och 4",ex:"20, _, 28, …",c:"#FF9F43"},
+  {n:4,name:"Stora tal",desc:"Upp till 1000, och dubbelt",ex:"3, 6, 12, …",c:"#7B61FF"}];
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+let G=null;
+function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
+  $("levels").innerHTML=LEVELS.map(l=>`<button class="lcard" data-l="${l.n}" style="--c:${l.c}"><span class="ex">${l.ex}</span><b>${l.n}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.n]||0)}</button>`).join("");
+  document.querySelectorAll(".lcard").forEach(b=>b.onclick=()=>start(+b.dataset.l));show("home");}
+
+function start(level){
+  const tasks=[];for(let i=0;i<ROUND;i++){let t;do{t=gen(level);}while(tasks.some(x=>x.seq.join()===t.seq.join()));tasks.push(t);}
+  if(level===4&&!tasks.some(t=>t.op==="·")){let t;do{t=gen(4);}while(t.op!=="·"||tasks.some(x=>x.seq.join()===t.seq.join()));tasks[rnd(1,6)]=t;}
+  G={level,tasks,i:0,err:0,done:0,requeued:0};show("game");next();}
+
+function next(){if(G.i>=G.tasks.length)return finish();
+  const t=G.tasks[G.i];G.t=t;G.vals=t.seq.map((v,i)=>t.blank[i]?null:v);G.tries={};G.step="nums";G.rop=null;G.rval="";G.ruleTries=0;G.missed=false;G.shown={};
+  G.sel=t.blank.indexOf(true);G.inp="";
+  $("info").textContent=`${G.done+1} / ${ROUND}`;$("prog").style.width=(G.done/ROUND*100)+"%";
+  $("rule").hidden=true;$("rule").className="rule";$("pad").hidden=false;$("next").hidden=true;fb("");
+  $("instr").textContent="Fyll i talen som fattas.";
+  $("ops").innerHTML=(G.level===4?["+","−","·"]:["+","−"]).map(o=>`<button data-op="${o}" aria-pressed="false" aria-label="${o==="+"?"plus":o==="−"?"minus":"gånger"}">${o}</button>`).join("");
+  document.querySelectorAll("#ops button").forEach(b=>b.onclick=()=>{if(G.step!=="rule")return;G.rop=b.dataset.op;$("rule").classList.remove("bad");drawRule();});
+  drawStones();$("arcs").innerHTML="";
+  requestAnimationFrame(()=>placeFrog(frogIdx(),false));}
+
+const known=i=>G.vals[i]!=null;
+function frogIdx(){let k=-1;while(k+1<N&&known(k+1))k++;return k;}
+function drawStones(){
+  $("stones").innerHTML=G.vals.map((v,i)=>{const b=G.t.blank[i];
+    if(b&&v==null){const sel=G.step==="nums"&&i===G.sel;return `<button class="stone blank${sel?" sel":""}${sel&&G.bad?" bad":""}" data-i="${i}" aria-label="Tom sten"><span>${sel?G.inp||"":""}</span></button>`;}
+    return `<div class="stone${b?(G.shown[i]?" shown":" filled"):""}">${v}</div>`;}).join("");
+  document.querySelectorAll(".stone.blank").forEach(s=>s.onclick=()=>{if(G.step!=="nums")return;G.sel=+s.dataset.i;G.inp="";G.bad=false;drawStones();});}
+function drawRule(){document.querySelectorAll("#ops button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.op===G.rop));$("rbox").textContent=G.rval||" ";}
+function fb(msg,hint){const f=$("feedback");f.textContent=msg;f.className="feedback"+(hint?" hint":"");}
+
+/* ---------- Grodan ---------- */
+function frogPos(k){const sc=$("stream").getBoundingClientRect(),f=$("frog"),fw=f.offsetWidth||42,fh=f.offsetHeight||42;
+  if(k<0)return{x:-6,y:sc.height*.42-fh/2};
+  if(k>=N)return{x:sc.width-fw+2,y:sc.height*.42-fh/2};
+  const r=$("stones").children[k].getBoundingClientRect();return{x:r.left-sc.left+r.width/2-fw/2,y:r.top-sc.top-fh+3};}
+let frogAt=-1,frogBusy=Promise.resolve();
+function placeFrog(k,anim){const p=frogPos(k),f=$("frog"),from=frogPos(frogAt);frogAt=k;
+  const end=`translate(${p.x}px,${p.y}px)`;
+  if(!anim||reduced()||!f.animate){f.style.transform=end;return Promise.resolve();}
+  const top=Math.min(from.y,p.y)-34;
+  const a=f.animate([{transform:`translate(${from.x}px,${from.y}px)`},{transform:`translate(${(from.x+p.x)/2}px,${top}px) scale(1.08)`},{transform:end}],{duration:330,easing:"ease-in-out"});
+  f.style.transform=end;return a.finished.catch(()=>{});}
+function hopTo(k){frogBusy=frogBusy.then(async()=>{for(let j=frogAt+1;j<=k;j++){window.Ljud&&Ljud.hop&&Ljud.hop();await placeFrog(j,true);}});return frogBusy;}
+addEventListener("resize",()=>{if(G&&!$("game").hidden){placeFrog(frogAt,false);if(G.step==="done")drawArcs();}});
+
+/* ---------- Bågarna med regeln ---------- */
+function drawArcs(){const s=$("arcs"),sc=$("stream").getBoundingClientRect(),st=[...$("stones").children].map(e=>e.getBoundingClientRect());
+  s.setAttribute("viewBox",`0 0 ${sc.width} ${sc.height}`);let h="";
+  const lab=opTxt(G.t.op)+G.t.d;
+  for(let i=0;i<N-1;i++){const a=st[i],b=st[i+1],x1=a.left-sc.left+a.width*.62,x2=b.left-sc.left+b.width*.38,y=a.top-sc.top+6,cx=(x1+x2)/2,top=y-58;
+    h+=`<path d="M${x1} ${y} Q${cx} ${top} ${x2} ${y}" fill="none" stroke="#fff" stroke-width="7" stroke-linecap="round" opacity=".7"/><path d="M${x1} ${y} Q${cx} ${top} ${x2} ${y}" fill="none" stroke="${G.t.op==="−"?"#E5484D":"#1E9E5E"}" stroke-width="3.5" stroke-linecap="round"/>`;
+    const w=lab.length*10+16;h+=`<rect x="${cx-w/2}" y="${top+10}" width="${w}" height="24" rx="12" fill="#fff"/><text x="${cx}" y="${top+28}" text-anchor="middle" font-size="18" font-weight="800" fill="${G.t.op==="−"?"#B8323A":"#157548"}">${lab}</text>`;}
+  s.innerHTML=h;}
+
+/* ---------- Tips ---------- */
+function pairHint(){const t=G.t,v=G.vals;
+  for(let j=0;j<N-1;j++)if(v[j]!=null&&v[j+1]!=null){const a=v[j],b=v[j+1];
+    if(t.op==="·")return `Titta på ${a} och ${b}. ${a} + ${a} = ${b}. Talet blir dubbelt så stort varje gång.`;
+    return `Titta på hur mycket det ${b>a?"ökar":"minskar"} från ${a} till ${b}.`;}
+  const ks=v.map((x,i)=>x!=null?i:-1).filter(i=>i>=0),j=ks[0],k=ks[1];
+  return `Från ${v[j]} till ${v[k]} är det ${k-j} hopp. Hur långt är varje hopp?`;}
+function stepTxt(i){const t=G.t,v=G.vals,x=t.seq[i];
+  if(i>0&&v[i-1]!=null)return t.op==="·"?`${v[i-1]} · 2 = ${x}`:`${v[i-1]} ${t.op} ${t.d} = ${x}`;
+  if(i<N-1&&v[i+1]!=null)return t.op==="·"?`${v[i+1]} / 2 = ${x}`:`${v[i+1]} ${t.op==="+"?"−":"+"} ${t.d} = ${x}`;
+  return `${x}`;}
+
+/* ---------- Svara ---------- */
+function key(k){if(!G||$("pad").hidden)return;
+  if(G.step==="nums"){if(G.sel<0)return;
+    if(k==="del"){G.inp=G.inp.slice(0,-1);G.bad=false;drawStones();return;}
+    if(k==="ok"){if(G.inp)checkNum();return;}
+    if(G.inp.length<4){if(G.bad){G.inp="";G.bad=false;}G.inp+=k;drawStones();}}
+  else if(G.step==="rule"){
+    if(k==="del"){G.rval=G.rval.slice(0,-1);$("rule").classList.remove("bad");drawRule();return;}
+    if(k==="ok"){checkRule();return;}
+    if(G.rval.length<3){if($("rule").classList.contains("bad")){G.rval="";$("rule").classList.remove("bad");}G.rval+=k;drawRule();}}}
+function checkNum(){const i=G.sel,t=G.t,v=+G.inp;
+  if(v===t.seq[i]){G.vals[i]=v;window.Ljud&&Ljud.ok&&Ljud.ok();fb(pickOne(["Rätt!","Ja!","Snyggt!","Precis!"]));afterFill();return;}
+  G.err++;G.missed=true;G.tries[i]=(G.tries[i]||0)+1;window.Ljud&&Ljud.bad&&Ljud.bad();
+  if(G.tries[i]>=2){G.vals[i]=t.seq[i];G.shown[i]=true;fb(`Det ska vara ${t.seq[i]}, för ${stepTxt(i)}.`,true);afterFill();return;}
+  G.bad=true;drawStones();fb(`${v} stämmer inte. ${pairHint()}`,true);}
+function afterFill(){G.inp="";G.bad=false;
+  const left=G.t.blank.map((b,i)=>b&&G.vals[i]==null?i:-1).filter(i=>i>=0);
+  G.sel=left.length?(left.find(i=>i>G.sel)??left[0]):-1;drawStones();hopTo(frogIdx());
+  if(!left.length){G.step="rule";$("rule").hidden=false;drawRule();
+    $("instr").textContent=G.level===4?"Vilken är regeln? Välj +, − eller · och skriv talet.":"Vilken är regeln? Välj + eller − och skriv hur långt hoppet är.";}}
+function checkRule(){const t=G.t;
+  if(!G.rop){toast(G.level===4?"Välj +, − eller · först.":"Välj + eller − först.");return;}
+  if(!G.rval){toast("Skriv ett tal i rutan.");return;}
+  const v=+G.rval;
+  if(G.rop===t.op&&v===t.d){done();return;}
+  G.err++;G.missed=true;G.ruleTries++;window.Ljud&&Ljud.bad&&Ljud.bad();
+  const a=t.seq[0],b=t.seq[1];let msg;
+  if(G.ruleTries>=2){G.rop=t.op;G.rval=String(t.d);drawRule();fb(`Regeln är ${opTxt(t.op)}${t.d}: ${a} ${t.op} ${t.d} = ${b}.`,true);done(true);return;}
+  if(G.rop!==t.op)msg=t.op==="·"?"Hoppen blir längre och längre. Det är inte samma hopp varje gång. Vad händer med talet?":t.op==="+"?"Talen blir större för varje sten. Då är det plus.":"Talen blir mindre för varje sten. Då är det minus.";
+  else msg=t.op==="·"?`${a} · ? = ${b}`:`Titta från ${a} till ${b}. Hur långt är hoppet?`;
+  $("rule").classList.add("bad");fb(msg,true);}
+function done(shown){G.step="done";$("rule").classList.remove("bad");$("rule").classList.add("done");$("pad").hidden=true;
+  if(!shown){window.Ljud&&Ljud.chime?Ljud.chime():window.Ljud&&Ljud.ok&&Ljud.ok();fb(G.missed?"Bra! Grodan kom över.":pickOne(["Rätt regel! 🎉","Helt rätt! 🎉","Du hittade mönstret! 🎉"]));}
+  $("instr").textContent="Grodan hoppar över bäcken!";drawArcs();
+  if(G.missed&&G.requeued<3){G.requeued++;const t=G.t;G.tasks.push({seq:t.seq,op:t.op,d:t.d,blank:t.blank,again:true});}
+  else G.done++;
+  $("prog").style.width=(Math.min(G.done,ROUND)/ROUND*100)+"%";
+  hopTo(N).then(()=>{if(G&&G.step==="done"){$("next").hidden=false;$("next").focus({preventScroll:true});}});}
+$("next").onclick=()=>{if(!G)return;G.i++;if(G.tasks[G.i]&&G.tasks[G.i].again)toast("Den här kommer tillbaka. Prova igen!");frogAt=-1;next();};
+document.querySelectorAll("#pad button").forEach(b=>b.onclick=()=>key(b.dataset.k));
+document.addEventListener("keydown",e=>{if(!G||$("game").hidden)return;
+  if(G.step==="done"){if(e.key==="Enter"&&!$("next").hidden){e.preventDefault();$("next").click();}return;}
+  if(/^[0-9]$/.test(e.key))key(e.key);else if(e.key==="Backspace"){e.preventDefault();key("del");}else if(e.key==="Enter"){e.preventDefault();key("ok");}
+  else if(G.step==="rule"&&(e.key==="+"||e.key==="-"||e.key==="*")){G.rop=e.key==="+"?"+":e.key==="-"?"−":(G.level===4?"·":G.rop);drawRule();}});
+
+function finish(){const st=G.err===0?3:G.err<=2?2:1,old=data.stars[G.level]||0;
+  data.stars[G.level]=Math.max(old,st);data.played=(data.played||0)+1;save();
+  $("rTitle").textContent=st===3?"Alla rätt direkt!":"Grodan kom över bäcken!";
+  $("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=G.err===0?`${ROUND} talföljder utan ett enda fel.`:`${ROUND} talföljder. Du svarade fel ${G.err} ${G.err===1?"gång":"gånger"}.`+(st>old&&old?" Nytt rekord!":"");
+  show("result");if(st===3||st>old){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
+$("rAgain").onclick=()=>start(G?G.level:1);$("rHome").onclick=openHome;$("quit").onclick=openHome;
+
+/* ---------- Uppläsning (bara med 🔊) ---------- */
+let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
+function speak(text){if(!("speechSynthesis" in window))return toast("Uppläsning fungerar inte i den här webbläsaren.");loadVoices();
+  if(!svVoice&&speechSynthesis.getVoices().length)return toast("Den här datorn har ingen svensk röst för uppläsning.");
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
+$("spk").onclick=()=>{if(!G)return;const ns=G.vals.map(v=>v==null?"tom sten":v).join(", ");
+  speak(G.step==="nums"?`Fyll i talen som fattas. ${ns}.`:G.step==="rule"?`${ns}. ${$("instr").textContent}`:$("instr").textContent);};
+
+function confetti(){
+  if(reduced())return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W/2+(Math.random()-.5)*120,y:H*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pickOne(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);
+}
+openHome();
+</script>
+</body>
+</html>

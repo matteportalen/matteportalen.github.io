@@ -216,7 +216,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <h2 class="grp"><span aria-hidden="true">🎮</span>Spela och utforska</h2>
   <nav class="cards" aria-label="Spela och utforska">
     <a class="card" href="spel/"><span class="tile" style="--c:linear-gradient(135deg,#3D5AFE,#17AFC4)">🎮</span><span class="txt"><b>Spelhörnan</b><small>Nio spel! Leta skatter i labyrinten, poppa bubblor, dra rep, kör, hoppa, bygg och handla medan du räknar.</small><span class="badge" id="bSpel" hidden></span></span><span class="chev">›</span></a>
-    <a class="card" href="verktyg/"><span class="tile" style="--c:linear-gradient(135deg,#FF9F43,#E5484D)">🧰</span><span class="txt"><b>Verktygslådan</b><small>Hundrarutan, kulramen, bråkväggen, klockan, tiobas och spegelmåla.</small></span><span class="chev">›</span></a>
+    <a class="card" href="verktyg/"><span class="tile" style="--c:linear-gradient(135deg,#FF9F43,#E5484D)">🧰</span><span class="txt"><b>Verktygslådan</b><small>Hundrarutan, tallinjen, kulramen, bråkväggen, klockan, tiobas och spegelmåla.</small></span><span class="chev">›</span></a>
   </nav>
 
   <h2 class="grp"><span aria-hidden="true">➕</span>Addition och subtraktion</h2>
@@ -235,6 +235,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <h2 class="grp"><span aria-hidden="true">💯</span>Tal och mönster</h2>
   <nav class="cards" aria-label="Tal och mönster">
     <a class="card" href="hundraruta/"><span class="tile" style="--c:#17AFC4"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><rect x="3" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="3" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="21" y="12" width="7.5" height="7.5" rx="1.5" fill="#FFC93C" opacity="1"/><rect x="30" y="12" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="3" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="1"/><rect x="30" y="21" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="3" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="12" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="21" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/><rect x="30" y="30" width="7.5" height="7.5" rx="1.5" fill="#fff" opacity="0.45"/></svg></span><span class="txt"><b>Hundrarutan</b><small>Steg åt sidan är ett, steg upp och ner är tio. Laga den trasiga hundrarutan!</small><span class="badge" id="bHundra" hidden></span></span><span class="chev">›</span></a>
+    <a class="card" href="talfoljd/"><span class="tile" style="--c:#2BB673">🐸</span><span class="txt"><b>Talföljder</b><small>Hjälp grodan över bäcken! Hitta mönstret, fyll i talen och skriv regeln.</small><span class="badge" id="bFoljd" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="brak/"><span class="tile" style="--c:#FF9F43"><svg viewBox="0 0 40 40" width="46" height="46" aria-hidden="true"><circle cx="20" cy="20" r="16" fill="#fff" stroke="#1D2B53" stroke-width="2.5"/><path d="M20 20 L20 4 A16 16 0 0 1 36 20 Z" fill="#FF5FA2" stroke="#1D2B53" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 20 L36 20 A16 16 0 0 1 20 36 Z" fill="#FF5FA2" stroke="#1D2B53" stroke-width="2.5" stroke-linejoin="round"/><path d="M4 20H36M20 4V36" stroke="#1D2B53" stroke-width="2.5"/></svg></span><span class="txt"><b>Bråk</b><small>Halvor, fjärdedelar och andra delar. Dela, färglägg och jämför.</small><span class="badge" id="bBrak" hidden></span></span><span class="chev">›</span></a>
   </nav>
 
@@ -389,6 +390,8 @@ const upp=get("mattespel-uppstallning-v1");S.upp=(upp&&upp.stars)||{};
 {const s=sum(S.upp);S.stars+=s;if(s)show("bUpp",`⭐ ${s} stjärnor`)}
 const hru=get("mattespel-hundraruta-v1");S.hundra=(hru&&hru.stars)||{};
 {const s=sum(S.hundra);S.stars+=s;if(s)show("bHundra",`⭐ ${s} stjärnor`)}
+const tfo=get("mattespel-talfoljd-v1");S.foljd=(tfo&&tfo.stars)||{};
+{const s=sum(S.foljd);S.stars+=s;if(s)show("bFoljd",`⭐ ${s} stjärnor`)}
 const ti=get("mattespel-tiotal-v1");S.ti=(ti&&ti.stars)||{};
 {const s=sum(S.ti);S.stars+=s;if(s)show("bTiotal",`⭐ ${s} stjärnor`)}
 const ta=get("mattespel-taluppfattning-v1");S.ta=(ta&&ta.stars)||{};S.taDiag=Object.values((ta&&ta.diag)||{});
@@ -409,7 +412,7 @@ $("sStars").textContent=S.stars;
 /* ---------- Dagar i rad (en dag räknas när något har tränats) ---------- */
 const day=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const today=day(new Date()),yest=day(new Date(Date.now()-864e5));
-const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1"].map(k=>localStorage.getItem(k)||"").join("|");
+const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1"].map(k=>localStorage.getItem(k)||"").join("|");
 let fp=0;for(let i=0;i<snap.length;i++)fp=(fp*31+snap.charCodeAt(i))|0;
 const st=get("matteportalen-dagar")||{fp:null,days:[]};
 if(st.fp!==null&&st.fp!==fp&&!st.days.includes(today))st.days.push(today);
@@ -503,6 +506,8 @@ const STICKERS=[
   ["vaxlingsproffs","🏦","Växlingsproffset","Få tre stjärnor på Subtraktion med växling upp till 1000.",()=>(S.upp["4-1000"]||0)===3],
   ["hundraruta","🔢","Hundrarutan","Få stjärnor i Hundrarutan.",()=>sum(S.hundra)>0],
   ["detektiv","🔍","Rutnätsdetektiven","Få tre stjärnor på Trasig hundraruta.",()=>(S.hundra.trasig||0)===3],
+  ["grodhopp","🐸","Grodhopparen","Få stjärnor i Talföljder.",()=>sum(S.foljd)>0],
+  ["monster","🔎","Mönsterspanaren","Få tre stjärnor på Stora tal i Talföljder.",()=>(S.foljd[4]||0)===3],
   ["spanare","🔭","Talspanaren","Få stjärnor i Bedömningsstöd i taluppfattning.",()=>sum(S.ta)>0],
   ["diagnos","📋","Diagnosen klar","Gör en diagnos i Bedömningsstöd i taluppfattning.",()=>S.taDiag.length>0],
   ["allaratt","🏆","Alla rätt","Få alla rätt på en diagnos.",()=>S.taDiag.some(d=>d.ok===d.n)],
@@ -556,7 +561,7 @@ $("bubble").textContent=`${hi} ${msg}`;
 /* ============ Elevprofiler (allt sparas bara på den här enheten) ============ */
 (function(){
 const PKEYS=["mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
-  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
+  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const jGet=k=>{try{return JSON.parse(lsGet(k)||"null")}catch(e){return null}},jSet=(k,v)=>lsSet(k,JSON.stringify(v));
 const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};
