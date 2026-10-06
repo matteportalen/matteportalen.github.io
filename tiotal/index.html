@@ -203,7 +203,11 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .hrbtn[aria-expanded="true"]{background:var(--ink);color:#fff}
 @media(max-width:420px){.hrbtn span{display:none}}
 .hrpanel{position:fixed;z-index:30;background:var(--card);box-shadow:0 10px 30px rgba(29,43,83,.3),0 0 0 1px rgba(29,43,83,.08);padding:10px 12px 12px;display:flex;flex-direction:column;gap:8px}
-@media(min-width:900px){body.hropen{padding-right:384px}.hrpanel{right:16px;top:76px;width:360px;border-radius:20px;max-height:calc(100vh - 92px);overflow:auto}}
+@media(min-width:900px){.hrpanel{left:0;top:0;width:340px;border-radius:20px;max-height:calc(100vh - 20px);overflow:auto}
+  .hrhead{cursor:grab;touch-action:none;user-select:none;margin:-4px -4px 0;padding:4px;border-radius:14px}
+  .hrhead:hover{background:var(--bg)}.hrhead.drag{cursor:grabbing}
+  .hrgrip{color:#A9B6CF;font-size:1rem;letter-spacing:-2px;margin-right:2px}}
+@media(max-width:899px){.hrgrip{display:none}}
 @media(max-width:899px){.hrhops button{height:38px}.hrpanel{gap:6px;left:0;right:0;bottom:0;border-radius:20px 20px 0 0;max-height:74vh;overflow:auto;padding-bottom:calc(12px + env(safe-area-inset-bottom,0px))}}
 .hrhead{display:flex;align-items:center;justify-content:space-between}
 .hrtask{margin-left:6px;background:var(--bg);border-radius:999px;padding:1px 10px;font-size:.95rem;color:var(--ink)}
@@ -301,7 +305,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Hundrarutan som hjälp (visar aldrig svaret; eleven hoppar själv) -->
 <div class="hrpanel" id="hrPanel" hidden role="dialog" aria-label="Hundrarutan">
-  <div class="hrhead"><b>💯 Hundrarutan <span class="hrtask" id="hrTask"></span></b><button class="hrx" id="hrClose" aria-label="Stäng">✕</button></div>
+  <div class="hrhead" id="hrHead" title="Dra för att flytta"><b><span class="hrgrip" aria-hidden="true">⋮⋮</span>💯 Hundrarutan <span class="hrtask" id="hrTask"></span></b><button class="hrx" id="hrClose" aria-label="Stäng">✕</button></div>
   <div class="hrgrid" id="hrGrid"></div>
   <div class="hrhops"><button data-h="-10" class="mi up">↑ −10</button><button data-h="-1" class="mi lf">← −1</button><button data-h="undo" class="un">↶</button><button data-h="1" class="pl rt">+1 →</button><button data-h="10" class="pl dn">+10 ↓</button></div>
   <div class="hrsum" id="hrSum"></div>
@@ -571,7 +575,21 @@ function hrDraw(){if($('#hrPanel').hidden)return;if(G&&G.t)$('#hrTask').textCont
   $('#hrGrid').innerHTML=Array.from({length:n},(_,i)=>{const v=i+1;let c=v===HR.start?'st':on.get(v)||'';if(v===end&&HR.path.length>1)c+=' end';return`<i class="${c}" data-n="${v}">${v}</i>`;}).join('');
   const steps=HR.path.length-1,ten=HR.path.slice(1).filter((v,i)=>Math.abs(v-HR.path[i])===10).length,one=steps-ten;
   $('#hrSum').textContent=steps?`Du har hoppat ${ten?ten+(ten===1?' tiohopp':' tiohopp'):''}${ten&&one?' och ':''}${one?one+(one===1?' enhopp':' enhopp'):''} och står på ${end}.`:`Du står på ${HR.start}. Hoppa med knapparna.`;}
-function hrOpen(on){$('#hrPanel').hidden=!on;document.body.classList.toggle('hropen',on);$('#hrBtn').setAttribute('aria-expanded',on);if(on){if(HR.start==null||!HR.path.length)hrReset();hrDraw();}}
+function hrOpen(on){$('#hrPanel').hidden=!on;if(on)hrPlace();$('#hrBtn').setAttribute('aria-expanded',on);if(on){if(HR.start==null||!HR.path.length)hrReset();hrDraw();}}
+/* på dator är rutan ett fönster som man flyttar i rubriken; det öppnas bredvid uppgiften och minns var man lade det */
+let hrPos=null;try{hrPos=JSON.parse(sessionStorage.getItem('mp-tio-hr')||'null');}catch(e){}
+const hrWide=()=>innerWidth>=900;
+function hrClamp(x,y){const p=$('#hrPanel'),w=p.offsetWidth||340,h=p.offsetHeight||560;return[Math.max(6,Math.min(innerWidth-w-6,x)),Math.max(6,Math.min(innerHeight-Math.min(h,120),y))];}
+function hrSet(x,y){const[cx,cy]=hrClamp(x,y);const p=$('#hrPanel');p.style.left=cx+'px';p.style.top=cy+'px';}
+function hrPlace(){const p=$('#hrPanel');if(!hrWide()){p.style.left=p.style.top='';return;}
+  if(hrPos){hrSet(hrPos[0],hrPos[1]);return;}const w=document.querySelector('#game .qbox')||$('#game');const r=w.getBoundingClientRect();
+  const x=r.right+16+340<=innerWidth?r.right+16:Math.max(6,innerWidth-346);hrSet(x,Math.max(70,r.top-200));}
+(()=>{let d=null;const hd=$('#hrHead');
+  hd.addEventListener('pointerdown',e=>{if(!hrWide()||e.target.closest('button'))return;const p=$('#hrPanel').getBoundingClientRect();d={dx:e.clientX-p.left,dy:e.clientY-p.top};hd.setPointerCapture(e.pointerId);hd.classList.add('drag');e.preventDefault();});
+  hd.addEventListener('pointermove',e=>{if(!d)return;hrSet(e.clientX-d.dx,e.clientY-d.dy);});
+  const up=()=>{if(!d)return;d=null;hd.classList.remove('drag');const p=$('#hrPanel');hrPos=[parseFloat(p.style.left),parseFloat(p.style.top)];try{sessionStorage.setItem('mp-tio-hr',JSON.stringify(hrPos));}catch(e){}};
+  hd.addEventListener('pointerup',up);hd.addEventListener('pointercancel',up);
+  addEventListener('resize',()=>{if(!$('#hrPanel').hidden){if(hrWide()&&hrPos)hrSet(hrPos[0],hrPos[1]);else hrPlace();}});})();
 $('#hrBtn').onclick=()=>hrOpen($('#hrPanel').hidden);$('#hrClose').onclick=()=>hrOpen(false);
 $('#hrGrid').addEventListener('click',e=>{const c=e.target.closest('i');if(!c)return;HR.start=+c.dataset.n;HR.path=[HR.start];hrDraw();});
 $$('.hrhops button').forEach(b=>b.onclick=()=>{const h=b.dataset.h,cur=HR.path[HR.path.length-1];
