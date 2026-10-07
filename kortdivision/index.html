@@ -305,7 +305,7 @@ function finishTask(){
   G.done=true;const sol=G.sol,q=sol.qStr;if(!G.miss){}else G.err++;
   $("task").className="task ok";window.Ljud&&Ljud.ok&&Ljud.ok();const p=$("pet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");
   say(pick(["Utmärkt!","Snyggt räknat!","Helt rätt!"]));
-  if(G.mode==="steg")fb(`${sol.n}/${sol.d} = ${q}${sol.rest?` rest ${sol.rest}`:""}`);
+  fb(`${sol.n}/${sol.d} = ${q}${sol.rest?` rest ${sol.rest}`:""}`); // grönt i båda lägena, så att en gammal röd text aldrig blir kvar
   // kontroll med multiplikation
   $("check").textContent=`Kontroll: ${sol.d} · ${q}${sol.rest?` + ${sol.rest}`:""} = ${sol.n} ✓`;
   render();$("pad").hidden=true;$("nextBtn").hidden=false;G.k++;$("prog").style.width=(G.k/ROUND*100)+"%";}
