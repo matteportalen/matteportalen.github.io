@@ -210,7 +210,7 @@ function render(){
       if(steg){const v=s.carries[i];const act=s.phase==="c"&&s.i===i-1;cb=`<span class="cb${act?" act":v?" ok":" empty"}">${act?(s.ans||""):v||""}</span>`;}
       else{const v=f.carries[i]||"",act=f.cur.type==="c"&&f.cur.i===i,m=f.marks["c"+i];cb=`<button class="cb${act?" act":""}${m?" "+m:""}${!v&&!act&&!m?" idle":""}" data-c="${i}" aria-label="Rest ovanför siffra ${i+1}">${v}</button>`;}
     }
-    const cur=steg&&s.phase==="q"&&(s.i===i||s.i===i+1&&sol.steps[i].skip);
+    const cur=steg&&s.phase==="q"&&(s.i===i||s.i===i+1&&sol.steps[i].q===0&&sol.steps[i].num>0);
     top+=`<div class="dg${i>=sol.intLen?" new":""}${cur?" cur":""}">${cb}${sol.digs[i]}</div>`;}
   // svaret efter likhetstecknet
   let ans="";
@@ -249,13 +249,13 @@ function stepPrompt(){
 function stepKey(k){
   const s=G.s,sol=G.sol,st=sol.steps[s.i],d=sol.d;if(G.done)return;
   if(k==="del"){s.ans="";s.wrong=false;render();return;}
-  if(s.phase==="comma"){if(k===","){s.shownDec=1;s.phase="c";window.Ljud&&Ljud.ok();fb("Rätt! Nu blir det en nolla efter decimaltecknet.");stepPrompt();}else wrong("Tryck på , (decimaltecknet) för att fortsätta efter kommat.");return;}
+  if(s.phase==="comma"){if(k===","){s.shownDec=1;window.Ljud&&Ljud.ok();fb("Rätt! Nu blir det en nolla efter decimaltecknet.");if(st.q===0)vidare();else{s.phase="c";stepPrompt();}}else wrong("Tryck på , (decimaltecknet) för att fortsätta efter kommat.");return;}
   if(k===","){fb("Decimaltecknet kommer när siffrorna är slut.",true);return;}
   if(k==="ok")return;
   const v=k==="none"?0:+k;
   if(s.phase==="q"){
     if(v===st.q){window.Ljud&&Ljud.ok();
-      fb(st.q===0&&!st.write?`Inga gånger! Då skriver vi ingen siffra i svaret. ${st.num} följer med till nästa siffra.`:st.q===0?`Inga gånger! Då skriver vi en nolla i svaret.`:`Rätt! ${d} går ${st.q} ${st.q===1?"gång":"gånger"} i ${st.num}.`);
+      fb(st.q===0&&!st.write?`Inga gånger! Då skriver vi ingen siffra i svaret. ${st.num} följer med till nästa siffra.`:st.q===0?`Inga gånger! Då skriver vi en nolla i svaret och tar med ${st.num} till nästa siffra.`:`Rätt! ${d} går ${st.q} ${st.q===1?"gång":"gånger"} i ${st.num}.`);
       afterQ();}
     else wrong(`${tabHint(d,st.num)} Hur många gånger går ${d} i ${st.num}?`);
   }else if(s.phase==="c"){
@@ -268,13 +268,15 @@ function stepKey(k){
     else wrong(`${st.num} − ${d*st.q} = ${sol.rest}. Det är resten.`);
   }
 }
-function afterQ(){const s=G.s,sol=G.sol,i=s.i,last=i===sol.digs.length-1;
-  if(i<sol.intLen-1){s.phase="c";stepPrompt();return;}
+// Går det inga gånger (en nolla i svaret) skriver man ingen liten siffra; man tar med siffran till nästa ("3 i 18"), som i skolan.
+function vidare(){const s=G.s;s.carries[s.i+1]="";s.i++;s.phase="q";stepPrompt();}
+function afterQ(){const s=G.s,sol=G.sol,i=s.i,last=i===sol.digs.length-1,noll=sol.steps[i].q===0;
+  if(i<sol.intLen-1){if(noll)vidare();else{s.phase="c";stepPrompt();}return;}
   if(i===sol.intLen-1){
     if(sol.dec){s.phase="comma";stepPrompt();return;}            // det blev rest: sätt decimaltecken
     if(sol.rest>0){s.restOn=true;s.phase="rest";stepPrompt();return;}
     s.phase="done";finishTask();return;}
-  if(!last){s.shownDec++;s.phase="c";stepPrompt();return;}        // en decimalnolla till
+  if(!last){s.shownDec++;if(noll)vidare();else{s.phase="c";stepPrompt();}return;}   // en decimalnolla till
   s.phase="done";finishTask();}
 function tabHint(d,num){const lo=Math.floor(num/d),hi=lo+1;return lo===0?`${d} · 1 = ${d}, och det är mer än ${num}.`:`${d} · ${lo} = ${d*lo} och ${d} · ${hi} = ${d*hi}.`;}
 function wrong(msg){G.s.wrong=true;G.miss=true;window.Ljud&&Ljud.bad();fb(msg,true);render();}
@@ -294,7 +296,7 @@ function selfKey(k){const f=G.f;if(G.done)return;
   render();}
 function selfCheck(){
   const f=G.f,sol=G.sol;let ok=true;f.marks={};
-  sol.steps.forEach((st,i)=>{if(i===0)return;const want=sol.steps[i-1].r&&!sol.steps[i-1].skip?String(sol.steps[i-1].r):"";if((f.carries[i]||"")!==want){ok=false;f.marks["c"+i]="bad";}});
+  sol.steps.forEach((st,i)=>{if(i===0)return;const pr=sol.steps[i-1],v=f.carries[i]||"",want=pr.r&&pr.q>0?String(pr.r):"";if(v!==want&&!(pr.q===0&&v===String(pr.r))){ok=false;f.marks["c"+i]="bad";}});
   if(f.ans!==sol.qStr){ok=false;f.marks.ans="bad";}else f.marks.ans="ok";
   if(hasRestBox()){const want=sol.rest?String(sol.rest):"";if(f.rest!==want&&!(f.rest==="0"&&!want)){ok=false;f.marks.rest="bad";}else f.marks.rest="ok";}
   if(ok){G.done=true;finishTask();return;}
