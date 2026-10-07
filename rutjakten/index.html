@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rutjakten – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
+.lead{margin:0 0 16px;color:var(--muted);font-size:1.1rem}
+.stars{color:var(--gold);letter-spacing:1px}.stars .off{color:#D5DDEC}
+/* startskärmen */
+.how{display:flex;align-items:center;gap:14px;background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 var(--line);margin-bottom:16px}
+.how .mini{flex:none;display:grid;grid-template-columns:1fr 1fr;gap:3px;width:74px}
+.how .mini i{font-style:normal;display:grid;place-items:center;height:34px;border-radius:8px;background:#F2F6FF;font-weight:800;font-size:1.1rem}
+.how .mini i.g{background:#C9F0D8;color:var(--good-dark)}
+.how p{margin:0;font-weight:700;line-height:1.3}
+.vars{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+@media(max-width:360px){.vars{grid-template-columns:1fr}}
+.var{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;flex-direction:column;gap:2px}
+.var:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.var .t{width:52px;height:52px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1.4rem;margin-bottom:4px}
+.var b{font-size:1.15rem;line-height:1.15}
+.var small{color:var(--muted);font-size:.88rem;line-height:1.2}
+.var .cnt{font-size:.8rem;color:var(--muted);font-weight:700}
+.tabs{margin-top:14px;background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line)}
+.tabs p{margin:0 0 8px;font-weight:800}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{min-width:48px;height:46px;border-radius:12px;background:var(--bg);font-weight:800;font-size:1.2rem;padding:0 10px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:#fff}
+/* spelet */
+.gbar{display:flex;align-items:center;gap:10px;margin:2px 0 10px}
+.gbar .vn{font-weight:800;font-size:1.1rem}
+.gbar .cnt{margin-left:auto;background:var(--card);border-radius:999px;padding:3px 12px;font-weight:800;box-shadow:0 3px 0 var(--line);white-space:nowrap}
+.gbar .st{font-size:.95rem}
+.board{position:relative;width:min(92vw,calc(100dvh - 250px),560px);aspect-ratio:1;margin:0 auto;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+@supports not (height:100dvh){.board{width:min(92vw,calc(100vh - 250px),560px)}}
+.box{position:absolute;width:44%;height:44%;display:grid;grid-template-columns:1fr 1fr;gap:5px;padding:6px;border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);transition:transform .35s cubic-bezier(.3,1.4,.5,1),opacity .3s,background .25s}
+.box[data-i="0"]{left:0;top:0}.box[data-i="1"]{right:0;top:0}.box[data-i="2"]{left:0;bottom:0}.box[data-i="3"]{right:0;bottom:0}
+.box button{border-radius:14px;background:#F2F6FF;font-weight:800;font-size:clamp(1.4rem,7vmin,2.6rem);line-height:1;display:grid;place-items:center;box-shadow:inset 0 0 0 2px #DFE8FA;transition:background .12s,transform .12s}
+.box button:active{transform:scale(.96)}
+.box button.sel{background:#DCE4FF;box-shadow:inset 0 0 0 3px var(--accent);color:var(--accent)}
+.box.done{background:#DDF5E7;box-shadow:0 5px 0 #A9DFC0}
+.box.done button{background:#BDEBCF;box-shadow:none;color:var(--good-dark)}
+.box.done button.part{background:#2BB673;color:#fff}
+.box.shake{animation:shake .45s}
+.box.shake button.sel{background:#FFE3E5;box-shadow:inset 0 0 0 3px #F3A9AE;color:#B8323A}
+@keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
+.box.out{transform:scale(.6);opacity:0}
+.box.in{transform:scale(.6);opacity:0;transition:none}
+.op{position:absolute;left:41%;top:41%;width:18%;height:18%;border-radius:50%;background:linear-gradient(135deg,#3D8BFD,#3D5AFE);color:#fff;display:grid;place-items:center;font-weight:800;font-size:clamp(1.6rem,8vmin,3rem);box-shadow:0 4px 0 #2A3FB8;z-index:2}
+.board.win .op{background:linear-gradient(135deg,#2BB673,#1E9E5E);box-shadow:0 4px 0 #157548}
+.fr{display:inline-flex;flex-direction:column;align-items:center;line-height:.95;font-size:.72em}
+.fr i{font-style:normal}.fr i:first-child{border-bottom:3px solid currentColor;padding:0 .12em}
+.yay{position:absolute;left:50%;top:50%;z-index:5;transform:translate(-50%,-50%) rotate(-6deg) scale(.4);opacity:0;background:var(--card);color:var(--good-dark);font-weight:800;font-size:clamp(2rem,10vmin,3.6rem);padding:6px 26px;border-radius:20px;box-shadow:0 6px 0 #A9DFC0,0 10px 30px rgba(29,43,83,.2);pointer-events:none;white-space:nowrap}
+.yay.show{animation:yay 1.1s ease-out forwards}
+@keyframes yay{0%{opacity:0;transform:translate(-50%,-50%) rotate(-6deg) scale(.4)}25%{opacity:1;transform:translate(-50%,-50%) rotate(-6deg) scale(1.08)}70%{opacity:1;transform:translate(-50%,-50%) rotate(-6deg) scale(1)}100%{opacity:0;transform:translate(-50%,-60%) rotate(-6deg) scale(1)}}
+.foot{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-top:12px}
+.pet{width:84px;flex:none;transition:transform .2s}
+.pet svg{width:100%;height:auto;display:block}
+.pet.hop{animation:hop .5s ease-out}.pet.jump{animation:jump .8s ease-out}
+@keyframes hop{40%{transform:translateY(-14px)}}
+@keyframes jump{30%{transform:translateY(-34px) rotate(-8deg)}60%{transform:translateY(-10px) rotate(6deg)}}
+.bubble{background:var(--card);border-radius:16px;padding:8px 14px;font-weight:800;box-shadow:0 3px 0 var(--line);margin-bottom:34px;position:relative;min-height:1.6em}
+.bubble::after{content:"";position:absolute;left:-8px;bottom:12px;border:8px solid transparent;border-left:0;border-right-color:var(--card)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:9;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:8}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}.yay.show{opacity:1;transform:translate(-50%,-50%) rotate(-6deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen">
+  <h1>🟩 Rutjakten</h1>
+  <p class="lead">I varje ruta hör tre tal ihop. Hitta dem!</p>
+  <div class="how"><div class="mini"><i class="g">3</i><i>5</i><i class="g">10</i><i class="g">7</i></div><p>3 + 7 = 10. Tryck på de tre talen som hör ihop. Det fjärde talet passar inte. När alla fyra rutor är klara kommer nya.</p></div>
+  <div class="vars" id="vars"></div>
+  <div class="tabs" id="tabsBox"><p>Vilka tabeller i <b>Gånger, alla tabeller</b>?</p><div class="chips" id="tabChips"></div></div>
+</section>
+<section id="game" class="screen" hidden>
+  <div class="gbar"><button class="back" id="quit">← Byt</button><span class="vn" id="vn"></span><span class="cnt" id="cnt"></span></div>
+  <div class="board" id="board"></div>
+  <div class="foot"><div class="pet" id="pet" aria-hidden="true"></div><div class="bubble" id="bubble" aria-live="polite"></div></div>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Rutjakten" data-ikon="🟩"></script>
+<script>
+/* Rutjakten: fyra rutor med fyra tal var. Tre tal hör ihop (a + b = c eller a · b = c), det fjärde är ett störtal.
+   Alla fyra rutor lösta = ett kors klart: "Utmärkt!" och fyra nya rutor. Inget tidstryck, inget slut.
+   Stjärnor per variant vid 10, 25 och 50 klara kors. */
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const KEY="mattespel-rutjakten-v1",STEG=[10,25,50];
+const data=(()=>{try{return Object.assign({stars:{},kors:{},tab:[2,3,4,5,6,7,8,9,10]},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},kors:{},tab:[2,3,4,5,6,7,8,9,10]}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+
+/* ---------- Varianterna ----------
+   Tal är [täljare, nämnare] (heltal har nämnaren 1), så att bråk räknas utan avrundning. */
+const W=n=>[n,1];
+const VAR=[
+ {id:"p10",name:"Plus till 10",desc:"Tiokompisar och små tal",ex:"3 + 7 = 10",t:"10",c:"#2BB673",op:"+",gen:()=>{const c=rnd(4,10),a=rnd(1,c-1);return[a,c-a,c].map(W);}},
+ {id:"p20",name:"Plus till 20",desc:"Ofta över tiotalet",ex:"8 + 5 = 13",t:"20",c:"#3D8BFD",op:"+",gen:()=>{let a,b;if(Math.random()<.7){do{a=rnd(2,9);b=rnd(2,9);}while(a+b<=10);}else{a=rnd(1,15);b=rnd(1,20-a);}return[a,b,a+b].map(W);}},
+ {id:"p25",name:"Plus till 25",desc:"Lite större tal",ex:"14 + 9 = 23",t:"25",c:"#17AFC4",op:"+",gen:()=>{const c=rnd(11,25),a=rnd(2,c-2);return[a,c-a,c].map(W);}},
+ {id:"tio",name:"Hela tiotal",desc:"Tiotal upp till 100",ex:"30 + 40 = 70",t:"+10",c:"#7B61FF",op:"+",gen:()=>{const c=rnd(3,10),a=rnd(1,c-1);return[a*10,(c-a)*10,c*10].map(W);}},
+ {id:"p100",name:"Plus till 100",desc:"Tvåsiffriga tal",ex:"36 + 27 = 63",t:"100",c:"#FF9F43",op:"+",gen:()=>{const a=rnd(11,78),b=rnd(11,Math.min(89,100-a));return[a,b,a+b].map(W);}},
+ {id:"mA",name:"Gånger, små tabeller",desc:"Tabellerna 2, 3, 4, 5 och 10",ex:"4 · 5 = 20",t:"×",c:"#FF5FA2",op:"·",gen:()=>{const a=pick([2,3,4,5,10]),b=rnd(2,10);return shuffle([a,b]).concat(a*b).map(W);}},
+ {id:"mB",name:"Gånger, alla tabeller",desc:"Välj tabeller nedanför",ex:"7 · 8 = 56",t:"×",c:"#E5484D",op:"·",gen:()=>{const tb=data.tab&&data.tab.length?data.tab:[2,3,4,5,6,7,8,9,10],a=pick(tb),b=rnd(2,10);return shuffle([a,b]).concat(a*b).map(W);}},
+ {id:"br",name:"Bråk",desc:"Samma nämnare",ex:"¼ + ²⁄₄ = ¾",t:"½",c:"#F2B707",op:"+",gen:()=>{const d=pick([2,3,4,4,5,6,8]),c=rnd(2,d),a=rnd(1,c-1);return[[a,d],[c-a,d],[c,d]];}}
+];
+// störtal: nära talen i trion, så att man måste tänka
+function storTal(v,tri){const isB=v.id==="br",d=tri[2][1];
+  if(isB){const n=pick([tri[2][0]+1,tri[2][0]-1,tri[0][0]+1,rnd(1,d)]);return[Math.max(1,Math.min(d,n)),d];}
+  const c=tri[2][0],a=tri[0][0],b=tri[1][0],tal=v.id==="tio"?[c+10,c-10,a+10,b-10]:v.op==="·"?[c+a,c-b,c+1,a*(b+1),(a+1)*b]:[c+1,c-1,a+1,b-1,c+2];
+  const max={p10:10,p20:20,p25:25,tio:100,p100:100}[v.id]||100,ok=tal.filter(n=>n>=1&&n<=max);
+  return W(ok.length?pick(ok):rnd(1,max));}
+const lika=(x,y)=>x[0]*y[1]===y[0]*x[1];
+const summa=(x,y)=>[x[0]*y[1]+y[0]*x[1],x[1]*y[1]];
+const hor=(op,x,y,z)=>op==="+"?lika(summa(x,y),z):lika([x[0]*y[0],x[1]*y[1]],z);
+// sant om tre tal (i någon ordning) hör ihop
+const trio=(op,t)=>hor(op,t[0],t[1],t[2])||hor(op,t[0],t[2],t[1])||hor(op,t[1],t[2],t[0]);
+function nyRuta(v,undvik){
+  for(let k=0;k<200;k++){
+    const tri=v.gen(),s=storTal(v,tri),tal=[...tri,s],nyckel=tri.map(x=>x.join("/")).sort().join(",");
+    if(tal.some((x,i)=>tal.findIndex(y=>lika(x,y))!==i&&i===3))continue;           // störtalet får inte vara ett av trions tal
+    if(undvik.has(nyckel))continue;
+    // exakt en av de fyra möjliga trion får höra ihop
+    let antal=0;for(let u=0;u<4;u++){if(trio(v.op,tal.filter((_,i)=>i!==u)))antal++;}
+    if(antal!==1)continue;
+    undvik.add(nyckel);const ord=shuffle([0,1,2,3]);return{tal:ord.map(i=>tal[i]),ratt:ord.map(i=>i<3),nyckel};
+  }
+  return null;
+}
+const visa=x=>x[1]===1?String(x[0]):x[0]===x[1]?"1":`<span class="fr"><i>${x[0]}</i><i>${x[1]}</i></span>`;
+
+/* ---------- Skärmar ---------- */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+function openHome(){G=null;
+  $("vars").innerHTML=VAR.map(v=>{const k=data.kors[v.id]||0;return`<button class="var" data-v="${v.id}" style="--c:${v.c}"><span class="t">${v.t}</span><b>${v.name}</b><small>${v.ex}</small>${starHtml(data.stars[v.id]||0)}<span class="cnt">${k?`🟩 ${k} kors klara`:v.desc}</span></button>`;}).join("");
+  $("tabChips").innerHTML=[2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${data.tab.includes(t)}">${t}</button>`).join("");
+  show("home");}
+$("vars").onclick=e=>{const b=e.target.closest("[data-v]");if(b)start(b.dataset.v);};
+$("tabChips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t,s=new Set(data.tab);
+  if(s.has(t)){if(s.size===1){toast("Minst en tabell behövs.");return;}s.delete(t);}else s.add(t);data.tab=[...s].sort((a,b)=>a-b);save();openHome();};
+$("quit").onclick=openHome;
+
+/* ---------- Spelet ---------- */
+let G=null;
+function start(id){const v=VAR.find(x=>x.id===id);G={v,boxes:[],senast:new Set(),sel:new Set(),busy:false};
+  $("vn").textContent=v.name;$("pet").innerHTML=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";
+  $("bubble").textContent="Hitta tre tal som hör ihop!";
+  show("game");nyttKors(false);}
+function nyttKors(anim){
+  const v=G.v,b=$("board"),undvik=new Set(G.senast);G.senast=new Set();
+  G.boxes=[0,1,2,3].map(()=>{const r=nyRuta(v,undvik);G.senast.add(r.nyckel);return Object.assign(r,{done:false});});
+  b.classList.remove("win");
+  b.innerHTML=G.boxes.map((r,i)=>`<div class="box${anim?" in":""}" data-i="${i}" role="group" aria-label="Ruta ${i+1}">${r.tal.map((x,j)=>`<button data-j="${j}" aria-label="${x[1]===1?x[0]:x[0]+"/"+x[1]}">${visa(x)}</button>`).join("")}</div>`).join("")+
+    `<div class="op" aria-hidden="true">${v.op==="·"?"·":"＋"}</div><div class="yay" id="yay">Utmärkt!</div>`;
+  if(anim)requestAnimationFrame(()=>requestAnimationFrame(()=>b.querySelectorAll(".box").forEach((x,i)=>{x.style.transitionDelay=i*70+"ms";x.classList.remove("in");})));
+  hud();G.busy=false;}
+function hud(){const k=data.kors[G.v.id]||0,st=data.stars[G.v.id]||0,next=STEG.find(s=>s>k);
+  $("cnt").innerHTML=`🟩 ${k} <span class="st">${starHtml(st)}</span>`;$("cnt").title=next?`${next-k} kors kvar till nästa stjärna`:"Alla stjärnor!";}
+$("board").addEventListener("click",e=>{
+  const btn=e.target.closest(".box button");if(!btn||!G||G.busy)return;
+  const box=btn.parentNode,i=+box.dataset.i,j=+btn.dataset.j,r=G.boxes[i];if(r.done)return;
+  // man väljer i en ruta i taget; byter man ruta börjar valet om
+  if(G.cur!==i){G.sel.forEach(k=>{const bb=$("board").querySelector(`.box[data-i="${G.cur}"] button[data-j="${k}"]`);if(bb)bb.classList.remove("sel");});G.sel=new Set();G.cur=i;}
+  if(G.sel.has(j)){G.sel.delete(j);btn.classList.remove("sel");return;}
+  G.sel.add(j);btn.classList.add("sel");window.Ljud&&Ljud.pop&&Ljud.pop(G.sel.size);
+  if(G.sel.size<3)return;
+  const valda=[...G.sel].map(k=>r.tal[k]);
+  if(trio(G.v.op,valda)){
+    r.done=true;box.classList.add("done");[...G.sel].forEach(k=>box.querySelector(`button[data-j="${k}"]`).classList.add("part"));G.sel=new Set();G.cur=null;
+    window.Ljud&&Ljud.ok&&Ljud.ok();petHop("hop");$("bubble").textContent=pick(["Bra!","Snyggt!","Rätt!","Ja!","Precis!"]);
+    if(G.boxes.every(x=>x.done))korsKlart();
+  }else{
+    G.busy=true;box.classList.add("shake");$("bubble").textContent=pick(["Prova igen!","Nästan, titta en gång till.","De tre hör inte ihop."]);
+    setTimeout(()=>{box.classList.remove("shake");box.querySelectorAll("button.sel").forEach(x=>x.classList.remove("sel"));G.sel=new Set();G.cur=null;G.busy=false;},480);
+  }
+});
+function korsKlart(){
+  G.busy=true;const id=G.v.id,k=(data.kors[id]||0)+1,fore=data.stars[id]||0,st=STEG.filter(s=>k>=s).length;
+  data.kors[id]=k;data.stars[id]=Math.max(fore,st);data.spelat=(data.spelat||0)+1;save();
+  const b=$("board");b.classList.add("win");const y=$("yay");y.classList.remove("show");void y.offsetWidth;y.classList.add("show");
+  window.Ljud&&(Ljud.chime?Ljud.chime():Ljud.ok());petHop("jump");$("bubble").textContent=pick(["Utmärkt!","Hela korset!","Toppen!"]);
+  hud();
+  if(data.stars[id]>fore){setTimeout(()=>{toast(`⭐ Ny stjärna! ${k} kors klara i ${G.v.name}.`);window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();},500);}
+  setTimeout(()=>{if(!G)return;b.querySelectorAll(".box").forEach(x=>x.classList.add("out"));setTimeout(()=>{if(G)nyttKors(true);},320);},1150);
+}
+function petHop(c){const p=$("pet");p.classList.remove("hop","jump");void p.offsetWidth;p.classList.add(c);}
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&G&&!$("game").hidden)openHome();});
+
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800);}
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W2=innerWidth,H2=innerHeight;c.width=W2*dpr;c.height=H2*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W2/2+(Math.random()-.5)*120,y:H2*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pick(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W2,H2);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W2,H2);c.hidden=true;}})(t0);
+}
+openHome();
+</script>
+</body>
+</html>
