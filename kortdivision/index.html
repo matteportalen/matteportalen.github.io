@@ -51,11 +51,11 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 /* uppställningen: täljaren över divisorn med bråkstreck, svaret efter likhetstecknet */
 .kd{--cell:min(12vw,58px);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;margin:14px 0 6px;font-weight:800}
 .frac{display:inline-flex;flex-direction:column;align-items:stretch}
-.top{display:flex;padding-top:calc(var(--cell)*.42)}
+.top{display:flex;padding-top:calc(var(--cell)*.42);position:relative;z-index:0}
 .dg{position:relative;width:var(--cell);height:var(--cell);display:grid;place-items:center;font-size:calc(var(--cell)*.78);line-height:1}
 .dg.comma{width:calc(var(--cell)*.4)}
 .dg.new{color:var(--accent)}
-.dg.cur::before{content:"";position:absolute;inset:4px -2px 0;border-radius:10px;background:#FFF4CC;z-index:-1}
+.dg.cur::before{content:"";position:absolute;inset:4px 0 0;border-radius:10px;background:#FFF4CC;z-index:-1}
 /* den lilla resten snett ovanför siffran */
 .cb{position:absolute;left:-14%;top:-46%;width:calc(var(--cell)*.5);height:calc(var(--cell)*.5);border-radius:8px;display:grid;place-items:center;font-size:calc(var(--cell)*.36);color:#B8323A;border:2px dashed #E5BFC3;background:#fff}
 .cb.empty{border-color:transparent;background:transparent}
@@ -138,7 +138,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <script src="../huvud.js" data-titel="Kort division" data-ikon="➗"></script>
 <script>
 /* Kort division som i läroboken: täljaren över divisorn med bråkstreck, svaret efter likhetstecknet, resten i svaret skrivs "rest".
-   "Hur många gånger går 4 i 1? Inga gånger. Hur många gånger går 4 i 13? 3 gånger, rest 1." Resten skrivs litet snett ovanför nästa siffra
+   Är första siffran för liten tar man de två första direkt: "Hur många gånger går 4 i 13? 3 gånger, rest 1." Resten skrivs litet snett ovanför nästa siffra
    (eleven skriver den själv, som minnessiffran i Uppställning). Decimaler: sätt decimaltecken och lägg till en nolla.
    Visa stegen: varje steg kontrolleras direkt med en fråga och ledtråd. Själv: inga tips, allt rättas på en gång. */
 const $=id=>document.getElementById(id);
@@ -153,7 +153,9 @@ function solve(n,d,dec){
   const digs=String(n).split("").map(Number);for(let i=0;i<dec;i++)digs.push(0);
   const steps=[];let carry=0,started=false;
   digs.forEach((x,i)=>{const num=carry*10+x,q=Math.floor(num/d),r=num%d,write=started||q>0||i===digs.length-1-dec&&!started;
-    if(write)started=true;steps.push({i,x,carryIn:carry,num,q,r,write});carry=r;});
+    // är första siffran för liten tar man de två första direkt ("3 i 21"); ingen liten siffra skrivs, som i skolan
+    const skip=i===0&&!write&&digs.length>1;
+    if(write)started=true;steps.push({i,x,carryIn:carry,num,q,r,write,skip});carry=r;});
   const intLen=String(n).length,qInt=Math.floor(n/d),rest=dec?0:n%d,qStr=dec?(n/d).toFixed(dec).replace(".",","):String(qInt);
   return{digs,steps,intLen,dec,rest,qStr,d,n};}
 const LEVELS=[
@@ -188,7 +190,7 @@ function next(){
   let t;do{t=G.L.gen();}while(G.seen.has(t.n+"/"+t.d));G.seen.add(t.n+"/"+t.d);
   G.t=t;G.sol=solve(t.n,t.d,t.dec);G.miss=false;G.done=false;
   // läge för Visa stegen: vilken siffra vi är på och vad som efterfrågas
-  G.s={i:0,phase:"q",ans:"",carries:{},shownDec:0,restVal:"",restOn:false,marks:{}};
+  G.s={i:G.sol.steps[0].skip?1:0,phase:"q",ans:"",carries:{},shownDec:0,restVal:"",restOn:false,marks:{}};
   // Själv: allt eleven skriver
   G.f={carries:{},ans:"",rest:"",cur:{type:"ans"},marks:{}};
   $("info").textContent=`${G.k+1} / ${ROUND}`;$("prog").style.width=(G.k/ROUND*100)+"%";
@@ -204,11 +206,11 @@ function render(){
   for(let i=0;i<nd;i++){
     if(i===sol.intLen)top+=`<div class="dg comma new">,</div>`;
     let cb="";
-    if(i>0){
+    if(i>0&&!sol.steps[i-1].skip){
       if(steg){const v=s.carries[i];const act=s.phase==="c"&&s.i===i-1;cb=`<span class="cb${act?" act":v?" ok":" empty"}">${act?(s.ans||""):v||""}</span>`;}
       else{const v=f.carries[i]||"",act=f.cur.type==="c"&&f.cur.i===i,m=f.marks["c"+i];cb=`<button class="cb${act?" act":""}${m?" "+m:""}${!v&&!act&&!m?" idle":""}" data-c="${i}" aria-label="Rest ovanför siffra ${i+1}">${v}</button>`;}
     }
-    const cur=steg&&s.phase==="q"&&s.i===i;
+    const cur=steg&&s.phase==="q"&&(s.i===i||s.i===i+1&&sol.steps[i].skip);
     top+=`<div class="dg${i>=sol.intLen?" new":""}${cur?" cur":""}">${cb}${sol.digs[i]}</div>`;}
   // svaret efter likhetstecknet
   let ans="";
@@ -292,7 +294,7 @@ function selfKey(k){const f=G.f;if(G.done)return;
   render();}
 function selfCheck(){
   const f=G.f,sol=G.sol;let ok=true;f.marks={};
-  sol.steps.forEach((st,i)=>{if(i===0)return;const want=sol.steps[i-1].r?String(sol.steps[i-1].r):"";if((f.carries[i]||"")!==want){ok=false;f.marks["c"+i]="bad";}});
+  sol.steps.forEach((st,i)=>{if(i===0)return;const want=sol.steps[i-1].r&&!sol.steps[i-1].skip?String(sol.steps[i-1].r):"";if((f.carries[i]||"")!==want){ok=false;f.marks["c"+i]="bad";}});
   if(f.ans!==sol.qStr){ok=false;f.marks.ans="bad";}else f.marks.ans="ok";
   if(hasRestBox()){const want=sol.rest?String(sol.rest):"";if(f.rest!==want&&!(f.rest==="0"&&!want)){ok=false;f.marks.rest="bad";}else f.marks.rest="ok";}
   if(ok){G.done=true;finishTask();return;}
