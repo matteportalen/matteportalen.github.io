@@ -239,6 +239,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <nav class="cards" aria-label="Multiplikation och division">
     <a class="card" href="multiplikation/"><span class="tile" style="--c:#7B61FF">×</span><span class="txt"><b>Multiplikation</b><small>Tabellerna 1–10. Samla medaljer!</small><span class="badge" id="bMulti" hidden></span></span><span class="chev">›</span></a>
     <a class="card" href="division/"><span class="tile" style="--c:#FF5FA2">÷</span><span class="txt"><b>Division</b><small>Dela lika, med och utan rest.</small><span class="badge" id="bDiv" hidden></span></span><span class="chev">›</span></a>
+    <a class="card" href="kortdivision/"><span class="tile sm" style="--c:#17AFC4">84/2</span><span class="txt"><b>Kort division</b><small>Dela siffra för siffra med rest snett ovanför. Rest i svaret och decimaler.</small><span class="badge" id="bKort" hidden></span></span><span class="chev">›</span></a>
   </nav>
 
   <h2 class="grp"><span aria-hidden="true">💯</span>Tal och mönster</h2>
@@ -420,6 +421,8 @@ const np=get("np3-resultat");S.np=Object.values(np||{});
 const sj=get("mattespel-skattjakten-v1");S.sj=sj||{};S.stars+=Object.values(S.sj.stars||{}).reduce((a,b)=>a+(+b||0),0);
 const bbt=get("mattespel-brakbitar-v1");S.bitar=(bbt&&bbt.stars)||{};
 {const s=sum(S.bitar);S.stars+=s;if(s)show("bBitar",`⭐ ${s} stjärnor`)}
+const kdv=get("mattespel-kortdivision-v1");S.kort=(kdv&&kdv.stars)||{};
+{const s=sum(S.kort);S.stars+=s;if(s)show("bKort",`⭐ ${s} stjärnor`)}
 const rj=get("mattespel-rutjakten-v1");S.rut=(rj&&rj.stars)||{};S.stars+=sum(S.rut); // Rutjakten (i Spelhörnan)
 if(S.np.length){const last=S.np.slice().sort((a,b)=>b.d-a.d)[0];show("bNp",`Senast: ${last.r} av ${last.t} rätt`)}
 $("sStars").textContent=S.stars;
@@ -427,7 +430,7 @@ $("sStars").textContent=S.stars;
 /* ---------- Dagar i rad (en dag räknas när något har tränats) ---------- */
 const day=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const today=day(new Date()),yest=day(new Date(Date.now()-864e5));
-const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1"].map(k=>localStorage.getItem(k)||"").join("|");
+const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1"].map(k=>localStorage.getItem(k)||"").join("|");
 let fp=0;for(let i=0;i<snap.length;i++)fp=(fp*31+snap.charCodeAt(i))|0;
 const st=get("matteportalen-dagar")||{fp:null,days:[]};
 if(st.fp!==null&&st.fp!==fp&&!st.days.includes(today))st.days.push(today);
@@ -531,6 +534,7 @@ const STICKERS=[
   ["skattjagare","🗝️","Skattjägaren","Hitta utgången i Skattjakten.",()=>Object.values(S.sj.stars||{}).some(v=>v>=1)],
   ["kristallkula","🔮","Sällsynt fynd","Hitta en sällsynt skatt i Skattjakten: kristallkulan, guldägget eller iskulan.",()=>["orb","egg","iceorb"].some(k=>((S.sj.chamber||{})[k]||0)>0)],
   ["brakbyggare","🧩","Bråkbyggaren","Få stjärnor i Bråkbitarna.",()=>sum(S.bitar)>0],
+  ["kortdiv","➗","Delningsmästaren","Få stjärnor i Kort division.",()=>sum(S.kort)>0],
   ["rutjagare","🟩","Rutjägaren","Fyll tio kors i Rutjakten.",()=>sum(S.rut)>0],
   ["rutmastare","🏅","Rutmästaren","Få tre stjärnor i en variant i Rutjakten.",()=>Object.values(S.rut).some(v=>v>=3)],
   ["skattmastare","🏴‍☠️","Skattmästaren","Hitta alla skatter på nivå 3 i Skattjakten.",()=>((S.sj.stars||{})[3]||0)>=3],
@@ -579,7 +583,7 @@ $("bubble").textContent=`${hi} ${msg}`;
 /* ============ Elevprofiler (allt sparas bara på den här enheten) ============ */
 (function(){
 const PKEYS=["mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
-  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
+  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const jGet=k=>{try{return JSON.parse(lsGet(k)||"null")}catch(e){return null}},jSet=(k,v)=>lsSet(k,JSON.stringify(v));
 const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};

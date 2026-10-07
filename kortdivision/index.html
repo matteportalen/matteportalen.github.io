@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kort division – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:620px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.5rem;line-height:1;margin:14px 0 8px;font-weight:800}
+h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
+.lead{margin:0 0 14px;color:var(--muted);font-size:1.1rem}
+.stars{color:var(--gold);letter-spacing:1px}.stars .off{color:#D5DDEC}
+.opts{background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line);margin-bottom:12px}
+.opts p{margin:0 0 6px;font-weight:800;font-size:1rem}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button{flex:1;min-height:46px;border-radius:12px;background:var(--bg);font-weight:800;font-size:1.05rem;padding:0 10px}
+.chips button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.levels{display:grid;gap:10px;margin-top:14px}
+.lv{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line);text-align:left;width:100%}
+.lv:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lv .t{min-width:62px;height:54px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1rem;flex:none;line-height:1.05;text-align:center;padding:0 6px}
+.lv b{font-size:1.12rem;display:block;line-height:1.15}
+.lv small{color:var(--muted);font-size:.88rem;display:block;line-height:1.25}
+.lv .st{margin-left:auto;flex:none}
+.note{color:var(--muted);font-size:.95rem;margin-top:16px}
+/* spelet */
+.gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.info{font-weight:800;font-size:1.2rem}
+.progress{height:10px;border-radius:5px;background:var(--card);overflow:hidden;margin-top:6px;box-shadow:inset 0 0 0 2px var(--line)}
+.progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.task{background:var(--card);border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--line);margin:12px 0;transition:background .15s}
+.task.ok{background:#DDF5E7}
+.instr{display:flex;gap:10px;align-items:center;font-weight:800;font-size:1.15rem;line-height:1.3;min-height:48px}
+.spk{flex:none;width:44px;height:44px;border-radius:50%;background:var(--bg);font-size:1.3rem;box-shadow:0 3px 0 var(--line)}
+/* uppställningen: täljaren över divisorn med bråkstreck, svaret efter likhetstecknet */
+.kd{--cell:min(12vw,58px);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;margin:14px 0 6px;font-weight:800}
+.frac{display:inline-flex;flex-direction:column;align-items:stretch}
+.top{display:flex;padding-top:calc(var(--cell)*.42)}
+.dg{position:relative;width:var(--cell);height:var(--cell);display:grid;place-items:center;font-size:calc(var(--cell)*.78);line-height:1}
+.dg.comma{width:calc(var(--cell)*.4)}
+.dg.new{color:var(--accent)}
+.dg.cur::before{content:"";position:absolute;inset:4px -2px 0;border-radius:10px;background:#FFF4CC;z-index:-1}
+/* den lilla resten snett ovanför siffran */
+.cb{position:absolute;left:-14%;top:-46%;width:calc(var(--cell)*.5);height:calc(var(--cell)*.5);border-radius:8px;display:grid;place-items:center;font-size:calc(var(--cell)*.36);color:#B8323A;border:2px dashed #E5BFC3;background:#fff}
+.cb.empty{border-color:transparent;background:transparent}
+.cb.act{border:3px solid var(--accent);background:#EEF1FF;color:var(--accent)}
+.cb.ok{border:2px solid #F3B4B6;background:#FFF1F1}
+.cb.bad{border:2px solid var(--bad);background:#FDE4E4;color:var(--bad)}
+.cb.hidden{visibility:hidden}
+.bar{height:4px;background:var(--ink);border-radius:2px;margin:4px 0}
+.bot{text-align:center;font-size:calc(var(--cell)*.78);line-height:1.1}
+.eqgrp{display:inline-flex;align-items:center;gap:8px;font-size:calc(var(--cell)*.78);line-height:1}
+.ans{display:inline-flex;align-items:center;gap:2px;min-height:var(--cell)}
+.ans .a{min-width:calc(var(--cell)*.62);text-align:center}
+.kd .box{display:inline-grid;place-items:center;min-width:calc(var(--cell)*.75);height:calc(var(--cell)*.95);border-radius:10px;border:3px solid var(--accent);background:#EEF1FF;color:var(--accent);padding:0 4px}
+.kd .box.bad{border-color:var(--bad);background:#FDE4E4;color:var(--bad)}
+.kd .box.ok{border-color:var(--good);background:#DDF5E7;color:var(--good-dark)}
+.kd .box.idle{border:2px dashed #AFC4EA;background:#fff;color:var(--ink)}
+.rest{display:inline-flex;align-items:center;gap:6px;font-size:.62em;color:var(--muted)}
+.rest .box{font-size:1.5em}
+.check{text-align:center;font-weight:800;color:var(--good-dark);font-size:1.15rem;margin-top:6px;min-height:1.4em}
+.feedback{min-height:1.4em;font-weight:800;font-size:1.05rem;margin-top:6px;text-align:center;color:var(--good-dark);line-height:1.3}
+.feedback.bad{color:#9B2C3A;background:#FFE9EC;border-radius:12px;padding:6px 10px}
+.pad{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
+.pad button{height:54px;border-radius:16px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.7rem;font-weight:800}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pad .next{font-size:1rem;background:#F6F8FF}
+.pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.3rem}
+.pad .comma{background:#FFF4CC;box-shadow:0 4px 0 #EAD58A}
+.go{display:block;width:100%;padding:14px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.3rem;margin-top:12px}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
+.result{text-align:center;padding-top:20px}
+.rbig{font-size:clamp(3.2rem,16vw,4.6rem);font-weight:800;line-height:1;margin:6px 0}
+.rsub{color:var(--muted);font-size:1.15rem;margin:0 0 14px}
+.big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
+.pet{width:64px;margin:0 auto}.pet svg{width:100%;height:auto;display:block}
+.pet.hop{animation:hop .5s ease-out}@keyframes hop{40%{transform:translateY(-12px)}}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:9;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:8}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen">
+  <h1>Kort division</h1>
+  <p class="lead">Dela siffra för siffra. Resten skrivs snett ovanför nästa siffra.</p>
+  <div class="opts"><p>Hur vill du räkna?</p><div class="chips" id="modeChips"><button data-m="steg">Visa stegen</button><button data-m="sjalv">Själv</button></div></div>
+  <div class="levels" id="levels"></div>
+  <p class="note" id="modeNote"></p>
+</section>
+<section id="game" class="screen" hidden>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="progress"><i id="prog"></i></div>
+  <div class="task" id="task">
+    <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
+    <div class="kd" id="kd"></div>
+    <div class="check" id="check"></div>
+    <div class="feedback" id="feedback" aria-live="polite"></div>
+  </div>
+  <div class="pad" id="pad">
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="0">0</button>
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="none" class="next" id="noneKey">Ingen</button>
+    <button data-k="," class="comma" id="commaKey" aria-label="Decimaltecken">,</button><button data-k="ok" class="okbtn" id="okKey" style="grid-column:span 3">Rätta</button>
+  </div>
+  <button class="go" id="nextBtn" hidden>Nästa tal →</button>
+  <div class="pet" id="pet" aria-hidden="true"></div>
+</section>
+<section id="result" class="screen result" hidden>
+  <h2 id="rTitle"></h2>
+  <div class="rbig" id="rBig"></div>
+  <p class="rsub" id="rSub"></p>
+  <button class="go" id="rAgain">Räkna igen</button>
+  <button class="big" id="rHome">Välj en annan nivå</button>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Kort division" data-ikon="➗"></script>
+<script>
+/* Kort division som i läroboken: täljaren över divisorn med bråkstreck, svaret efter likhetstecknet, resten i svaret skrivs "rest".
+   "Hur många gånger går 4 i 1? Inga gånger. Hur många gånger går 4 i 13? 3 gånger, rest 1." Resten skrivs litet snett ovanför nästa siffra
+   (eleven skriver den själv, som minnessiffran i Uppställning). Decimaler: sätt decimaltecken och lägg till en nolla.
+   Visa stegen: varje steg kontrolleras direkt med en fråga och ledtråd. Själv: inga tips, allt rättas på en gång. */
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+const KEY="mattespel-kortdivision-v1",ROUND=6;
+const data=(()=>{try{return Object.assign({stars:{},mode:"steg"},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},mode:"steg"}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+
+/* ---------- Talen ---------- */
+// steg för talet: för varje siffra (även decimalnollor) vad man delar, kvotsiffran och resten
+function solve(n,d,dec){
+  const digs=String(n).split("").map(Number);for(let i=0;i<dec;i++)digs.push(0);
+  const steps=[];let carry=0,started=false;
+  digs.forEach((x,i)=>{const num=carry*10+x,q=Math.floor(num/d),r=num%d,write=started||q>0||i===digs.length-1-dec&&!started;
+    if(write)started=true;steps.push({i,x,carryIn:carry,num,q,r,write});carry=r;});
+  const intLen=String(n).length,qInt=Math.floor(n/d),rest=dec?0:n%d,qStr=dec?(n/d).toFixed(dec).replace(".",","):String(qInt);
+  return{digs,steps,intLen,dec,rest,qStr,d,n};}
+const LEVELS=[
+ {id:1,name:"Går jämnt",desc:"Varje siffra delas jämnt",ex:"84/2",c:"#2BB673",gen:()=>{for(;;){const d=rnd(2,4),a=rnd(1,Math.floor(9/d)),b=rnd(0,Math.floor(9/d)),n=(a*10+b)*d;if(n>=10&&n<100)return{n,d,dec:0};}}},
+ {id:2,name:"Rest förs över",desc:"Resten blir tiotal framför nästa siffra",ex:"72/3",c:"#3D8BFD",gen:()=>{for(;;){const d=rnd(2,9),q=rnd(10,Math.floor(99/d)),n=q*d;if(n<100&&Math.floor(n/10)%d!==0)return{n,d,dec:0};}}},
+ {id:3,name:"Rest i svaret",desc:"Det blir något över på slutet",ex:"73/3",c:"#FF9F43",gen:()=>{for(;;){const d=rnd(2,9),q=rnd(4,Math.floor(99/d)),r=rnd(1,d-1),n=q*d+r;if(n>=10&&n<100)return{n,d,dec:0};}}},
+ {id:4,name:"Tresiffriga tal",desc:"Med och utan rest i svaret",ex:"133/4",c:"#7B61FF",gen:()=>{for(;;){const d=rnd(2,9),r=Math.random()<.5?0:rnd(1,d-1),q=rnd(Math.ceil(100/d),Math.floor((999-r)/d)),n=q*d+r;
+   if(n>=100&&n<1000&&!String(q).slice(1).includes("0"))return{n,d,dec:0};}}},
+ {id:5,name:"Nolla i svaret",desc:"Ibland går det inga gånger mitt i",ex:"618/3",c:"#FF5FA2",gen:()=>{for(;;){const d=rnd(2,9),a=rnd(1,9),b=rnd(1,9),q=a*100+b,r=Math.random()<.3?rnd(1,d-1):0,n=q*d+r;if(n<1000)return{n,d,dec:0};}}},
+ {id:6,name:"Decimaler",desc:"Sätt decimaltecken och fortsätt",ex:"133/4",c:"#17AFC4",gen:()=>{for(;;){const d=pick([2,4,4,5,8,8]),n=rnd(11,250);if(n%d===0)continue;if((n*100)%d!==0)continue;const dec=(n*10)%d===0?1:2;return{n,d,dec};}}}
+];
+
+/* ---------- Skärmar ---------- */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+function openHome(){G=null;
+  $("modeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===data.mode));
+  $("modeNote").textContent=data.mode==="steg"?"Visa stegen: du får en fråga för varje steg, och en ledtråd om något blir fel.":"Själv: skriv resterna snett ovanför siffrorna och svaret efter likhetstecknet, tryck sedan på Rätta. Inga tips förrän du rättar.";
+  $("levels").innerHTML=LEVELS.map(l=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${l.ex}</span><span><b>${l.id}. ${l.name}</b><small>${l.desc}</small></span><span class="st">${starHtml((data.stars[data.mode]||{})[l.id]||0)}</span></button>`).join("");
+  show("home");}
+$("modeChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.mode=b.dataset.m;save();openHome();};
+$("levels").onclick=e=>{const b=e.target.closest("[data-l]");if(b)start(+b.dataset.l);};
+$("quit").onclick=openHome;$("rHome").onclick=openHome;$("rAgain").onclick=()=>start(G?G.lv:1);
+
+/* ---------- Spelet ---------- */
+let G=null;
+function start(lv){G={lv,L:LEVELS.find(l=>l.id===lv),k:0,err:0,mode:data.mode,seen:new Set()};$("pet").innerHTML=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";show("game");next();}
+function next(){
+  if(G.k>=ROUND)return finish();
+  let t;do{t=G.L.gen();}while(G.seen.has(t.n+"/"+t.d));G.seen.add(t.n+"/"+t.d);
+  G.t=t;G.sol=solve(t.n,t.d,t.dec);G.miss=false;G.done=false;
+  // läge för Visa stegen: vilken siffra vi är på och vad som efterfrågas
+  G.s={i:0,phase:"q",ans:"",carries:{},shownDec:0,restVal:"",restOn:false,marks:{}};
+  // Själv: allt eleven skriver
+  G.f={carries:{},ans:"",rest:"",cur:{type:"ans"},marks:{}};
+  $("info").textContent=`${G.k+1} / ${ROUND}`;$("prog").style.width=(G.k/ROUND*100)+"%";
+  $("task").className="task";$("feedback").textContent="";$("feedback").className="feedback";$("check").textContent="";
+  $("nextBtn").hidden=true;$("pad").hidden=false;
+  if(G.mode==="steg")stepPrompt();else{say(`Räkna ${t.n} delat med ${t.d}. Skriv resterna snett ovanför siffrorna och svaret efter likhetstecknet.`);}
+  render();}
+const hasRestBox=()=>G.L.id>=3&&G.L.id<=5;
+function render(){
+  const sol=G.sol,t=G.t,steg=G.mode==="steg",s=G.s,f=G.f;
+  // täljarens siffror; i Visa stegen syns decimalnollorna först när de har lagts till
+  const nd=steg?sol.intLen+s.shownDec:sol.digs.length;let top="";
+  for(let i=0;i<nd;i++){
+    if(i===sol.intLen)top+=`<div class="dg comma new">,</div>`;
+    let cb="";
+    if(i>0){
+      if(steg){const v=s.carries[i];const act=s.phase==="c"&&s.i===i-1;cb=`<span class="cb${act?" act":v?" ok":" empty"}">${act?(s.ans||""):v||""}</span>`;}
+      else{const v=f.carries[i]||"",act=f.cur.type==="c"&&f.cur.i===i,m=f.marks["c"+i];cb=`<button class="cb${act?" act":""}${m?" "+m:""}${!v&&!act&&!m?" idle":""}" data-c="${i}" aria-label="Rest ovanför siffra ${i+1}">${v}</button>`;}
+    }
+    const cur=steg&&s.phase==="q"&&s.i===i;
+    top+=`<div class="dg${i>=sol.intLen?" new":""}${cur?" cur":""}">${cb}${sol.digs[i]}</div>`;}
+  // svaret efter likhetstecknet
+  let ans="";
+  if(steg){
+    const klar=i=>i<s.i||(i===s.i&&s.phase!=="q");
+    let w=sol.steps.filter((st,i)=>i<sol.intLen&&klar(i)&&st.write).map(st=>`<span class="a">${st.q}</span>`).join("");
+    if(s.shownDec)w+=`<span class="a">,</span>`+sol.steps.filter((st,i)=>i>=sol.intLen&&klar(i)).map(st=>`<span class="a">${st.q}</span>`).join("");
+    if(s.phase==="q")w+=`<span class="box${s.wrong?" bad":""}">${s.ans||"?"}</span>`;
+    if(s.phase==="comma")w+=`<span class="box">,</span>`;
+    if(s.phase==="done"&&!w)w=`<span class="a">0</span>`;
+    ans=`<span class="ans">${w||`<span class="box idle">&nbsp;</span>`}</span>`;
+    if(s.restOn)ans+=`<span class="rest">rest <span class="box${s.phase==="rest"?(s.wrong?" bad":""):" ok"}">${s.phase==="rest"?(s.ans||"?"):sol.rest}</span></span>`;
+  }else{
+    const m=f.marks.ans,act=f.cur.type==="ans";
+    ans=`<span class="ans"><button class="box${act?"":" idle"}${m?" "+m:""}" data-a="1" aria-label="Svaret">${f.ans||(act?"?":"&nbsp;")}</button></span>`;
+    if(hasRestBox()){const mr=f.marks.rest,ar=f.cur.type==="rest";ans+=`<span class="rest">rest <button class="box${ar?"":" idle"}${mr?" "+mr:""}" data-r="1" aria-label="Resten">${f.rest||(ar?"?":"&nbsp;")}</button></span>`;}
+  }
+  $("kd").innerHTML=`<div class="frac"><div class="top">${top}</div><div class="bar"></div><div class="bot">${t.d}</div></div><span class="eqgrp">=${ans}</span>`;
+  $("commaKey").hidden=G.L.id!==6;$("noneKey").hidden=false;
+  $("okKey").textContent=steg?"OK":"Rätta";
+  if(!steg){$("kd").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{if(G.done)return;G.f.cur={type:"c",i:+b.dataset.c};render();});
+    $("kd").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{if(G.done)return;G.f.cur={type:"ans"};render();});
+    $("kd").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{if(G.done)return;G.f.cur={type:"rest"};render();});}
+}
+let lastSay="";function say(t){lastSay=t;$("instr").textContent=t;}
+$("spk").onclick=()=>speak(lastSay.replace(/\//g," delat med "));
+
+/* ---------- Visa stegen ---------- */
+function stepPrompt(){
+  const s=G.s,sol=G.sol,st=sol.steps[s.i],d=sol.d;s.ans="";s.wrong=false;
+  if(s.phase==="q")say(`Hur många gånger går ${d} i ${st.num}?`);
+  else if(s.phase==="c")say(st.r?`${d} · ${st.q} = ${d*st.q}. Resten är ${st.num} − ${d*st.q}. Skriv resten snett ovanför nästa siffra.`:`${d} · ${st.q} = ${d*st.q}. Blir det något över? Skriv resten snett ovanför nästa siffra, eller tryck Ingen.`);
+  else if(s.phase==="comma")say("Siffrorna är slut men det blev rest. Tryck på , för att sätta decimaltecken och lägga till en nolla.");
+  else if(s.phase==="rest")say("Siffrorna är slut. Hur mycket blev över? Skriv resten.");
+  render();}
+function stepKey(k){
+  const s=G.s,sol=G.sol,st=sol.steps[s.i],d=sol.d;if(G.done)return;
+  if(k==="del"){s.ans="";s.wrong=false;render();return;}
+  if(s.phase==="comma"){if(k===","){s.shownDec=1;s.phase="c";window.Ljud&&Ljud.ok();fb("Rätt! Nu blir det en nolla efter decimaltecknet.");stepPrompt();}else wrong("Tryck på , (decimaltecknet) för att fortsätta efter kommat.");return;}
+  if(k===","){fb("Decimaltecknet kommer när siffrorna är slut.",true);return;}
+  if(k==="ok")return;
+  const v=k==="none"?0:+k;
+  if(s.phase==="q"){
+    if(v===st.q){window.Ljud&&Ljud.ok();
+      fb(st.q===0&&!st.write?`Inga gånger! Då skriver vi ingen siffra i svaret. ${st.num} följer med till nästa siffra.`:st.q===0?`Inga gånger! Då skriver vi en nolla i svaret.`:`Rätt! ${d} går ${st.q} ${st.q===1?"gång":"gånger"} i ${st.num}.`);
+      afterQ();}
+    else wrong(`${tabHint(d,st.num)} Hur många gånger går ${d} i ${st.num}?`);
+  }else if(s.phase==="c"){
+    if(v===st.r){window.Ljud&&Ljud.ok();s.carries[s.i+1]=st.r?String(st.r):"";
+      fb(st.r?`Rätt! ${st.r}:an gör att det blir ${st.r*10+sol.digs[s.i+1]} nästa gång.`:"Rätt, ingen rest!");
+      s.i++;s.phase="q";stepPrompt();}
+    else wrong(`${st.num} − ${d*st.q} = ${st.r}. ${st.r?`Skriv ${st.r} snett ovanför nästa siffra.`:"Det blir inget över, tryck Ingen."}`);
+  }else if(s.phase==="rest"){
+    if(v===sol.rest){window.Ljud&&Ljud.ok();s.phase="done";finishTask();}
+    else wrong(`${st.num} − ${d*st.q} = ${sol.rest}. Det är resten.`);
+  }
+}
+function afterQ(){const s=G.s,sol=G.sol,i=s.i,last=i===sol.digs.length-1;
+  if(i<sol.intLen-1){s.phase="c";stepPrompt();return;}
+  if(i===sol.intLen-1){
+    if(sol.dec){s.phase="comma";stepPrompt();return;}            // det blev rest: sätt decimaltecken
+    if(sol.rest>0){s.restOn=true;s.phase="rest";stepPrompt();return;}
+    s.phase="done";finishTask();return;}
+  if(!last){s.shownDec++;s.phase="c";stepPrompt();return;}        // en decimalnolla till
+  s.phase="done";finishTask();}
+function tabHint(d,num){const lo=Math.floor(num/d),hi=lo+1;return lo===0?`${d} · 1 = ${d}, och det är mer än ${num}.`:`${d} · ${lo} = ${d*lo} och ${d} · ${hi} = ${d*hi}.`;}
+function wrong(msg){G.s.wrong=true;G.miss=true;window.Ljud&&Ljud.bad();fb(msg,true);render();}
+function fb(t,bad){const f=$("feedback");f.textContent=t;f.className="feedback"+(bad?" bad":"");}
+
+/* ---------- Själv ---------- */
+function selfKey(k){const f=G.f;if(G.done)return;
+  if(k==="ok")return selfCheck();
+  const c=f.cur;f.marks={};
+  if(c.type==="c"){if(k==="del"||k==="none")f.carries[c.i]="";else if(/\d/.test(k)){f.carries[c.i]=k;
+      // hoppa till nästa ruta för en rest
+      const nx=Object.keys(G.sol.digs).map(Number).find(i=>i>c.i&&i>0);f.cur=nx!=null?{type:"c",i:nx}:{type:"ans"};}
+    render();return;}
+  const key=c.type==="rest"?"rest":"ans";
+  if(k==="del")f[key]=f[key].slice(0,-1);else if(k==="none"){if(key==="rest")f.rest="";}
+  else if(k===","){if(key==="ans"&&!f.ans.includes(","))f.ans+=",";}else if(f[key].length<8)f[key]+=k;
+  render();}
+function selfCheck(){
+  const f=G.f,sol=G.sol;let ok=true;f.marks={};
+  sol.steps.forEach((st,i)=>{if(i===0)return;const want=sol.steps[i-1].r?String(sol.steps[i-1].r):"";if((f.carries[i]||"")!==want){ok=false;f.marks["c"+i]="bad";}});
+  if(f.ans!==sol.qStr){ok=false;f.marks.ans="bad";}else f.marks.ans="ok";
+  if(hasRestBox()){const want=sol.rest?String(sol.rest):"";if(f.rest!==want&&!(f.rest==="0"&&!want)){ok=false;f.marks.rest="bad";}else f.marks.rest="ok";}
+  if(ok){G.done=true;finishTask();return;}
+  G.miss=true;window.Ljud&&Ljud.bad();
+  const nCar=Object.keys(f.marks).filter(k=>k[0]==="c").length;
+  fb(f.marks.ans==="bad"?"Svaret stämmer inte än. Kontrollera de röda rutorna och försök igen.":nCar?"Svaret stämmer, men någon rest snett ovanför stämmer inte. Rätta de röda.":"Resten stämmer inte. Försök igen.",true);render();}
+
+/* ---------- Klart ---------- */
+function finishTask(){
+  G.done=true;const sol=G.sol,q=sol.qStr;if(!G.miss){}else G.err++;
+  $("task").className="task ok";window.Ljud&&Ljud.ok&&Ljud.ok();const p=$("pet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");
+  say(pick(["Utmärkt!","Snyggt räknat!","Helt rätt!"]));
+  if(G.mode==="steg")fb(`${sol.n}/${sol.d} = ${q}${sol.rest?` rest ${sol.rest}`:""}`);
+  // kontroll med multiplikation
+  $("check").textContent=`Kontroll: ${sol.d} · ${q}${sol.rest?` + ${sol.rest}`:""} = ${sol.n} ✓`;
+  render();$("pad").hidden=true;$("nextBtn").hidden=false;G.k++;$("prog").style.width=(G.k/ROUND*100)+"%";}
+$("nextBtn").onclick=()=>{if(G)next();};
+function finish(){const st=G.err===0?3:G.err<=2?2:1,m=G.mode,stars=data.stars[m]=data.stars[m]||{},old=stars[G.lv]||0;
+  stars[G.lv]=Math.max(old,st);save();
+  $("rTitle").textContent=st===3?"Alla rätt direkt!":"Bra räknat!";$("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=`${ROUND} tal på nivån ${G.L.name} (${m==="steg"?"Visa stegen":"Själv"}). `+(G.err?`${G.err} ${G.err===1?"tal":"tal"} behövde mer än ett försök.`:"Inga fel!")+(st>old&&old?" Ny stjärna!":"");
+  show("result");if(st===3||st>old){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
+
+$("pad").onclick=e=>{const b=e.target.closest("[data-k]");if(!b||!G)return;(G.mode==="steg"?stepKey:selfKey)(b.dataset.k);};
+document.addEventListener("keydown",e=>{if(!G||$("game").hidden)return;
+  if(!$("nextBtn").hidden){if(e.key==="Enter"){e.preventDefault();$("nextBtn").click();}return;}
+  const k=/^\d$/.test(e.key)?e.key:e.key===","||e.key==="."?",":e.key==="Backspace"?"del":e.key==="Enter"?"ok":null;if(!k)return;e.preventDefault();(G.mode==="steg"?stepKey:selfKey)(k);});
+
+let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
+function speak(text){if(!("speechSynthesis" in window))return toast("Uppläsning fungerar inte i den här webbläsaren.");loadVoices();
+  if(!svVoice&&speechSynthesis.getVoices().length)return toast("Den här datorn har ingen svensk röst för uppläsning.");
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text.replace(/·/g," gånger ").replace(/−/g," minus "));u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W2=innerWidth,H2=innerHeight;c.width=W2*dpr;c.height=H2*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W2/2+(Math.random()-.5)*120,y:H2*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pick(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W2,H2);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W2,H2);c.hidden=true;}})(t0);
+}
+openHome();
+</script>
+</body>
+</html>
