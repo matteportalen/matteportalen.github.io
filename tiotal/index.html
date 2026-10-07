@@ -643,7 +643,7 @@ function submit(){
   const step=G.steps[G.si],ok=+G.input===step.v;G.busy=true;
   petFx(ok?'hop':'hmm');
   if(ok){
-    G.si++;$('#qbox').classList.add('ok');window.Ljud&&Ljud.ok();renderRows();
+    G.si++;G.input='';$('#qbox').classList.add('ok');window.Ljud&&Ljud.ok();renderRows(); // töm svaret först, annars syns det en stund i nästa ruta
     if(!G.race)renderVisual();
     const tenMsg=G.steps[G.si-1].k==='p1'&&!G.race&&!(G.t.op==='minus'&&think()&&G.lv>1)?(G.t.op==='plus'?'Ett helt tiotal! Bussen är full.':'Nu är du på tiotalet!'):null;
     if(G.si<G.steps.length){$('#feedback').textContent=tenMsg||PRAISE[Math.floor(Math.random()*PRAISE.length)];setTimeout(startStep,750);return;}
