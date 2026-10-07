@@ -73,6 +73,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 - Stora tryckytor (minst 48 px), sifferknappsats för inmatning, 🔊-uppläsning med svensk röst där det finns. **Uppläsningen sker bara när man trycker på 🔊, aldrig automatiskt** (lärarens val).
 - Konfetti vid alla rätt eller nytt rekord. Respektera `prefers-reduced-motion`.
 - Rätt svar: grönt och pling. Fel svar: mjukt rosa, en förklaring och uppgiften kommer tillbaka senare i rundan. Aldrig bara ordet "Fel".
+- **Kortens bilder visar hur övningen ser ut** (lärarens krav, inga generiska emojis på nya kort): små SVG-miniatyrer på startsidans kort och i övningens rubrik, t.ex. Bråkbitarna (stav, halvor, bygglucka), Rutjakten (korset med 2×2-rutor runt ＋), Talföljder (stenar 4, 6, ? i bäcken, båge +2, grodan), Kort division (72 över 3 med en liten röd etta, = 24).
 - **Emojis används som ikoner.** Ett försök med egenritade SVG-ikoner och en stilguide gjordes men **valdes bort**: läraren tyckte emojiversionen var snyggare. Rita inte nya figurer i SVG utan att fråga.
 - Maskoten är en **uggla**. Eleven kan välja bland nio djur i Garderoben (uggla, katt, kanin, räv, panda, pingvin, robot, drake, enhörning). Alla ritas med samma mall i funktionen `owlSVG` så att kläderna passar alla. Mallen finns bara i `djur.js`. Grodhoppet visar alltid grodan.
 
