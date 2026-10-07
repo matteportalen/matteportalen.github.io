@@ -157,8 +157,10 @@ function solve(n,d,dec){
   const intLen=String(n).length,qInt=Math.floor(n/d),rest=dec?0:n%d,qStr=dec?(n/d).toFixed(dec).replace(".",","):String(qInt);
   return{digs,steps,intLen,dec,rest,qStr,d,n};}
 const LEVELS=[
- {id:1,name:"Går jämnt",desc:"Varje siffra delas jämnt",ex:"84/2",c:"#2BB673",gen:()=>{for(;;){const d=rnd(2,4),a=rnd(1,Math.floor(9/d)),b=rnd(0,Math.floor(9/d)),n=(a*10+b)*d;if(n>=10&&n<100)return{n,d,dec:0};}}},
- {id:2,name:"Rest förs över",desc:"Resten blir tiotal framför nästa siffra",ex:"72/3",c:"#3D8BFD",gen:()=>{for(;;){const d=rnd(2,9),q=rnd(10,Math.floor(99/d)),n=q*d;if(n<100&&Math.floor(n/10)%d!==0)return{n,d,dec:0};}}},
+ // Nivå 1 och 2 ihopslagna (lärarens önskan): ibland förs en rest över, ibland inte, så att eleven själv måste tänka efter.
+ {id:1,name:"Tvåsiffriga tal",desc:"Ibland blir det rest som förs över",ex:"72/3",c:"#2BB673",gen:()=>{
+   if(Math.random()<.4){for(;;){const d=rnd(2,4),a=rnd(1,Math.floor(9/d)),b=rnd(0,Math.floor(9/d)),n=(a*10+b)*d;if(n>=10&&n<100)return{n,d,dec:0};}}
+   for(;;){const d=rnd(2,9),q=rnd(10,Math.floor(99/d)),n=q*d;if(n<100&&Math.floor(n/10)%d!==0)return{n,d,dec:0};}}},
  {id:3,name:"Rest i svaret",desc:"Det blir något över på slutet",ex:"73/3",c:"#FF9F43",gen:()=>{for(;;){const d=rnd(2,9),q=rnd(4,Math.floor(99/d)),r=rnd(1,d-1),n=q*d+r;if(n>=10&&n<100)return{n,d,dec:0};}}},
  {id:4,name:"Tresiffriga tal",desc:"Med och utan rest i svaret",ex:"133/4",c:"#7B61FF",gen:()=>{for(;;){const d=rnd(2,9),r=Math.random()<.5?0:rnd(1,d-1),q=rnd(Math.ceil(100/d),Math.floor((999-r)/d)),n=q*d+r;
    if(n>=100&&n<1000&&!String(q).slice(1).includes("0"))return{n,d,dec:0};}}},
@@ -172,7 +174,7 @@ const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class=
 function openHome(){G=null;
   $("modeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===data.mode));
   $("modeNote").textContent=data.mode==="steg"?"Visa stegen: du får en fråga för varje steg, och en ledtråd om något blir fel.":"Själv: skriv resterna snett ovanför siffrorna och svaret efter likhetstecknet, tryck sedan på Rätta. Inga tips förrän du rättar.";
-  $("levels").innerHTML=LEVELS.map(l=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${l.ex}</span><span><b>${l.id}. ${l.name}</b><small>${l.desc}</small></span><span class="st">${starHtml((data.stars[data.mode]||{})[l.id]||0)}</span></button>`).join("");
+  $("levels").innerHTML=LEVELS.map((l,ix)=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${l.ex}</span><span><b>${ix+1}. ${l.name}</b><small>${l.desc}</small></span><span class="st">${starHtml((data.stars[data.mode]||{})[l.id]||0)}</span></button>`).join("");
   show("home");}
 $("modeChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.mode=b.dataset.m;save();openHome();};
 $("levels").onclick=e=>{const b=e.target.closest("[data-l]");if(b)start(+b.dataset.l);};
@@ -238,7 +240,7 @@ $("spk").onclick=()=>speak(lastSay.replace(/\//g," delat med "));
 function stepPrompt(){
   const s=G.s,sol=G.sol,st=sol.steps[s.i],d=sol.d;s.ans="";s.wrong=false;
   if(s.phase==="q")say(`Hur många gånger går ${d} i ${st.num}?`);
-  else if(s.phase==="c")say(st.r?`${d} · ${st.q} = ${d*st.q}. Resten är ${st.num} − ${d*st.q}. Skriv resten snett ovanför nästa siffra.`:`${d} · ${st.q} = ${d*st.q}. Blir det något över? Skriv resten snett ovanför nästa siffra, eller tryck Ingen.`);
+  else if(s.phase==="c")say(`${d} · ${st.q} = ${d*st.q}. Blir det något över? Skriv resten snett ovanför nästa siffra, eller tryck Ingen.`);
   else if(s.phase==="comma")say("Siffrorna är slut men det blev rest. Tryck på , för att sätta decimaltecken och lägga till en nolla.");
   else if(s.phase==="rest")say("Siffrorna är slut. Hur mycket blev över? Skriv resten.");
   render();}
