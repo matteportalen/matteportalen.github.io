@@ -831,7 +831,9 @@ const aSpeed=()=>Math.min(W,620)*(.05+A.score*.004);
 const aLive=()=>A.rocks.filter(r=>!r.dead);
 const aSeen=v=>aLive().some(r=>r.val===v&&!r.enter); // svaret syns i bilden (inte på väg in utanför kanten)
 // svaret saknas: en sten poppar fram direkt på en ledig plats (lärarens fynd: 4 · 5 fanns ingen 20-sten)
-function aNeed(v){if(aSeen(v))return;const old=aLive().find(r=>r.val===v);if(old)old.dead=true;const r=aSpawn(v,true);r.born=0;}
+function aNeed(v){if(aSeen(v))return;const old=aLive().find(r=>r.val===v);if(old)old.dead=true;const r=aSpawn(v,true);r.born=0;A.needs=(A.needs||0)+1;
+  // samtidigt byts en annan sten mot en ny störsten, så att det inte syns vilken av de nya som är svaret
+  const other=aLive().filter(o=>o!==r&&o.val!==v&&!o.enter&&!o.child);if(other.length){const o=pickOne(other);o.dead=true;boom(o.x,o.y,["#C6D6F2","#fff"],8);const d=aDistractor(A.task);if(d!=null){const n=aSpawn(d,true);n.born=0;}}}
 const aUnique=v=>!aLive().some(r=>r.val===v);
 function aSpawn(val,onScreen){
   const big=Math.random()<.18,R=aR()*(big?1.35:1),sp=aSpeed()*(.7+Math.random()*.6)*(big?.75:1);let x,y,ang;
@@ -849,8 +851,10 @@ function aSetQ(){$("q").innerHTML=A.task.q+"<span>= ?</span>";$("q").className="
 function aNewTask(){
   if(A.chainQ&&A.chainQ.length){const t=A.chainQ.shift();A.task=t;aSetQ();aNeed(t.a);aFill();return;}
   // helst en uppgift vars svar redan driver omkring; annars flyger svaret in från kanten
-  let t;for(let k=0;k<40;k++){t=gen();if(aSeen(t.a))break;}
-  A.task=t;aSetQ();aNeed(t.a);aFill();}
+  // välj en uppgift vars svar är en sten som redan syns (vilken som helst, med eller utan pansar), så att nya stenar inte avslöjar svaret
+  const vis=new Set(aLive().filter(r=>!r.enter&&r.born>=1&&!r.child).map(r=>r.val)),prev=A.task&&A.task.a;let t=null;
+  for(let k=0;k<400;k++){const x=gen();if(vis.has(x.a)&&(x.a!==prev||vis.size<2)){t=x;break;}}
+  if(!t)t=gen();A.tasks=(A.tasks||0)+1;A.task=t;aSetQ();aNeed(t.a);aFill();}
 function aFill(){let g=0;while(aLive().length<aCount()&&g++<20){const v=aDistractor(A.task)??aDistractor(gen());if(v==null)break;aSpawn(v,false);}}
 function spaceInit(){A.rocks=[];A.task=gen();aSetQ();aSpawn(A.task.a,true);let g=0;while(aLive().length<6&&g++<30){const v=aDistractor(A.task)??aDistractor(gen());if(v!=null)aSpawn(v,true);}}
 function aimAt(x,y){const s=shipPos(),oy=s.y;A.ang=Math.max(-1.35,Math.min(1.35,Math.atan2(x-s.x,oy-y)));}
