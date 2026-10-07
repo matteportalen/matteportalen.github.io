@@ -103,6 +103,7 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../brak.js"></script>
 <script src="../huvud.js" data-titel="Rutjakten" data-ikon="🟩"></script>
 <script>
 /* Rutjakten: fyra rutor med fyra tal var. Tre tal hör ihop (a + b = c eller a · b = c), det fjärde är ett störtal.
@@ -134,8 +135,7 @@ function storTal(v,tri){const isB=v.id==="br",d=tri[2][1];
   const c=tri[2][0],a=tri[0][0],b=tri[1][0],tal=v.id==="tio"?[c+10,c-10,a+10,b-10]:v.op==="·"?[c+a,c-b,c+1,a*(b+1),(a+1)*b]:[c+1,c-1,a+1,b-1,c+2];
   const max={p10:10,p20:20,p25:25,tio:100,p100:100}[v.id]||100,ok=tal.filter(n=>n>=1&&n<=max);
   return W(ok.length?pick(ok):rnd(1,max));}
-const lika=(x,y)=>x[0]*y[1]===y[0]*x[1];
-const summa=(x,y)=>[x[0]*y[1]+y[0]*x[1],x[1]*y[1]];
+const lika=MPBrak.eq,summa=MPBrak.add; // bråkräkningen delas med Bråkbitarna (brak.js)
 const hor=(op,x,y,z)=>op==="+"?lika(summa(x,y),z):lika([x[0]*y[0],x[1]*y[1]],z);
 // sant om tre tal (i någon ordning) hör ihop
 const trio=(op,t)=>hor(op,t[0],t[1],t[2])||hor(op,t[0],t[2],t[1])||hor(op,t[1],t[2],t[0]);

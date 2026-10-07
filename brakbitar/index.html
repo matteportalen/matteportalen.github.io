@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bråkbitarna – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:980px;margin:0 auto;padding:12px 16px 40px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
+.lead{margin:0 0 16px;color:var(--muted);font-size:1.1rem}
+.stars{color:var(--gold);letter-spacing:1px}.stars .off{color:#D5DDEC}
+.fr{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:middle}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 2px}
+/* startskärmen */
+.explore{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:linear-gradient(135deg,#FF5FA2,#FF9F43 45%,#F2B707);color:#fff;border-radius:20px;padding:14px;box-shadow:0 5px 0 #C2447C;margin-bottom:16px}
+.explore:active{transform:translateY(3px);box-shadow:0 2px 0 #C2447C}
+.explore .ico{flex:none;width:76px;display:flex;flex-direction:column;gap:3px}
+.explore .ico i{display:flex;gap:2px;height:14px}.explore .ico i b{flex:1;border-radius:3px;background:rgba(255,255,255,.9)}
+.explore b{display:block;font-size:1.4rem;line-height:1.1}.explore small{font-size:.95rem;font-weight:700;opacity:.95}
+.levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
+.lv{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;flex-direction:column;gap:3px}
+.lv:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lv .ex{font-weight:800;font-size:1.1rem;color:#fff;background:var(--c);border-radius:12px;padding:3px 10px;align-self:flex-start;display:flex;align-items:center;gap:4px;min-height:40px}
+.lv b{font-size:1.15rem;line-height:1.15}
+.lv small{color:var(--muted);font-size:.86rem;line-height:1.2}
+.seg{display:inline-flex;background:var(--card);border-radius:14px;padding:3px;box-shadow:0 3px 0 var(--line);flex-wrap:wrap}
+.seg button{border-radius:11px;padding:5px 10px;font-weight:800;font-size:.9rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.labrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 0;font-weight:800}
+/* spelet */
+.gbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
+.gbar .ln{font-weight:800;font-size:1.1rem}
+.dots{display:flex;gap:5px;margin-left:auto}
+.dots i{width:12px;height:12px;border-radius:50%;background:#D5DDEC}.dots i.ok{background:var(--good)}.dots i.miss{background:#F3A9AE}.dots i.now{box-shadow:0 0 0 3px var(--accent)}
+.qcard{background:var(--card);border-radius:20px;box-shadow:0 4px 0 var(--line);padding:10px 14px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-weight:800;font-size:clamp(1.3rem,5vw,1.9rem);text-align:center;min-height:70px;transition:background .2s}
+.qcard.ok{background:#DDF5E7}.qcard.bad{background:#FFE9EC}
+.qcard .fr>span:first-child{border-bottom-width:3px}
+.ansbox{display:inline-grid;place-items:center;min-width:52px;min-height:46px;border-radius:12px;border:3px solid var(--accent);color:var(--accent);background:#EEF1FF;padding:0 8px}
+.qcard.ok .ansbox{border-color:var(--good);color:var(--good-dark);background:#fff}
+.hint{min-height:1.5em;text-align:center;font-weight:800;color:var(--good-dark);margin:6px 0;font-size:1rem}
+.hint.bad{color:#9B2C3A}
+.play{display:grid;gap:10px}
+@media(min-width:820px){.play{grid-template-columns:118px 1fr;align-items:start}}
+/* bitlådan */
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px;background:#FFF8EC;border-radius:16px;padding:8px;box-shadow:inset 0 0 0 2px #F3E3C3}
+@media(min-width:820px){.palette{grid-template-columns:1fr;position:sticky;top:70px}}
+.bit{height:46px;border-radius:9px;background:var(--c);color:var(--k);font-weight:800;font-size:.95rem;display:grid;place-items:center;box-shadow:0 3px 0 rgba(29,43,83,.3),inset 0 0 0 2px rgba(29,43,83,.18);touch-action:none;user-select:none;-webkit-user-select:none;line-height:1}
+.bit:active{transform:translateY(2px)}
+.bit .fr>span:first-child{border-bottom-width:2px}
+/* raderna */
+.rows{display:grid;gap:12px;background:var(--card);border-radius:20px;padding:12px;box-shadow:0 4px 0 var(--line);overflow:hidden}
+.row .rl{font-weight:800;font-size:.95rem;color:var(--muted);margin-bottom:3px;display:flex;align-items:center;gap:6px}
+.track{position:relative;width:86%}
+.ref,.lane{position:relative;height:48px;display:flex}
+.ref{margin-bottom:4px}
+.lane{border-radius:10px;background:repeating-linear-gradient(90deg,transparent 0 11px,rgba(29,43,83,.05) 11px 12px),#F4F7FD;box-shadow:inset 0 0 0 2px #DCE4F2;cursor:pointer}
+.lane::after{content:"";position:absolute;right:-2px;top:-6px;bottom:-6px;width:3px;border-radius:2px;background:var(--ink);opacity:.35}
+.row.active .lane{box-shadow:inset 0 0 0 3px var(--accent)}
+.lane.full{box-shadow:inset 0 0 0 3px var(--good)!important}
+.piece{flex:none;height:100%;border-radius:7px;background:var(--c);color:var(--k);display:grid;place-items:center;font-weight:800;font-size:clamp(.7rem,2.4vw,1rem);line-height:1;box-shadow:inset 0 0 0 2px rgba(29,43,83,.25);overflow:hidden;white-space:nowrap}
+.lane .piece{cursor:pointer}
+.lane .piece.new{animation:pin .18s ease-out}
+@keyframes pin{from{transform:translateY(-10px);opacity:.3}}
+.piece.over{background:repeating-linear-gradient(-45deg,var(--c) 0 7px,rgba(255,255,255,.55) 7px 13px);box-shadow:inset 0 0 0 2px #E5484D}
+.piece.cut{background:repeating-linear-gradient(-45deg,rgba(255,255,255,.65) 0 6px,var(--c) 6px 12px);opacity:.75;box-shadow:inset 0 0 0 2px #E5484D;color:#9B2C3A}
+.piece.ghost{background:transparent;border:2px dashed var(--c);box-shadow:none;color:var(--c);animation:none;pointer-events:none}
+.plus{flex:none;width:0;position:relative}.plus::before{content:"+";position:absolute;left:-9px;top:-20px;font-weight:800;color:var(--muted)}
+.overlab{position:absolute;right:6px;top:-11px;background:#E5484D;color:#fff;border-radius:999px;padding:0 8px;font-weight:800;font-size:.75rem;white-space:nowrap;z-index:2;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.rsum{font-weight:800;font-size:.95rem;color:var(--muted);margin-top:3px;min-height:1.3em}
+.rsum.full{color:var(--good-dark)}
+/* verktyg och svar */
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.tools button{height:44px;padding:0 14px;border-radius:14px;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:.95rem}
+.tools button:active{transform:translateY(2px)}
+.pad{display:grid;grid-template-columns:repeat(6,1fr);gap:7px;margin-top:10px}
+.pad button{height:50px;border-radius:14px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.5rem;font-weight:800}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pad .okb{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.2rem}
+.choice{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.choice button{min-width:96px;min-height:64px;border-radius:16px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.5rem;padding:4px 14px}
+.choice button:active{transform:translateY(3px)}
+.choice button.same{font-size:1.1rem}
+.foot{display:flex;align-items:flex-end;gap:10px;margin-top:10px}
+.pet{width:70px;flex:none}.pet svg{width:100%;height:auto;display:block}
+.pet.hop{animation:hop .5s ease-out}@keyframes hop{40%{transform:translateY(-14px)}}
+.yay{position:fixed;left:50%;top:45%;z-index:20;transform:translate(-50%,-50%) rotate(-5deg) scale(.4);opacity:0;background:var(--card);color:var(--good-dark);font-weight:800;font-size:clamp(2rem,9vw,3.4rem);padding:6px 26px;border-radius:20px;box-shadow:0 6px 0 #A9DFC0,0 10px 30px rgba(29,43,83,.2);pointer-events:none;white-space:nowrap;text-align:center;line-height:1.1}
+.yay small{display:block;font-size:.45em;color:var(--muted)}
+.yay.show{animation:yay 1.2s ease-out forwards}
+@keyframes yay{0%{opacity:0;transform:translate(-50%,-50%) rotate(-5deg) scale(.4)}22%{opacity:1;transform:translate(-50%,-50%) rotate(-5deg) scale(1.06)}75%{opacity:1;transform:translate(-50%,-50%) rotate(-5deg) scale(1)}100%{opacity:0;transform:translate(-50%,-58%) rotate(-5deg) scale(1)}}
+.drag{position:fixed;z-index:30;pointer-events:none;opacity:.9;transform:translate(-50%,-50%) scale(1.08)}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:40;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:35}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}.yay.show{opacity:1;transform:translate(-50%,-50%) rotate(-5deg)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen">
+  <h1>🧩 Bråkbitarna</h1>
+  <p class="lead">Bygg med bråkbitar under en hel stav. Hur många ryms? Vilka är lika stora?</p>
+  <button class="explore" id="btnFree"><span class="ico"><i><b></b></i><i><b></b><b></b></i><i><b></b><b></b><b></b><b></b></i></span><span><b>Utforska fritt</b><small>Lägg bitar som du vill. Hur många halvor blir en hel?</small></span></button>
+  <div class="levels" id="levels"></div>
+  <div class="labrow"><span>Text på bitarna:</span><div class="seg" id="segLab"></div></div>
+</section>
+<section id="game" class="screen" hidden>
+  <div class="gbar"><button class="back" id="quit">← Nivåer</button><span class="ln" id="ln"></span><div class="dots" id="dots"></div></div>
+  <div class="qcard" id="qcard"></div>
+  <div class="hint" id="hint" aria-live="polite"></div>
+  <div class="play">
+    <div class="palette" id="palette" aria-label="Bitlådan"></div>
+    <div>
+      <div class="rows" id="rows"></div>
+      <div class="tools"><button id="tUndo">↶ Ångra</button><button id="tClear">🧹 Rensa</button><button id="tTip">💡 Tips</button><div class="seg" id="segLab2"></div></div>
+      <div class="pad" id="pad"><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="0">0</button><button data-k="del" aria-label="Sudda">⌫</button><button data-k="ok" class="okb">OK</button></div>
+      <div class="choice" id="choice" hidden></div>
+      <div class="foot"><div class="pet" id="pet" aria-hidden="true"></div></div>
+    </div>
+  </div>
+</section>
+</div>
+<div class="yay" id="yay">Utmärkt!</div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../brak.js"></script>
+<script src="../huvud.js" data-titel="Bråkbitarna" data-ikon="🧩"></script>
+<script>
+/* Bråkbitarna: bitar 1, ½ … 1/12 (färger från brak.js) läggs under en hel stav eller under ett bråk.
+   Utforska (fritt) och sex nivåer med uppgifter. Bitarna snäpper mot vänsterkanten, för mycket blir randigt.
+   Rundor om 8 uppgifter som rullar på; stjärnor per nivå: 3 utan fel, 2 vid högst 2 fel, annars 1. */
+const $=id=>document.getElementById(id);
+const B=MPBrak,rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const KEY="mattespel-brakbitar-v1",ROUND=8;
+const data=(()=>{try{return Object.assign({stars:{},label:"frac"},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},label:"frac"}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const H=(n,d)=>B.html(n,d);
+
+/* ---------- Nivåerna ----------
+   En uppgift: q (frågan i HTML, med {A} där svaret skrivs), rows (rader med referens överst och en bygglucka),
+   ans ({den: nämnaren som svaret har, val: rätt täljare} eller {choice:[...], right}), tip (bitar som Tips visar), hint (text vid fel). */
+const LEVELS=[
+ {id:1,name:"Hur många ryms?",desc:"Fyll staven med bitar",ex:()=>`1 ÷ ${H(1,4)}`,c:"#E5484D",gen:()=>{const n=pick([2,3,4,5,6,8,10,12]);
+   return{q:`Hur många ${H(1,n)} ryms i 1?<br><span style="font-size:.8em">1 ÷ ${H(1,n)} = {A}</span>`,rows:[{ref:[[1,1]],label:"1"}],ans:{den:1,val:n},tip:Array(n).fill(n),
+     hint:`Lägg ${H(1,n)}-bitar under staven tills den är full. Räkna bitarna.`};}},
+ {id:2,name:"Lika stora bråk",desc:"Samma längd, olika bitar",ex:()=>`${H(1,2)} = ${H(2,4)}`,c:"#FF5FA2",gen:()=>{const [b,c]=pick([[2,4],[2,6],[2,8],[3,6],[4,8],[2,10],[5,10],[3,12],[4,12],[6,12]]),a=rnd(1,b-1);
+   return{q:`${H(a,b)} = ${frq(c)}`,rows:[{ref:Array(a).fill([1,b]),label:H(a,b)}],ans:{den:c,val:a*c/b},tip:Array(a*c/b).fill(c),
+     hint:`Lägg ${H(1,c)}-bitar under ${H(a,b)} tills de är lika långa. Hur många blev det?`};}},
+ {id:3,name:"Vilken är störst?",desc:"Bygg och jämför",ex:()=>`${H(1,3)} eller ${H(1,4)}`,c:"#FF9F43",gen:()=>{const [x,y]=shuffle(pick([[[1,3],[1,4]],[[1,2],[1,3]],[[2,3],[3,4]],[[2,4],[1,2]],[[3,5],[1,2]],[[5,6],[3,4]],[[2,3],[5,6]],[[3,8],[1,2]],[[1,5],[1,6]],[[3,6],[1,2]],[[2,5],[1,3]],[[4,8],[2,4]]]).slice());
+   const c=B.cmp(x,y),right=c>0?0:c<0?1:2;
+   return{q:`Vilken är störst: ${H(...x)} eller ${H(...y)}?`,rows:[{ref:[[1,1]],label:H(...x),lab2:x},{ref:[[1,1]],label:H(...y),lab2:y}],ans:{choice:[H(...x),H(...y),"Lika stora"],right},
+     tip:null,tipRows:[Array(x[0]).fill(x[1]),Array(y[0]).fill(y[1])],
+     hint:`Bygg ${H(...x)} i den första raden och ${H(...y)} i den andra. Vilken rad blev längst?`};}},
+ {id:4,name:"Addition, samma nämnare",desc:"Lägg ihop bitarna",ex:()=>`${H(1,4)} + ${H(2,4)}`,c:"#F2B707",gen:()=>{const d=pick([3,4,5,6,8,10]),c=rnd(2,d),a=rnd(1,c-1);
+   return{q:`${H(a,d)} + ${H(c-a,d)} = ${frq(d)}`,rows:[{ref:[...Array(a).fill([1,d]),"+",...Array(c-a).fill([1,d])],label:`${H(a,d)} + ${H(c-a,d)}`}],ans:{den:d,val:c},tip:Array(c).fill(d),
+     hint:`Räkna alla ${H(1,d)}-bitar i båda bråken tillsammans.`};}},
+ {id:5,name:"Addition, olika nämnare",desc:"Byt till lika bitar",ex:()=>`${H(1,2)} + ${H(1,4)}`,c:"#2BB673",gen:()=>{const [x,y,L]=pick([[[1,2],[1,4],4],[[1,2],[1,8],8],[[1,4],[1,8],8],[[1,3],[1,6],6],[[1,2],[1,6],6],[[1,2],[1,3],6],[[2,3],[1,6],6],[[1,4],[1,2],4],[[3,8],[1,4],8],[[1,5],[1,10],10],[[1,2],[3,10],10],[[1,4],[3,8],8],[[1,3],[1,2],6],[[1,6],[1,3],6]]);
+   const s=B.add(x,y),val=s[0]*L/s[1];
+   return{q:`${H(...x)} + ${H(...y)} = ${frq(L)}`,rows:[{ref:[...Array(x[0]).fill([1,x[1]]),"+",...Array(y[0]).fill([1,y[1]])],label:`${H(...x)} + ${H(...y)}`}],ans:{den:L,val},tip:Array(val).fill(L),
+     hint:`Lägg ${H(1,L)}-bitar under tills de är lika långa som ${H(...x)} + ${H(...y)}.`};}},
+ {id:6,name:"Subtraktion",desc:"Ta bort en del",ex:()=>`${H(3,4)} − ${H(1,4)}`,c:"#17AFC4",gen:()=>{const [x,y,L]=pick([[[3,4],[1,4],4],[[5,6],[2,6],6],[[1,1],[1,3],3],[[1,2],[1,4],4],[[3,4],[1,2],4],[[5,8],[1,4],8],[[2,3],[1,6],6],[[1,1],[3,8],8],[[4,5],[2,5],5],[[7,10],[1,2],10],[[1,1],[1,4],4],[[5,6],[1,2],6]]);
+   const r=B.sub(x,y),val=r[0]*L/r[1];
+   // referensen: x som bitar, och y överstruken i slutet (det som tas bort)
+   const xs=x[1]===1?[[1,1]]:Array(x[0]).fill([1,x[1]]);
+   return{q:`${H(...x)} − ${H(...y)} = ${frq(L)}`,rows:[{ref:xs,cut:y,label:`${H(...x)} − ${H(...y)}`}],ans:{den:L,val},tip:Array(val).fill(L),
+     hint:`Den randiga delen tas bort. Lägg ${H(1,L)}-bitar under det som är kvar.`};}}
+];
+function frq(den){return den===1?"{A}":`<span class="fr"><span>{A}</span><span>${den}</span></span>`;}
+
+/* ---------- Skärmar ---------- */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+const LABS=[["frac","Bråk"],["dec","Decimal"],["pct","Procent"],["none","Ingen"]];
+function segLab(){["segLab","segLab2"].forEach(id=>{$(id).innerHTML=LABS.map(([k,n])=>`<button data-l="${k}" aria-pressed="${data.label===k}">${n}</button>`).join("");});}
+["segLab","segLab2"].forEach(id=>$(id).onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.label=b.dataset.l;save();segLab();if(G)render();});
+function openHome(){G=null;
+  $("levels").innerHTML=LEVELS.map(l=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="ex">${l.ex()}</span><b>${l.id}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.id]||0)}</button>`).join("");
+  segLab();show("home");}
+$("levels").onclick=e=>{const b=e.target.closest("[data-l]");if(b)start(+b.dataset.l);};
+$("btnFree").onclick=()=>start(0);
+$("quit").onclick=openHome;
+
+/* ---------- Spelet ---------- */
+let G=null;
+function start(lv){
+  G={lv,L:LEVELS.find(l=>l.id===lv)||null,i:0,err:0,res:[],active:0,input:"",busy:false};
+  $("pet").innerHTML=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";
+  $("ln").textContent=lv?`${lv}. ${G.L.name}`:"Utforska fritt";$("quit").textContent=lv?"← Nivåer":"← Tillbaka";
+  $("palette").innerHTML=B.DEN.map(d=>`<button class="bit" data-d="${d}" style="--c:${B.COL[d]};--k:${B.ink(d)}" aria-label="${d===1?"en hel":"en "+d+"-del"}">${bitLab(d)}</button>`).join("");
+  segLab();show("game");next();}
+const bitLab=d=>B.label(1,d,data.label)||"&nbsp;";
+function next(){
+  G.input="";G.tipOn=false;G.busy=false;G.active=0;G.hist=[];G.miss=false;
+  if(!G.lv){G.task={q:"Bygg fritt! Blir det en hel?",rows:[0,1,2].map(()=>({ref:[[1,1]],label:"1"})),free:true};}
+  else G.task=G.L.gen();
+  G.lanes=G.task.rows.map(()=>[]);
+  $("hint").textContent=G.lv?"Lägg bitar från lådan. Tryck på en bit för att lägga den i raden.":"Tryck eller dra en bit till en rad. Tryck på en lagd bit för att ta bort den.";$("hint").className="hint";
+  $("qcard").className="qcard";render();}
+function render(){
+  const t=G.task;setTimeout(()=>{if(G)G.nyss=null;},0);
+  $("palette").querySelectorAll(".bit").forEach(b=>b.innerHTML=bitLab(+b.dataset.d));
+  // frågan med svarsrutan
+  $("qcard").innerHTML=t.q.replace("{A}",`<span class="ansbox" id="ansbox">${G.input||"?"}</span>`);
+  // raderna
+  $("rows").innerHTML=t.rows.map((r,ri)=>{
+    let ref="";r.ref.forEach(p=>{if(p==="+"){ref+=`<span class="plus"></span>`;return;}ref+=pieceHtml(p[1],p[0]===p[1]&&p[1]===1?1:B.cmp(p,[1,1])===0?1:null,p);});
+    if(r.cut){// den överstrukna delen läggs ovanpå slutet av referensen
+      const x=t.rows[ri].ref,tot=B.sum(x.filter(p=>p!=="+")),start=B.sub(tot,r.cut);
+      ref+=`<div class="piece cut" style="position:absolute;left:${start[0]/start[1]*100}%;width:${r.cut[0]/r.cut[1]*100}%;--c:#fff">${data.label==="none"?"":"− "+B.label(r.cut[0],r.cut[1],data.label)}</div>`;}
+    const lane=G.lanes[ri],sum=B.sum(lane.map(d=>[1,d])),over=B.cmp(sum,[1,1])>0;
+    let acc=[0,1],lp=lane.map((d,k)=>{acc=B.add(acc,[1,d]);const o=B.cmp(acc,[1,1])>0;return pieceHtml(d,null,[1,d],`data-k="${k}"`,(o?" over":"")+(G.nyss&&G.nyss[0]===ri&&G.nyss[1]===k?" new":""));}).join("");
+    if(G.tipOn){const tp=(t.tipRows?t.tipRows[ri]:ri===0?t.tip:null)||[];tp.slice(lane.length).forEach(d=>{lp+=pieceHtml(d,null,[1,d],"",""," ghost");});}
+    const full=G.lv?false:B.eq(sum,[1,1]);
+    const sumTxt=!lane.length?"":t.free||G.lv===3?`= ${B.label(...sum,data.label==="none"?"frac":data.label)}${B.eq(sum,[1,1])?" 🎉 En hel!":over?" (mer än en hel)":""}`:"";
+    return`<div class="row${ri===G.active?" active":""}" data-r="${ri}"><div class="rl">${r.label}</div><div class="track"><div class="ref">${ref}</div><div class="lane${full||B.eq(sum,refLen(r))&&G.lv&&G.lv!==3?" full":""}" data-r="${ri}">${lp}${over?`<span class="overlab">För mycket!</span>`:""}</div></div><div class="rsum${B.eq(sum,[1,1])?" full":""}">${sumTxt}</div></div>`;}).join("");
+  // svaret
+  const a=t.ans;$("pad").hidden=!a||!!a.choice;$("choice").hidden=!a||!a.choice;$("tTip").hidden=!G.lv;
+  if(a&&a.choice)$("choice").innerHTML=a.choice.map((c,k)=>`<button data-c="${k}" class="${k===2?"same":""}">${c}</button>`).join("");
+  $("dots").innerHTML=G.lv?Array.from({length:ROUND},(_,k)=>`<i class="${G.res[k]===true?"ok":G.res[k]===false?"miss":k===G.i?"now":""}"></i>`).join(""):"";
+}
+// längden på referensen (för att visa grönt när bygget är lika långt)
+function refLen(r){const tot=B.sum(r.ref.filter(p=>p!=="+"));return r.cut?B.sub(tot,r.cut):tot;}
+function pieceHtml(d,whole,p,attr,cls,cls2){const w=(p?p[0]/p[1]:1/d)*100,dd=p?p[1]:d;
+  return`<div class="piece${cls||""}${cls2||""}" ${attr||""} style="width:${w}%;--c:${B.COL[dd]||B.COL[1]};--k:${B.ink(dd)}">${data.label==="none"?"":B.label(p?p[0]:1,dd,data.label)}</div>`;}
+
+/* ---------- Lägga och ta bort bitar ---------- */
+function addPiece(d,ri){if(!G||G.busy)return;ri=ri==null?G.active:ri;const lane=G.lanes[ri],s=B.sum(lane.map(x=>[1,x]));
+  if(B.cmp(B.add(s,[1,d]),[3,2])>0){toast("Det får inte plats mer i raden.");return;}
+  lane.push(d);G.hist.push(ri);G.active=ri;G.nyss=[ri,lane.length-1];window.Ljud&&Ljud.pop&&Ljud.pop(Math.min(12,lane.length));
+  render();
+  if(G.lv===0&&B.eq(B.sum(lane.map(x=>[1,x])),[1,1])){window.Ljud&&Ljud.chime&&Ljud.chime();petHop();}}
+$("rows").addEventListener("click",e=>{if(!G)return;const pc=e.target.closest(".lane .piece[data-k]");const row=e.target.closest(".row");if(!row)return;const ri=+row.dataset.r;
+  if(pc){G.lanes[ri].splice(+pc.dataset.k,1);G.active=ri;render();return;}
+  if(G.active!==ri){G.active=ri;render();}});
+$("tUndo").onclick=()=>{if(!G||!G.hist.length)return;const ri=G.hist.pop();G.lanes[ri].pop();render();};
+$("tClear").onclick=()=>{if(!G)return;G.lanes=G.lanes.map(()=>[]);G.hist=[];render();};
+$("tTip").onclick=()=>{if(!G||!G.lv)return;G.tipOn=true;$("hint").innerHTML="💡 "+G.task.hint;$("hint").className="hint";render();};
+// bitlådan: tryck = lägg i den markerade raden, dra = lägg i raden man släpper på
+let drag=null;
+$("palette").addEventListener("pointerdown",e=>{const b=e.target.closest(".bit");if(!b||!G)return;e.preventDefault();
+  drag={d:+b.dataset.d,x:e.clientX,y:e.clientY,el:null,id:e.pointerId};try{b.setPointerCapture(e.pointerId);}catch(_){}});
+$("palette").addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(!drag.el&&Math.hypot(dx,dy)>8){const r=$("rows").querySelector(".track").getBoundingClientRect(),w=r.width/drag.d;
+    drag.el=document.createElement("div");drag.el.className="piece drag";drag.el.style.cssText=`width:${Math.max(30,w)}px;height:48px;--c:${B.COL[drag.d]};--k:${B.ink(drag.d)}`;drag.el.innerHTML=bitLab(drag.d);document.body.appendChild(drag.el);}
+  if(drag.el){drag.el.style.left=e.clientX+"px";drag.el.style.top=e.clientY+"px";}});
+function endDrag(e,cancel){if(!drag)return;const d=drag.d,el=drag.el;drag=null;
+  if(el){el.remove();if(cancel)return;const t=document.elementFromPoint(e.clientX,e.clientY),row=t&&t.closest(".row");if(row)addPiece(d,+row.dataset.r);}
+  else if(!cancel)addPiece(d);}
+$("palette").addEventListener("pointerup",e=>endDrag(e,false));
+$("palette").addEventListener("pointercancel",e=>endDrag(e,true));
+
+/* ---------- Svara ---------- */
+$("pad").onclick=e=>{const b=e.target.closest("[data-k]");if(!b||!G||G.busy)return;const k=b.dataset.k;
+  if(k==="del")G.input=G.input.slice(0,-1);else if(k==="ok"){if(G.input!=="")check(+G.input);return;}else if(G.input.length<2)G.input+=k;
+  const ab=$("ansbox");if(ab)ab.textContent=G.input||"?";};
+$("choice").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!G||G.busy)return;check(+b.dataset.c);};
+document.addEventListener("keydown",e=>{if(!G||$("game").hidden||!G.task.ans)return;
+  if(/^\d$/.test(e.key)&&!G.task.ans.choice){$("pad").querySelector(`[data-k="${e.key}"]`).click();}
+  else if(e.key==="Backspace"){e.preventDefault();$("pad").querySelector('[data-k="del"]').click();}
+  else if(e.key==="Enter"){e.preventDefault();$("pad").querySelector('[data-k="ok"]').click();}});
+function check(v){
+  const a=G.task.ans,ok=a.choice?v===a.right:v===a.val;
+  if(ok){
+    G.busy=true;$("qcard").className="qcard ok";$("hint").textContent=pick(["Rätt!","Precis!","Snyggt!"]);$("hint").className="hint";
+    window.Ljud&&Ljud.ok&&Ljud.ok();petHop();yay("Utmärkt!");
+    G.res[G.i]=!G.miss;
+    setTimeout(()=>{if(!G)return;G.i++;if(G.i>=ROUND)roundDone();else next();},1300);
+  }else{
+    G.err++;G.miss=true;window.Ljud&&Ljud.bad&&Ljud.bad();$("qcard").className="qcard bad";
+    $("hint").innerHTML=(a.choice?"Inte riktigt. ":`${v} stämmer inte. `)+G.task.hint;$("hint").className="hint bad";
+    G.input="";const ab=$("ansbox");if(ab)ab.textContent="?";
+  }
+}
+function roundDone(){
+  const fel=G.res.filter(r=>r===false).length,st=fel===0?3:fel<=2?2:1,fore=data.stars[G.lv]||0;
+  data.stars[G.lv]=Math.max(fore,st);data.rundor=(data.rundor||0)+1;save();
+  yay(`${"★".repeat(st)}<small>${fel===0?"Alla rätt direkt!":"Runda klar!"}${st>fore?" Ny stjärna!":""}</small>`);
+  if(st>fore||st===3){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}
+  G.i=0;G.res=[];setTimeout(()=>{if(G)next();},1400);
+}
+function yay(h){const y=$("yay");y.innerHTML=h;y.classList.remove("show");void y.offsetWidth;y.classList.add("show");}
+function petHop(){const p=$("pet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2400);}
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W2=innerWidth,H2=innerHeight;c.width=W2*dpr;c.height=H2*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W2/2+(Math.random()-.5)*120,y:H2*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pick(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W2,H2);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W2,H2);c.hidden=true;}})(t0);
+}
+openHome();
+</script>
+</body>
+</html>
