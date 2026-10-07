@@ -66,7 +66,7 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 /* raderna */
 .rows{display:grid;gap:12px;background:var(--card);border-radius:20px;padding:12px;box-shadow:0 4px 0 var(--line);overflow:hidden}
 .row .rl{font-weight:800;font-size:.95rem;color:var(--muted);margin-bottom:3px;display:flex;align-items:center;gap:6px}
-.track{position:relative;width:86%}
+.track{position:relative;width:78%}
 .ref,.lane{position:relative;height:48px;display:flex}
 .ref{margin-bottom:4px}
 .lane{border-radius:10px;background:repeating-linear-gradient(90deg,transparent 0 11px,rgba(29,43,83,.05) 11px 12px),#F4F7FD;box-shadow:inset 0 0 0 2px #DCE4F2;cursor:pointer}
@@ -82,6 +82,7 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .piece.ghost{background:transparent;border:2px dashed var(--c);box-shadow:none;color:var(--c);animation:none;pointer-events:none}
 .plus{flex:none;width:0;position:relative}.plus::before{content:"+";position:absolute;left:-9px;top:-20px;font-weight:800;color:var(--muted)}
 .overlab{position:absolute;right:6px;top:-11px;background:#E5484D;color:#fff;border-radius:999px;padding:0 8px;font-weight:800;font-size:.75rem;white-space:nowrap;z-index:2;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+.overlab.mer{background:#F2B707;color:#4A3500}
 .rsum{font-weight:800;font-size:.95rem;color:var(--muted);margin-top:3px;min-height:1.3em}
 .rsum.full{color:var(--good-dark)}
 /* verktyg och svar */
@@ -96,6 +97,9 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .choice button{min-width:96px;min-height:64px;border-radius:16px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.5rem;padding:4px 14px}
 .choice button:active{transform:translateY(3px)}
 .choice button.same{font-size:1.1rem}
+.choice button.ord{position:relative}
+.choice button.picked{background:#EEF1FF;box-shadow:inset 0 0 0 3px var(--accent),0 4px 0 var(--line)}
+.choice .nr{position:absolute;top:-10px;left:-8px;width:28px;height:28px;border-radius:50%;background:var(--accent);color:#fff;font-size:1rem;display:grid;place-items:center}
 .foot{display:flex;align-items:flex-end;gap:10px;margin-top:10px}
 .pet{width:70px;flex:none}.pet svg{width:100%;height:auto;display:block}
 .pet.hop{animation:hop .5s ease-out}@keyframes hop{40%{transform:translateY(-14px)}}
@@ -157,20 +161,30 @@ const H=(n,d)=>B.html(n,d);
    En uppgift: q (frågan i HTML, med {A} där svaret skrivs), rows (rader med referens överst och en bygglucka),
    ans ({den: nämnaren som svaret har, val: rätt täljare} eller {choice:[...], right}), tip (bitar som Tips visar), hint (text vid fel). */
 const LEVELS=[
- {id:1,name:"Hur många ryms?",desc:"Fyll staven med bitar",ex:()=>`1 ÷ ${H(1,4)}`,c:"#E5484D",gen:()=>{const n=pick([2,3,4,5,6,8,10,12]);
-   return{q:`Hur många ${H(1,n)} ryms i 1?<br><span style="font-size:.8em">1 ÷ ${H(1,n)} = {A}</span>`,rows:[{ref:[[1,1]],label:"1"}],ans:{den:1,val:n},tip:Array(n).fill(n),
-     hint:`Lägg ${H(1,n)}-bitar under staven tills den är full. Räkna bitarna.`};}},
- {id:2,name:"Lika stora bråk",desc:"Samma längd, olika bitar",ex:()=>`${H(1,2)} = ${H(2,4)}`,c:"#FF5FA2",gen:()=>{const [b,c]=pick([[2,4],[2,6],[2,8],[3,6],[4,8],[2,10],[5,10],[3,12],[4,12],[6,12]]),a=rnd(1,b-1);
-   return{q:`${H(a,b)} = ${frq(c)}`,rows:[{ref:Array(a).fill([1,b]),label:H(a,b)}],ans:{den:c,val:a*c/b},tip:Array(a*c/b).fill(c),
-     hint:`Lägg ${H(1,c)}-bitar under ${H(a,b)} tills de är lika långa. Hur många blev det?`};}},
- {id:3,name:"Vilken är störst?",desc:"Bygg och jämför",ex:()=>`${H(1,3)} eller ${H(1,4)}`,c:"#FF9F43",gen:()=>{const [x,y]=shuffle(pick([[[1,3],[1,4]],[[1,2],[1,3]],[[2,3],[3,4]],[[2,4],[1,2]],[[3,5],[1,2]],[[5,6],[3,4]],[[2,3],[5,6]],[[3,8],[1,2]],[[1,5],[1,6]],[[3,6],[1,2]],[[2,5],[1,3]],[[4,8],[2,4]]]).slice());
-   const c=B.cmp(x,y),right=c>0?0:c<0?1:2;
-   return{q:`Vilken är störst: ${H(...x)} eller ${H(...y)}?`,rows:[{ref:[[1,1]],label:H(...x),lab2:x},{ref:[[1,1]],label:H(...y),lab2:y}],ans:{choice:[H(...x),H(...y),"Lika stora"],right},
-     tip:null,tipRows:[Array(x[0]).fill(x[1]),Array(y[0]).fill(y[1])],
-     hint:`Bygg ${H(...x)} i den första raden och ${H(...y)} i den andra. Vilken rad blev längst?`};}},
- {id:4,name:"Addition, samma nämnare",desc:"Lägg ihop bitarna",ex:()=>`${H(1,4)} + ${H(2,4)}`,c:"#F2B707",gen:()=>{const d=pick([3,4,5,6,8,10]),c=rnd(2,d),a=rnd(1,c-1);
+ // Bygg och jämför: de fyra första uppgiftstyperna blandade och klurigare (lärarens önskan, de var för enkla var för sig).
+ // id 7 så att gamla stjärnor på nivå 1–4 ligger kvar och fortsätter att räknas.
+ {id:7,name:"Bygg och jämför",desc:"Ryms, lika stora, ordna och addera",ex:()=>`${H(3,4)} = ${H(6,8)}`,c:"#E5484D",gen:()=>{
+   const typ=G&&G.mixQ&&G.mixQ.length?G.mixQ.shift():pick(["ryms","lika","ordna","plus"]);
+   if(typ==="ryms"){const [x,n]=pick([[[1,2],4],[[1,2],6],[[1,2],8],[[3,4],8],[[2,3],6],[[1,2],10],[[3,5],10],[[1,3],12],[[3,4],12],[[5,6],12],[[1,1],8],[[2,3],12],[[1,4],8],[[2,5],10],[[1,1],12]]),val=x[0]*n/x[1];
+     const xs=x[1]===1?[[1,1]]:Array(x[0]).fill([1,x[1]]);
+     return{q:`Hur många ${H(1,n)} ryms i ${H(...x)}?`.replace("?","? {A}"),rows:[{ref:xs,label:H(...x)}],ans:{den:1,val},tip:Array(val).fill(n),
+       hint:`Lägg ${H(1,n)}-bitar under ${H(...x)} tills de är lika långa. Räkna bitarna.`};}
+   if(typ==="lika"){const [b,c]=pick([[2,4],[2,6],[2,8],[3,6],[4,8],[2,10],[5,10],[3,12],[4,12],[6,12],[3,9]].filter(([b,c])=>B.COL[c])),a=rnd(1,b-1);
+     if(Math.random()<.5){// uppåt: ⅔ = ?/6
+       return{q:`${H(a,b)} = ${frq(c)}`,rows:[{ref:Array(a).fill([1,b]),label:H(a,b)}],ans:{den:c,val:a*c/b},tip:Array(a*c/b).fill(c),
+         hint:`Lägg ${H(1,c)}-bitar under ${H(a,b)} tills de är lika långa. Hur många blev det?`};}
+     // neråt: 6/8 = ?/4
+     const k=a*c/b;return{q:`${H(k,c)} = ${frq(b)}`,rows:[{ref:Array(k).fill([1,c]),label:H(k,c)}],ans:{den:b,val:a},tip:Array(a).fill(b),
+       hint:`Lägg större ${H(1,b)}-bitar under ${H(k,c)}. Hur många ${H(1,b)} blir lika långt?`};}
+   if(typ==="ordna"){let tri;for(;;){tri=shuffle([[1,2],[1,3],[2,3],[3,4],[1,4],[2,5],[3,5],[5,6],[3,8],[5,8],[1,6],[4,5],[7,10],[3,10]].slice()).slice(0,3);
+       const v=tri.map(x=>x[0]/x[1]);if(v.every((a,i)=>v.every((b,j)=>i===j||Math.abs(a-b)>.04)))break;}
+     const right=[0,1,2].sort((i,j)=>B.cmp(tri[i],tri[j]));
+     return{q:`Ordna från minst till störst: ${tri.map(x=>H(...x)).join(", ")}`,rows:tri.map(x=>({ref:[[1,1]],label:H(...x)})),ans:{order:true,items:tri.map(x=>H(...x)),right},
+       tip:null,tipRows:tri.map(x=>Array(x[0]).fill(x[1])),hint:`Bygg varje bråk i sin rad med bitar. Den kortaste raden är minst.`};}
+   // plus: samma nämnare, summan kan bli mer än en hel
+   let d,c,a;do{d=pick([3,4,5,6,8]);c=rnd(Math.ceil(d*.6),d+Math.floor(d/4));a=rnd(1,c-1);}while(a>=d||c-a>=d);
    return{q:`${H(a,d)} + ${H(c-a,d)} = ${frq(d)}`,rows:[{ref:[...Array(a).fill([1,d]),"+",...Array(c-a).fill([1,d])],label:`${H(a,d)} + ${H(c-a,d)}`}],ans:{den:d,val:c},tip:Array(c).fill(d),
-     hint:`Räkna alla ${H(1,d)}-bitar i båda bråken tillsammans.`};}},
+     hint:c>d?`Det blir mer än en hel! Räkna alla ${H(1,d)}-bitar tillsammans.`:`Räkna alla ${H(1,d)}-bitar i båda bråken tillsammans.`};}},
  {id:5,name:"Addition, olika nämnare",desc:"Byt till lika bitar",ex:()=>`${H(1,2)} + ${H(1,4)}`,c:"#2BB673",gen:()=>{const [x,y,L]=pick([[[1,2],[1,4],4],[[1,2],[1,8],8],[[1,4],[1,8],8],[[1,3],[1,6],6],[[1,2],[1,6],6],[[1,2],[1,3],6],[[2,3],[1,6],6],[[1,4],[1,2],4],[[3,8],[1,4],8],[[1,5],[1,10],10],[[1,2],[3,10],10],[[1,4],[3,8],8],[[1,3],[1,2],6],[[1,6],[1,3],6]]);
    const s=B.add(x,y),val=s[0]*L/s[1];
    return{q:`${H(...x)} + ${H(...y)} = ${frq(L)}`,rows:[{ref:[...Array(x[0]).fill([1,x[1]]),"+",...Array(y[0]).fill([1,y[1]])],label:`${H(...x)} + ${H(...y)}`}],ans:{den:L,val},tip:Array(val).fill(L),
@@ -191,7 +205,7 @@ const LABS=[["frac","Bråk"],["dec","Decimal"],["pct","Procent"],["none","Ingen"
 function segLab(){["segLab","segLab2"].forEach(id=>{$(id).innerHTML=LABS.map(([k,n])=>`<button data-l="${k}" aria-pressed="${data.label===k}">${n}</button>`).join("");});}
 ["segLab","segLab2"].forEach(id=>$(id).onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.label=b.dataset.l;save();segLab();if(G)render();});
 function openHome(){G=null;
-  $("levels").innerHTML=LEVELS.map(l=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="ex">${l.ex()}</span><b>${l.id}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.id]||0)}</button>`).join("");
+  $("levels").innerHTML=LEVELS.map((l,ix)=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="ex">${l.ex()}</span><b>${ix+1}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.id]||0)}</button>`).join("");
   segLab();show("home");}
 $("levels").onclick=e=>{const b=e.target.closest("[data-l]");if(b)start(+b.dataset.l);};
 $("btnFree").onclick=()=>start(0);
@@ -202,14 +216,15 @@ let G=null;
 function start(lv){
   G={lv,L:LEVELS.find(l=>l.id===lv)||null,i:0,err:0,res:[],active:0,input:"",busy:false};
   $("pet").innerHTML=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";
-  $("ln").textContent=lv?`${lv}. ${G.L.name}`:"Utforska fritt";$("quit").textContent=lv?"← Nivåer":"← Tillbaka";
+  $("ln").textContent=lv?`${LEVELS.indexOf(G.L)+1}. ${G.L.name}`:"Utforska fritt";$("quit").textContent=lv?"← Nivåer":"← Tillbaka";
   $("palette").innerHTML=B.DEN.map(d=>`<button class="bit" data-d="${d}" style="--c:${B.COL[d]};--k:${B.ink(d)}" aria-label="${d===1?"en hel":"en "+d+"-del"}">${bitLab(d)}</button>`).join("");
   segLab();show("game");next();}
 const bitLab=d=>B.label(1,d,data.label)||"&nbsp;";
 function next(){
   G.input="";G.tipOn=false;G.busy=false;G.active=0;G.hist=[];G.miss=false;
   if(!G.lv){G.task={q:"Bygg fritt! Blir det en hel?",rows:[0,1,2].map(()=>({ref:[[1,1]],label:"1"})),free:true};}
-  else G.task=G.L.gen();
+  else{if(G.lv===7&&(!G.mixQ||!G.mixQ.length))G.mixQ=shuffle(["ryms","lika","ordna","plus","ryms","lika","ordna","plus"]);G.task=G.L.gen();}
+  G.pick=[];
   G.lanes=G.task.rows.map(()=>[]);
   $("hint").textContent=G.lv?"Lägg bitar från lådan. Tryck på en bit för att lägga den i raden.":"Tryck eller dra en bit till en rad. Tryck på en lagd bit för att ta bort den.";$("hint").className="hint";
   $("qcard").className="qcard";render();}
@@ -228,11 +243,12 @@ function render(){
     let acc=[0,1],lp=lane.map((d,k)=>{acc=B.add(acc,[1,d]);const o=B.cmp(acc,[1,1])>0;return pieceHtml(d,null,[1,d],`data-k="${k}"`,(o?" over":"")+(G.nyss&&G.nyss[0]===ri&&G.nyss[1]===k?" new":""));}).join("");
     if(G.tipOn){const tp=(t.tipRows?t.tipRows[ri]:ri===0?t.tip:null)||[];tp.slice(lane.length).forEach(d=>{lp+=pieceHtml(d,null,[1,d],"",""," ghost");});}
     const full=G.lv?false:B.eq(sum,[1,1]);
-    const sumTxt=!lane.length?"":t.free||G.lv===3?`= ${B.label(...sum,data.label==="none"?"frac":data.label)}${B.eq(sum,[1,1])?" 🎉 En hel!":over?" (mer än en hel)":""}`:"";
-    return`<div class="row${ri===G.active?" active":""}" data-r="${ri}"><div class="rl">${r.label}</div><div class="track"><div class="ref">${ref}</div><div class="lane${full||B.eq(sum,refLen(r))&&G.lv&&G.lv!==3?" full":""}" data-r="${ri}">${lp}${over?`<span class="overlab">För mycket!</span>`:""}</div></div><div class="rsum${B.eq(sum,[1,1])?" full":""}">${sumTxt}</div></div>`;}).join("");
+    const sumTxt=!lane.length?"":t.free||t.ans&&t.ans.order?`= ${B.label(...sum,data.label==="none"?"frac":data.label)}${B.eq(sum,[1,1])?" 🎉 En hel!":over?" (mer än en hel)":""}`:"";
+    return`<div class="row${ri===G.active?" active":""}" data-r="${ri}"><div class="rl">${r.label}</div><div class="track"><div class="ref">${ref}</div><div class="lane${full||B.eq(sum,refLen(r))&&G.lv&&!(t.ans&&t.ans.order)?" full":""}" data-r="${ri}">${lp}${over?(B.cmp(refLen(r),[1,1])>0?`<span class="overlab mer">Mer än en hel</span>`:`<span class="overlab">För mycket!</span>`):""}</div></div><div class="rsum${B.eq(sum,[1,1])?" full":""}">${sumTxt}</div></div>`;}).join("");
   // svaret
-  const a=t.ans;$("pad").hidden=!a||!!a.choice;$("choice").hidden=!a||!a.choice;$("tTip").hidden=!G.lv;
+  const a=t.ans,knapp=a&&(a.choice||a.order);$("pad").hidden=!a||!!knapp;$("choice").hidden=!a||!knapp;$("tTip").hidden=!G.lv;
   if(a&&a.choice)$("choice").innerHTML=a.choice.map((c,k)=>`<button data-c="${k}" class="${k===2?"same":""}">${c}</button>`).join("");
+  if(a&&a.order)$("choice").innerHTML=a.items.map((c,k)=>{const n=G.pick.indexOf(k);return`<button data-c="${k}" class="ord${n>=0?" picked":""}">${n>=0?`<span class="nr">${n+1}</span>`:""}${c}</button>`;}).join("");
   $("dots").innerHTML=G.lv?Array.from({length:ROUND},(_,k)=>`<i class="${G.res[k]===true?"ok":G.res[k]===false?"miss":k===G.i?"now":""}"></i>`).join(""):"";
 }
 // längden på referensen (för att visa grönt när bygget är lika långt)
@@ -270,13 +286,15 @@ $("palette").addEventListener("pointercancel",e=>endDrag(e,true));
 $("pad").onclick=e=>{const b=e.target.closest("[data-k]");if(!b||!G||G.busy)return;const k=b.dataset.k;
   if(k==="del")G.input=G.input.slice(0,-1);else if(k==="ok"){if(G.input!=="")check(+G.input);return;}else if(G.input.length<2)G.input+=k;
   const ab=$("ansbox");if(ab)ab.textContent=G.input||"?";};
-$("choice").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!G||G.busy)return;check(+b.dataset.c);};
+$("choice").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!G||G.busy)return;const k=+b.dataset.c,a=G.task.ans;
+  if(a.order){if(G.pick.includes(k))return;G.pick.push(k);window.Ljud&&Ljud.pop&&Ljud.pop(G.pick.length);render();if(G.pick.length===3)check(G.pick.join()===a.right.join()?"ok":"fel");return;}
+  check(k);};
 document.addEventListener("keydown",e=>{if(!G||$("game").hidden||!G.task.ans)return;
   if(/^\d$/.test(e.key)&&!G.task.ans.choice){$("pad").querySelector(`[data-k="${e.key}"]`).click();}
   else if(e.key==="Backspace"){e.preventDefault();$("pad").querySelector('[data-k="del"]').click();}
   else if(e.key==="Enter"){e.preventDefault();$("pad").querySelector('[data-k="ok"]').click();}});
 function check(v){
-  const a=G.task.ans,ok=a.choice?v===a.right:v===a.val;
+  const a=G.task.ans,ok=a.order?v==="ok":a.choice?v===a.right:v===a.val;
   if(ok){
     G.busy=true;$("qcard").className="qcard ok";$("hint").textContent=pick(["Rätt!","Precis!","Snyggt!"]);$("hint").className="hint";
     window.Ljud&&Ljud.ok&&Ljud.ok();petHop();yay("Utmärkt!");
@@ -284,7 +302,8 @@ function check(v){
     setTimeout(()=>{if(!G)return;G.i++;if(G.i>=ROUND)roundDone();else next();},1300);
   }else{
     G.err++;G.miss=true;window.Ljud&&Ljud.bad&&Ljud.bad();$("qcard").className="qcard bad";
-    $("hint").innerHTML=(a.choice?"Inte riktigt. ":`${v} stämmer inte. `)+G.task.hint;$("hint").className="hint bad";
+    $("hint").innerHTML=(a.choice||a.order?"Inte riktigt. ":`${v} stämmer inte. `)+G.task.hint;$("hint").className="hint bad";
+    if(a.order){G.pick=[];setTimeout(()=>{if(G)render();},700);}
     G.input="";const ab=$("ansbox");if(ab)ab.textContent="?";
   }
 }
