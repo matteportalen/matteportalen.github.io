@@ -809,7 +809,7 @@ function spaceHud(){$("hearts").innerHTML=[0,1,2].map(i=>shield(i<A.shields)).jo
 const shipPos=()=>({x:A&&A.sx!=null?A.sx:W/2,y:H*.9});
 function startSpace(){
   if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
-  OPTN=4;$("carBtns").hidden=true;$("spaceBtns").hidden=false;$("game").classList.add("space");$("hint").textContent="Tryck på stenen med rätt svar, så skjuter du på den. Åk undan med pilarna om en sten kommer mot skeppet!";
+  OPTN=4;$("carBtns").hidden=true;$("spaceBtns").hidden=false;$("game").classList.add("space");$("hint").textContent="Tryck på stenen med rätt svar, så skjuter du på den. Åk undan med pilarna om en sten kommer mot skeppet!"+(matchMedia("(pointer:fine)").matches?" På datorn: ← → åker, A och D vrider kanonen, mellanslag skjuter.":"");
   showOnly("game");resize();
   A={shields:3,score:0,t:0,ang:0,rocks:[],shots:[],parts:[],stars:Array.from({length:110},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.4,tw:Math.random()*6})),
      cool:0,nextAt:0,shake:0,over:false,running:false,last:performance.now(),turn:0,frags:[],fragHit:0,rings:[],debris:[],msg:null,flash:0,shieldFx:0,pending:false,qBack:0};
@@ -862,8 +862,9 @@ hold("aimL",-1);hold("aimR",1);$("fireBtn").onclick=()=>fire(null);
 // långt tryck öppnar annars telefonens meny (kopiera, dela) i stället för att vrida kanonen
 document.getElementById("game").addEventListener("contextmenu",e=>e.preventDefault());
 document.addEventListener("keydown",e=>{if(!A||$("game").hidden)return;
-  if(e.key==="ArrowLeft"){e.preventDefault();A.turn=-1;}else if(e.key==="ArrowRight"){e.preventDefault();A.turn=1;}else if(e.key===" "||e.key==="ArrowUp"){e.preventDefault();fire(null);}});
-document.addEventListener("keyup",e=>{if(A&&(e.key==="ArrowLeft"||e.key==="ArrowRight"))A.turn=0;});
+  if(e.key==="ArrowLeft"){e.preventDefault();A.turn=-1;}else if(e.key==="ArrowRight"){e.preventDefault();A.turn=1;}else if(e.key===" "||e.key==="ArrowUp"){e.preventDefault();fire(null);}
+  else if(e.key==="a"||e.key==="A"){A.aimTurn=-1;}else if(e.key==="d"||e.key==="D"){A.aimTurn=1;}});   // A och D vrider kanonen på dator
+document.addEventListener("keyup",e=>{if(!A)return;if(e.key==="ArrowLeft"||e.key==="ArrowRight")A.turn=0;if("aAdD".includes(e.key))A.aimTurn=0;});
 function boom(x,y,cols,n,big){for(let i=0;i<n;i++){const a=Math.random()*6.28,sp=80+Math.random()*(big?340:260);A.parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:.9,c:pickOne(cols),s:2+Math.random()*3});}
   A.rings.push({x,y,r:6,life:.45,big:!!big});
   for(let i=0;i<(big?8:5);i++){const a=Math.random()*6.28,sp=60+Math.random()*160;A.debris.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rot:Math.random()*6,vr:(Math.random()-.5)*8,s:3+Math.random()*5,life:1.1});}}
@@ -891,6 +892,7 @@ function spaceFrame(now){
   if(!A)return;if(A.running&&!A.over&&!document.hidden&&window.Ljud&&!Ljud.space.g)Ljud.space.start();const dt=Math.min(.05,(now-A.last)/1000);A.last=now;
   if(A.running&&!document.hidden){
     A.t+=dt;A.cool=Math.max(0,A.cool-dt);A.shake=Math.max(0,A.shake-dt);A.flash=Math.max(0,(A.flash||0)-dt);A.shieldFx=Math.max(0,(A.shieldFx||0)-dt);if(A.msg)A.msg.t-=dt;
+    if(A.aimTurn)A.ang=Math.max(-1.35,Math.min(1.35,A.ang+A.aimTurn*dt*1.8));
     // pilarna låter skeppet glida åt sidorna för att väja för stenar
     {const m=Math.min(W*.3,130)*.45;if(A.sx==null)A.sx=W/2;A.sx=Math.max(m,Math.min(W-m,A.sx+(A.turn||0)*Math.max(220,W*.55)*dt));A.tilt=(A.tilt||0)+((A.turn||0)*.18-(A.tilt||0))*Math.min(1,dt*8);}
     if(A.pending&&A.t>=A.nextAt&&!A.over){A.pending=false;aNewTask();}
