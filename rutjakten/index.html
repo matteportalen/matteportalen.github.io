@@ -143,6 +143,10 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .tcard .big{font-size:3rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;margin:2px 0 8px}
 .tcard table{width:100%;font-weight:700;color:var(--muted);border-collapse:collapse}
 .tcard td{padding:2px 0}.tcard td:last-child{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.rst .stars{font-size:2.4rem;letter-spacing:4px}
+.rnext{font-weight:800;color:var(--muted);margin:0 0 8px}
+.tvar .stars{font-size:1.05rem}
+.tvar small.mal{margin-top:2px;font-weight:700}
 .newrec{display:inline-block;background:#FFF4D1;color:#7A5B00;font-weight:800;border-radius:999px;padding:2px 14px;margin-bottom:8px}
 .go{display:block;width:100%;max-width:380px;margin:8px auto 0;padding:13px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.3rem}
 .go.alt{background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--line)}
@@ -176,8 +180,9 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 </section>
 <section id="result" class="screen tres" hidden>
   <h2 id="rTitle">Klart!</h2>
-  <div class="tcard"><div class="newrec" id="rNew" hidden>🏆 Nytt rekord!</div><div class="big" id="rTime"></div>
+  <div class="tcard"><div class="newrec" id="rNew" hidden>🏆 Nytt rekord!</div><div class="rst" id="rStars"></div><div class="big" id="rTime"></div>
     <table><tr><td>Speltid</td><td id="rGame"></td></tr><tr><td>Straff</td><td id="rPen"></td></tr><tr><td>Ditt rekord</td><td id="rBest"></td></tr></table></div>
+  <p class="rnext" id="rNext"></p>
   <button class="go" id="rAgain">Spela igen</button>
   <button class="go alt" id="rHome">Byt spel</button>
 </section>
@@ -191,11 +196,11 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 <script>
 /* Rutjakten: fyra rutor med fyra tal var. Tre tal hör ihop (a + b = c eller a · b = c), det fjärde är ett störtal.
    Alla fyra rutor lösta = ett kors klart: "Utmärkt!" och fyra nya rutor. Inget tidstryck, inget slut.
-   Stjärnor per variant vid 10, 25 och 50 klara kors. */
+   Stjärnor per variant vid 5, 25 och 50 klara kors. */
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-const KEY="mattespel-rutjakten-v1",STEG=[10,25,50];
+const KEY="mattespel-rutjakten-v1",STEG=[5,25,50];
 const data=(()=>{try{return Object.assign({stars:{},kors:{},tab:[2,3,4,5,6,7,8,9,10]},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},kors:{},tab:[2,3,4,5,6,7,8,9,10]}}})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
 
@@ -341,11 +346,18 @@ const fmt=ms=>{const s=ms/1000,m=Math.floor(s/60);return `${m}:${(s-m*60).toFixe
 const narrow=()=>innerWidth<600;
 let T=null;
 const tKey=k=>data.top==="·"?k+"-x":k+"-"+data.rng;
+// stjärnor efter sluttiden (speltid + straff): en för att bli klar, två och tre under gränserna (sekunder); till 20 och 25 har samma
+const LIM={fem:{"20":[90,50],"100":[150,90],"x":[120,75]},rut:{"20":[180,105],"100":[300,180],"x":[240,150]}};
+const limOf=key=>{const [k,v]=key.split("-");return LIM[k][v==="25"?"20":v];};
+const tStars=(key,ms)=>{const l=limOf(key);return 1+(ms<l[0]*1000)+(ms<l[1]*1000);};
+const fmtS=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
+// nästa mål: "⭐⭐ under 1:30" (eller tomt när alla tre finns)
+const tNext=(key,st)=>{const l=limOf(key);return st>=3?"":st<=1?`⭐⭐ under ${fmtS(l[0])}`:`⭐⭐⭐ under ${fmtS(l[1])}`;};
 function renderTid(){
   $("rng").innerHTML=`<button data-o="+" aria-pressed="${data.top!=="·"}">＋ Addition</button><button data-o="·" aria-pressed="${data.top==="·"}">· Multiplikation</button>`;
   $("rng2").innerHTML=data.top==="·"?`<span class="sub" style="margin:0">Tabellerna 2–10</span>`:RNG.map(r=>`<button data-r="${r}" aria-pressed="${data.rng===r}">Till ${r}</button>`).join("");
-  $("tvars").innerHTML=Object.keys(TB).map(k=>{const rec=data.tid[tKey(k)];
-    return `<button class="tvar" data-k="${k}">${k==="fem"?pentMini():gridMini()}<span><b>${TB[k].name}</b><small>${TB[k].desc}</small>${rec?`<span class="rek">🏆 ${fmt(rec.best)}</span>`:""}</span></button>`;}).join("");}
+  $("tvars").innerHTML=Object.keys(TB).map(k=>{const key=tKey(k),rec=data.tid[key],st=data.stars["t-"+key]||0;
+    return `<button class="tvar" data-k="${k}">${k==="fem"?pentMini():gridMini()}<span><b>${TB[k].name}</b><small>${TB[k].desc}</small>${starHtml(st)}${rec?` <span class="rek">🏆 ${fmt(rec.best)}</span>`:""}<small class="mal">${tNext(key,st)||"Alla stjärnor!"}</small></span></button>`;}).join("");}
 $("rng").onclick=e=>{const b=e.target.closest("[data-o]");if(!b)return;data.top=b.dataset.o;save();renderTid();};
 $("rng2").onclick=e=>{const b=e.target.closest("[data-r]");if(!b)return;data.rng=+b.dataset.r;save();renderTid();};
 $("tvars").onclick=e=>{const b=e.target.closest("[data-k]");if(b)tStart(b.dataset.k);};
@@ -418,12 +430,14 @@ function tSel(bk,j){
   [el,z].forEach(x=>x&&x.classList.add("shake"));
   setTimeout(()=>{[el,z].forEach(x=>x&&x.classList.remove("shake"));if(!T)return;T.sel=new Set();T.busy=false;tRender();},480);}
 function tDone(eq){T.done=true;clearInterval(T.iv);const game=performance.now()-T.t0,tot=game+T.pen*1000,key=T.key;
-  const rec=data.tid[key],nytt=!rec||tot<rec.best;data.tid[key]={best:nytt?Math.round(tot):rec.best,last:Math.round(tot),spelat:((rec&&rec.spelat)||0)+1};save();
+  const rec=data.tid[key],nytt=!rec||tot<rec.best;data.tid[key]={best:nytt?Math.round(tot):rec.best,last:Math.round(tot),spelat:((rec&&rec.spelat)||0)+1};
+  const st=tStars(key,tot),fore=data.stars["t-"+key]||0;data.stars["t-"+key]=Math.max(fore,st);save();
   $("tClock").textContent=fmt(game);tMsg(`${eq}. Klart!`,"ok");tRender();
   setTimeout(()=>{if(!T)return;
     $("rTitle").textContent=nytt&&rec?"Nytt rekord! 🏆":"Klart!";$("rNew").hidden=!(nytt&&rec);
-    $("rTime").textContent=fmt(tot);$("rGame").textContent=fmt(game);$("rPen").textContent=T.err?`${T.err} fel · ${T.pen} s`:"0 s";$("rBest").textContent=fmt(data.tid[key].best);
-    show("result");if(nytt){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}},900);}
+    $("rTime").textContent=fmt(tot);$("rStars").innerHTML=starHtml(st);
+    const nx=tNext(key,data.stars["t-"+key]);$("rNext").textContent=data.stars["t-"+key]>fore?`Ny stjärna! ${nx?"Nästa: "+nx+".":"Alla tre stjärnor!"}`:nx?`Nästa stjärna: ${nx}.`:"Du har alla tre stjärnor här.";$("rGame").textContent=fmt(game);$("rPen").textContent=T.err?`${T.err} fel · ${T.pen} s`:"0 s";$("rBest").textContent=fmt(data.tid[key].best);
+    show("result");if(nytt||data.stars["t-"+key]>fore){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}},900);}
 function tStop(){if(T)clearInterval(T.iv);T=null;}
 $("tQuit").onclick=()=>{tStop();openHome();};
 $("rAgain").onclick=()=>{const k=T?T.kind:"fem";tStart(k);};

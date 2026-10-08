@@ -544,7 +544,7 @@ const STICKERS=[
   ["gata","🎁","Gåtlösaren","Få stjärnor i Gömda tal.",()=>sum(S.gomda)>0],
   ["paket","🔍","Paketöppnaren","Få tre stjärnor i Gömda tal.",()=>Object.values(S.gomda).some(v=>v===3)],
   ["kortdiv","➗","Delningsmästaren","Få stjärnor i Kort division.",()=>sum(S.kort)>0],
-  ["rutjagare","🟩","Rutjägaren","Fyll tio kors i Rutjakten.",()=>sum(S.rut)>0],
+  ["rutjagare","🟩","Rutjägaren","Fyll fem kors i Rutjakten.",()=>Object.entries(S.rut).some(([k,v])=>!k.startsWith("t-")&&v>0)],
   ["rutmastare","🏅","Rutmästaren","Få tre stjärnor i en variant i Rutjakten.",()=>Object.values(S.rut).some(v=>v>=3)],
   ["skattmastare","🏴‍☠️","Skattmästaren","Hitta alla skatter på nivå 3 i Skattjakten.",()=>((S.sj.stars||{})[3]||0)>=3],
   ["bubbelpoppare","🫧","Bubbelpopparen","Töm en hel bana i Bubbeljakten.",()=>Object.values(S.spel.bubbel||{}).some(r=>(r.bana||0)>=1)],
