@@ -42,6 +42,23 @@ h2{font-size:1.6rem;margin:18px 0 8px;font-weight:800}
 .spr{width:var(--w,46px);height:var(--w,46px);background:url(bilder/varor.png) no-repeat;background-size:calc(var(--w,46px)*8) auto;background-position:calc(var(--x)*var(--w,46px)*-1) calc(var(--y)*var(--w,46px)*-1)}
 .tag{font-size:.64rem;font-weight:800;background:#fff;border-radius:6px;padding:0 4px;line-height:1.35;box-shadow:0 1px 0 rgba(0,0,0,.15);white-space:nowrap;margin-top:-4px}
 .tag.offer{background:#FFD43B}
+.tag.slut{background:#E5484D;color:#fff}
+.ware{position:relative}
+.ware .cnt{position:absolute;top:-3px;right:-5px;background:#1D2B53;color:#fff;font-size:.6rem;font-style:normal;font-weight:800;border-radius:8px;padding:0 4px;line-height:1.4}
+.ware.out .spr{opacity:.25;filter:grayscale(1)}
+.onc .ware .cnt{display:none}
+/* påfyllningen */
+.lrows{display:flex;flex-direction:column;gap:8px}
+.lrow{display:flex;align-items:center;flex-wrap:wrap;gap:6px 10px;background:var(--card);border-radius:16px;padding:8px 12px;box-shadow:0 3px 0 var(--line)}
+.lrow .spr{--w:46px;flex:none}
+.lrow .nm{flex:1 1 150px;min-width:0;line-height:1.2}.lrow .nm b{display:block}.lrow .nm small{color:var(--muted);font-weight:700}
+.step{display:flex;align-items:center;gap:6px;margin-left:auto}
+.step button{width:40px;height:40px;border-radius:12px;background:#F3E6CB;font-weight:800;font-size:1.3rem}
+.step span{min-width:1.4em;text-align:center;font-weight:800;font-size:1.2rem}
+.lrow .bst{padding:8px 12px;border-radius:12px;background:#1E9E5E;color:#fff;font-weight:800;box-shadow:0 3px 0 #157548}
+.lrow .bst:disabled{background:#E5E0D6;color:#9A8F80;box-shadow:none}
+.lrow.full{opacity:.6}
+.order{background:#fff;border-radius:18px;box-shadow:0 0 0 3px #3D5AFE,0 4px 0 var(--line);padding:12px;margin:0 0 12px}
 .counter{position:absolute;left:0;right:0;bottom:0;height:36%;background:linear-gradient(#C8874A,#A86F36);border-top:7px solid #8A5A2B;z-index:2}
 .keeper{position:absolute;right:3%;bottom:31%;width:clamp(78px,22%,120px);z-index:1}
 .cust{position:absolute;left:3%;bottom:31%;width:clamp(78px,22%,120px);z-index:1;transition:transform .5s cubic-bezier(.3,1.2,.5,1),opacity .4s}
@@ -142,6 +159,7 @@ h2{font-size:1.6rem;margin:18px 0 8px;font-weight:800}
   <h2>Vilken nivå?</h2>
   <div class="levels" id="levels"></div>
   <button class="go" id="play">Öppna affären ▶</button>
+  <button class="mine" id="lagerBtn"><span><b>🚚 Fyll på hyllorna</b><small id="lagerInfo">Beställ varor som håller på att ta slut</small></span></button>
   <button class="mine" id="mineBtn"><span><b>🏪 Min affär</b><small>Köp nya varor och saker till affären</small></span><span class="k" id="mineK"></span></button>
 </div>
 </section>
@@ -153,6 +171,15 @@ h2{font-size:1.6rem;margin:18px 0 8px;font-weight:800}
   <div id="mineShop"></div>
   <h2>Varor</h2><div class="ups" id="upsVaror"></div>
   <h2>Inredning</h2><div class="ups" id="upsInred"></div>
+</div>
+</section>
+<section id="lager" class="screen" hidden>
+<div class="wrap">
+  <button class="back" id="lagerBack">← Affären</button>
+  <h1>Fyll på hyllorna</h1>
+  <p class="lead">I kassan: <b id="lagerKassa"></b>. Välj hur många du vill beställa och räkna ut vad det kostar.</p>
+  <div id="order"></div>
+  <div class="lrows" id="lrows"></div>
 </div>
 </section>
 <section id="game" class="screen" hidden>
@@ -169,6 +196,7 @@ h2{font-size:1.6rem;margin:18px 0 8px;font-weight:800}
   <div class="big" id="rKassa"></div>
   <p id="rSub"></p>
   <button class="go" id="rAgain">Ny dag ▶</button>
+  <button class="alt" id="rLager">🚚 Fyll på hyllorna</button>
   <button class="alt" id="rMine">🏪 Min affär</button>
   <button class="alt" id="rHome">Till menyn</button>
 </div>
@@ -187,7 +215,7 @@ const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 const KEY="mattespel-affaren-v1";
-const data=(()=>{try{return Object.assign({stars:{},kassa:0,own:[],niva:1,dagar:0},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},kassa:0,own:[],niva:1,dagar:0}}})();
+const data=(()=>{try{return Object.assign({stars:{},kassa:0,own:[],niva:1,dagar:0,lager:{}},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},kassa:0,own:[],niva:1,dagar:0}}})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
 const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -209,6 +237,16 @@ const UPS=[
   {id:"guld",typ:"inred",name:"Guldkassa",desc:"En kassaapparat i guld",pris:300}];
 const has=id=>data.own.includes(id);
 const sortiment=()=>[...KAT.frukt,...["bar","godis","bageri","kyl","glass","grill"].filter(has).flatMap(k=>KAT[k])];
+/* Lager: varje vara finns i högst 4 exemplar på hyllan. Kunderna handlar ur lagret, och man fyller på i "Fyll på hyllorna"
+   (eleven räknar ut vad beställningen kostar, "3 äpplen som kostar 2 kr styck", och betalar ur kassan). */
+const FULL=4;
+const INK=[2,2,2,2,1,1,1,4, 3,3,3,4, 3,3,2,3,2,1,4,2, 2,4,3, 2,1,1, 2,3,2, 3, 3,3,4,3]; // inköpspris per vara
+if(!data.lager)data.lager={};
+function initLager(){sortiment().forEach(i=>{if(data.lager[i]==null)data.lager[i]=FULL;});}
+const lag=i=>data.lager[i]??FULL;
+const iLager=()=>sortiment().filter(i=>lag(i)>0);
+// lönen: affären tjänar per kund (inte hela köpet), lite mer på svårare nivåer; allt köpt på ungefär 15 speldagar
+const MULT={1:1,2:1,3:1.2,4:1.4},LON=(direkt,n)=>Math.round((direkt?12:6)*MULT[n]);
 const spr=(i,w)=>`<span class="spr" style="--x:${i%8};--y:${Math.floor(i/8)}${w?`;--w:${w}px`:""}"></span>`;
 
 /* ---------- Pengarna ---------- */
@@ -228,7 +266,7 @@ const KUNDER=8;
 /* ---------- Scenen ---------- */
 function shopHtml(o){o=o||{};const pr=o.prices||{},sor=sortiment(),pet=lasDjur();
   const rows=[sor.slice(0,Math.ceil(sor.length/2)),sor.slice(Math.ceil(sor.length/2))];
-  const shelf=r=>`<div class="shelf">${r.map(i=>`<span class="ware">${spr(i)}${pr[i]!=null?`<span class="tag${o.offer&&o.offer.i===i?" offer":""}">${o.offer&&o.offer.i===i?`2 för ${o.offer.p}`:pr[i]+" kr"}</span>`:""}</span>`).join("")}</div>`;
+  const shelf=r=>`<div class="shelf">${r.map(i=>lag(i)===0?`<span class="ware out">${spr(i)}<span class="tag slut">Slut</span></span>`:`<span class="ware">${spr(i)}<i class="cnt">${lag(i)}</i>${pr[i]!=null?`<span class="tag${o.offer&&o.offer.i===i?" offer":""}">${o.offer&&o.offer.i===i?`2 för ${o.offer.p}`:pr[i]+" kr"}</span>`:""}</span>`).join("")}</div>`;
   return `<div class="shop" style="${has("markis")?"--a1:#2BB673":""}">
     <div class="awn"></div>${has("lampor")?`<div class="lights">${["#FF5FA2","#FFD43B","#3D8BFD","#2BB673","#FF9F43","#7B61FF","#FF5FA2","#FFD43B"].map(c=>`<i style="--c:${c}"></i>`).join("")}</div>`:""}
     ${has("skylt")?`<div class="sign">${(PETNAME[pet.animal]||"Ugglan").replace(/n$|en$/,m=>m)}s affär</div>`:""}
@@ -247,7 +285,9 @@ const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class=
 function openHome(){G=null;
   $("homeShop").innerHTML=shopHtml();
   $("levels").innerHTML=Object.entries(NIVA).map(([n,v])=>`<button class="lvl" data-n="${n}" aria-pressed="${data.niva==n}"><b>${n}. ${v.name}</b><small>${v.desc}</small>${starHtml(data.stars[n]||0)}</button>`).join("");
-  $("mineK").textContent=`💰 ${data.kassa} kr`;show("home");}
+  $("mineK").textContent=`💰 ${data.kassa} kr`;initLager();const lagt=sortiment().filter(i=>lag(i)<=1).length;
+  $("lagerInfo").textContent=lagt?`${lagt} ${lagt===1?"vara håller":"varor håller"} på att ta slut`:"Hyllorna är fulla";show("home");}
+$("lagerBtn").onclick=()=>openLager();
 $("levels").onclick=e=>{const b=e.target.closest("[data-n]");if(!b)return;data.niva=+b.dataset.n;save();$("levels").querySelectorAll("[data-n]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.n==data.niva));};
 $("play").onclick=()=>startDay();
 $("mineBtn").onclick=()=>openMine();$("mineBack").onclick=()=>openHome();
@@ -258,54 +298,104 @@ function openMine(){
   $("upsVaror").innerHTML=UPS.filter(u=>u.typ==="varor").map(card).join("");$("upsInred").innerHTML=UPS.filter(u=>u.typ==="inred").map(card).join("");
   show("mine");}
 document.addEventListener("click",e=>{const b=e.target.closest(".buy[data-u]");if(!b)return;const u=UPS.find(x=>x.id===b.dataset.u);if(!u||has(u.id)||data.kassa<u.pris)return;
-  data.kassa-=u.pris;data.own.push(u.id);save();window.Ljud&&Ljud.kaching&&Ljud.kaching();toast(`${u.name} är din! 🎉`);const y=scrollY;openMine();scrollTo(0,y);});
+  data.kassa-=u.pris;data.own.push(u.id);initLager();save();window.Ljud&&Ljud.kaching&&Ljud.kaching();toast(`${u.name} är din! 🎉`);const y=scrollY;openMine();scrollTo(0,y);});
+
+/* ---------- Fyll på hyllorna ---------- */
+let L={q:{},ord:null};
+function openLager(){initLager();
+  // grossisten hjälper till om kassan är tom och hyllorna nästan tomma, så att man aldrig kör fast
+  const tot=sortiment().reduce((a,i)=>a+lag(i),0),billig=Math.min(...sortiment().map(i=>INK[i]));
+  if(tot<6&&data.kassa<billig*2){KAT.frukt.forEach(i=>data.lager[i]=FULL);save();toast("Grossisten bjöd på en låda frukt! 🍎");}
+  L.ord=null;renderLager();show("lager");}
+function renderLager(){$("lagerKassa").textContent=`${data.kassa} kr`;
+  $("lrows").innerHTML=sortiment().map(i=>{const left=lag(i),max=FULL-left,q=Math.min(L.q[i]||Math.min(max,FULL-left),max);L.q[i]=q;
+    return `<div class="lrow${max?"":" full"}">${spr(i)}<span class="nm"><b>${NAMN(i)}</b><small>${left} av ${FULL} kvar · ${INK[i]} kr styck</small></span>${max?`<span class="step"><button data-m="${i}" aria-label="Färre">−</button><span>${q}</span><button data-p="${i}" aria-label="Fler">+</button></span><button class="bst" data-b="${i}" ${q?"":"disabled"}>Beställ</button>`:"<small><b>Full</b></small>"}</div>`;}).join("");
+  $("lrows").querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{const i=+b.dataset.m;L.q[i]=Math.max(0,(L.q[i]||0)-1);renderLager();});
+  $("lrows").querySelectorAll("[data-p]").forEach(b=>b.onclick=()=>{const i=+b.dataset.p;L.q[i]=Math.min(FULL-lag(i),(L.q[i]||0)+1);renderLager();});
+  $("lrows").querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{const i=+b.dataset.b;L.ord={i,q:L.q[i],inp:"",tries:0,msg:""};renderOrder();window.scrollTo({top:0,behavior:"smooth"});});
+  renderOrder();}
+function renderOrder(){const o=L.ord,el=$("order");if(!o){el.innerHTML="";return;}
+  el.innerHTML=`<div class="order"><p class="ask">${ANTAL(o.q,o.i)} som kostar ${INK[o.i]} kr styck. Vad kostar det?</p><p class="ask"><span class="ans${o.bad?" bad":""}">${o.inp||" "}</span> kr</p><div class="fb${o.hint?" hint":""}">${o.msg}</div>
+    <div class="pad">${[1,2,3,4,5,6,7,8,9].map(n=>`<button data-k="${n}">${n}</button>`).join("")}<button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okbtn">OK</button></div>
+    <button class="alt" id="ordX" style="margin-top:8px">Avbryt</button></div>`;
+  el.querySelectorAll(".pad [data-k]").forEach(b=>b.onclick=()=>orderKey(b.dataset.k));$("ordX").onclick=()=>{L.ord=null;renderOrder();};}
+function orderKey(k){const o=L.ord;if(!o)return;
+  if(k==="del"){o.inp=o.inp.slice(0,-1);o.bad=false;renderOrder();return;}
+  if(k!=="ok"){if(o.bad){o.inp="";o.bad=false;}if(o.inp.length<3)o.inp+=k;renderOrder();return;}
+  if(!o.inp)return;const cost=o.q*INK[o.i],v=+o.inp,lista=Array(o.q).fill(INK[o.i]).join(" + ");
+  if(v!==cost){o.tries++;window.Ljud&&Ljud.bad&&Ljud.bad();
+    if(o.tries<2){o.bad=true;o.hint=true;o.msg=o.q>1?`Det är ${INK[o.i]} kr ${o.q} gånger: ${lista} = ?`:`En kostar ${INK[o.i]} kr.`;renderOrder();return;}
+    o.msg=`Det kostar ${lista} = ${cost} kr.`;}
+  if(data.kassa<cost){o.hint=true;o.msg=`Det kostar ${cost} kr, men i kassan finns bara ${data.kassa} kr. Beställ färre.`;o.inp="";renderOrder();return;}
+  data.kassa-=cost;data.lager[o.i]=Math.min(FULL,lag(o.i)+o.q);save();window.Ljud&&Ljud.kaching&&Ljud.kaching();
+  toast(`${o.tries?"":"Rätt! "}${ANTAL(o.q,o.i)} för ${cost} kr ligger nu på hyllan.`);L.q[o.i]=0;L.ord=null;renderLager();}
+$("lagerBack").onclick=()=>openHome();
 
 /* ---------- Dagen ---------- */
 let G=null;
 function startDay(){const N=NIVA[data.niva],sor=sortiment(),prices={};
-  sor.forEach(i=>prices[i]=rnd(N.pris[0],N.pris[1]));
+  initLager();sor.forEach(i=>prices[i]=Math.max(INK[i]+1,rnd(N.pris[0],N.pris[1])));
   // erbjudande på nivå 4: "2 för X kr" på en vara
   let offer=null;if(data.niva===4){const i=pick(sor);offer={i,p:prices[i]*2-rnd(2,Math.max(3,Math.floor(prices[i]/2)))};}
   // kunderna: blandade uppgifter, alla sorter varje dag
-  const typer=shuffle(["summa","summa","vaxel","vaxel","rakna","budget",pick(["vaxel","summa"]),data.niva===4?"styck":pick(["rakna","vaxel"])]);
-  G={N,niva:data.niva,prices,offer,typer,k:0,miss:0,kassa:0,tips:0};
+  const typer=shuffle(["summa","summa","vaxel","vaxel","rakna","budget","vaxla",data.niva===4?"styck":pick(["rakna","vaxel","summa"])]);
+  G={N,niva:data.niva,prices,offer,typer,k:0,miss:0,kassa:0,slut:[]};
   show("game");nextCust();}
 function custCfg(){const pet=lasDjur(),an=pick(WARD.animal.items.map(x=>x.id).filter(a=>a!==pet.animal));
   return{animal:an,color:"natur",glasses:pick(["inga","inga","runda","sol"]),hat:pick(["ingen","ingen","keps","mossa","party"]),neck:pick(["ingen","rosett","halsduk"])};}
 function hud(){$("hudT").textContent=`Dag ${data.dagar+1} · Kund ${Math.min(G.k+1,KUNDER)} av ${KUNDER}`;$("hudK").textContent=`💰 ${G.kassa} kr`;}
 function nextCust(){if(G.k>=KUNDER)return endDay();
   const typ=G.typer[G.k];FB={m:"",h:false};G.bad=false;G.t=makeTask(typ);G.t.cust=custCfg();G.tries=0;G.inp="";G.tray=[];G.sel=new Set();G.done=false;G.helped=false;
-  hud();render(true);}
+  hud();render(true);
+  if(G.t.typ==="slut"){G.done=true;G.slut.push(G.t.want);fb(`Kunden gick utan att handla. Fyll på ${NAMN(G.t.want)} efter dagen!`,true);window.Ljud&&Ljud.bad&&Ljud.bad();renderPanel();}}
 // ett slumpat köp: 1–3 varor vars summa ryms under gränsen
-function basket(n,limit){const sor=sortiment();for(let k=0;k<200;k++){const it=shuffle(sor.slice()).slice(0,n),tot=it.reduce((s,i)=>s+G.prices[i],0);if(tot<=limit)return{it,tot};}
+function basket(n,limit){const sor=iLager();n=Math.min(n,sor.length);for(let k=0;k<200;k++){const it=shuffle(sor.slice()).slice(0,n),tot=it.reduce((s,i)=>s+G.prices[i],0);if(tot<=limit)return{it,tot};}
   const i=sor.reduce((a,b)=>G.prices[a]<G.prices[b]?a:b);return{it:[i],tot:G.prices[i]};}
 // kunden betalar med en sedel eller ett mynt som är större än summan
 function payFor(tot){const opts=G.N.val.filter(v=>v>tot);return opts.length?(Math.random()<.7?opts[0]:pick(opts.slice(0,2))):null;}
-function makeTask(typ){const N=G.N,max=N.max;
+function makeTask(typ){const N=G.N,max=N.max,inne=iLager(),borta=sortiment().filter(i=>lag(i)===0);
+  // kunden vill ha något som är slut: oftare ju mer som är slut (rakna behöver inga varor)
+  if(typ!=="rakna"&&borta.length&&(inne.length<2||Math.random()<borta.length/sortiment().length*.7))return{typ:"slut",want:pick(borta)};
+  if(typ==="budget"&&inne.length<5)typ="summa";
+  if(typ==="styck"&&!inne.some(i=>lag(i)>=2))typ="summa";
   if(typ==="summa"){const b=basket(data.niva===1?2:rnd(2,3),max);return{typ,items:b.it,ans:b.tot,earn:b.tot};}
-  if(typ==="styck"){const ok=sortiment().filter(i=>G.prices[i]*2<=max),i=pick(ok.length?ok:sortiment()),n=rnd(2,Math.max(2,Math.min(4,Math.floor(max/G.prices[i])))),useOffer=G.offer&&Math.random()<.5;
+  if(typ==="styck"){const ok=inne.filter(i=>G.prices[i]*2<=max&&lag(i)>=2),i=pick(ok.length?ok:inne.filter(i=>lag(i)>=2)),n=rnd(2,Math.max(2,Math.min(lag(i),4,Math.floor(max/G.prices[i])))),useOffer=G.offer&&lag(G.offer.i)>=4&&Math.random()<.5;
     if(useOffer){const n2=pick([2,4]),i2=G.offer.i;return{typ,items:Array(n2).fill(i2),qty:n2,unit:i2,offer:true,ans:n2/2*G.offer.p,earn:n2/2*G.offer.p};}
     return{typ,items:Array(n).fill(i),qty:n,unit:i,ans:n*G.prices[i],earn:n*G.prices[i]};}
   if(typ==="vaxel"){for(let k=0;k<100;k++){const b=basket(rnd(1,2),max-1),pay=payFor(b.tot);if(pay&&pay-b.tot>0&&(data.niva>1||pay-b.tot<=15))return{typ,items:b.it,tot:b.tot,pay,ans:pay-b.tot,earn:b.tot};}
-    return{typ:"summa",items:[sortiment()[0]],ans:G.prices[sortiment()[0]],earn:G.prices[sortiment()[0]]};}
+    const i0=inne[0];return{typ:"summa",items:[i0],ans:G.prices[i0],earn:G.prices[i0]};}
+  // växla en sedel eller ett mynt, ibland till bara en sorts pengar ("till bara tiokronor")
+  if(typ==="vaxla"){const note=pick({1:[10,20],2:[20,50],3:[50,100],4:[100,200]}[data.niva]),smaller=G.N.val.filter(v=>v<note);
+    const only=Math.random()<.45?pick(smaller.filter(d=>d>=2&&note%d===0&&note/d<=10)):null;
+    return{typ,note,only:only||null,ans:note,earn:0};}
   if(typ==="rakna"){const vals=G.N.val.filter(v=>v<max);for(let k=0;k<100;k++){const n=rnd(3,data.niva===1?4:6),m=Array.from({length:n},()=>pick(vals)).sort((a,b)=>b-a),s=m.reduce((a,b)=>a+b,0);if(s<=max&&s>3)return{typ,money:m,ans:s,earn:Math.min(s,10*data.niva)};}
     return{typ,money:[10,5,2],ans:17,earn:10};}
   // budget: två varor som kostar exakt summan, bara ett par går
-  const sor=sortiment();for(let k=0;k<300;k++){const it=shuffle(sor.slice()).slice(0,5);const ps=it.map(i=>G.prices[i]);
+  const sor=inne;for(let k=0;k<300;k++){const it=shuffle(sor.slice()).slice(0,5);const ps=it.map(i=>G.prices[i]);
     const [a,b]=shuffle([0,1,2,3,4]).slice(0,2),sum=ps[a]+ps[b];if(sum>max)continue;
     let pairs=0;for(let x=0;x<5;x++)for(let y=x+1;y<5;y++)if(ps[x]+ps[y]===sum)pairs++;
     if(pairs===1&&new Set(ps).size===5)return{typ:"budget",items:it,sum,ans:[a,b].sort(),earn:sum};}
   return makeTask("summa");}
 const NAMN=i=>VAROR[i];
+// flera av samma vara ("3 bananer"); n = 1 ger ental
+const PLUR=["äpplen","bananer","apelsiner","päron","citroner","morötter","ägg","ostar","jordgubbar","körsbär","klasar vindruvor","vattenmeloner","croissanter","limpor","muffins","cupcakes","munkar","kakor","tårtor","våfflor",
+  "isglassar","glasspokaler","glassbägare","chokladkakor","chokladbitar","klubbor","läskburkar","läskflaskor","mjölkpaket","burkar honung","korv med bröd","smörgåsar","pizzor","pannkakor"];
+const ANTAL=(n,i)=>`${n} ${n===1?VAROR[i]:PLUR[i]}`;
+const ENSAM={10:"tiokrona",20:"tjugolapp",50:"femtiolapp",100:"hundralapp",200:"tvåhundralapp"};
+const FLERA={1:"enkronor",2:"tvåkronor",5:"femkronor",10:"tiokronor",20:"tjugolappar",50:"femtiolappar",100:"hundralappar"};
 function sayFor(t){
+  if(t.typ==="slut")return `Hej! Har ni ${NAMN(t.want)}? … Åh, det är slut! Då går jag någon annanstans.`;
   if(t.typ==="summa")return `Hej! Jag vill köpa ${t.items.length===2?"de här två":"de här"}. Vad blir det?`;
-  if(t.typ==="styck")return t.offer?`Jag tar ${t.qty} ${NAMN(t.unit)}. Det är 2 för ${G.offer.p} kr! Vad blir det?`:`Jag vill ha ${t.qty} st ${NAMN(t.unit)}. De kostar ${G.prices[t.unit]} kr styck. Vad blir det?`;
+  if(t.typ==="styck")return t.offer?`Jag tar ${ANTAL(t.qty,t.unit)}. Det är 2 för ${G.offer.p} kr! Vad blir det?`:`Jag vill ha ${ANTAL(t.qty,t.unit)}. De kostar ${G.prices[t.unit]} kr styck. Vad blir det?`;
+  if(t.typ==="vaxla")return `Hej! Kan du växla min ${ENSAM[t.note]}${t.only?` till bara ${FLERA[t.only]}`:""}?`;
   if(t.typ==="vaxel")return `Det blir ${t.tot} kr. Här är ${t.pay} kr. Kan jag få tillbaka?`;
   if(t.typ==="rakna")return `Här är mina pengar. Hur mycket är det?`;
   return `Jag har ${t.sum} kr. Vilka två saker kostar exakt ${t.sum} kr tillsammans?`;}
 function render(enter){const t=G.t;let onc="";
   if(t.typ==="summa"||t.typ==="vaxel")onc=t.items.map(i=>`<span class="ware">${spr(i)}<span class="tag">${G.prices[i]} kr</span></span>`).join("")+(t.typ==="vaxel"?`<span style="margin-left:10px">${moneyHtml(t.pay,true)}</span>`:"");
   else if(t.typ==="styck")onc=`<span class="ware">${spr(t.unit)}<span class="tag${t.offer?" offer":""}">${t.offer?`2 för ${G.offer.p} kr`:G.prices[t.unit]+" kr/st"}</span></span><span class="qty">× ${t.qty}</span>`;
+  else if(t.typ==="vaxla")onc=moneyHtml(t.note,true);
+  else if(t.typ==="slut")onc=`<span class="ware out">${spr(t.want)}<span class="tag slut">Slut</span></span>`;
   else if(t.typ==="rakna")onc=t.money.map(v=>moneyHtml(v,true)).join("");
   else onc=t.items.map((i,j)=>`<span class="ware pick${G.sel.has(j)?" sel":""}" data-j="${j}">${spr(i)}<span class="tag">${G.prices[i]} kr</span></span>`).join("");
   $("gameShop").innerHTML=shopHtml({prices:G.prices,offer:G.offer,cust:t.cust,away:enter,say:sayFor(t),onc,reg:t.typ==="vaxel"?`${t.tot} kr`:""});
@@ -315,16 +405,16 @@ function render(enter){const t=G.t;let onc="";
   renderPanel();}
 function renderPanel(){const t=G.t,p=$("panel");
   if(G.done){p.innerHTML=`<div class="fb" id="fb"></div><button class="go" id="nextC">${G.k+1>=KUNDER?"Stäng för idag":"Nästa kund ➜"}</button>`;$("nextC").onclick=()=>{G.k++;nextCust();};fbShow();return;}
-  if(t.typ==="vaxel"){
-    const sum=G.tray.reduce((a,b)=>a+b,0);
-    p.innerHTML=`<p class="ask">Ge tillbaka växel:</p><div class="tray" id="tray">${G.tray.map((v,i)=>`<button data-i="${i}" aria-label="Ta bort ${v} kr">${moneyHtml(v)}</button>`).join("")}</div>
+  if(t.typ==="vaxel"||t.typ==="vaxla"){
+    const sum=G.tray.reduce((a,b)=>a+b,0),vx=t.typ==="vaxla",top=vx?t.note:t.pay;
+    p.innerHTML=`<p class="ask">${vx?`Växla ${t.note} kr${t.only?` till ${FLERA[t.only]}`:""}:`:"Ge tillbaka växel:"}</p><div class="tray" id="tray">${G.tray.map((v,i)=>`<button data-i="${i}" aria-label="Ta bort ${v} kr">${moneyHtml(v)}</button>`).join("")}</div>
       <div class="traysum">På disken: ${sum} kr</div><div id="lineBox"></div>
-      <div class="drawer">${G.N.val.filter(v=>v<t.pay).map(v=>`<button data-v="${v}" aria-label="${v} kronor">${moneyHtml(v,1.3)}</button>`).join("")}</div>
-      <div class="fb" id="fb"></div><div class="row2"><button class="help" id="help">💡 Räkna uppåt</button><button class="done" id="klar">Klar ✓</button></div>`;
+      <div class="drawer">${G.N.val.filter(v=>v<top).map(v=>`<button data-v="${v}" aria-label="${v} kronor">${moneyHtml(v,1.3)}</button>`).join("")}</div>
+      <div class="fb" id="fb"></div><div class="row2">${vx?"":'<button class="help" id="help">💡 Räkna uppåt</button>'}<button class="done" id="klar">Klar ✓</button></div>`;
     p.querySelectorAll(".drawer [data-v]").forEach(b=>b.onclick=()=>{if(G.tray.length>=12)return;G.tray.push(+b.dataset.v);window.Ljud&&Ljud.clonk&&Ljud.clonk();G.bad=false;keepFb();renderPanel();});
     p.querySelectorAll("#tray [data-i]").forEach(b=>b.onclick=()=>{G.tray.splice(+b.dataset.i,1);keepFb();renderPanel();});
-    $("klar").onclick=checkChange;$("help").onclick=()=>{G.helped=true;$("lineBox").innerHTML=countUp(t.tot,t.pay);};
-    if(G.helped)$("lineBox").innerHTML=countUp(t.tot,t.pay);
+    $("klar").onclick=checkChange;if(!vx)$("help").onclick=()=>{G.helped=true;$("lineBox").innerHTML=countUp(t.tot,t.pay);};
+    if(G.helped&&!vx)$("lineBox").innerHTML=countUp(t.tot,t.pay);
     fbShow();return;}
   if(t.typ==="budget"){p.innerHTML=`<p class="ask">Tryck på två varor på disken.</p><div class="fb" id="fb"></div>`;fbShow();return;}
   const lab=t.typ==="rakna"?"Pengarna är:":"Det blir:";
@@ -363,10 +453,17 @@ function checkNum(){const t=G.t,v=+G.inp;
   G.bad=true;
   fb(t.typ==="rakna"?"Inte riktigt. Börja med de största pengarna och räkna vidare.":t.typ==="styck"?(t.offer?"Inte riktigt. Hur många par blir det?":"Inte riktigt. Det är samma pris flera gånger."):"Inte riktigt. Räkna ihop prislapparna en gång till.",true);renderPanel();}
 function checkChange(){const t=G.t,sum=G.tray.reduce((a,b)=>a+b,0);if(!G.tray.length){fb("Tryck på pengarna i kassalådan först.",true);return;}
+  if(t.typ==="vaxla"){const fel=t.only&&G.tray.some(v=>v!==t.only);
+    if(sum===t.note&&!fel){serve(`Rätt! ${G.tray.length>6&&t.only?`${G.tray.length} · ${t.only}`:G.tray.join(" + ")} = ${t.note} kr.`);return;}
+    G.tries++;if(G.tries===1)G.miss++;window.Ljud&&Ljud.bad&&Ljud.bad();
+    if(G.tries>=2){serve(t.only?`${t.note} kr är ${t.note/t.only} ${FLERA[t.only]}: ${t.note/t.only} · ${t.only} = ${t.note}.`:`Pengarna ska bli ${t.note} kr tillsammans, till exempel ${exempel(t.note)}.`,true);return;}
+    fb(fel?`Kunden vill bara ha ${FLERA[t.only]}. Hur många ${FLERA[t.only]} blir ${t.note} kr?`:sum<t.note?`Det är ${sum} kr. Det ska bli ${t.note} kr.`:`Det är ${sum} kr, det är för mycket. Det ska bli ${t.note} kr.`,true);renderPanel();return;}
   if(sum===t.ans){serve(`Rätt! ${t.pay} − ${t.tot} = ${t.ans} kr tillbaka.`);return;}
   G.tries++;if(G.tries===1)G.miss++;window.Ljud&&Ljud.bad&&Ljud.bad();
   if(G.tries>=2){G.helped=true;serve(`Tillbaka ska det vara ${t.ans} kr: räkna uppåt från ${t.tot} till ${t.pay}.`,true);return;}
   fb(sum<t.ans?"Det är för lite. Räkna uppåt från priset till det kunden betalade.":"Det är för mycket. Räkna uppåt från priset till det kunden betalade.",true);renderPanel();}
+// ett exempel på växel med de största valörerna under beloppet
+function exempel(n){const out=[];let r=n;for(const v of G.N.val.filter(v=>v<n).reverse())while(r>=v){out.push(v);r-=v;}return out.join(" + ");}
 function pickWare(j){if(!G||G.done)return;const t=G.t;if(G.sel.has(j))G.sel.delete(j);else{if(G.sel.size>=2)return;G.sel.add(j);}
   render(false);if(G.sel.size<2)return;
   const [a,b]=[...G.sel].sort(),pa=G.prices[t.items[a]],pb=G.prices[t.items[b]];
@@ -375,20 +472,24 @@ function pickWare(j){if(!G||G.done)return;const t=G.t;if(G.sel.has(j))G.sel.dele
   if(G.tries>=2){G.sel=new Set(t.ans);serve(`De två är ${t.ans.map(j=>G.prices[t.items[j]]).join(" + ")} = ${t.sum} kr.`,true);return;}
   fb(`${pa} + ${pb} = ${pa+pb} kr. Det ska bli ${t.sum} kr.`,true);setTimeout(()=>{if(G&&!G.done){G.sel=new Set();render(false);}},900);}
 function serve(msg,shown){const t=G.t;G.done=true;
-  const tip=G.tries===0?2*G.niva:0;G.kassa+=t.earn+tip;G.tips+=tip;
-  fb(msg+(tip?` Kunden ger dig ${tip} kr i dricks!`:""),shown);
+  const lon=LON(G.tries===0,G.niva);G.kassa+=lon;
+  // varorna går från hyllan
+  const salt=t.typ==="budget"?t.ans.map(j=>t.items[j]):t.items||[];salt.forEach(i=>{data.lager[i]=Math.max(0,lag(i)-1);});save();
+  fb(msg+` Affären tjänar ${lon} kr.`,shown);
   if(!shown){window.Ljud&&Ljud.kaching&&Ljud.kaching();}
   hud();renderPanel();
   if(t.typ==="vaxel"&&G.helped){const lb=document.querySelector("#panel #lineBox");if(lb)lb.innerHTML=countUp(t.tot,t.pay);}
   const c=$("cust");if(c&&!reduced()){c.animate([{transform:"translateY(0)"},{transform:"translateY(-16px)"},{transform:"translateY(0)"}],{duration:450});}}
 function endDay(){const st=G.miss===0?3:G.miss<=2?2:1,old=data.stars[G.niva]||0;data.stars[G.niva]=Math.max(old,st);
+  const bonus=G.miss===0?Math.round(20*MULT[G.niva]):0;G.kassa+=bonus;
   data.kassa+=G.kassa;data.dagar=(data.dagar||0)+1;save();
   $("rTitle").textContent=G.miss===0?"Alla kunder fick rätt direkt! 🎉":"Affären har stängt för idag";
   $("rStars").innerHTML=starHtml(st);$("rKassa").textContent=`+${G.kassa} kr`;
   const next=UPS.filter(u=>!has(u.id)).sort((a,b)=>a.pris-b.pris)[0];
-  $("rSub").innerHTML=`${KUNDER-G.miss} av ${KUNDER} kunder fick rätt direkt.${G.tips?` ${G.tips} kr var dricks.`:""}<br>I kassan totalt: <b>${data.kassa} kr</b>.`+(next?(data.kassa>=next.pris?` Du har råd med <b>${next.name}</b>!`:` ${next.pris-data.kassa} kr kvar till ${next.name}.`):"");
+  const lagt=sortiment().filter(i=>lag(i)<=1).length;
+  $("rSub").innerHTML=`${KUNDER-G.miss} av ${KUNDER} kunder fick rätt direkt.${bonus?` ${bonus} kr i bonus för en dag utan fel!`:""}${G.slut.length?` ${G.slut.length} ${G.slut.length===1?"kund":"kunder"} gick för att varan var slut.`:""}<br>I kassan totalt: <b>${data.kassa} kr</b>.`+(lagt?`<br>🚚 ${lagt} ${lagt===1?"vara håller":"varor håller"} på att ta slut.`:"")+(next?(data.kassa>=next.pris?` Du har råd med <b>${next.name}</b>!`:` ${next.pris-data.kassa} kr kvar till ${next.name}.`):"");
   show("result");if(st===3&&window.Ljud&&Ljud.fanfare){Ljud.fanfare();confetti();}}
-$("rAgain").onclick=()=>startDay();$("rMine").onclick=()=>openMine();$("rHome").onclick=()=>openHome();
+$("rAgain").onclick=()=>startDay();$("rMine").onclick=()=>openMine();$("rLager").onclick=()=>openLager();$("rHome").onclick=()=>openHome();
 $("quit").onclick=()=>{G=null;openHome();};
 
 /* ---------- Uppläsning (bara med 🔊) ---------- */
