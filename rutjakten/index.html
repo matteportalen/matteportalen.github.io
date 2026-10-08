@@ -81,20 +81,41 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .bubble::after{content:"";position:absolute;left:-8px;bottom:12px;border:8px solid transparent;border-left:0;border-right-color:var(--card)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:9;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:8}
+/* startsidan: tre spel */
+.gcards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:640px){.gcards{grid-template-columns:1fr}}
+.gcard{background:var(--card);border-radius:20px;padding:14px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;gap:4px}
+.gcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.gcard .pic{width:120px;height:120px;display:grid;place-items:center}
+.gcard .pic svg{width:100%;height:100%}
+.gcard b{font-size:1.35rem;line-height:1.1}
+.gcard small{color:var(--muted);font-weight:700;line-height:1.25}
+.gcard .tag{font-size:.85rem;font-weight:800;background:#FFE9D6;color:#9A4A00;border-radius:999px;padding:1px 10px}
+.gcard .tag.calm{background:#DDF5E7;color:var(--good-dark)}
+.gcard .tot{font-weight:800;color:#7A5B00}
+.gcard .txt{display:flex;flex-direction:column;align-items:center;gap:4px}
+@media(max-width:640px){.gcard{flex-direction:row;flex-wrap:wrap;text-align:left;align-items:center}.gcard .pic{width:84px;height:84px;grid-row:span 3}.gcard .txt{flex:1;gap:3px;align-items:flex-start}}
+/* inställningarna för tidsspelen */
+.thead{display:flex;align-items:center;gap:14px;margin:4px 0 10px}
+.thead svg{width:96px;height:96px;flex:none}
+.thead .sec{margin:0 0 2px}
+.lab{font-weight:800;margin:10px 0 6px}
+.tsel{background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:12px 16px;margin:14px 0 6px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.tsel .stars{font-size:1.8rem;letter-spacing:3px}
+.tsel .rek{display:inline-block;font-weight:800;background:#FFF4D1;color:#7A5B00;border-radius:999px;padding:2px 12px}
+.tsel .mal{flex-basis:100%;font-weight:700;color:var(--muted)}
+#tGo{max-width:none}
+.tover{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+@media(max-width:520px){.tover{grid-template-columns:1fr 1fr}}
+.tover button{background:var(--card);border-radius:14px;box-shadow:0 3px 0 var(--line);padding:8px 6px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:1px}
+.tover button[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent),0 3px 0 var(--line)}
+.tover .stars{font-size:1rem}.tover small{color:var(--muted);font-size:.82rem}
 /* ---------- På tid (Femhörningarna och Rutnätet) ---------- */
 .sec{font-size:1.6rem;font-weight:800;margin:26px 0 2px;display:flex;align-items:center;gap:8px}
 .sub{margin:0 0 10px;color:var(--muted);font-weight:700;line-height:1.3}
 .rng{display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap}
 .rng button{height:46px;padding:0 16px;border-radius:12px;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:1.1rem}
 .rng button[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 3px 0 #0E1735}
-.tvars{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:480px){.tvars{grid-template-columns:1fr}}
-.tvar{background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;align-items:center;gap:12px}
-.tvar:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.tvar svg{flex:none;width:76px;height:76px}
-.tvar b{display:block;font-size:1.2rem;line-height:1.15}
-.tvar small{display:block;color:var(--muted);font-size:.88rem;line-height:1.25}
-.tvar .rek{display:inline-block;margin-top:4px;font-weight:800;font-size:.9rem;background:#FFF4D1;color:#7A5B00;border-radius:999px;padding:1px 10px}
 .tbar{display:flex;align-items:center;gap:10px;margin:2px 0 8px;flex-wrap:wrap}
 .tbar .vn{font-weight:800;font-size:1.1rem}
 .clock{margin-left:auto;background:var(--ink);color:#fff;border-radius:12px;padding:4px 14px;font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums;min-width:110px;text-align:center}
@@ -145,8 +166,6 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .tcard td{padding:2px 0}.tcard td:last-child{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
 .rst .stars{font-size:2.4rem;letter-spacing:4px}
 .rnext{font-weight:800;color:var(--muted);margin:0 0 8px}
-.tvar .stars{font-size:1.05rem}
-.tvar small.mal{margin-top:2px;font-weight:700}
 .newrec{display:inline-block;background:#FFF4D1;color:#7A5B00;font-weight:800;border-radius:999px;padding:2px 14px;margin-bottom:8px}
 .go{display:block;width:100%;max-width:380px;margin:8px auto 0;padding:13px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.3rem}
 .go.alt{background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--line)}
@@ -157,15 +176,24 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 <div class="wrap">
 <section id="home" class="screen">
   <h1 style="display:flex;align-items:center;gap:10px"><svg viewBox="0 0 60 60" width="54" height="54" aria-hidden="true"><rect x="2" y="2" width="26" height="26" rx="5" fill="#fff"/><rect x="5" y="5" width="9" height="9" rx="2" fill="#2BB673"/><text x="9.5" y="12" font-size="7" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#fff">3</text><rect x="16" y="5" width="9" height="9" rx="2" fill="#E6EEFF"/><text x="20.5" y="12" font-size="7" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#1D2B53">5</text><rect x="5" y="16" width="9" height="9" rx="2" fill="#2BB673"/><text x="9.5" y="23" font-size="6" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#fff">10</text><rect x="16" y="16" width="9" height="9" rx="2" fill="#2BB673"/><text x="20.5" y="23" font-size="7" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#fff">7</text><rect x="32" y="2" width="26" height="26" rx="5" fill="#DDF5E7"/><rect x="35" y="5" width="9" height="9" rx="2" fill="#2BB673"/><rect x="46" y="5" width="9" height="9" rx="2" fill="#2BB673"/><rect x="35" y="16" width="9" height="9" rx="2" fill="#2BB673"/><rect x="46" y="16" width="9" height="9" rx="2" fill="#2BB673"/><rect x="2" y="32" width="26" height="26" rx="5" fill="#fff"/><rect x="5" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="16" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="5" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="16" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="32" y="32" width="26" height="26" rx="5" fill="#fff"/><rect x="35" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="46" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="35" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="46" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><circle cx="30" cy="30" r="8" fill="#3D5AFE" stroke="#fff" stroke-width="2"/><path d="M30 25.5v9M25.5 30h9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg>Rutjakten</h1>
-  <p class="lead">I varje ruta hör tre tal ihop. Hitta dem!</p>
+  <p class="lead">I varje ruta hör tre tal ihop. Välj ett spel!</p>
+  <div class="gcards" id="games"></div>
+</section>
+<section id="kval" class="screen" hidden>
+  <button class="back" id="kBack">← Rutjakten</button>
+  <h2 class="sec">🟩 Korset</h2>
   <div class="how"><div class="mini"><i class="g">3</i><i>5</i><i class="g">10</i><i class="g">7</i></div><p>3 + 7 = 10. Tryck på de tre talen som hör ihop. Det fjärde talet passar inte. När alla fyra rutor är klara kommer nya.</p></div>
   <div class="vars" id="vars"></div>
   <div class="tabs" id="tabsBox"><p>Vilka tabeller i <b>Gånger, alla tabeller</b>?</p><div class="chips" id="tabChips"></div></div>
-  <h2 class="sec">⏱️ På tid</h2>
-  <p class="sub">För dig som vill ha en utmaning. Lös alla rutor så fort du kan, sedan bildar svaren en sista ruta. Varje fel ger 3 sekunder extra. Med addition eller multiplikation.</p>
-  <div class="rng" id="rng"></div>
-  <div class="rng" id="rng2"></div>
-  <div class="tvars" id="tvars"></div>
+</section>
+<section id="tval" class="screen" hidden>
+  <button class="back" id="vBack">← Rutjakten</button>
+  <div class="thead"><span id="tvPic"></span><div><h2 class="sec" id="tvName"></h2><p class="sub" id="tvRule"></p></div></div>
+  <p class="lab">Räknesätt</p><div class="rng" id="rng"></div>
+  <p class="lab" id="rngLab">Talområde</p><div class="rng" id="rng2"></div>
+  <div class="tsel" id="tsel"></div>
+  <button class="go" id="tGo">Starta ⏱️</button>
+  <p class="lab" style="margin-top:22px">Alla inställningar</p><div class="tover" id="tover"></div>
 </section>
 <section id="game" class="screen" hidden>
   <div class="gbar"><button class="back" id="quit">← Byt</button><span class="vn" id="vn"></span><span class="cnt" id="cnt"></span></div>
@@ -184,7 +212,7 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
     <table><tr><td>Speltid</td><td id="rGame"></td></tr><tr><td>Straff</td><td id="rPen"></td></tr><tr><td>Ditt rekord</td><td id="rBest"></td></tr></table></div>
   <p class="rnext" id="rNext"></p>
   <button class="go" id="rAgain">Spela igen</button>
-  <button class="go alt" id="rHome">Byt spel</button>
+  <button class="go alt" id="rHome">Ändra inställningar</button>
 </section>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -244,14 +272,28 @@ const visa=x=>x[1]===1?String(x[0]):x[0]===x[1]?"1":`<span class="fr"><i>${x[0]}
 /* ---------- Skärmar ---------- */
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+const KORS_SVG=document.querySelector("#home h1 svg").outerHTML;
+const sumKeys=f=>Object.entries(data.stars).filter(([k])=>f(k)).reduce((t,[,v])=>t+(+v||0),0);
 function openHome(){G=null;if(typeof tStop==="function")tStop();
+  const kors=sumKeys(k=>VAR.some(v=>v.id===k)),fem=sumKeys(k=>k.startsWith("t-fem-")),rut=sumKeys(k=>k.startsWith("t-rut-"));
+  $("games").innerHTML=[
+    {g:"kors",pic:KORS_SVG,name:"Korset",desc:"Fyra rutor runt ＋. Addition, gånger eller bråk.",tag:'<span class="tag calm">Ingen klocka</span>',tot:`⭐ ${kors} av ${VAR.length*3}`},
+    {g:"fem",pic:pentMini(),name:"Femhörningarna",desc:"Fem femhörningar, sedan en sista ring.",tag:'<span class="tag">⏱️ På tid · Utmaning</span>',tot:`⭐ ${fem} av 12`},
+    {g:"rut",pic:gridMini(),name:"Rutnätet",desc:"Nio rutor med nio tal, sedan en sista ruta.",tag:'<span class="tag">⏱️ På tid · Utmaning</span>',tot:`⭐ ${rut} av 12`}]
+    .map(c=>`<button class="gcard" data-g="${c.g}"><span class="pic">${c.pic}</span><span class="txt"><b>${c.name}</b><small>${c.desc}</small>${c.tag}<span class="tot">${c.tot}</span></span></button>`).join("");
+  show("home");}
+$("games").onclick=e=>{const b=e.target.closest("[data-g]");if(!b)return;b.dataset.g==="kors"?openKorset():openTval(b.dataset.g);};
+function openKorset(){G=null;
   $("vars").innerHTML=VAR.map(v=>{const k=data.kors[v.id]||0;return`<button class="var" data-v="${v.id}" style="--c:${v.c}"><span class="t">${v.t}</span><b>${v.name}</b><small>${v.ex}</small>${starHtml(data.stars[v.id]||0)}<span class="cnt">${k?`🟩 ${k} kors klara`:v.desc}</span></button>`;}).join("");
   $("tabChips").innerHTML=[2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${data.tab.includes(t)}">${t}</button>`).join("");
-  renderTid();show("home");}
+  show("kval");}
+$("kBack").onclick=openHome;$("vBack").onclick=openHome;
 $("vars").onclick=e=>{const b=e.target.closest("[data-v]");if(b)start(b.dataset.v);};
 $("tabChips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t,s=new Set(data.tab);
-  if(s.has(t)){if(s.size===1){toast("Minst en tabell behövs.");return;}s.delete(t);}else s.add(t);data.tab=[...s].sort((a,b)=>a-b);save();openHome();};
-$("quit").onclick=openHome;
+  if(s.has(t)){if(s.size===1){toast("Minst en tabell behövs.");return;}s.delete(t);}else s.add(t);data.tab=[...s].sort((a,b)=>a-b);save();
+  // bara knapparna byts, sidan ritas inte om (annars hoppar den upp till toppen vid varje tryck)
+  $("tabChips").querySelectorAll("[data-t]").forEach(x=>x.setAttribute("aria-pressed",data.tab.includes(+x.dataset.t)));};
+$("quit").onclick=openKorset;
 
 /* ---------- Spelet ---------- */
 let G=null;
@@ -297,7 +339,7 @@ function korsKlart(){
   setTimeout(()=>{if(!G)return;b.querySelectorAll(".box").forEach(x=>x.classList.add("out"));setTimeout(()=>{if(G)nyttKors(true);},320);},1150);
 }
 function petHop(c){const p=$("pet");p.classList.remove("hop","jump");void p.offsetWidth;p.classList.add(c);}
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&((G&&!$("game").hidden)||(T&&!$("tid").hidden)))openHome();});
+document.addEventListener("keydown",e=>{if(e.key!=="Escape")return;if(G&&!$("game").hidden)openKorset();else if(T&&!$("tid").hidden)$("tQuit").click();});
 
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800);}
 function confetti(){
@@ -353,14 +395,23 @@ const tStars=(key,ms)=>{const l=limOf(key);return 1+(ms<l[0]*1000)+(ms<l[1]*1000
 const fmtS=s=>`${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;
 // nästa mål: "⭐⭐ under 1:30" (eller tomt när alla tre finns)
 const tNext=(key,st)=>{const l=limOf(key);return st>=3?"":st<=1?`⭐⭐ under ${fmtS(l[0])}`:`⭐⭐⭐ under ${fmtS(l[1])}`;};
-function renderTid(){
+const TRULE={fem:"I varje femhörning hör tre av de fem talen ihop. När alla fem är lösta bildar svaren en sista ring. Varje fel ger 3 sekunder extra.",
+  rut:"I varje ruta hör tre av de nio talen ihop. När alla nio är lösta bildar svaren en sista ruta. Varje fel ger 3 sekunder extra."};
+function openTval(kind){tStop();data.tkind=kind;save();renderTval();show("tval");}
+function renderTval(){const kind=data.tkind||"fem";
+  $("tvPic").innerHTML=kind==="fem"?pentMini():gridMini();$("tvName").textContent=TB[kind].name;$("tvRule").textContent=TRULE[kind];
   $("rng").innerHTML=`<button data-o="+" aria-pressed="${data.top!=="·"}">＋ Addition</button><button data-o="·" aria-pressed="${data.top==="·"}">· Multiplikation</button>`;
-  $("rng2").innerHTML=data.top==="·"?`<span class="sub" style="margin:0">Tabellerna 2–10</span>`:RNG.map(r=>`<button data-r="${r}" aria-pressed="${data.rng===r}">Till ${r}</button>`).join("");
-  $("tvars").innerHTML=Object.keys(TB).map(k=>{const key=tKey(k),rec=data.tid[key],st=data.stars["t-"+key]||0;
-    return `<button class="tvar" data-k="${k}">${k==="fem"?pentMini():gridMini()}<span><b>${TB[k].name}</b><small>${TB[k].desc}</small>${starHtml(st)}${rec?` <span class="rek">🏆 ${fmt(rec.best)}</span>`:""}<small class="mal">${tNext(key,st)||"Alla stjärnor!"}</small></span></button>`;}).join("");}
-$("rng").onclick=e=>{const b=e.target.closest("[data-o]");if(!b)return;data.top=b.dataset.o;save();renderTid();};
-$("rng2").onclick=e=>{const b=e.target.closest("[data-r]");if(!b)return;data.rng=+b.dataset.r;save();renderTid();};
-$("tvars").onclick=e=>{const b=e.target.closest("[data-k]");if(b)tStart(b.dataset.k);};
+  $("rngLab").textContent=data.top==="·"?"Tabellerna 2–10":"Talområde";
+  $("rng2").innerHTML=data.top==="·"?"":RNG.map(r=>`<button data-r="${r}" aria-pressed="${data.rng===r}">Till ${r}</button>`).join("");
+  const key=tKey(kind),rec=data.tid[key],st=data.stars["t-"+key]||0;
+  $("tsel").innerHTML=`${starHtml(st)}${rec?`<span class="rek">🏆 Rekord ${fmt(rec.best)}</span>`:`<span class="sub" style="margin:0">Inget rekord än</span>`}<span class="mal">${st?(tNext(key,st)?"Nästa stjärna: "+tNext(key,st):"Du har alla tre stjärnor här."):"⭐ när du blir klar, "+tNext(key,1).replace("⭐⭐","⭐⭐")}</span>`;
+  const opts=[...RNG.map(r=>({o:"+",r,l:`Till ${r}`})),{o:"·",r:data.rng,l:"Multiplikation"}];
+  $("tover").innerHTML=opts.map(x=>{const k2=x.o==="·"?kind+"-x":kind+"-"+x.r,on=x.o==="·"?data.top==="·":data.top!=="·"&&data.rng===x.r,r2=data.tid[k2];
+    return `<button data-o="${x.o}" data-r="${x.r}" aria-pressed="${on}">${x.l}${starHtml(data.stars["t-"+k2]||0)}<small>${r2?"🏆 "+fmt(r2.best):"–"}</small></button>`;}).join("");}
+$("rng").onclick=e=>{const b=e.target.closest("[data-o]");if(!b)return;data.top=b.dataset.o;save();renderTval();};
+$("rng2").onclick=e=>{const b=e.target.closest("[data-r]");if(!b)return;data.rng=+b.dataset.r;save();renderTval();};
+$("tover").onclick=e=>{const b=e.target.closest("[data-o]");if(!b)return;data.top=b.dataset.o;if(b.dataset.o==="+")data.rng=+b.dataset.r;save();renderTval();};
+$("tGo").onclick=()=>tStart(data.tkind||"fem");
 function tStart(kind){clearInterval(T&&T.iv);G=null;
   const op=data.top==="·"?"·":"+",max=op==="·"?100:data.rng;
   T={kind,op,key:tKey(kind),max,d:tGen(kind,max,op),solved:Array(TB[kind].n).fill(false),cur:null,sel:new Set(),t0:0,pen:0,err:0,done:false,busy:false,iv:0};
@@ -439,9 +490,9 @@ function tDone(eq){T.done=true;clearInterval(T.iv);const game=performance.now()-
     const nx=tNext(key,data.stars["t-"+key]);$("rNext").textContent=data.stars["t-"+key]>fore?`Ny stjärna! ${nx?"Nästa: "+nx+".":"Alla tre stjärnor!"}`:nx?`Nästa stjärna: ${nx}.`:"Du har alla tre stjärnor här.";$("rGame").textContent=fmt(game);$("rPen").textContent=T.err?`${T.err} fel · ${T.pen} s`:"0 s";$("rBest").textContent=fmt(data.tid[key].best);
     show("result");if(nytt||data.stars["t-"+key]>fore){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}},900);}
 function tStop(){if(T)clearInterval(T.iv);T=null;}
-$("tQuit").onclick=()=>{tStop();openHome();};
+$("tQuit").onclick=()=>{const k=T?T.kind:data.tkind;tStop();openTval(k);};
 $("rAgain").onclick=()=>{const k=T?T.kind:"fem";tStart(k);};
-$("rHome").onclick=()=>{tStop();openHome();};
+$("rHome").onclick=()=>{const k=T?T.kind:data.tkind;tStop();openTval(k);};
 addEventListener("resize",()=>{if(T&&!$("tid").hidden)tZoom();});
 
 /* små bilder till korten */
