@@ -265,7 +265,7 @@ function checkRule(){const t=G.t;
   G.err++;G.missed=true;G.ruleTries++;window.Ljud&&Ljud.bad&&Ljud.bad();
   const a=t.seq[0],b=t.seq[1];let msg;
   if(G.ruleTries>=2){G.rop=t.op;G.rval=String(t.d);drawRule();fb(`Regeln är ${opTxt(t.op)}${t.d}: ${a} ${t.op} ${t.d} = ${b}.`,true);done(true);return;}
-  if(G.rop!==t.op)msg=t.op==="·"?"Hoppen blir längre och längre. Det är inte samma hopp varje gång. Vad händer med talet?":t.op==="+"?"Talen blir större för varje sten. Då är det plus.":"Talen blir mindre för varje sten. Då är det minus.";
+  if(G.rop!==t.op)msg=t.op==="·"?"Hoppen blir längre och längre. Det är inte samma hopp varje gång. Vad händer med talet?":t.op==="+"?"Talen blir större för varje sten. Då är det addition (+).":"Talen blir mindre för varje sten. Då är det subtraktion (−).";
   else msg=t.op==="·"?`${a} · ? = ${b}`:`Titta från ${a} till ${b}. Hur långt är hoppet?`;
   $("rule").classList.add("bad");fb(msg,true);}
 function done(shown){G.step="done";$("rule").classList.remove("bad");$("rule").classList.add("done");$("pad").hidden=true;

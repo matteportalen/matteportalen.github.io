@@ -120,11 +120,11 @@ const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
    Tal är [täljare, nämnare] (heltal har nämnaren 1), så att bråk räknas utan avrundning. */
 const W=n=>[n,1];
 const VAR=[
- {id:"p10",name:"Plus till 10",desc:"Tiokompisar och små tal",ex:"3 + 7 = 10",t:"10",c:"#2BB673",op:"+",gen:()=>{const c=rnd(4,10),a=rnd(1,c-1);return[a,c-a,c].map(W);}},
- {id:"p20",name:"Plus till 20",desc:"Ofta över tiotalet",ex:"8 + 5 = 13",t:"20",c:"#3D8BFD",op:"+",gen:()=>{let a,b;if(Math.random()<.7){do{a=rnd(2,9);b=rnd(2,9);}while(a+b<=10);}else{a=rnd(1,15);b=rnd(1,20-a);}return[a,b,a+b].map(W);}},
- {id:"p25",name:"Plus till 25",desc:"Lite större tal",ex:"14 + 9 = 23",t:"25",c:"#17AFC4",op:"+",gen:()=>{const c=rnd(11,25),a=rnd(2,c-2);return[a,c-a,c].map(W);}},
- {id:"tio",name:"Hela tiotal",desc:"Tiotal upp till 100",ex:"30 + 40 = 70",t:"+10",c:"#7B61FF",op:"+",gen:()=>{const c=rnd(3,10),a=rnd(1,c-1);return[a*10,(c-a)*10,c*10].map(W);}},
- {id:"p100",name:"Plus till 100",desc:"Tvåsiffriga tal",ex:"36 + 27 = 63",t:"100",c:"#FF9F43",op:"+",gen:()=>{const a=rnd(11,78),b=rnd(11,Math.min(89,100-a));return[a,b,a+b].map(W);}},
+ {id:"p10",name:"Addition till 10",desc:"Tiokompisar och små tal",ex:"3 + 7 = 10",t:"10",c:"#2BB673",op:"+",gen:()=>{const c=rnd(4,10),a=rnd(1,c-1);return[a,c-a,c].map(W);}},
+ {id:"p20",name:"Addition till 20",desc:"Ofta över tiotalet",ex:"8 + 5 = 13",t:"20",c:"#3D8BFD",op:"+",gen:()=>{let a,b;if(Math.random()<.7){do{a=rnd(2,9);b=rnd(2,9);}while(a+b<=10);}else{a=rnd(1,15);b=rnd(1,20-a);}return[a,b,a+b].map(W);}},
+ {id:"p25",name:"Addition till 25",desc:"Lite större tal",ex:"14 + 9 = 23",t:"25",c:"#17AFC4",op:"+",gen:()=>{const c=rnd(11,25),a=rnd(2,c-2);return[a,c-a,c].map(W);}},
+ {id:"tio",name:"Addition, hela tiotal",desc:"Tiotal upp till 100",ex:"30 + 40 = 70",t:"+10",c:"#7B61FF",op:"+",gen:()=>{const c=rnd(3,10),a=rnd(1,c-1);return[a*10,(c-a)*10,c*10].map(W);}},
+ {id:"p100",name:"Addition till 100",desc:"Tvåsiffriga tal",ex:"36 + 27 = 63",t:"100",c:"#FF9F43",op:"+",gen:()=>{const a=rnd(11,78),b=rnd(11,Math.min(89,100-a));return[a,b,a+b].map(W);}},
  {id:"mA",name:"Gånger, små tabeller",desc:"Tabellerna 2, 3, 4, 5 och 10",ex:"4 · 5 = 20",t:"×",c:"#FF5FA2",op:"·",gen:()=>{const a=pick([2,3,4,5,10]),b=rnd(2,10);return shuffle([a,b]).concat(a*b).map(W);}},
  {id:"mB",name:"Gånger, alla tabeller",desc:"Välj tabeller nedanför",ex:"7 · 8 = 56",t:"×",c:"#E5484D",op:"·",gen:()=>{const tb=data.tab&&data.tab.length?data.tab:[2,3,4,5,6,7,8,9,10],a=pick(tb),b=rnd(2,10);return shuffle([a,b]).concat(a*b).map(W);}},
  {id:"br",name:"Bråk",desc:"Samma nämnare",ex:"¼ + ²⁄₄ = ¾",t:"½",c:"#F2B707",op:"+",gen:()=>{const d=pick([2,3,4,4,5,6,8]),c=rnd(2,d),a=rnd(1,c-1);return[[a,d],[c-a,d],[c,d]];}}

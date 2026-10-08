@@ -151,8 +151,8 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
     <div><h1>Lilla plus &amp; minus <span class="world">🐔 Hönsgården</span></h1><p class="lead" id="homeLead">Huvudräkning med tal upp till 10. Välj räknesätt och sedan hur du vill träna.</p></div></div>
   <div class="ops" id="ops">
-    <button class="op" data-op="plus" style="--c:#2BB673"><span class="sym">+</span><span class="lbl">Plus</span></button>
-    <button class="op" data-op="minus" style="--c:#FF6B6B"><span class="sym">−</span><span class="lbl">Minus</span></button>
+    <button class="op" data-op="plus" style="--c:#2BB673"><span class="sym">+</span><span class="lbl">Addition</span></button>
+    <button class="op" data-op="minus" style="--c:#FF6B6B"><span class="sym">−</span><span class="lbl">Subtraktion</span></button>
     <button class="op" data-op="mix" style="--c:#7B61FF"><span class="sym">±</span><span class="lbl">Blandat</span></button>
   </div>
   <div class="modes">
@@ -217,7 +217,7 @@ const $$=s=>document.querySelectorAll(s);
 const range=(a,b)=>Array.from({length:Math.max(0,b-a+1)},(_,i)=>a+i);
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 const OPCOL={plus:'#2BB673',minus:'#FF6B6B',mix:'#7B61FF'};
-const OPNAME={plus:'Plus',minus:'Minus',mix:'Blandat'};
+const OPNAME={plus:'Addition',minus:'Subtraktion',mix:'Blandat'};
 const RACE_LEN=30;
 const carSvg=c=>`<svg viewBox="0 0 48 28" width="46" height="27" aria-hidden="true"><path d="M3 19Q3 13 9 12.5L15 12L21 5H33L39.5 12Q46 13 46 19V21H3Z" fill="${c}"/><path d="M23 7H32L36.5 12H23Z" fill="#fff" opacity=".85"/><circle cx="12" cy="21" r="5" fill="#1D2B53"/><circle cx="37" cy="21" r="5" fill="#1D2B53"/><circle cx="12" cy="21" r="2" fill="#fff"/><circle cx="37" cy="21" r="2" fill="#fff"/></svg>`;
 
@@ -381,13 +381,13 @@ $$('#tf button').forEach(x=>x.onclick=()=>{if(!G||G.busy||G.over||G.kind!=='tf')
 function tipFor(f){
   const {a,b}=f;
   if(f.s==='+'){
-    if(a===0||b===0)return 'Plus 0 ändrar inte talet.';
+    if(a===0||b===0)return 'Att addera 0 ändrar inte talet.';
     if(a+b===10)return `Tiokompisar: ${a} och ${b} blir tillsammans 10.`;
     if(a===b)return `Dubbelt: ${a} + ${a} = ${a*2}.`;
     const big=Math.max(a,b),small=Math.min(a,b);
     return `Börja på det största talet, ${big}, och räkna ${small} steg uppåt: ${range(big+1,big+small).join(', ')}.`;
   }
-  if(b===0)return 'Minus 0 ändrar inte talet.';
+  if(b===0)return 'Att subtrahera 0 ändrar inte talet.';
   if(a===b)return 'Ett tal minus samma tal blir 0.';
   if(a===10)return `Tiokompisar: ${b} och ${10-b} blir 10. Därför är 10 − ${b} = ${10-b}.`;
   if(b<=3)return `Börja på ${a} och räkna ${b} steg bakåt: ${range(a-b,a-1).reverse().join(', ')}.`;
