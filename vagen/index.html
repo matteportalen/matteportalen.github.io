@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Vågen – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:660px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.6rem;line-height:1;margin:14px 0 4px;font-weight:800;display:flex;align-items:center;gap:10px}
+h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
+.lead{margin:0 0 14px;color:var(--muted);font-size:1.1rem}
+.stars{color:var(--gold);letter-spacing:1px}
+.stars .off{color:#CFDAEE}
+/* startskärmen */
+.intro{background:var(--card);border-radius:18px;padding:10px 14px 12px;box-shadow:0 4px 0 var(--line);margin:0 0 18px;display:flex;gap:12px;align-items:center}
+.intro svg{flex:none;width:150px;height:auto}
+.intro p{margin:0;font-weight:700;line-height:1.3}
+.intro p b{font-size:1.25rem}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.lcard{background:var(--card);border-radius:18px;padding:12px 12px 10px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.lcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lcard .ex{font-weight:800;font-size:1.05rem;color:#fff;background:var(--c);border-radius:12px;padding:2px 10px;margin-bottom:4px;white-space:nowrap}
+.lcard b{font-size:1.2rem;line-height:1.15}
+.lcard small{color:var(--muted);font-size:.85rem;line-height:1.2}
+.note{color:var(--muted);font-size:.95rem;margin-top:18px}
+/* spelet */
+.gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.info{font-weight:800;font-size:1.2rem}
+.progress{height:10px;border-radius:5px;background:var(--card);overflow:hidden;margin-top:6px;box-shadow:inset 0 0 0 2px var(--line)}
+.progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.instr{display:flex;gap:10px;align-items:center;font-weight:700;font-size:1.12rem;line-height:1.3;margin:10px 0 6px}
+.spk{flex:none;width:46px;height:46px;border-radius:50%;background:var(--card);font-size:1.4rem;box-shadow:0 3px 0 var(--line)}
+.stage{background:linear-gradient(#FFFFFF,#F3F7FF);border-radius:22px;box-shadow:0 4px 0 var(--line);padding:6px 6px 0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:44vh}
+.eq{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px;font-weight:800;font-size:clamp(1.7rem,7.4vw,2.3rem);line-height:1.1;margin:12px 0 4px;text-align:center}
+.eq.long{font-size:clamp(1.35rem,5.6vw,2rem);gap:4px 7px}
+.eq .is{color:var(--accent);padding:0 4px}
+.eq .gift{font-size:.9em}
+.slot{display:inline-grid;place-items:center;min-width:1.9em;height:1.45em;padding:0 .2em;border:3px dashed var(--accent);border-radius:12px;background:#fff;color:var(--accent)}
+.slot.ok{border:3px solid var(--good);color:var(--good-dark);background:#E3F7EC}
+.slot.bad{border:3px solid var(--bad);background:#FFE3E5;color:var(--bad)}
+.slot.shown{border:3px solid var(--good);color:#B8323A;background:#fff}
+.giftq{display:flex;justify-content:center;align-items:center;gap:10px;font-weight:800;font-size:clamp(1.5rem,6.4vw,2rem);margin:2px 0 0}
+.feedback{min-height:1.5em;font-weight:800;font-size:1.08rem;margin:10px 0;text-align:center;color:var(--good-dark);line-height:1.3}
+.feedback.hint{background:#FFE9EC;color:#9B2C3A;border-radius:14px;padding:8px 12px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.pad button{height:54px;border-radius:16px;background:var(--card);font-size:1.8rem;font-weight:800;box-shadow:0 4px 0 var(--line)}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.4rem}
+.yn{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.yn button{padding:14px 10px;border-radius:18px;font-weight:800;font-size:1.3rem;line-height:1.15;color:#fff}
+.yn .ja{background:var(--good);box-shadow:0 5px 0 var(--good-dark)}
+.yn .nej{background:#E5484D;box-shadow:0 5px 0 #B8323A}
+.yn button:active{transform:translateY(3px)}
+.yn small{display:block;font-size:.85rem;font-weight:700;opacity:.92}
+.go{display:block;width:100%;padding:14px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.35rem;margin-top:6px}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
+.result{text-align:center;padding-top:20px}
+.rbig{font-size:clamp(3.2rem,16vw,4.6rem);font-weight:800;line-height:1;margin:6px 0}
+.rsub{color:var(--muted);font-size:1.15rem;margin:0 0 14px}
+.big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
+@media(min-width:700px){.pad button{height:48px}.stage svg{max-height:40vh}}
+@media(max-width:420px){.pad{gap:8px}.pad button{height:50px}.intro svg{width:118px}}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen">
+  <h1><span id="logo"></span>Vågen</h1>
+  <p class="lead">Likhetstecknet betyder att det är lika mycket på båda sidor.</p>
+  <div class="intro"><span id="demo"></span><p><b>8 + 4 = 7 + 5</b><br>Båda sidorna väger 12. Då väger vågen jämnt.</p></div>
+  <div class="levels" id="levels"></div>
+  <p class="note">Tre stjärnor får du om alla åtta uppgifter blir rätt direkt.</p>
+</section>
+<section id="game" class="screen" hidden>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="progress"><i id="prog"></i></div>
+  <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
+  <div class="stage"><div id="scale"></div></div>
+  <div class="eq" id="eq" aria-live="polite"></div>
+  <div class="giftq" id="giftq" hidden></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="yn" id="yn" hidden><button class="ja" data-a="1">Ja<small>det stämmer</small></button><button class="nej" data-a="0">Nej<small>det stämmer inte</small></button></div>
+  <div class="pad" id="pad">
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+    <button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okbtn">OK</button>
+  </div>
+  <button class="go" id="next" hidden>Nästa ➜</button>
+</section>
+<section id="result" class="screen result" hidden>
+  <h2 id="rTitle"></h2>
+  <div class="rbig" id="rBig"></div>
+  <p class="rsub" id="rSub"></p>
+  <button class="go" id="rAgain">Spela igen</button>
+  <button class="big" id="rHome">Välj en annan nivå</button>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../huvud.js" data-titel="Vågen" data-ikon="⚖️"></script>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+const KEY="mattespel-vagen-v1";
+const data=(()=>{try{return Object.assign({stars:{}},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{}}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const ROUND=8;
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- Uppgifterna ----------
+   En sida är en lista med delar: {k:"n",v} tal, {k:"q"} rutan, {k:"g"} ett paket, {k:"m",a,b} a grupper med b (a eller b kan vara null = rutan).
+   op är "+" eller "−" för delen efter den första. */
+const N=(v,op)=>({k:"n",v,op}),Q=op=>({k:"q",op}),Gf=op=>({k:"g",op}),M=(a,b,op)=>({k:"m",a,b,op});
+const gifts=(k,op)=>Array.from({length:k},(_,i)=>Gf(i?"+":op));
+function val(it,x){return it.k==="n"?it.v:it.k==="m"?(it.a??x)*(it.b??x):x;}
+function weight(side,x){return side.reduce((s,it,i)=>i&&it.op==="−"?s-val(it,x):s+val(it,x),0);}
+
+function gen(level){
+  if(level===1)return genYN();
+  if(level===2){const c=rnd(5,20),a=rnd(1,c-1),b=c-a;
+    return pickOne([
+      ()=>({L:[Q(),N(b,"+")],R:[N(c)],ans:a}),
+      ()=>({L:[N(a),Q("+")],R:[N(c)],ans:b}),
+      ()=>({L:[N(c)],R:[Q(),N(b,"+")],ans:a}),
+      ()=>({L:[N(c)],R:[N(a),Q("+")],ans:b}),
+      ()=>({L:[Q()],R:[N(a),N(b,"+")],ans:c}),
+      ()=>({L:[N(c),N(b,"−")],R:[Q()],ans:a}),
+      ()=>({L:[Q()],R:[N(c),N(b,"−")],ans:a})])();}
+  if(level===3){const s=rnd(7,20),a=rnd(1,s-1),b=s-a;let c;do{c=rnd(1,s-1);}while((c===a||c===b)&&s>3);
+    const f=[()=>({L:[N(a),N(b,"+")],R:[Q(),N(c,"+")],ans:s-c}),
+             ()=>({L:[N(a),N(b,"+")],R:[N(c),Q("+")],ans:s-c}),
+             ()=>({L:[Q(),N(c,"+")],R:[N(a),N(b,"+")],ans:s-c}),
+             ()=>({L:[N(c),Q("+")],R:[N(a),N(b,"+")],ans:s-c})];
+    if(s<=17){const big=rnd(s+1,20);f.push(()=>({L:[N(big),N(big-s,"−")],R:[Q(),N(c,"+")],ans:s-c}),()=>({L:[N(big),N(big-s,"−")],R:[N(c),Q("+")],ans:s-c}));}
+    return pickOne(f)();}
+  if(level===4){const a=rnd(15,59),b=rnd(12,39),k=pickOne([1,2,3,1,2,10]);
+    return pickOne([
+      ()=>({L:[N(a),N(b,"+")],R:[N(a-k),Q("+")],ans:b+k,hint:`${a-k} är ${k} mindre än ${a}. Då måste det andra talet vara ${k} mer än ${b}.`}),
+      ()=>({L:[N(a),N(b,"+")],R:[N(a+k),Q("+")],ans:b-k,hint:`${a+k} är ${k} mer än ${a}. Då måste det andra talet vara ${k} mindre än ${b}.`}),
+      ()=>({L:[N(a),N(b,"+")],R:[Q(),N(b+k,"+")],ans:a-k,hint:`${b+k} är ${k} mer än ${b}. Då måste det första talet vara ${k} mindre än ${a}.`}),
+      ()=>({L:[N(a),N(b,"+")],R:[N(b),Q("+")],ans:a,hint:`Titta på talen. Samma tal fast i en annan ordning?`})])();}
+  if(level===5){const x=rnd(1,9);
+    const f=[];
+    f.push(()=>{const k=pickOne([2,3]);return{L:gifts(k),R:[N(k*x)],ans:x,hint:`${k} paket väger ${k*x} tillsammans. Dela lika.`};});
+    f.push(()=>{const k=pickOne([1,2,2,3]),a=rnd(1,9);return{L:[...gifts(k),N(a,"+")],R:[N(k*x+a)],ans:x,hint:`Ta bort ${a} från båda sidorna. Då väger vågen fortfarande jämnt.`};});
+    f.push(()=>{const k=pickOne([2,3]),m=rnd(1,k-1),a=rnd(1,8),b=a+(k-m)*x;
+      return b>30?null:{L:[...gifts(k),N(a,"+")],R:[...gifts(m),N(b,"+")],ans:x,hint:`Ta bort ${m===1?"ett 🎁":m+" 🎁"} från båda sidorna. Då väger vågen fortfarande jämnt.`};});
+    f.push(()=>{const a=rnd(1,9),s=x+a,b=rnd(1,s-1);return{L:[Gf(),N(a,"+")],R:[N(b),N(s-b,"+")],ans:x,hint:`Hur mycket fattas från ${a} till ${s}?`};});
+    let t;do{t=pickOne(f)();}while(!t);
+    if(Math.random()<.35)[t.L,t.R]=[t.R,t.L];
+    t.gift=true;return t;}
+  // nivå 6: multiplikation
+  const f=[
+    ()=>{const p=pickOne([12,12,16,18,20,24,24,30,36,40]),pairs=[];for(let c=2;c<=10;c++)if(p%c===0&&p/c>=2&&p/c<=10)pairs.push([c,p/c]);
+      const [a,b]=pickOne(pairs);let [c,d]=pickOne(pairs.filter(q=>q[0]!==a));
+      return Math.random()<.5?{L:[M(a,b)],R:[M(c,null)],ans:d,hint:`${a} · ${b} = ${p}. ${c} gånger vad blir ${p}?`}
+                            :{L:[M(a,b)],R:[M(null,d)],ans:c,hint:`${a} · ${b} = ${p}. Vad gånger ${d} blir ${p}?`};},
+    ()=>{const a=rnd(2,6),b=rnd(2,6),p=a*b,c=rnd(1,p-1);return{L:[M(a,b)],R:[N(c),Q("+")],ans:p-c,hint:`${a} · ${b} = ${p}. Hur mycket fattas från ${c} till ${p}?`};},
+    ()=>{const f2=rnd(2,5),g=rnd(2,5),s=f2*g,c=rnd(1,s-1);return{L:[N(c),N(s-c,"+")],R:[M(f2,null)],ans:g,hint:`Vänster sida väger ${s}. ${f2} gånger vad blir ${s}?`};}];
+  const t=pickOne(f)();if(Math.random()<.3)[t.L,t.R]=[t.R,t.L];t.mul=true;return t;}
+
+function genYN(){const truth=Math.random()<.5;let L,R,ok;
+  const off=v=>{let d=pickOne([-2,-1,1,2]);if(v+d<0)d=-d;return v+d;};
+  do{const s=rnd(4,10),a=rnd(1,s-1),b=s-a,f=rnd(1,truth?6:5);ok=true;
+    if(f===1){L=[N(truth?s:off(s))];R=[N(a),N(b,"+")];}
+    else if(f===2){let c=rnd(1,s-1);if(c===a||c===b)c=rnd(1,s-1);const d=s-c;L=[N(a),N(b,"+")];R=[N(c),N(truth?d:off(d),"+")];if(!truth&&R[1].v===0)ok=false;}
+    else if(f===3){const big=rnd(s+1,12),r=big-s;L=[N(big),N(r,"−")];R=truth?[N(a),N(b,"+")]:pickOne([[N(off(s))],[N(a),N(off(b),"+")]]);if(!truth&&R.length===2&&R[1].v===0)ok=false;}
+    else if(f===4){L=[N(s),N(b,"−")];R=[N(truth?a:off(a))];}
+    else if(f===5){if(truth){L=[N(a),N(b,"+")];R=[N(b),N(a,"+")];if(a===b)ok=false;}else{const d=rnd(1,4);L=[N(a),N(b,"+")];R=[N(s),N(d,"+")];}}
+    else{L=[N(s)];R=[N(s)];}
+    if(ok&&(weight(L)===weight(R))!==truth)ok=false;
+  }while(!ok);
+  if(Math.random()<.3&&!(L.length===1&&R.length===1))[L,R]=[R,L];
+  return{L,R,yn:true,truth};}
+
+/* ---------- Texten ---------- */
+const slotHtml=()=>`<span class="slot ${G.slotCls||""}" id="slot">${G.inp!==""?G.inp:G.shownAns!=null?G.shownAns:" "}</span>`;
+function itemHtml(it){if(it.k==="n")return it.v;if(it.k==="q")return slotHtml();if(it.k==="g")return '<span class="gift">🎁</span>';
+  return `${it.a??slotHtml()} · ${it.b??slotHtml()}`;}
+const sideHtml=s=>s.map((it,i)=>(i?`<span>${it.op}</span>`:"")+`<span>${itemHtml(it)}</span>`).join("");
+function itemTxt(it,x){if(it.k==="n")return it.v;if(it.k==="q")return x;if(it.k==="g")return x??"🎁";return `${it.a??x} · ${it.b??x}`;}
+const sideTxt=(s,x)=>s.map((it,i)=>(i?` ${it.op} `:"")+itemTxt(it,x)).join("");
+function itemSay(it){if(it.k==="n")return it.v;if(it.k==="q")return "tom ruta";if(it.k==="g")return "paket";return `${it.a??"tom ruta"} gånger ${it.b??"tom ruta"}`;}
+const sideSay=s=>s.map((it,i)=>(i?(it.op==="−"?" minus ":" plus "):"")+itemSay(it)).join("");
+
+/* ---------- Vågen (SVG) ----------
+   Klossarna: små tal i staplar om fem, tiotal som stavar. Varje del på en sida får egen färg. */
+const COLS=["#3D8BFD","#FF9F43","#7B61FF","#17AFC4"];
+function clusters(side,x,ansCol,rods){const out=[];let ci=0;
+  side.forEach((it,i)=>{
+    if(i&&it.op==="−"&&out.length&&out[out.length-1].t==="n"){const p=out[out.length-1];p.ghost=Math.min(it.v,p.n);return;}
+    if(it.k==="n")out.push({t:"n",n:it.v,c:COLS[ci++%4],rods:rods||it.v>=20});
+    else if(it.k==="q")out.push(x==null?{t:"q"}:{t:"n",n:x,c:ansCol,rods:rods||x>=20});
+    else if(it.k==="g")out.push(x==null?{t:"g"}:{t:"n",n:x,c:"#9B6BFF",rods:false,gift:true});
+    else{const a=it.a??x,b=it.b??x;out.push(a==null||b==null?{t:"q"}:{t:"m",a,b,c:it.a==null||it.b==null?null:COLS[ci++%4],ac:ansCol});}});
+  out.forEach(c=>{if(c.t==="n"){const n=Math.min(c.n,150);c.n=n;
+      if(c.rods){c.r=Math.floor(n/10);c.u=n%10;c.w=c.r+Math.ceil(c.u/5);c.h=c.r?10:Math.min(5,c.u);}
+      else{c.w=Math.ceil(n/5);c.h=Math.min(5,n);}
+      if(!c.w){c.w=.4;c.h=0;}}
+    else if(c.t==="m"){c.a=Math.min(c.a,12);c.b=Math.min(c.b,12);c.w=c.a+(c.a-1)*.3;c.h=c.b;}
+    else if(c.t==="g"){c.w=2;c.h=2;}else{c.w=3;c.h=3;}});
+  return out;}
+const panW=cl=>cl.reduce((s,c)=>s+c.w,0)+Math.max(0,cl.length-1)*.7;
+const panH=cl=>Math.max(1,...cl.map(c=>c.h+(c.ghost?1:0)));
+function cube(x,y,u,col,ghost){const s=u-1.4,r=Math.max(1.5,u*.18);
+  return ghost?`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${r}" fill="#fff" fill-opacity=".6" stroke="${col}" stroke-width="1.3" stroke-dasharray="2.5 2"/>`
+             :`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${r}" fill="${col}"/><rect x="${x+1.2}" y="${y+1.2}" width="${s-2.4}" height="${s*.32}" rx="${r*.6}" fill="#fff" opacity=".28"/>`;}
+function drawPan(cl,u){let x=-panW(cl)*u/2,h="";
+  cl.forEach(c=>{
+    if(c.t==="n"){let col=0;
+      if(c.rods)for(let i=0;i<c.r;i++){const rx=x+col*u,s=u-1.4;h+=`<rect x="${rx}" y="${-10*u}" width="${s}" height="${10*u-1.4}" rx="${Math.max(1.5,u*.18)}" fill="${c.c}"/>`;
+        for(let j=1;j<10;j++)h+=`<line x1="${rx+1}" x2="${rx+s-1}" y1="${-j*u-.7}" y2="${-j*u-.7}" stroke="#000" stroke-opacity=".18" stroke-width="1"/>`;
+        h+=`<rect x="${rx+1.2}" y="${-10*u+1.2}" width="${s*.3}" height="${10*u-4}" rx="1" fill="#fff" opacity=".25"/>`;col++;}
+      const units=c.rods?c.u:c.n;
+      for(let i=0;i<units;i++){const cc=col+Math.floor(i/5),rr=i%5,g=c.ghost&&i>=units-c.ghost;h+=cube(x+cc*u,-(rr+1)*u,u,c.c,g);}
+      if(c.ghost){const gx=x+(col+(units-1)/5|0)*u;h+=`<text x="${x+c.w*u/2}" y="${-c.h*u-5}" text-anchor="middle" font-size="${Math.max(11,u*1.1)}" font-weight="800" fill="#B8323A" font-family="Baloo 2, Trebuchet MS, sans-serif">−${c.ghost}</text>`;}}
+    else if(c.t==="m"){const col=c.c||c.ac;for(let a=0;a<c.a;a++){const gx=x+a*1.3*u;for(let b=0;b<c.b;b++)h+=cube(gx,-(b+1)*u,u,col);}}
+    else if(c.t==="g"){const s=2*u-2,y=-2*u;h+=`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${u*.3}" fill="#9B6BFF"/><rect x="${x+s/2-u*.22}" y="${y}" width="${u*.44}" height="${s}" fill="#FFD43B"/><rect x="${x}" y="${y+s*.38}" width="${s}" height="${u*.44}" fill="#FFD43B"/><path d="M${x+s/2} ${y} q${-u*.7} ${-u*.8} ${-u*.8} ${-u*.1} q0 ${u*.4} ${u*.8} ${u*.1} q${u*.8} ${u*.3} ${u*.8} ${-u*.1} q${-u*.1} ${-u*.7} ${-u*.8} ${u*.1}" fill="#FFD43B"/>`;}
+    else{const s=3*u-2,y=-3*u;h+=`<rect x="${x+1}" y="${y+1}" width="${s-2}" height="${s-2}" rx="${u*.5}" fill="#EEF2FF" stroke="#3D5AFE" stroke-width="2" stroke-dasharray="5 4"/><text x="${x+s/2}" y="${y+s*.7}" text-anchor="middle" font-size="${u*2}" font-weight="800" fill="#3D5AFE" font-family="Baloo 2, Trebuchet MS, sans-serif">?</text>`;}
+    x+=(c.w+.7)*u;});
+  return h;}
+const PX=220,PY=176,ARM=113;
+const fitU=cls=>Math.min(13,...cls.map(c=>Math.min(170/Math.max(panW(c),1),122/panH(c))));
+// toppen av bilden beskärs efter de högsta klossarna, så att det inte blir tomt ovanför små tal
+const fitTop=(cls,u)=>Math.max(-18,Math.min(PY-80,PY-19-22-Math.max(...cls.map(panH))*u-18));
+function scaleSVG(Lc,Rc,th,lock,u,top){
+  if(u==null)u=fitU([Lc,Rc]);if(top==null)top=fitTop([Lc,Rc],u);
+  const rad=th*Math.PI/180,dx=ARM*Math.cos(rad),dy=ARM*Math.sin(rad);
+  const pan=(ex,ey,cl)=>`<g transform="translate(${ex.toFixed(2)} ${ey.toFixed(2)})"><line x1="0" y1="0" x2="0" y2="-12" stroke="#56668F" stroke-width="4" stroke-linecap="round"/><rect x="-94" y="-19" width="188" height="8" rx="4" fill="#C9A26B"/><rect x="-94" y="-19" width="188" height="3" rx="1.5" fill="#E2C391"/><g transform="translate(0 -19)">${drawPan(cl,u)}</g></g>`;
+  return `<svg viewBox="0 ${top.toFixed(1)} 440 ${(248-top).toFixed(1)}" role="img" aria-label="En balansvåg">
+  <ellipse cx="${PX}" cy="243" rx="80" ry="6" fill="#1D2B53" opacity=".08"/>
+  <path d="M${PX} ${PY} L${PX-26} 238 L${PX+26} 238 Z" fill="#7B8AB0"/><rect x="${PX-48}" y="234" width="96" height="9" rx="4.5" fill="#56668F"/>
+  <g transform="rotate(${th.toFixed(2)} ${PX} ${PY})"><rect x="${PX-ARM-6}" y="${PY-4.5}" width="${2*ARM+12}" height="9" rx="4.5" fill="#56668F"/><rect x="${PX-ARM-6}" y="${PY-4.5}" width="${2*ARM+12}" height="3" rx="1.5" fill="#8E9BBE"/></g>
+  <circle cx="${PX}" cy="${PY}" r="7" fill="#F2B707" stroke="#1D2B53" stroke-width="2"/>
+  ${pan(PX-dx,PY-dy,Lc)}${pan(PX+dx,PY+dy,Rc)}
+  ${lock?`<text x="${PX}" y="${PY-16}" text-anchor="middle" font-size="22">🔒</text>`:""}</svg>`;}
+const tilt=(l,r)=>l===r?0:Math.sign(r-l)*Math.min(11,4+Math.abs(r-l)*.7);
+
+/* ---------- Vågens rörelse (fjäder, gungar lite innan den stannar) ---------- */
+const SC={th:0,v:0,t:0,raf:0};
+function scaleTo(t){SC.t=t;if(reduced()){SC.th=t;SC.v=0;drawScale();return;}if(!SC.raf)SC.raf=requestAnimationFrame(step);}
+function step(){SC.v+=(SC.t-SC.th)*.045;SC.v*=.86;SC.th+=SC.v;
+  if(Math.abs(SC.v)<.004&&Math.abs(SC.t-SC.th)<.01){SC.th=SC.t;SC.v=0;SC.raf=0;drawScale();return;}
+  drawScale();SC.raf=requestAnimationFrame(step);}
+function drawScale(){if(!G)return;const t=G.t,x=G.reveal,col=G.state==="done"?"#2BB673":"#E5484D",rods=G.level===4;
+  const L=clusters(t.L,x,col,rods),R=clusters(t.R,x,col,rods);
+  // samma klossar som med rätt svar, så att storleken inte hoppar när svaret visas
+  const all=[L,R];if(!t.yn)all.push(clusters(t.L,t.ans,col,rods),clusters(t.R,t.ans,col,rods));
+  const u=fitU(all);
+  $("scale").innerHTML=scaleSVG(L,R,SC.th,t.yn&&!G.unlocked,u,fitTop(all,u));}
+
+/* ---------- Skärmar ---------- */
+const LEVELS=[
+  {n:1,name:"Stämmer det?",desc:"Är det lika mycket på båda sidor?",ex:"7 = 3 + 4",c:"#2BB673"},
+  {n:2,name:"Talet som fattas",desc:"Rutan kan stå var som helst",ex:"9 = __ + 4",c:"#3D8BFD"},
+  {n:3,name:"Båda sidorna",desc:"Räkna på båda sidorna",ex:"8 + 4 = __ + 5",c:"#FF9F43"},
+  {n:4,name:"Tänk smart",desc:"Jämför talen i stället för att räkna allt",ex:"27 + 15 = 26 + __",c:"#17AFC4"},
+  {n:5,name:"Gömda tal",desc:"Hur mycket väger ett paket?",ex:"🎁 + 🎁 = 10",c:"#7B61FF"},
+  {n:6,name:"Multiplikation",desc:"Lika mycket med gånger",ex:"3 · 4 = 2 · __",c:"#E5484D"}];
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+let G=null;
+function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
+  $("levels").innerHTML=LEVELS.map(l=>`<button class="lcard" data-l="${l.n}" style="--c:${l.c}"><span class="ex">${l.ex}</span><b>${l.n}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.n]||0)}</button>`).join("");
+  document.querySelectorAll(".lcard").forEach(b=>b.onclick=()=>start(+b.dataset.l));show("home");}
+function start(level){const tasks=[],seen=new Set();
+  while(tasks.length<ROUND){const t=gen(level),k=sideTxt(t.L)+"="+sideTxt(t.R);if(seen.has(k))continue;seen.add(k);tasks.push(t);}
+  if(level===1&&!tasks.some(t=>!t.truth)){tasks[rnd(1,6)]=(()=>{let t;do{t=genYN();}while(t.truth);return t;})();}
+  G={level,tasks,i:0,err:0,done:0,requeued:0};show("game");next();}
+
+function next(){if(G.i>=G.tasks.length)return finish();
+  const t=G.tasks[G.i];G.t=t;G.inp="";G.tries=0;G.missed=false;G.reveal=null;G.state="ask";G.unlocked=false;G.slotCls="";G.shownAns=null;
+  $("info").textContent=`${G.done+1} / ${ROUND}`;$("prog").style.width=(G.done/ROUND*100)+"%";
+  $("next").hidden=true;fb("");$("yn").hidden=!t.yn;$("pad").hidden=!!t.yn;
+  $("instr").textContent=t.yn?"Stämmer det? Är det lika mycket på båda sidor?":t.gift?"Vågen väger jämnt. Alla paket väger lika mycket. Hur mycket väger ett paket?":G.level===4?"Tänk smart! Vilket tal ska stå i rutan för att vågen ska väga jämnt?":"Vilket tal ska stå i rutan för att vågen ska väga jämnt?";
+  SC.th=0;SC.v=0;SC.t=0;drawEq();drawScale();}
+function drawEq(){const t=G.t;$("eq").classList.toggle("long",t.L.length+t.R.length>5);$("eq").innerHTML=`${sideHtml(t.L)}<span class="is">=</span>${sideHtml(t.R)}`;
+  $("giftq").hidden=!t.gift;if(t.gift)$("giftq").innerHTML=`🎁 = ${slotHtml()}`;}
+function fb(msg,hint){const f=$("feedback");f.textContent=msg;f.className="feedback"+(hint?" hint":"");}
+
+/* ---------- Svara ---------- */
+function answerYN(yes){if(!G||G.state!=="ask")return;const t=G.t,l=weight(t.L),r=weight(t.R),right=(yes===t.truth);
+  G.unlocked=true;G.state="done";$("yn").hidden=true;scaleTo(tilt(l,r));
+  const desc=(s,w,side)=>s.length===1?`${side} sida är ${w}`:`${sideTxt(s)} är ${w}`;
+  const d1=desc(t.L,l,"vänster");
+  const why=l===r?`Båda sidorna är ${l}. Det stämmer!`:`${d1[0].toUpperCase()+d1.slice(1)}, men ${desc(t.R,r,"höger")}. Det stämmer inte.`;
+  if(right){window.Ljud&&Ljud.ok&&Ljud.ok();fb("Rätt! "+why);}
+  else{G.err++;G.missed=true;window.Ljud&&Ljud.bad&&Ljud.bad();fb("Titta på vågen. "+why,true);}
+  finishTask();}
+function key(k){if(!G||G.t.yn||G.state==="done")return;
+  if(k==="del"){if(G.state==="wrong")resetTry();G.inp=G.inp.slice(0,-1);drawEq();return;}
+  if(k==="ok"){if(G.inp!=="")check();return;}
+  if(G.state==="wrong"){resetTry();G.inp="";}
+  if(G.inp.length<3){G.inp=(G.inp==="0"?"":G.inp)+k;drawEq();}}
+function resetTry(){G.state="ask";G.reveal=null;G.slotCls="";fb("");scaleTo(0);drawScale();}
+function check(){const t=G.t,v=+G.inp;G.reveal=v;const l=weight(t.L,v),r=weight(t.R,v);
+  if(v===t.ans){G.state="done";G.slotCls="ok";drawEq();drawScale();scaleTo(0);
+    window.Ljud&&Ljud.chime?Ljud.chime():window.Ljud&&Ljud.ok&&Ljud.ok();
+    fb((G.missed?"Nu väger vågen jämnt! ":pickOne(["Rätt! ","Precis! ","Snyggt! "]))+proof(v));finishTask();return;}
+  G.err++;G.missed=true;G.tries++;window.Ljud&&Ljud.bad&&Ljud.bad();
+  if(G.tries>=2){G.state="done";G.inp="";G.shownAns=t.ans;G.reveal=t.ans;G.slotCls="shown";drawEq();drawScale();
+    scaleTo(0);
+    fb(`Det ska vara ${t.ans}. ${proof(t.ans)}`,true);finishTask();return;}
+  G.state="wrong";G.slotCls="bad";drawEq();drawScale();scaleTo(tilt(l,r));fb(wrongMsg(t,v,l,r),true);}
+function proof(x){const t=G.t,w=weight(t.L,x);
+  if(t.gift)return `Ett paket väger ${x}: ${sideTxt(t.L,x)} = ${sideTxt(t.R,x)}, båda sidorna är ${w}.`;
+  return `${sideTxt(t.L,x)} = ${sideTxt(t.R,x)}. Båda sidorna är ${w}.`;}
+function wrongMsg(t,v,l,r){
+  const heavy=l>r?"Vänster":"Höger";
+  let msg=t.gift?`Om ett paket väger ${v} blir vänster sida ${l} och höger sida ${r}.`:`Med ${v} blir vänster sida ${l} och höger sida ${r}.`;
+  msg+=` ${heavy} sida väger mer.`;
+  if(t.hint)return msg+" "+t.hint;
+  const qs=t.L.some(it=>it.k==="q")?t.L:t.R,os=qs===t.L?t.R:t.L,known=qs.filter(it=>it.k==="n");
+  if(known.length&&v===weight(os)){const ks=known.map(it=>it.v).join(" och ");
+    return `Du skrev vad ${os===t.L?"vänster":"höger"} sida blir. Men på andra sidan finns redan ${ks}. Båda sidorna ska vara lika mycket.`;}
+  if(known.length&&v===weight(os)+known.reduce((s,it)=>s+it.v,0))return "Du lade ihop alla talen. Likhetstecknet betyder att båda sidorna ska vara lika mycket.";
+  return msg+` Båda sidorna ska vara lika mycket.`;}
+function finishTask(){
+  if(G.missed&&G.requeued<3){G.requeued++;const t=G.t;G.tasks.push(Object.assign({},t,{again:true}));}
+  else G.done++;
+  $("prog").style.width=(Math.min(G.done,ROUND)/ROUND*100)+"%";$("pad").hidden=true;
+  setTimeout(()=>{if(G&&G.state==="done"){$("next").hidden=false;$("next").focus({preventScroll:true});}},450);}
+$("next").onclick=()=>{if(!G)return;G.i++;if(G.tasks[G.i]&&G.tasks[G.i].again)toast("Den här kommer tillbaka. Prova igen!");next();};
+document.querySelectorAll("#pad button").forEach(b=>b.onclick=()=>key(b.dataset.k));
+document.querySelectorAll("#yn button").forEach(b=>b.onclick=()=>answerYN(b.dataset.a==="1"));
+document.addEventListener("keydown",e=>{if(!G||$("game").hidden)return;
+  if(G.state==="done"){if(e.key==="Enter"&&!$("next").hidden){e.preventDefault();$("next").click();}return;}
+  if(G.t.yn){if(/^[jJ]$/.test(e.key))answerYN(true);else if(/^[nN]$/.test(e.key))answerYN(false);return;}
+  if(/^[0-9]$/.test(e.key))key(e.key);else if(e.key==="Backspace"){e.preventDefault();key("del");}else if(e.key==="Enter"){e.preventDefault();key("ok");}});
+
+function finish(){const st=G.err===0?3:G.err<=2?2:1,old=data.stars[G.level]||0;
+  data.stars[G.level]=Math.max(old,st);data.played=(data.played||0)+1;save();
+  $("rTitle").textContent=st===3?"Alla rätt direkt!":"Bra jobbat!";
+  $("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=G.err===0?`${ROUND} uppgifter utan ett enda fel.`:`${ROUND} uppgifter. Du svarade fel ${G.err} ${G.err===1?"gång":"gånger"}.`+(st>old&&old?" Nytt rekord!":"");
+  show("result");if(st===3||st>old){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
+$("rAgain").onclick=()=>start(G?G.level:1);$("rHome").onclick=openHome;$("quit").onclick=openHome;
+
+/* ---------- Uppläsning (bara med 🔊) ---------- */
+let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
+function speak(text){if(!("speechSynthesis" in window))return toast("Uppläsning fungerar inte i den här webbläsaren.");loadVoices();
+  if(!svVoice&&speechSynthesis.getVoices().length)return toast("Den här datorn har ingen svensk röst för uppläsning.");
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
+$("spk").onclick=()=>{if(!G)return;const t=G.t;speak(`${$("instr").textContent} ${sideSay(t.L)} är lika med ${sideSay(t.R)}.`);};
+
+function confetti(){
+  if(reduced())return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W/2+(Math.random()-.5)*120,y:H*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pickOne(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);
+}
+
+/* startskärmens våg: 8 + 4 = 7 + 5 */
+$("demo").innerHTML=scaleSVG(clusters([N(8),N(4,"+")]),clusters([N(7),N(5,"+")]),0,false);
+$("logo").innerHTML=`<span style="display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#3D8BFD;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="50" height="50" aria-hidden="true"><path d="M30 31 L22 50 L38 50 Z" fill="#fff"/><rect x="6" y="28" width="48" height="5" rx="2.5" fill="#fff"/><rect x="2" y="21" width="20" height="4" rx="2" fill="#FFD43B"/><rect x="38" y="21" width="20" height="4" rx="2" fill="#FFD43B"/><rect x="5" y="9" width="6" height="6" rx="1.4" fill="#fff"/><rect x="5" y="15" width="6" height="6" rx="1.4" fill="#fff"/><rect x="12" y="15" width="6" height="6" rx="1.4" fill="#FFB86B"/><rect x="42" y="15" width="6" height="6" rx="1.4" fill="#fff"/><rect x="49" y="15" width="6" height="6" rx="1.4" fill="#FFB86B"/><rect x="49" y="9" width="6" height="6" rx="1.4" fill="#FFB86B"/><text x="30" y="20" font-size="14" text-anchor="middle" font-weight="800" fill="#fff" font-family="Baloo 2, Trebuchet MS, sans-serif">=</text></svg></span>`;
+openHome();
+</script>
+</body>
+</html>
