@@ -118,6 +118,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 
 - **Stjärnorna känns lite uttjatade** (lärarens känsla, okt 2026): fundera på ett annat belöningssystem längre fram, gärna ihop med strukturen för mellanstadiet och profilerna. Tas inte nu.
+- **För många "-jakten"** (lärarens känsla, okt 2026): Bubbeljakten, Skattjakten, Asteroidjakten och Rutjakten. Läraren gillar Rutjakten men funderar; förslag som diskuterats för Rutjakten: Taldetektiven (verkar ledigt), Trillingarna, Pling Plong Tal, Tripp Trapp Tal (krockar med Stokkes varumärke Tripp Trapp®). Kanske byta namn på något av de andra i stället. Mappar och sparnycklar behålls vid ett namnbyte.
 - **Hitta felet** i Uppställning: färdiga uppställningar med typiska misstag.
 - **Blandade uppgifter med saknat tal** (`__ · 5 = 15`, `__ + 7 = 12`) och "Stämmer det?" i fler övningar (addition, multiplikation osv.). Prövas först i Division (Kalaset); läraren gillar idén.
 - **Egen värld per övning**: klart i Division (Kalaset), Multiplikation (Bageriet), Lilla plus (Hönsgården) och Tiotal (Bussen). Kvar att fundera på: övriga övningar.
