@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gömda tal – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F1ECFF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#D6CCF5;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#7B61FF; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:660px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
+h1{font-size:2.6rem;line-height:1;margin:14px 0 4px;font-weight:800;display:flex;align-items:center;gap:10px}
+h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
+.lead{margin:0 0 14px;color:var(--muted);font-size:1.1rem}
+.stars{color:var(--gold);letter-spacing:1px}
+.stars .off{color:#DCD3F5}
+/* startskärmen */
+.intro{background:var(--card);border-radius:18px;padding:12px 16px;box-shadow:0 4px 0 var(--line);margin:0 0 18px;font-weight:800;font-size:1.3rem;line-height:1.5}
+.intro small{display:block;font-size:.95rem;font-weight:700;color:var(--muted);line-height:1.3;margin-top:4px}
+.levels{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.lcard{background:var(--card);border-radius:18px;padding:12px 10px 10px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
+.lcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lcard .ex{font-size:1.5rem;line-height:1.2;margin-bottom:2px;letter-spacing:2px}
+.lcard b{font-size:1.15rem;line-height:1.15}
+.lcard small{color:var(--muted);font-size:.85rem;line-height:1.2}
+@media(max-width:520px){.levels{grid-template-columns:1fr}.lcard{flex-direction:row;flex-wrap:wrap;text-align:left;gap:4px 10px;padding:10px 14px}.lcard .ex{width:100%;margin:0}.lcard b{flex:1}.lcard small{order:3;width:100%}}
+.note{color:var(--muted);font-size:.95rem;margin-top:18px}
+/* spelet */
+.gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.info{font-weight:800;font-size:1.2rem}
+.progress{height:10px;border-radius:5px;background:var(--card);overflow:hidden;margin-top:6px;box-shadow:inset 0 0 0 2px var(--line)}
+.progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
+.instr{display:flex;gap:10px;align-items:center;font-weight:700;font-size:1.05rem;line-height:1.25;margin:8px 0 6px}
+.spk{flex:none;width:44px;height:44px;border-radius:50%;background:var(--card);font-size:1.3rem;box-shadow:0 3px 0 var(--line)}
+.stage{background:linear-gradient(#FFFFFF,#F6F3FF);border-radius:20px;box-shadow:0 4px 0 var(--line);padding:4px 4px 0;overflow:hidden}
+.stage svg{display:block;width:100%;height:auto;max-height:30vh}
+.rows{display:flex;flex-direction:column;gap:7px;margin:10px 0 0}
+.row{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:2px 7px;min-height:48px;border-radius:14px;background:var(--card);box-shadow:0 3px 0 var(--line);padding:4px 34px;font-weight:800;font-size:clamp(1.25rem,5.4vw,1.6rem);line-height:1.1;position:relative}
+.row.on{box-shadow:0 0 0 3px var(--accent),0 3px 0 var(--line)}
+.row .is{color:var(--accent)}
+.row .ok{position:absolute;right:10px;top:50%;transform:translateY(-50%);color:var(--good);font-size:1.1rem}
+.row .tap{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.95rem;color:var(--accent)}
+.sy{position:relative;display:inline-block}
+.sy i{position:absolute;right:-9px;bottom:-5px;font-style:normal;font-size:.58em;min-width:1.45em;height:1.45em;line-height:1.45em;text-align:center;border-radius:.8em;background:var(--good);color:#fff;padding:0 .2em}
+.sy i.shown{background:#B8323A}
+.slot{display:inline-grid;place-items:center;min-width:1.9em;height:1.4em;padding:0 .2em;border:3px dashed var(--accent);border-radius:11px;background:#fff;color:var(--accent)}
+.slot.sel{border-style:solid;box-shadow:0 0 0 4px rgba(123,97,255,.22)}
+.slot.ok{border:3px solid var(--good);color:var(--good-dark);background:#E3F7EC;box-shadow:none}
+.slot.bad{border:3px solid var(--bad);background:#FFE3E5;color:var(--bad)}
+.slot.shown{border:3px solid var(--good);color:#B8323A;background:#fff;box-shadow:none}
+.answers{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:12px 0 0}
+.ans{display:flex;align-items:center;gap:6px;font-weight:800;font-size:1.45rem;background:var(--card);border-radius:14px;padding:4px 10px;box-shadow:0 3px 0 var(--line)}
+.ans .slot{font-size:1.3rem}
+.feedback{min-height:1.5em;font-weight:800;font-size:1.05rem;margin:10px 0;text-align:center;color:var(--good-dark);line-height:1.3}
+.feedback.hint{background:#FFE9EC;color:#9B2C3A;border-radius:14px;padding:8px 12px}
+.pad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.pad button{height:50px;border-radius:16px;background:var(--card);font-size:1.7rem;font-weight:800;box-shadow:0 4px 0 var(--line)}
+.pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.4rem}
+.go{display:block;width:100%;padding:14px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.35rem;margin-top:6px}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
+.result{text-align:center;padding-top:20px}
+.rbig{font-size:clamp(3.2rem,16vw,4.6rem);font-weight:800;line-height:1;margin:6px 0}
+.rsub{color:var(--muted);font-size:1.15rem;margin:0 0 14px}
+.big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
+@media(min-width:700px){.stage svg{max-height:34vh}.pad button{height:46px}}
+/* dator: vågen till vänster, raderna till höger */
+@media(min-width:900px){.wrap.wide{max-width:960px}.board{display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start}.board .rows{margin-top:0}.stage svg{max-height:none}.row{font-size:1.45rem}#game .pad,#game .go,#game .feedback{max-width:620px;margin-left:auto;margin-right:auto}}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<section id="home" class="screen">
+  <h1><span id="logo"></span>Gömda tal</h1>
+  <p class="lead">Samma sak väger alltid lika mycket. Kan du lista ut vad varje sak väger?</p>
+  <div class="intro">🎁 + 🎁 + 🎁 = 15<br>🎁 + 🌸 = 7<small>Tre paket väger 15, då väger ett paket 5. Paketet och blomman väger 7, då väger blomman 2.</small></div>
+  <div class="levels" id="levels"></div>
+  <p class="note">Tre stjärnor får du om alla uppgifter blir rätt direkt.</p>
+</section>
+<section id="game" class="screen" hidden>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
+  <div class="progress"><i id="prog"></i></div>
+  <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr">Varje rad väger jämnt. Tryck på en rad för att se den på vågen.</span></div>
+  <div class="board"><div class="stage"><div id="scale"></div></div>
+  <div><div class="rows" id="rows"></div>
+  <div class="answers" id="answers"></div></div></div>
+  <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="pad" id="pad">
+    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button>
+    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button>
+    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button>
+    <button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okbtn">OK</button>
+  </div>
+  <button class="go" id="next" hidden>Nästa ➜</button>
+</section>
+<section id="result" class="screen result" hidden>
+  <h2 id="rTitle"></h2>
+  <div class="rbig" id="rBig"></div>
+  <p class="rsub" id="rSub"></p>
+  <button class="go" id="rAgain">Spela igen</button>
+  <button class="big" id="rHome">Välj en annan nivå</button>
+</section>
+</div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../ljud.js"></script>
+<script src="../djur.js"></script>
+<script src="../vag.js"></script>
+<script src="../huvud.js" data-titel="Gömda tal" data-ikon="🎁"></script>
+<script>
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pickOne=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const KEY="mattespel-gomda-v1";
+const data=(()=>{try{return Object.assign({stars:{}},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{}}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- Sakerna ---------- */
+const SAKER=[["🎁","#9B6BFF","paket"],["🌸","#FF5FA2","blomma"],["⭐","#E0A800","stjärna"],["🍎","#E5484D","äpple"],["🍌","#D9A400","banan"],["🍓","#D6336C","jordgubbe"],
+  ["🐟","#17AFC4","fisk"],["🎈","#3D8BFD","ballong"],["🍪","#B07A3B","kaka"],["⚽","#56668F","boll"],["🦋","#7B61FF","fjäril"],["🍄","#C2410C","svamp"]];
+
+/* ---------- Uppgifterna ----------
+   k gömda tal. Raderna byggs i en ordning där varje rad har exakt en ny sak, så det finns alltid en väg att lösa dem
+   en i taget (och svaret är entydigt). Sedan blandas raderna. En rad är {L,R}, delar {s:i} (sak) eller {n:tal} eller {q:true} (frågan).
+   Nivå 1: två saker. Nivå 2: tre saker, ibland en fråga sist. Nivå 3: fyra saker, ibland en sak på båda sidor och en fråga sist. */
+const LEVELS=[{n:1,k:2,name:"Två gömda tal",desc:"Två saker att lista ut",ex:"🎁 🌸"},
+  {n:2,k:3,name:"Tre gömda tal",desc:"Tre saker, ibland en fråga sist",ex:"🍎 🍌 🍓"},
+  {n:3,k:4,name:"Fyra gömda tal",desc:"Fyra saker att reda ut",ex:"🐟 🎈 ⭐ 🦋"}];
+const ROUNDS={1:6,2:5,3:4};
+const rowW=(side,v)=>side.reduce((s,it)=>s+(it.s!=null?v[it.s]:it.n!=null?it.n:0),0);
+function gen(level){const k=LEVELS[level-1].k;
+  for(;;){const saker=shuffle(SAKER.slice()).slice(0,k).map(([e,c,name])=>({e,c,name}));
+    const vals=shuffle([1,2,3,4,5,6,7,8,9,10].slice(0,level===1?9:10)).slice(0,k);
+    saker.forEach((s,i)=>s.v=vals[i]);const v=vals;
+    const rows=[];let ok=true;
+    for(let j=0;j<k&&ok;j++){
+      if(j===0){const c=pickOne([2,3,3]),add=Math.random()<.3?rnd(1,6):0,L=[];for(let i=0;i<c;i++)L.push({s:0});if(add)L.push({n:add});
+        rows.push({L,R:[{n:c*v[0]+add}]});continue;}
+      const cn=pickOne([1,1,2]);
+      if(level===3&&Math.random()<.3){const o=rnd(0,j-1),n=cn*v[j]-v[o];
+        if(n>=1){const L=[];for(let i=0;i<cn;i++)L.push({s:j});rows.push({L,R:shuffle([{s:o},{n}])});continue;}}
+      const olds=shuffle([...Array(j).keys()]).slice(0,j>=2&&Math.random()<.5?2:1),L=[];
+      for(let i=0;i<cn;i++)L.push({s:j});olds.forEach(o=>L.push({s:o}));
+      if(Math.random()<.25)L.push({n:rnd(1,5)});
+      rows.push({L:shuffle(L),R:[{n:rowW(L,v)}]});}
+    if(rows.some(r=>Math.max(rowW(r.L,v),rowW(r.R,v))>32))continue;
+    rows.forEach(r=>{if(r.R.length===1&&r.R[0].n!=null&&Math.random()<.25)[r.L,r.R]=[r.R,r.L];});
+    const shuffled=shuffle(rows.slice());
+    // inte i lösningsordning (raden att börja med ska letas fram)
+    if(k>=2&&shuffled.every((r,i)=>r===rows[i]))[shuffled[0],shuffled[1]]=[shuffled[1],shuffled[0]];
+    let q=null;
+    if(level>=2&&Math.random()<(level===2?.35:.45)){const pick=shuffle([...Array(k).keys()]).slice(0,rnd(2,3)),L=pick.map(i=>({s:i}));
+      if(Math.random()<.3)L.push({s:pick[0]});q=rowW(shuffle(L),v);shuffled.push({L,R:[{q:true}],q:true});}
+    return{saker,rows:shuffled,qAns:q,k};}}
+
+/* ---------- Skärmar ---------- */
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);document.querySelector(".wrap").classList.toggle("wide",id==="game");window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+let G=null;
+function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
+  $("levels").innerHTML=LEVELS.map(l=>`<button class="lcard" data-l="${l.n}"><span class="ex">${l.ex}</span><b>${l.n}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.n]||0)}</button>`).join("");
+  document.querySelectorAll(".lcard").forEach(b=>b.onclick=()=>start(+b.dataset.l));show("home");}
+function start(level){G={level,n:ROUNDS[level],i:0,err:0};show("game");next();}
+function next(){if(G.i>=G.n)return finish();
+  const t=gen(G.level);G.t=t;G.known=t.saker.map(()=>false);G.shown=t.saker.map(()=>false);G.tries={};G.trial=null;G.inp="";G.bad=false;
+  G.qDone=false;G.qShown=false;G.row=0;G.sel=0;G.done=false;
+  $("info").textContent=`${G.i+1} / ${G.n}`;$("prog").style.width=(G.i/G.n*100)+"%";
+  $("next").hidden=true;$("pad").hidden=false;fb("");SC.reset();draw();}
+const slots=()=>G.t.saker.length+(G.t.qAns!=null?1:0);
+const isQ=i=>i===G.t.saker.length;
+const solved=i=>isQ(i)?G.qDone:G.known[i];
+function fb(msg,hint){const f=$("feedback");f.textContent=msg;f.className="feedback"+(hint?" hint":"");}
+
+/* ---------- Rita ---------- */
+function slotHtml(i){const sel=G.sel===i&&!G.done,cls=solved(i)?((isQ(i)?G.qShown:G.shown[i])?"shown":"ok"):sel?(G.bad?"bad":"sel"):"";
+  const txt=solved(i)?(isQ(i)?G.t.qAns:G.t.saker[i].v):sel&&G.inp!==""?G.inp:" ";
+  return `<span class="slot ${cls}">${txt}</span>`;}
+function itemHtml(it){if(it.n!=null)return `<span>${it.n}</span>`;if(it.q)return slotHtml(G.t.saker.length);
+  const s=G.t.saker[it.s];return `<span class="sy">${s.e}${G.known[it.s]?`<i class="${G.shown[it.s]?"shown":""}">${s.v}</i>`:""}</span>`;}
+const sideHtml=side=>side.map((it,i)=>(i?"<span>+</span>":"")+itemHtml(it)).join("");
+const rowDone=r=>[...r.L,...r.R].every(it=>it.s==null||G.known[it.s])&&(!r.q||G.qDone);
+function draw(){const t=G.t;
+  $("rows").innerHTML=t.rows.map((r,i)=>`<button class="row${i===G.row?" on":""}" data-r="${i}" aria-label="Rad ${i+1}">${i===G.row?'<span class="tap">⚖️</span>':""}${sideHtml(r.L)}<span class="is">=</span>${sideHtml(r.R)}${rowDone(r)?'<span class="ok">✓</span>':""}</button>`).join("");
+  document.querySelectorAll(".row").forEach(b=>b.onclick=()=>{if(!G)return;const r=+b.dataset.r;if(G.row!==r){G.row=r;clearTrial();}
+    if(G.t.rows[r].q&&!G.qDone&&!G.done){G.sel=G.t.saker.length;G.inp="";G.bad=false;}draw();});
+  $("answers").innerHTML=t.saker.map((s,i)=>`<button class="ans" data-a="${i}">${s.e} = ${slotHtml(i)}</button>`).join("");
+  document.querySelectorAll(".ans").forEach(b=>b.onclick=()=>{if(!G||G.done)return;const i=+b.dataset.a;if(solved(i))return;if(G.sel!==i){G.sel=i;G.inp="";G.bad=false;clearTrial();}draw();});
+  drawScale();}
+// klossgrupper för en sida: kända saker (och elevens prov) blir klossar med sakens emoji ovanför
+function clusters(side,full){let ci=0;return side.map(it=>{
+  if(it.n!=null)return{t:"n",n:it.n,c:MPVag.COLS[ci++%2]};
+  if(it.q)return full||G.qDone?{t:"n",n:G.t.qAns,c:"#2BB673"}:{t:"q"};
+  const s=G.t.saker[it.s];
+  if(full||G.known[it.s])return{t:"n",n:s.v,c:s.c,tag:s.e};
+  if(G.trial&&G.trial.i===it.s)return{t:"n",n:G.trial.v,c:"#E5484D",tag:s.e};
+  return{t:"s",e:s.e,c:s.c};});}
+const SC=MPVag.spring(()=>drawScale());
+function drawScale(){if(!G)return;const r=G.t.rows[G.row];
+  const L=clusters(r.L),R=clusters(r.R),all=[L,R,clusters(r.L,true),clusters(r.R,true)];
+  $("scale").innerHTML=MPVag.svg(L,R,Object.assign({th:SC.th},MPVag.fit(all)));}
+function clearTrial(){if(G.trial||G.bad){G.trial=null;G.bad=false;fb("");}SC.to(0);}
+
+/* ---------- Svara ---------- */
+function key(k){if(!G||G.done)return;const i=G.sel;if(solved(i))return;
+  if(k==="del"){if(G.bad){clearTrial();}G.inp=G.inp.slice(0,-1);draw();return;}
+  if(k==="ok"){if(G.inp!=="")check(i,+G.inp);return;}
+  if(G.bad){clearTrial();G.inp="";}
+  if(G.inp.length<2){G.inp=(G.inp==="0"?"":G.inp)+k;draw();}}
+function nextSlot(){for(let d=1;d<=slots();d++){const j=(G.sel+d)%slots();if(!solved(j))return j;}return -1;}
+function check(i,v){const t=G.t,vals=t.saker.map(s=>s.v);
+  if(isQ(i)){const qr=t.rows.findIndex(r=>r.q);G.row=qr;
+    if(v===t.qAns){G.qDone=true;ok(`Rätt! ${rowTxt(t.rows[qr],vals)}.`);return;}
+    G.err++;G.tries.q=(G.tries.q||0)+1;window.Ljud&&Ljud.bad&&Ljud.bad();
+    const miss=t.rows[qr].L.filter(it=>!G.known[it.s]).map(it=>t.saker[it.s].e);
+    if(miss.length){G.bad=true;draw();fb(`Ta först reda på ${[...new Set(miss)].join(" och ")}. Sedan kan du räkna ihop.`,true);return;}
+    if(G.tries.q>=2){G.qDone=true;G.qShown=true;ok(`Det blir ${t.qAns}: ${rowTxt(t.rows[qr],vals)}.`,true);return;}
+    G.bad=true;draw();fb(`Räkna ihop: ${t.rows[qr].L.map(it=>t.saker[it.s].v).join(" + ")} = ?`,true);return;}
+  const s=t.saker[i];
+  if(v===s.v){G.known[i]=true;G.trial=null;ok(`Rätt! ${s.e} väger ${s.v}.`);return;}
+  G.err++;window.Ljud&&Ljud.bad&&Ljud.bad();
+  // en rad där allt annat redan är känt: där syns provet på vågen
+  const can=r=>[...r.L,...r.R].some(it=>it.s===i)&&[...r.L,...r.R].every(it=>it.s==null||it.s===i||G.known[it.s])&&!r.q;
+  let ri=can(t.rows[G.row])?G.row:t.rows.findIndex(can);
+  if(ri<0){G.bad=true;G.trial=null;draw();fb(`Det går inte att räkna ut ${s.e} än. Hitta en rad där du vet allt utom en sak.`,true);return;}
+  G.row=ri;G.tries[i]=(G.tries[i]||0)+1;const r=t.rows[ri];
+  if(G.tries[i]>=2){G.known[i]=true;G.shown[i]=true;G.trial=null;ok(`${s.e} väger ${s.v}: ${rowTxt(r,vals)}.`,true);return;}
+  G.trial={i,v};G.bad=true;const tv=vals.slice();tv[i]=v;const l=rowW(r.L,tv),rr=rowW(r.R,tv);
+  draw();SC.to(MPVag.tilt(l,rr));
+  const others=[...r.L,...r.R].some(it=>it.s!=null&&it.s!==i);
+  fb(`Om ${s.e} väger ${v} blir vänster sida ${l} och höger sida ${rr}. ${l>rr?"Vänster":"Höger"} sida väger mer.`+(others?" Sätt in det du redan vet.":""),true);}
+function rowTxt(r,vals){const sd=side=>side.map(it=>it.n!=null?it.n:it.q?G.t.qAns:vals[it.s]).join(" + ");return `${sd(r.L)} = ${sd(r.R)}`;}
+function ok(msg,shown){G.inp="";G.bad=false;
+  if(!shown){window.Ljud&&Ljud.ok&&Ljud.ok();}
+  const nx=nextSlot();
+  if(nx<0){G.done=true;$("pad").hidden=true;draw();SC.to(0);
+    window.Ljud&&Ljud.chime&&Ljud.chime();fb(`${msg} Du hittade alla gömda tal! 🎉`,shown);G.i++;$("prog").style.width=(G.i/G.n*100)+"%";
+    setTimeout(()=>{if(G&&G.done){$("next").hidden=false;$("next").focus({preventScroll:true});}},450);return;}
+  G.sel=nx;draw();SC.to(0);fb(msg,shown);}
+$("next").onclick=()=>{if(G)next();};
+document.querySelectorAll("#pad button").forEach(b=>b.onclick=()=>key(b.dataset.k));
+document.addEventListener("keydown",e=>{if(!G||$("game").hidden)return;
+  if(G.done){if(e.key==="Enter"&&!$("next").hidden){e.preventDefault();$("next").click();}return;}
+  if(/^[0-9]$/.test(e.key))key(e.key);else if(e.key==="Backspace"){e.preventDefault();key("del");}else if(e.key==="Enter"){e.preventDefault();key("ok");}
+  else if(e.key==="Tab"&&!e.shiftKey){e.preventDefault();const nx=nextSlot();if(nx>=0){G.sel=nx;G.inp="";clearTrial();draw();}}});
+
+function finish(){const st=G.err===0?3:G.err<=2?2:1,old=data.stars[G.level]||0;
+  data.stars[G.level]=Math.max(old,st);data.played=(data.played||0)+1;save();
+  $("rTitle").textContent=st===3?"Alla rätt direkt!":"Alla gömda tal hittade!";
+  $("rBig").innerHTML=starHtml(st);
+  $("rSub").textContent=G.err===0?`${G.n} uppgifter utan ett enda fel.`:`${G.n} uppgifter. Du svarade fel ${G.err} ${G.err===1?"gång":"gånger"}.`+(st>old&&old?" Nytt rekord!":"");
+  show("result");if(st===3||st>old){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
+$("rAgain").onclick=()=>start(G?G.level:1);$("rHome").onclick=openHome;$("quit").onclick=openHome;
+
+/* ---------- Uppläsning (bara med 🔊) ---------- */
+let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2600);}
+function speak(text){if(!("speechSynthesis" in window))return toast("Uppläsning fungerar inte i den här webbläsaren.");loadVoices();
+  if(!svVoice&&speechSynthesis.getVoices().length)return toast("Den här datorn har ingen svensk röst för uppläsning.");
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
+$("spk").onclick=()=>{if(!G)return;const t=G.t,say=side=>side.map(it=>it.n!=null?it.n:it.q?"tom ruta":t.saker[it.s].name).join(" plus ");
+  speak("Varje rad väger jämnt. Samma sak väger alltid lika mycket. "+t.rows.map(r=>`${say(r.L)} är lika med ${say(r.R)}.`).join(" "));};
+
+function confetti(){
+  if(reduced())return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W/2+(Math.random()-.5)*120,y:H*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pickOne(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);
+}
+$("logo").innerHTML=`<span style="display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#7B61FF;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="52" height="52" aria-hidden="true"><rect x="4" y="6" width="52" height="14" rx="5" fill="#fff"/><text x="30" y="17.5" font-size="10" text-anchor="middle">🎁 + 🎁 = 8</text><rect x="4" y="23" width="52" height="14" rx="5" fill="#fff"/><text x="30" y="34.5" font-size="10" text-anchor="middle">🎁 + 🌸 = 7</text><rect x="4" y="40" width="52" height="14" rx="5" fill="#fff"/><text x="30" y="51.5" font-size="10" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#7B61FF">🌸 = ?</text></svg></span>`;
+openHome();
+</script>
+</body>
+</html>

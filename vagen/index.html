@@ -51,12 +51,10 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .eq{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px;font-weight:800;font-size:clamp(1.7rem,7.4vw,2.3rem);line-height:1.1;margin:12px 0 4px;text-align:center}
 .eq.long{font-size:clamp(1.35rem,5.6vw,2rem);gap:4px 7px}
 .eq .is{color:var(--accent);padding:0 4px}
-.eq .gift{font-size:.9em}
 .slot{display:inline-grid;place-items:center;min-width:1.9em;height:1.45em;padding:0 .2em;border:3px dashed var(--accent);border-radius:12px;background:#fff;color:var(--accent)}
 .slot.ok{border:3px solid var(--good);color:var(--good-dark);background:#E3F7EC}
 .slot.bad{border:3px solid var(--bad);background:#FFE3E5;color:var(--bad)}
 .slot.shown{border:3px solid var(--good);color:#B8323A;background:#fff}
-.giftq{display:flex;justify-content:center;align-items:center;gap:10px;font-weight:800;font-size:clamp(1.5rem,6.4vw,2rem);margin:2px 0 0}
 .feedback{min-height:1.5em;font-weight:800;font-size:1.08rem;margin:10px 0;text-align:center;color:var(--good-dark);line-height:1.3}
 .feedback.hint{background:#FFE9EC;color:#9B2C3A;border-radius:14px;padding:8px 12px}
 .pad{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
@@ -97,7 +95,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
   <div class="stage"><div id="scale"></div></div>
   <div class="eq" id="eq" aria-live="polite"></div>
-  <div class="giftq" id="giftq" hidden></div>
   <div class="feedback" id="feedback" aria-live="polite"></div>
   <div class="yn" id="yn" hidden><button class="ja" data-a="1">Ja<small>det stämmer</small></button><button class="nej" data-a="0">Nej<small>det stämmer inte</small></button></div>
   <div class="pad" id="pad">
@@ -120,6 +117,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../vag.js"></script>
 <script src="../huvud.js" data-titel="Vågen" data-ikon="⚖️"></script>
 <script>
 const $=id=>document.getElementById(id);
@@ -132,10 +130,9 @@ const ROUND=8;
 const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /* ---------- Uppgifterna ----------
-   En sida är en lista med delar: {k:"n",v} tal, {k:"q"} rutan, {k:"g"} ett paket, {k:"m",a,b} a grupper med b (a eller b kan vara null = rutan).
+   En sida är en lista med delar: {k:"n",v} tal, {k:"q"} rutan, {k:"m",a,b} a grupper med b (a eller b kan vara null = rutan).
    op är "+" eller "−" för delen efter den första. */
-const N=(v,op)=>({k:"n",v,op}),Q=op=>({k:"q",op}),Gf=op=>({k:"g",op}),M=(a,b,op)=>({k:"m",a,b,op});
-const gifts=(k,op)=>Array.from({length:k},(_,i)=>Gf(i?"+":op));
+const N=(v,op)=>({k:"n",v,op}),Q=op=>({k:"q",op}),M=(a,b,op)=>({k:"m",a,b,op});
 function val(it,x){return it.k==="n"?it.v:it.k==="m"?(it.a??x)*(it.b??x):x;}
 function weight(side,x){return side.reduce((s,it,i)=>i&&it.op==="−"?s-val(it,x):s+val(it,x),0);}
 
@@ -163,16 +160,6 @@ function gen(level){
       ()=>({L:[N(a),N(b,"+")],R:[N(a+k),Q("+")],ans:b-k,hint:`${a+k} är ${k} mer än ${a}. Då måste det andra talet vara ${k} mindre än ${b}.`}),
       ()=>({L:[N(a),N(b,"+")],R:[Q(),N(b+k,"+")],ans:a-k,hint:`${b+k} är ${k} mer än ${b}. Då måste det första talet vara ${k} mindre än ${a}.`}),
       ()=>({L:[N(a),N(b,"+")],R:[N(b),Q("+")],ans:a,hint:`Titta på talen. Samma tal fast i en annan ordning?`})])();}
-  if(level===5){const x=rnd(1,9);
-    const f=[];
-    f.push(()=>{const k=pickOne([2,3]);return{L:gifts(k),R:[N(k*x)],ans:x,hint:`${k} paket väger ${k*x} tillsammans. Dela lika.`};});
-    f.push(()=>{const k=pickOne([1,2,2,3]),a=rnd(1,9);return{L:[...gifts(k),N(a,"+")],R:[N(k*x+a)],ans:x,hint:`Ta bort ${a} från båda sidorna. Då väger vågen fortfarande jämnt.`};});
-    f.push(()=>{const k=pickOne([2,3]),m=rnd(1,k-1),a=rnd(1,8),b=a+(k-m)*x;
-      return b>30?null:{L:[...gifts(k),N(a,"+")],R:[...gifts(m),N(b,"+")],ans:x,hint:`Ta bort ${m===1?"ett 🎁":m+" 🎁"} från båda sidorna. Då väger vågen fortfarande jämnt.`};});
-    f.push(()=>{const a=rnd(1,9),s=x+a,b=rnd(1,s-1);return{L:[Gf(),N(a,"+")],R:[N(b),N(s-b,"+")],ans:x,hint:`Hur mycket fattas från ${a} till ${s}?`};});
-    let t;do{t=pickOne(f)();}while(!t);
-    if(Math.random()<.35)[t.L,t.R]=[t.R,t.L];
-    t.gift=true;return t;}
   // nivå 6: multiplikation
   const f=[
     ()=>{const p=pickOne([12,12,16,18,20,24,24,30,36,40]),pairs=[];for(let c=2;c<=10;c++)if(p%c===0&&p/c>=2&&p/c<=10)pairs.push([c,p/c]);
@@ -199,79 +186,31 @@ function genYN(){const truth=Math.random()<.5;let L,R,ok;
 
 /* ---------- Texten ---------- */
 const slotHtml=()=>`<span class="slot ${G.slotCls||""}" id="slot">${G.inp!==""?G.inp:G.shownAns!=null?G.shownAns:" "}</span>`;
-function itemHtml(it){if(it.k==="n")return it.v;if(it.k==="q")return slotHtml();if(it.k==="g")return '<span class="gift">🎁</span>';
+function itemHtml(it){if(it.k==="n")return it.v;if(it.k==="q")return slotHtml();
   return `${it.a??slotHtml()} · ${it.b??slotHtml()}`;}
 const sideHtml=s=>s.map((it,i)=>(i?`<span>${it.op}</span>`:"")+`<span>${itemHtml(it)}</span>`).join("");
-function itemTxt(it,x){if(it.k==="n")return it.v;if(it.k==="q")return x;if(it.k==="g")return x??"🎁";return `${it.a??x} · ${it.b??x}`;}
+function itemTxt(it,x){if(it.k==="n")return it.v;if(it.k==="q")return x;return `${it.a??x} · ${it.b??x}`;}
 const sideTxt=(s,x)=>s.map((it,i)=>(i?` ${it.op} `:"")+itemTxt(it,x)).join("");
-function itemSay(it){if(it.k==="n")return it.v;if(it.k==="q")return "tom ruta";if(it.k==="g")return "paket";return `${it.a??"tom ruta"} gånger ${it.b??"tom ruta"}`;}
+function itemSay(it){if(it.k==="n")return it.v;if(it.k==="q")return "tom ruta";return `${it.a??"tom ruta"} gånger ${it.b??"tom ruta"}`;}
 const sideSay=s=>s.map((it,i)=>(i?(it.op==="−"?" minus ":" plus "):"")+itemSay(it)).join("");
 
-/* ---------- Vågen (SVG) ----------
-   Klossarna: små tal i staplar om fem, tiotal som stavar. Varje del på en sida får egen färg. */
-const COLS=["#3D8BFD","#FF9F43","#7B61FF","#17AFC4"];
+/* ---------- Vågen (ritas av vag.js) ----------
+   Varje del på en sida får egen färg; rutan blir elevens tal (grönt rätt, rött fel). */
+const COLS=MPVag.COLS;
 function clusters(side,x,ansCol,rods){const out=[];let ci=0;
   side.forEach((it,i)=>{
     if(i&&it.op==="−"&&out.length&&out[out.length-1].t==="n"){const p=out[out.length-1];p.ghost=Math.min(it.v,p.n);return;}
     if(it.k==="n")out.push({t:"n",n:it.v,c:COLS[ci++%4],rods:rods||it.v>=20});
     else if(it.k==="q")out.push(x==null?{t:"q"}:{t:"n",n:x,c:ansCol,rods:rods||x>=20});
-    else if(it.k==="g")out.push(x==null?{t:"g"}:{t:"n",n:x,c:"#9B6BFF",rods:false,gift:true});
-    else{const a=it.a??x,b=it.b??x;out.push(a==null||b==null?{t:"q"}:{t:"m",a,b,c:it.a==null||it.b==null?null:COLS[ci++%4],ac:ansCol});}});
-  out.forEach(c=>{if(c.t==="n"){const n=Math.min(c.n,150);c.n=n;
-      if(c.rods){c.r=Math.floor(n/10);c.u=n%10;c.w=c.r+Math.ceil(c.u/5);c.h=c.r?10:Math.min(5,c.u);}
-      else{c.w=Math.ceil(n/5);c.h=Math.min(5,n);}
-      if(!c.w){c.w=.4;c.h=0;}}
-    else if(c.t==="m"){c.a=Math.min(c.a,12);c.b=Math.min(c.b,12);c.w=c.a+(c.a-1)*.3;c.h=c.b;}
-    else if(c.t==="g"){c.w=2;c.h=2;}else{c.w=3;c.h=3;}});
+    else{const a=it.a??x,b=it.b??x;out.push(a==null||b==null?{t:"q"}:{t:"m",a,b,c:it.a==null||it.b==null?ansCol:COLS[ci++%4]});}});
   return out;}
-const panW=cl=>cl.reduce((s,c)=>s+c.w,0)+Math.max(0,cl.length-1)*.7;
-const panH=cl=>Math.max(1,...cl.map(c=>c.h+(c.ghost?1:0)));
-function cube(x,y,u,col,ghost){const s=u-1.4,r=Math.max(1.5,u*.18);
-  return ghost?`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${r}" fill="#fff" fill-opacity=".6" stroke="${col}" stroke-width="1.3" stroke-dasharray="2.5 2"/>`
-             :`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${r}" fill="${col}"/><rect x="${x+1.2}" y="${y+1.2}" width="${s-2.4}" height="${s*.32}" rx="${r*.6}" fill="#fff" opacity=".28"/>`;}
-function drawPan(cl,u){let x=-panW(cl)*u/2,h="";
-  cl.forEach(c=>{
-    if(c.t==="n"){let col=0;
-      if(c.rods)for(let i=0;i<c.r;i++){const rx=x+col*u,s=u-1.4;h+=`<rect x="${rx}" y="${-10*u}" width="${s}" height="${10*u-1.4}" rx="${Math.max(1.5,u*.18)}" fill="${c.c}"/>`;
-        for(let j=1;j<10;j++)h+=`<line x1="${rx+1}" x2="${rx+s-1}" y1="${-j*u-.7}" y2="${-j*u-.7}" stroke="#000" stroke-opacity=".18" stroke-width="1"/>`;
-        h+=`<rect x="${rx+1.2}" y="${-10*u+1.2}" width="${s*.3}" height="${10*u-4}" rx="1" fill="#fff" opacity=".25"/>`;col++;}
-      const units=c.rods?c.u:c.n;
-      for(let i=0;i<units;i++){const cc=col+Math.floor(i/5),rr=i%5,g=c.ghost&&i>=units-c.ghost;h+=cube(x+cc*u,-(rr+1)*u,u,c.c,g);}
-      if(c.ghost){const gx=x+(col+(units-1)/5|0)*u;h+=`<text x="${x+c.w*u/2}" y="${-c.h*u-5}" text-anchor="middle" font-size="${Math.max(11,u*1.1)}" font-weight="800" fill="#B8323A" font-family="Baloo 2, Trebuchet MS, sans-serif">−${c.ghost}</text>`;}}
-    else if(c.t==="m"){const col=c.c||c.ac;for(let a=0;a<c.a;a++){const gx=x+a*1.3*u;for(let b=0;b<c.b;b++)h+=cube(gx,-(b+1)*u,u,col);}}
-    else if(c.t==="g"){const s=2*u-2,y=-2*u;h+=`<rect x="${x}" y="${y}" width="${s}" height="${s}" rx="${u*.3}" fill="#9B6BFF"/><rect x="${x+s/2-u*.22}" y="${y}" width="${u*.44}" height="${s}" fill="#FFD43B"/><rect x="${x}" y="${y+s*.38}" width="${s}" height="${u*.44}" fill="#FFD43B"/><path d="M${x+s/2} ${y} q${-u*.7} ${-u*.8} ${-u*.8} ${-u*.1} q0 ${u*.4} ${u*.8} ${u*.1} q${u*.8} ${u*.3} ${u*.8} ${-u*.1} q${-u*.1} ${-u*.7} ${-u*.8} ${u*.1}" fill="#FFD43B"/>`;}
-    else{const s=3*u-2,y=-3*u;h+=`<rect x="${x+1}" y="${y+1}" width="${s-2}" height="${s-2}" rx="${u*.5}" fill="#EEF2FF" stroke="#3D5AFE" stroke-width="2" stroke-dasharray="5 4"/><text x="${x+s/2}" y="${y+s*.7}" text-anchor="middle" font-size="${u*2}" font-weight="800" fill="#3D5AFE" font-family="Baloo 2, Trebuchet MS, sans-serif">?</text>`;}
-    x+=(c.w+.7)*u;});
-  return h;}
-const PX=220,PY=176,ARM=113;
-const fitU=cls=>Math.min(13,...cls.map(c=>Math.min(170/Math.max(panW(c),1),122/panH(c))));
-// toppen av bilden beskärs efter de högsta klossarna, så att det inte blir tomt ovanför små tal
-const fitTop=(cls,u)=>Math.max(-18,Math.min(PY-80,PY-19-22-Math.max(...cls.map(panH))*u-18));
-function scaleSVG(Lc,Rc,th,lock,u,top){
-  if(u==null)u=fitU([Lc,Rc]);if(top==null)top=fitTop([Lc,Rc],u);
-  const rad=th*Math.PI/180,dx=ARM*Math.cos(rad),dy=ARM*Math.sin(rad);
-  const pan=(ex,ey,cl)=>`<g transform="translate(${ex.toFixed(2)} ${ey.toFixed(2)})"><line x1="0" y1="0" x2="0" y2="-12" stroke="#56668F" stroke-width="4" stroke-linecap="round"/><rect x="-94" y="-19" width="188" height="8" rx="4" fill="#C9A26B"/><rect x="-94" y="-19" width="188" height="3" rx="1.5" fill="#E2C391"/><g transform="translate(0 -19)">${drawPan(cl,u)}</g></g>`;
-  return `<svg viewBox="0 ${top.toFixed(1)} 440 ${(248-top).toFixed(1)}" role="img" aria-label="En balansvåg">
-  <ellipse cx="${PX}" cy="243" rx="80" ry="6" fill="#1D2B53" opacity=".08"/>
-  <path d="M${PX} ${PY} L${PX-26} 238 L${PX+26} 238 Z" fill="#7B8AB0"/><rect x="${PX-48}" y="234" width="96" height="9" rx="4.5" fill="#56668F"/>
-  <g transform="rotate(${th.toFixed(2)} ${PX} ${PY})"><rect x="${PX-ARM-6}" y="${PY-4.5}" width="${2*ARM+12}" height="9" rx="4.5" fill="#56668F"/><rect x="${PX-ARM-6}" y="${PY-4.5}" width="${2*ARM+12}" height="3" rx="1.5" fill="#8E9BBE"/></g>
-  <circle cx="${PX}" cy="${PY}" r="7" fill="#F2B707" stroke="#1D2B53" stroke-width="2"/>
-  ${pan(PX-dx,PY-dy,Lc)}${pan(PX+dx,PY+dy,Rc)}
-  ${lock?`<text x="${PX}" y="${PY-16}" text-anchor="middle" font-size="22">🔒</text>`:""}</svg>`;}
-const tilt=(l,r)=>l===r?0:Math.sign(r-l)*Math.min(11,4+Math.abs(r-l)*.7);
-
-/* ---------- Vågens rörelse (fjäder, gungar lite innan den stannar) ---------- */
-const SC={th:0,v:0,t:0,raf:0};
-function scaleTo(t){SC.t=t;if(reduced()){SC.th=t;SC.v=0;drawScale();return;}if(!SC.raf)SC.raf=requestAnimationFrame(step);}
-function step(){SC.v+=(SC.t-SC.th)*.045;SC.v*=.86;SC.th+=SC.v;
-  if(Math.abs(SC.v)<.004&&Math.abs(SC.t-SC.th)<.01){SC.th=SC.t;SC.v=0;SC.raf=0;drawScale();return;}
-  drawScale();SC.raf=requestAnimationFrame(step);}
+const SC=MPVag.spring(()=>drawScale());
+const scaleTo=t=>SC.to(t);
 function drawScale(){if(!G)return;const t=G.t,x=G.reveal,col=G.state==="done"?"#2BB673":"#E5484D",rods=G.level===4;
   const L=clusters(t.L,x,col,rods),R=clusters(t.R,x,col,rods);
   // samma klossar som med rätt svar, så att storleken inte hoppar när svaret visas
   const all=[L,R];if(!t.yn)all.push(clusters(t.L,t.ans,col,rods),clusters(t.R,t.ans,col,rods));
-  const u=fitU(all);
-  $("scale").innerHTML=scaleSVG(L,R,SC.th,t.yn&&!G.unlocked,u,fitTop(all,u));}
+  $("scale").innerHTML=MPVag.svg(L,R,Object.assign({th:SC.th,lock:t.yn&&!G.unlocked},MPVag.fit(all)));}
 
 /* ---------- Skärmar ---------- */
 const LEVELS=[
@@ -279,13 +218,12 @@ const LEVELS=[
   {n:2,name:"Talet som fattas",desc:"Rutan kan stå var som helst",ex:"9 = __ + 4",c:"#3D8BFD"},
   {n:3,name:"Båda sidorna",desc:"Räkna på båda sidorna",ex:"8 + 4 = __ + 5",c:"#FF9F43"},
   {n:4,name:"Tänk smart",desc:"Jämför talen i stället för att räkna allt",ex:"27 + 15 = 26 + __",c:"#17AFC4"},
-  {n:5,name:"Gömda tal",desc:"Hur mycket väger ett paket?",ex:"🎁 + 🎁 = 10",c:"#7B61FF"},
   {n:6,name:"Multiplikation",desc:"Lika mycket med gånger",ex:"3 · 4 = 2 · __",c:"#E5484D"}];
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 let G=null;
 function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
-  $("levels").innerHTML=LEVELS.map(l=>`<button class="lcard" data-l="${l.n}" style="--c:${l.c}"><span class="ex">${l.ex}</span><b>${l.n}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.n]||0)}</button>`).join("");
+  $("levels").innerHTML=LEVELS.map((l,i)=>`<button class="lcard" data-l="${l.n}" style="--c:${l.c}"><span class="ex">${l.ex}</span><b>${i+1}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.n]||0)}</button>`).join("");
   document.querySelectorAll(".lcard").forEach(b=>b.onclick=()=>start(+b.dataset.l));show("home");}
 function start(level){const tasks=[],seen=new Set();
   while(tasks.length<ROUND){const t=gen(level),k=sideTxt(t.L)+"="+sideTxt(t.R);if(seen.has(k))continue;seen.add(k);tasks.push(t);}
@@ -296,15 +234,15 @@ function next(){if(G.i>=G.tasks.length)return finish();
   const t=G.tasks[G.i];G.t=t;G.inp="";G.tries=0;G.missed=false;G.reveal=null;G.state="ask";G.unlocked=false;G.slotCls="";G.shownAns=null;
   $("info").textContent=`${G.done+1} / ${ROUND}`;$("prog").style.width=(G.done/ROUND*100)+"%";
   $("next").hidden=true;fb("");$("yn").hidden=!t.yn;$("pad").hidden=!!t.yn;
-  $("instr").textContent=t.yn?"Stämmer det? Är det lika mycket på båda sidor?":t.gift?"Vågen väger jämnt. Alla paket väger lika mycket. Hur mycket väger ett paket?":G.level===4?"Tänk smart! Vilket tal ska stå i rutan för att vågen ska väga jämnt?":"Vilket tal ska stå i rutan för att vågen ska väga jämnt?";
-  SC.th=0;SC.v=0;SC.t=0;drawEq();drawScale();}
+  $("instr").textContent=t.yn?"Stämmer det? Är det lika mycket på båda sidor?":G.level===4?"Tänk smart! Vilket tal ska stå i rutan för att vågen ska väga jämnt?":"Vilket tal ska stå i rutan för att vågen ska väga jämnt?";
+  SC.reset();drawEq();drawScale();}
 function drawEq(){const t=G.t;$("eq").classList.toggle("long",t.L.length+t.R.length>5);$("eq").innerHTML=`${sideHtml(t.L)}<span class="is">=</span>${sideHtml(t.R)}`;
-  $("giftq").hidden=!t.gift;if(t.gift)$("giftq").innerHTML=`🎁 = ${slotHtml()}`;}
+}
 function fb(msg,hint){const f=$("feedback");f.textContent=msg;f.className="feedback"+(hint?" hint":"");}
 
 /* ---------- Svara ---------- */
 function answerYN(yes){if(!G||G.state!=="ask")return;const t=G.t,l=weight(t.L),r=weight(t.R),right=(yes===t.truth);
-  G.unlocked=true;G.state="done";$("yn").hidden=true;scaleTo(tilt(l,r));
+  G.unlocked=true;G.state="done";$("yn").hidden=true;scaleTo(MPVag.tilt(l,r));
   const desc=(s,w,side)=>s.length===1?`${side} sida är ${w}`:`${sideTxt(s)} är ${w}`;
   const d1=desc(t.L,l,"vänster");
   const why=l===r?`Båda sidorna är ${l}. Det stämmer!`:`${d1[0].toUpperCase()+d1.slice(1)}, men ${desc(t.R,r,"höger")}. Det stämmer inte.`;
@@ -325,13 +263,12 @@ function check(){const t=G.t,v=+G.inp;G.reveal=v;const l=weight(t.L,v),r=weight(
   if(G.tries>=2){G.state="done";G.inp="";G.shownAns=t.ans;G.reveal=t.ans;G.slotCls="shown";drawEq();drawScale();
     scaleTo(0);
     fb(`Det ska vara ${t.ans}. ${proof(t.ans)}`,true);finishTask();return;}
-  G.state="wrong";G.slotCls="bad";drawEq();drawScale();scaleTo(tilt(l,r));fb(wrongMsg(t,v,l,r),true);}
+  G.state="wrong";G.slotCls="bad";drawEq();drawScale();scaleTo(MPVag.tilt(l,r));fb(wrongMsg(t,v,l,r),true);}
 function proof(x){const t=G.t,w=weight(t.L,x);
-  if(t.gift)return `Ett paket väger ${x}: ${sideTxt(t.L,x)} = ${sideTxt(t.R,x)}, båda sidorna är ${w}.`;
   return `${sideTxt(t.L,x)} = ${sideTxt(t.R,x)}. Båda sidorna är ${w}.`;}
 function wrongMsg(t,v,l,r){
   const heavy=l>r?"Vänster":"Höger";
-  let msg=t.gift?`Om ett paket väger ${v} blir vänster sida ${l} och höger sida ${r}.`:`Med ${v} blir vänster sida ${l} och höger sida ${r}.`;
+  let msg=`Med ${v} blir vänster sida ${l} och höger sida ${r}.`;
   msg+=` ${heavy} sida väger mer.`;
   if(t.hint)return msg+" "+t.hint;
   const qs=t.L.some(it=>it.k==="q")?t.L:t.R,os=qs===t.L?t.R:t.L,known=qs.filter(it=>it.k==="n");
@@ -379,7 +316,7 @@ function confetti(){
 }
 
 /* startskärmens våg: 8 + 4 = 7 + 5 */
-$("demo").innerHTML=scaleSVG(clusters([N(8),N(4,"+")]),clusters([N(7),N(5,"+")]),0,false);
+$("demo").innerHTML=MPVag.svg(clusters([N(8),N(4,"+")]),clusters([N(7),N(5,"+")]));
 $("logo").innerHTML=`<span style="display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#3D8BFD;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="50" height="50" aria-hidden="true"><path d="M30 31 L22 50 L38 50 Z" fill="#fff"/><rect x="6" y="28" width="48" height="5" rx="2.5" fill="#fff"/><rect x="2" y="21" width="20" height="4" rx="2" fill="#FFD43B"/><rect x="38" y="21" width="20" height="4" rx="2" fill="#FFD43B"/><rect x="5" y="9" width="6" height="6" rx="1.4" fill="#fff"/><rect x="5" y="15" width="6" height="6" rx="1.4" fill="#fff"/><rect x="12" y="15" width="6" height="6" rx="1.4" fill="#FFB86B"/><rect x="42" y="15" width="6" height="6" rx="1.4" fill="#fff"/><rect x="49" y="15" width="6" height="6" rx="1.4" fill="#FFB86B"/><rect x="49" y="9" width="6" height="6" rx="1.4" fill="#FFB86B"/><text x="30" y="20" font-size="14" text-anchor="middle" font-weight="800" fill="#fff" font-family="Baloo 2, Trebuchet MS, sans-serif">=</text></svg></span>`;
 openHome();
 </script>
