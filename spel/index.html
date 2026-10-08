@@ -378,7 +378,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <button class="gamecard car" id="btnCar"><span class="pic shot"><img src="bilder/kort/car.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Racerbanan</b><small>Tävla mot tre bilar! Kör under bågen med rätt svar, undvik hinder och plocka mynt till garaget.</small></span></button>
   <button class="gamecard space" id="btnSpace"><span class="pic shot"><img src="bilder/kort/space.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic shot"><img src="bilder/kort/frog.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
-  <button class="gamecard kiosk" id="btnKiosk"><span class="pic shot"><img src="bilder/kort/kiosk.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Kiosken</b><small>Räkna ihop priser och ge rätt växel till kunderna.</small></span></button>
+  <a class="gamecard kiosk" href="affaren/" style="text-decoration:none"><span class="pic shot"><img src="bilder/kort/affaren.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Affären</b><small>Stå i kassan! Räkna ihop, ge växel och bygg ut din egen affär.</small></span></a>
   </div>
   <div class="soon">Fler spel kommer!</div>
 </div>
@@ -516,7 +516,7 @@ $("btnBub").onclick=()=>{game="bub";if(cat==="klocka")cat="plus10";renderChoose(
 $("memChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.memMode=b.dataset.m;save();renderChoose();};
 $("bubChips").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.bubFrom=b.dataset.f;save();renderChoose();};
 $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
-$("btnKiosk").onclick=()=>{game="kiosk";renderChoose();showOnly("choose");};
+// Kiosken ersattes av Affären (egen sida affaren/); den gamla kioskkoden ligger kvar men nås inte längre
 $("btnTower").onclick=()=>{game="tower";if(cat==="klocka")cat="hundra";renderChoose();showOnly("choose");};
 $("btnFrog").onclick=()=>{game="frog";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("frogChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.frogMode=b.dataset.m;save();renderChoose();};

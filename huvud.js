@@ -91,7 +91,7 @@ body.mph-mini #quit{display:none}
     const dv=get('mattespel-division-v1');if(dv&&dv.facts)n+=medalsFrom((q,d)=>dv.facts[d+':'+q+':0']||[]).reduce((a,b)=>a+b,0);
     const sp=get('mattespel-spel-v1')||{};
     n+=['fly','mem','car','space','frog','tower','skatt','kiosk','bubbel','tug'].flatMap(k=>Object.values(sp[k]||{})).reduce((a,r)=>a+((r&&r.stars)||0),0);
-    ['klockan','geometri','brak','uppstallning','hundraruta','tiotal','taluppfattning','sverigekartan','ordgomma','europa','varlden','talfoljd','rutjakten','brakbitar','kortdivision','vagen','gomda','kulbanan'].forEach(k=>{const d=get('mattespel-'+k+'-v1');n+=sum((d&&d.stars)||{});});
+    ['klockan','geometri','brak','uppstallning','hundraruta','tiotal','taluppfattning','sverigekartan','ordgomma','europa','varlden','talfoljd','rutjakten','brakbitar','kortdivision','vagen','gomda','kulbanan','affaren'].forEach(k=>{const d=get('mattespel-'+k+'-v1');n+=sum((d&&d.stars)||{});});
     const sj=get('mattespel-skattjakten-v1');n+=Object.values((sj&&sj.stars)||{}).reduce((a,b)=>a+(+b||0),0);
     return n;
   };

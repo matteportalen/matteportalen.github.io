@@ -91,6 +91,8 @@ function owlSVG(cfg,cls,standalone){
   // halsband
   if(cfg.neck==="rosett")s+=`<path d="M60 80 L46 72 L46 88 Z M60 80 L74 72 L74 88 Z" fill="#E5484D"/><circle cx="60" cy="80" r="4.5" fill="#B8323A"/>`;
   if(cfg.neck==="halsduk")s+=`<path d="M26 74 Q60 90 94 74 L94 83 Q60 99 26 83 Z" fill="#3D8BFD"/><path d="M70 86 L78 110 L88 106 L80 84 Z" fill="#3D8BFD"/><path d="M36 80 Q60 93 84 80" stroke="#fff" stroke-width="2.5" fill="none" stroke-dasharray="4 5"/>`;
+  // förkläde: bara i Affären (som bygghjälmen i Tornbygget), finns inte i Garderoben
+  if(cfg.neck==="forklade")s+=`<path d="M42 84 L78 84 L84 106 Q60 116 36 106 Z" fill="#fff" stroke="#E5484D" stroke-width="2" stroke-linejoin="round"/><path d="M42 84 Q60 76 78 84" stroke="#E5484D" stroke-width="3" fill="none"/><rect x="52" y="93" width="16" height="9" rx="2" fill="none" stroke="#E5484D" stroke-width="1.8"/>`;
   if(cfg.neck==="medalj")s+=`<path d="M46 72 L60 92 L74 72" stroke="#3D5AFE" stroke-width="6" fill="none"/><circle cx="60" cy="96" r="9" fill="#F2C230" stroke="#C99A0A" stroke-width="2"/><path d="M60 90l2 4 4 .5-3 3 .8 4-3.8-2-3.8 2 .8-4-3-3 4-.5z" fill="#fff"/>`;
   // hatt
   if(cfg.hat==="keps")s+=`<path d="M34 32 Q60 0 86 32 Z" fill="#E5484D"/><path d="M58 30 Q86 25 104 32 Q88 38 58 34 Z" fill="#B8323A"/><circle cx="60" cy="13" r="3" fill="#B8323A"/>`;

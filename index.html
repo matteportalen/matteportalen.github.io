@@ -424,6 +424,7 @@ const np=get("np3-resultat");S.np=Object.values(np||{});
 {const og=get("mattespel-ordgomma-v1");S.stars+=sum((og&&og.stars)||{});} // Ordgömman (Övriga ämnen)
 {const eu=get("mattespel-europa-v1");S.stars+=sum((eu&&eu.stars)||{});} // Europakartan (Övriga ämnen)
 {const vw=get("mattespel-varlden-v1");S.stars+=sum((vw&&vw.stars)||{});} // Världskartan (Övriga ämnen)
+{const af=get("mattespel-affaren-v1");S.aff=af||{};S.stars+=sum(S.aff.stars);} // Affären (i Spelhörnan)
 {const kb=get("mattespel-kulbanan-v1");S.kul=(kb&&kb.stars)||{};S.stars+=sum(S.kul);} // Kulbanan (i Spelhörnan)
 const sj=get("mattespel-skattjakten-v1");S.sj=sj||{};S.stars+=Object.values(S.sj.stars||{}).reduce((a,b)=>a+(+b||0),0);
 const bbt=get("mattespel-brakbitar-v1");S.bitar=(bbt&&bbt.stars)||{};
@@ -437,7 +438,7 @@ $("sStars").textContent=S.stars;
 /* ---------- Dagar i rad (en dag räknas när något har tränats) ---------- */
 const day=d=>d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
 const today=day(new Date()),yest=day(new Date(Date.now()-864e5));
-const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","mattespel-vagen-v1","mattespel-gomda-v1","mattespel-kulbanan-v1"].map(k=>localStorage.getItem(k)||"").join("|");
+const snap=["mattespel-uppstallning-v1","mattespel-hundraruta-v1","mattespel-brak-v1","mattespel-geometri-v1","mattespel-spel-v1","mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","mattespel-vagen-v1","mattespel-gomda-v1","mattespel-kulbanan-v1","mattespel-affaren-v1"].map(k=>localStorage.getItem(k)||"").join("|");
 let fp=0;for(let i=0;i<snap.length;i++)fp=(fp*31+snap.charCodeAt(i))|0;
 const st=get("matteportalen-dagar")||{fp:null,days:[]};
 if(st.fp!==null&&st.fp!==fp&&!st.days.includes(today))st.days.push(today);
@@ -504,8 +505,8 @@ const STICKERS=[
   ["nackros","🪷","Näckrosmästaren","Klara Grodhoppet utan att bli blöt en enda gång.",()=>!!S.spel.frogPerfect],
   ["bygg","🏗️","Byggmästaren","Bygg tornet ända upp till månen.",()=>!!S.spel.towerWon],
   ["mane","🌙","Månlandaren","Nå månen i Tornbygget utan ett enda fel och utan att tappa en balk.",()=>!!S.spel.towerPerfect],
-  ["kiosk","🏪","Kioskbiträdet","Klara en dag i Kiosken.",()=>!!S.spel.kioskWon],
-  ["vaxel","🪙","Växelmästaren","Ge rätt svar till alla kunder i kiosken.",()=>!!S.spel.kioskPerfect],
+  ["kiosk","🏪","Kassören","Klara en dag i Affären.",()=>!!S.spel.kioskWon||(S.aff.dagar||0)>0],
+  ["vaxel","🪙","Växelmästaren","Ge rätt svar direkt till alla kunder en dag i Affären.",()=>!!S.spel.kioskPerfect||Object.values(S.aff.stars||{}).some(v=>v===3)],
   ["minne","🧠","Minnet","Spela Memory i Spelhörnan.",()=>(S.spel.memPlayed||0)>0],
   ["minnesmastare","🃏","Minnesmästaren","Få tre stjärnor i Memory.",()=>!!S.spel.memPerfect],
   ["groda","🐸","Plusgrodan","Kör Racet i Lilla plus & minus.",()=>S.lpRace.length>0],
@@ -544,6 +545,7 @@ const STICKERS=[
   ["vagen","⚖️","Vågmästaren","Få stjärnor i Vågen.",()=>sum(S.vag)>0],
   ["gata","🎁","Gåtlösaren","Få stjärnor i Gömda tal.",()=>sum(S.gomda)>0],
   ["paket","🔍","Paketöppnaren","Få tre stjärnor i Gömda tal.",()=>Object.values(S.gomda).some(v=>v===3)],
+  ["butik","🛍️","Butiksägaren","Köp allt till din affär i Affären.",()=>(S.aff.own||[]).length>=11],
   ["kulbana","🔺","Pyramidräddaren","Rensa hela Kulbanan innan kulorna når pyramiden.",()=>sum(S.kul)>0],
   ["kortdiv","➗","Delningsmästaren","Få stjärnor i Kort division.",()=>sum(S.kort)>0],
   ["rutjagare","🟩","Rutjägaren","Fyll fem kors i Rutjakten.",()=>Object.entries(S.rut).some(([k,v])=>!k.startsWith("t-")&&v>0)],
@@ -594,7 +596,7 @@ $("bubble").textContent=`${hi} ${msg}`;
 /* ============ Elevprofiler (allt sparas bara på den här enheten) ============ */
 (function(){
 const PKEYS=["mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
-  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","mattespel-vagen-v1","mattespel-gomda-v1","mattespel-kulbanan-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
+  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","mattespel-vagen-v1","mattespel-gomda-v1","mattespel-kulbanan-v1","mattespel-affaren-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const jGet=k=>{try{return JSON.parse(lsGet(k)||"null")}catch(e){return null}},jSet=(k,v)=>lsSet(k,JSON.stringify(v));
 const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};
