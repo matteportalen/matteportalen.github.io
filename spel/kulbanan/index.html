@@ -80,7 +80,7 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
   <p class="lab">Vilka tabeller?</p>
   <div class="chips" id="tabs"></div>
   <button class="go" id="play">Starta ▶</button>
-  <p class="note">Din kula är vit tills du skjuter, då får den sin färg. Tryck där du vill skjuta. Tryck på djuret för att byta till nästa kula. Hinner kulorna in i pyramiden får du försöka igen.</p>
+  <p class="note">Din kula är vit tills du skjuter, då får den sin färg. Dra med fingret för att sikta och släpp för att skjuta (med mus: klicka). Tryck på djuret för att byta till nästa kula. Hinner kulorna in i pyramiden får du försöka igen.</p>
 </div>
 </section>
 <section id="game" class="screen" hidden>
@@ -259,7 +259,8 @@ function burst(x,y,col){if(reduced())return;for(let k=0;k<10;k++){const a=Math.r
 /* ---------- Skjutkulan ---------- */
 // svar som finns bland kulorna man ser (annars bland dem som kommer)
 function present(){const vis=K.balls.filter(b=>b.s>0).map(b=>b.v);return vis.length?vis:K.queue.slice(0,8).map(b=>b.v);}
-function pickShot(){const p=present(),v=p.length?pick(p):pick(K.vals),e=pick(K.em[v]);return{v,txt:`${e[0]}·${e[1]}`};}
+// nytt uttryck vars svar finns i kedjan, inte samma uttryck som kulan före
+function pickShot(){const p=present();let o,k=0;do{const v=p.length?pick(p):pick(K.vals),e=pick(K.em[v]);o={v,txt:`${e[0]}·${e[1]}`};}while(k++<8&&[K.cur,K.next].some(c=>c&&c.txt===o.txt));return o;}
 function fixShot(o){if(o==null)return o;const p=present();return!p.length||p.includes(o.v)?o:pickShot();}
 function aimAt(x,y){K.ang=Math.atan2(y-K.sy,x-K.sx);}
 function shoot(){if(K.state!=="play"||K.paused||K.cool>0||K.cur==null)return;
@@ -325,18 +326,28 @@ function draw(){if(!K)return;const W=K.W,H=K.H,d=K.d;cx.clearRect(0,0,W,H);if(bg
   // kulan som ska skjutas, vid kanten åt det håll djuret siktar
   // skjutkulan är vit med uttrycket; den får sin färg först när den skjuts ut
   if(K.cur!=null&&K.state==="play")ballDraw(sx+Math.cos(K.ang)*R*1.2,sy+Math.sin(K.ang)*R*1.2,d/2*1.08,{white:true,txt:K.cur.txt});
-  if(K.next!=null&&K.state==="play"){ballDraw(sx+R*.98,sy+R*.82,d*.36,{white:true,txt:K.next.txt});}
+  // nästa kula på motsatt sida om siktet, så att den aldrig hamnar över kulan som ska skjutas
+  if(K.next!=null&&K.state==="play"){ballDraw(sx-Math.cos(K.ang)*R*.98,sy-Math.sin(K.ang)*R*.98,d*.36,{white:true,txt:K.next.txt});}
   K.shots.forEach(s=>ballDraw(s.x,s.y,d/2,{col:K.vc[s.v],txt:s.txt}));
   K.parts.forEach(p=>{cx.globalAlpha=1-p.t/.7;cx.fillStyle=p.col;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();});cx.globalAlpha=1;
   K.floats.forEach(f=>{cx.globalAlpha=Math.min(1,2-f.t*1.5);cx.font=`800 ${Math.round(d*.5)}px "Baloo 2","Trebuchet MS",sans-serif`;cx.textAlign="center";cx.lineWidth=5;cx.strokeStyle="rgba(60,30,5,.7)";cx.strokeText(f.txt,f.x,f.y-d*.6);cx.fillStyle="#FFE7A3";cx.fillText(f.txt,f.x,f.y-d*.6);});cx.globalAlpha=1;}
 
 /* ---------- Styrning ---------- */
 const evXY=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];};
-cv.addEventListener("pointermove",e=>{if(!K||K.state!=="play")return;if(e.pointerType==="mouse"){const [x,y]=evXY(e);aimAt(x,y);}});
+// mus: siktet följer musen och klick skjuter. Pekskärm: fingret ner = sikta, dra = flytta siktet, lyft = skjut
+// (lärarens fynd: förut sköt kulan direkt vid tryck, så det gick inte att sikta). Lyfter man över djuret skjuts inget.
+let drag=null;
+const onPet=(x,y)=>Math.hypot(x-K.sx,y-K.sy)<K.d*1.15;
 cv.addEventListener("pointerdown",e=>{if(!K||K.state!=="play"||K.paused)return;const [x,y]=evXY(e);
-  // tryck på djuret = byt kula
-  if(Math.hypot(x-K.sx,y-K.sy)<K.d*1.15){[K.cur,K.next]=[K.next,K.cur];window.Ljud&&Ljud.clonk&&Ljud.clonk();return;}
-  aimAt(x,y);shoot();});
+  if(onPet(x,y)){[K.cur,K.next]=[K.next,K.cur];window.Ljud&&Ljud.clonk&&Ljud.clonk();return;}   // tryck på djuret = byt kula
+  aimAt(x,y);
+  if(e.pointerType==="mouse"){shoot();return;}
+  drag=e.pointerId;try{cv.setPointerCapture(e.pointerId);}catch(_){}});
+cv.addEventListener("pointermove",e=>{if(!K||K.state!=="play")return;const [x,y]=evXY(e);
+  if(e.pointerType==="mouse"||drag===e.pointerId){if(!onPet(x,y))aimAt(x,y);}});
+cv.addEventListener("pointerup",e=>{if(drag!==e.pointerId)return;drag=null;if(!K||K.state!=="play"||K.paused)return;const [x,y]=evXY(e);
+  if(!onPet(x,y))shoot();});
+cv.addEventListener("pointercancel",()=>{drag=null;});
 document.addEventListener("keydown",e=>{if(!K||$("game").hidden||K.state!=="play")return;
   if(e.key==="ArrowLeft"||e.key==="a")K.ang-=.12;else if(e.key==="ArrowRight"||e.key==="d")K.ang+=.12;
   else if(e.key===" "||e.key==="ArrowUp"){e.preventDefault();shoot();}else if(e.key==="Shift"||e.key==="s"){[K.cur,K.next]=[K.next,K.cur];}
