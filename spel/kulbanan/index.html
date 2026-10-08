@@ -75,12 +75,12 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 <section id="home" class="screen">
 <div class="wrap">
   <div class="hero"><canvas id="heroCv" aria-hidden="true"></canvas><div class="in"><h1>Kulbanan</h1><p>Kulorna rullar mot pyramiden! Skjut svaret till rätt ställe så att kulorna försvinner.</p></div></div>
-  <div class="rule"><div class="balls"><span class="ball" style="--c:#2BB673">4·6</span><span class="ball num">24</span><span class="ball" style="--c:#FF9F43">3·8</span></div>
-    <p>Tre kulor med samma svar bredvid varandra försvinner. Färgen hjälper inte, du måste räkna!</p></div>
+  <div class="rule"><div class="balls"><span class="ball" style="--c:#2BB673">24</span><span class="ball num">4·6</span><span class="ball" style="--c:#2BB673">24</span></div>
+    <p>Räkna ut talet i din vita kula och skjut den till samma tal i ormen. Tre lika bredvid varandra försvinner!</p></div>
   <p class="lab">Vilka tabeller?</p>
   <div class="chips" id="tabs"></div>
   <button class="go" id="play">Starta ▶</button>
-  <p class="note">Tryck där du vill skjuta. Tryck på djuret för att byta till nästa kula. Hinner kulorna in i pyramiden får du försöka igen.</p>
+  <p class="note">Din kula är vit tills du skjuter, då får den sin färg. Tryck där du vill skjuta. Tryck på djuret för att byta till nästa kula. Hinner kulorna in i pyramiden får du försöka igen.</p>
 </div>
 </section>
 <section id="game" class="screen" hidden>
@@ -106,7 +106,8 @@ button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 <script>
 /* Kulbanan: en kedja kulor rullar längs en spiral mot en pyramid. Kulorna har uttryck (4 · 6), skjutkulan ett svar (24).
    Tre eller fler intill varandra med samma svar försvinner; kedjan sluter sig och samma svar i båda ändarna drar ihop den
-   igen (kedjereaktion). Färgen följer tabellen (första faktorn), aldrig svaret. Skjutkulan väljs bland svar som finns i kedjan.
+   igen (kedjereaktion). Som i Bubbeljakten (lärarens önskan): ormen har svaren med en färg per tal, skjutkulan har uttrycket och är
+   vit tills den skjuts ut, då får den sin färg. Skjutkulan väljs bland svar som finns i kedjan.
    Prototyp: en bana, inga extrakrafter. */
 const $=id=>document.getElementById(id);
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
@@ -116,7 +117,7 @@ const data=(()=>{try{return Object.assign({stars:{},best:{},tab:"sma"},JSON.pars
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
 const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
 const TABS={sma:{name:"Små tabeller",desc:"2, 3, 4, 5 och 10",t:[2,3,4,5,10],vals:4},alla:{name:"Alla tabeller",desc:"2 till 10",t:[2,3,4,5,6,7,8,9,10],vals:5}};
-const COL={2:"#E5484D",3:"#FF9F43",4:"#E0B000",5:"#2BB673",6:"#17AFC4",7:"#3D8BFD",8:"#7B61FF",9:"#FF5FA2",10:"#9C6B3C"};
+const PAL=["#E5484D","#2BB673","#3D8BFD","#F2A900","#7B61FF","#FF5FA2","#17AFC4","#9C6B3C"];
 
 /* ---------- Talen ----------
    Bara svar som kan skrivas på minst två olika sätt (12 = 3 · 4 = 2 · 6), annars räcker det att känna igen texten. */
@@ -125,10 +126,11 @@ function exprMap(tabs){const m={};
   const ok={};for(const v in m){const pairs=new Set(m[v].map(([a,b])=>Math.min(a,b)+"x"+Math.max(a,b)));if(pairs.size>=2)ok[v]=m[v];}
   return ok;}
 // kedjan: rader om 1–3 kulor med samma svar, aldrig samma svar två rader i rad
-function makeQueue(cfg){const em=exprMap(cfg.t),vals=shuffle(Object.keys(em).map(Number)).slice(0,cfg.vals),q=[];let last=null,lastTxt="";
+function makeQueue(cfg){const em=exprMap(cfg.t),vals=shuffle(Object.keys(em).map(Number)).slice(0,cfg.vals),q=[],vc={},pal=shuffle(PAL.slice());let last=null;
+  vals.forEach((v,i)=>vc[v]=pal[i]);
   while(q.length<cfg.n){let v;do{v=pick(vals);}while(v===last);last=v;const len=pick([1,2,2,2,3,3]);
-    for(let i=0;i<len&&q.length<cfg.n;i++){let e,t,k=0;do{e=pick(em[v]);t=`${e[0]}·${e[1]}`;}while(t===lastTxt&&k++<6);lastTxt=t;q.push({v,txt:t,col:COL[e[0]],num:false});}}
-  return{q,vals,em};}
+    for(let i=0;i<len&&q.length<cfg.n;i++)q.push({v,txt:String(v),col:vc[v]});}
+  return{q,vals,em,vc};}
 
 /* ---------- Skärmar ---------- */
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
@@ -150,7 +152,7 @@ function startGame(){stopGame();loadPet();const cfg0=TABS[data.tab];
   show("game");resize();
   // kedjan och farten efter banans längd, så att spelet blir lika svårt på mobil och dator
   const fits=K.path.len/K.d,cfg=Object.assign({},cfg0,{n:Math.max(22,Math.min(55,Math.round(fits*.65)))}),Q=makeQueue(cfg);
-  Object.assign(K,{cfg,queue:Q.q,vals:Q.vals,em:Q.em,total:cfg.n});
+  Object.assign(K,{cfg,queue:Q.q,vals:Q.vals,em:Q.em,vc:Q.vc,total:cfg.n});
   K.cur=pickShot();K.next=pickShot();$("score").textContent="0";$("prog").style.width="0";$("pause").hidden=true;$("tip").hidden=true;
   sndIcon();last=performance.now();raf=requestAnimationFrame(loop);}
 function stopGame(){cancelAnimationFrame(raf);raf=0;if(K)K.state="stop";}
@@ -242,8 +244,8 @@ function junction(i){const B=K.balls;if(i<=0||i>=B.length)return;const c=B[i].co
 function checkRun(i,combo){const B=K.balls;if(i<0||i>=B.length)return false;const v=B[i].v;let l=i,r=i;
   while(l>0&&B[l-1].v===v&&B[l-1].g===1)l--;while(r<B.length-1&&B[r+1].v===v&&B[r+1].g===1)r++;
   if(r-l+1<3)return false;
-  const gone=B.splice(l,r-l+1);K.popped+=gone.filter(b=>!b.num).length;const pts=gone.length*10*(1+combo);K.score+=pts;
-  gone.forEach((b,k)=>{const p=posAt(b.s);burst(p.x,p.y,b.num?"#E0A83A":b.col);});
+  const gone=B.splice(l,r-l+1);K.popped+=gone.filter(b=>!b.ins).length;const pts=gone.length*10*(1+combo);K.score+=pts;
+  gone.forEach((b,k)=>{const p=posAt(b.s);burst(p.x,p.y,b.col);});
   const mid=posAt(gone[gone.length>>1].s);K.floats.push({x:mid.x,y:mid.y,t:0,txt:`${v}! +${pts}`+(combo?` · kedja ×${combo+1}`:"")});
   window.Ljud&&Ljud.pop&&Ljud.pop(combo*3+gone.length);if(combo&&window.Ljud&&Ljud.chime)Ljud.chime();
   $("score").textContent=K.score;$("prog").style.width=(K.popped/K.total*100)+"%";
@@ -257,12 +259,12 @@ function burst(x,y,col){if(reduced())return;for(let k=0;k<10;k++){const a=Math.r
 /* ---------- Skjutkulan ---------- */
 // svar som finns bland kulorna man ser (annars bland dem som kommer)
 function present(){const vis=K.balls.filter(b=>b.s>0).map(b=>b.v);return vis.length?vis:K.queue.slice(0,8).map(b=>b.v);}
-function pickShot(){const p=present();return p.length?pick(p):pick(K.vals);}
-function fixShot(v){if(v==null)return v;const p=present();return!p.length||p.includes(v)?v:pick(p);}
+function pickShot(){const p=present(),v=p.length?pick(p):pick(K.vals),e=pick(K.em[v]);return{v,txt:`${e[0]}·${e[1]}`};}
+function fixShot(o){if(o==null)return o;const p=present();return!p.length||p.includes(o.v)?o:pickShot();}
 function aimAt(x,y){K.ang=Math.atan2(y-K.sy,x-K.sx);}
 function shoot(){if(K.state!=="play"||K.paused||K.cool>0||K.cur==null)return;
   const sp=Math.max(700,K.d*20),dx=Math.cos(K.ang),dy=Math.sin(K.ang),o=K.d*1.25;
-  K.shots.push({x:K.sx+dx*o,y:K.sy+dy*o,vx:dx*sp,vy:dy*sp,v:K.cur});K.cur=K.next;K.next=pickShot();K.cool=.22;window.Ljud&&Ljud.shoot&&Ljud.shoot();}
+  K.shots.push({x:K.sx+dx*o,y:K.sy+dy*o,vx:dx*sp,vy:dy*sp,v:K.cur.v,txt:K.cur.txt});K.cur=K.next;K.next=pickShot();K.cool=.22;window.Ljud&&Ljud.shoot&&Ljud.shoot();}
 function stepShots(dt){const B=K.balls,d=K.d;
   for(let k=K.shots.length-1;k>=0;k--){const s=K.shots[k];
     // flera små steg så att kulan inte hoppar förbi kedjan
@@ -272,13 +274,14 @@ function stepShots(dt){const B=K.balls,d=K.d;
     if(s.x<-d||s.y<-d||s.x>K.W+d||s.y>K.H+d)K.shots.splice(k,1);}}
 function insert(i,s){const B=K.balls,p=posAt(B[i].s),t=(s.x-p.x)*Math.cos(p.a)+(s.y-p.y)*Math.sin(p.a),front=t>0;
   const idx=front?i+1:i,prev=B[idx-1];
-  const nb={v:s.v,txt:String(s.v),num:true,col:"#FFF2D2",g:0,fresh:true,id:K.idc++,fx:s.x,fy:s.y,touch:true};
+  const nb={v:s.v,txt:String(s.v),col:K.vc[s.v],ins:true,g:0,fresh:true,id:K.idc++,fx:s.x,fy:s.y,touch:true};
+  K.floats.push({x:s.x,y:s.y,t:0,txt:`${s.txt.replace("·"," · ")} = ${s.v}`});
   nb.s=front?B[i].s+.01:(prev&&B[i].s-prev.s<=K.d+1?prev.s+K.d/2:B[i].s-K.d/2);
   B.splice(idx,0,nb);
   // hamnade kulan bredvid något med samma svar? annars räknas den som en miss (för stjärnorna)
   const nbV=[B[idx-1],B[idx+1]].filter(Boolean).map(b=>b.v);
   if(nbV.includes(s.v)){K.missRow=0;}else{K.misses++;K.missRow++;
-    if(K.missRow>=3){K.missRow=0;const ex=K.em[s.v]?K.em[s.v].slice(0,2).map(e=>`${e[0]} · ${e[1]}`).join(" och "):"";tip(`Tips: ${s.v} = ${ex}. Leta efter kulor som blir ${s.v}.`);}}}
+    if(K.missRow>=3){K.missRow=0;const ex=K.em[s.v]?K.em[s.v].slice(0,2).map(e=>`${e[0]} · ${e[1]}`).join(" och "):"";tip("Tips: räkna ut talet i den vita kulan först. Sedan skjuter du den till samma tal i ormen.");}}}
 let tipT;function tip(m){const t=$("tip");t.textContent=m;t.hidden=false;clearTimeout(tipT);tipT=setTimeout(()=>t.hidden=true,4200);}
 
 /* ---------- Loopen ---------- */
@@ -294,14 +297,14 @@ function loop(now){raf=requestAnimationFrame(loop);const dt=Math.min(.05,(now-la
   draw();}
 function ballDraw(x,y,r,b){
   const g=cx.createRadialGradient(x-r*.35,y-r*.4,r*.1,x,y,r);
-  if(b.num){g.addColorStop(0,"#FFFFFF");g.addColorStop(.5,"#FFF2D2");g.addColorStop(1,"#E9C98A");}
+  if(b.white){g.addColorStop(0,"#FFFFFF");g.addColorStop(.55,"#FBF6EA");g.addColorStop(1,"#D9CBAE");}
   else{g.addColorStop(0,"#FFFFFF");g.addColorStop(.18,b.col);g.addColorStop(1,shade(b.col,-.38));}
   cx.fillStyle=g;cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);cx.fill();
-  if(b.num){cx.strokeStyle="#D99A2B";cx.lineWidth=Math.max(2,r*.12);cx.stroke();}
+  if(b.white){cx.strokeStyle="#B89A66";cx.lineWidth=Math.max(1.5,r*.08);cx.stroke();}
   cx.fillStyle="rgba(255,255,255,.55)";cx.beginPath();cx.ellipse(x-r*.32,y-r*.42,r*.3,r*.17,-.5,0,Math.PI*2);cx.fill();
-  let fs=r*(b.num?.95:.78);cx.font=`800 ${fs}px "Baloo 2","Trebuchet MS",sans-serif`;const w=cx.measureText(b.txt).width;if(w>r*1.75){fs*=r*1.75/w;cx.font=`800 ${fs}px "Baloo 2","Trebuchet MS",sans-serif`;}
+  let fs=r*(b.txt.length<=2?.98:.78);cx.font=`800 ${fs}px "Baloo 2","Trebuchet MS",sans-serif`;const w=cx.measureText(b.txt).width;if(w>r*1.75){fs*=r*1.75/w;cx.font=`800 ${fs}px "Baloo 2","Trebuchet MS",sans-serif`;}
   cx.textAlign="center";cx.textBaseline="middle";
-  if(b.num){cx.fillStyle="#3B2A14";cx.fillText(b.txt,x,y+fs*.06);}
+  if(b.white){cx.fillStyle="#3B2A14";cx.fillText(b.txt,x,y+fs*.06);}
   else{cx.lineWidth=Math.max(2.5,fs*.2);cx.strokeStyle="rgba(40,20,5,.55)";cx.lineJoin="round";cx.strokeText(b.txt,x,y+fs*.06);cx.fillStyle="#fff";cx.fillText(b.txt,x,y+fs*.06);}}
 function shade(hex,f){const n=parseInt(hex.slice(1),16);let r=n>>16,g=n>>8&255,b=n&255;const t=f<0?0:255,p=Math.abs(f);r=Math.round((t-r)*p+r);g=Math.round((t-g)*p+g);b=Math.round((t-b)*p+b);return`rgb(${r},${g},${b})`;}
 function draw(){if(!K)return;const W=K.W,H=K.H,d=K.d;cx.clearRect(0,0,W,H);if(bg)cx.drawImage(bg,0,0,W,H);drawGoal();
@@ -320,9 +323,10 @@ function draw(){if(!K)return;const W=K.W,H=K.H,d=K.d;cx.clearRect(0,0,W,H);if(bg
   if(K.state==="play"){cx.setLineDash([3,9]);cx.strokeStyle="rgba(255,255,255,.65)";cx.lineWidth=2.5;cx.beginPath();cx.moveTo(sx+Math.cos(K.ang)*R*1.5,sy+Math.sin(K.ang)*R*1.5);cx.lineTo(sx+Math.cos(K.ang)*R*5,sy+Math.sin(K.ang)*R*5);cx.stroke();cx.setLineDash([]);}
   if(pet&&pet.complete&&pet.naturalWidth)cx.drawImage(pet,sx-R*.78,sy-R*.86,R*1.56,R*1.56);
   // kulan som ska skjutas, vid kanten åt det håll djuret siktar
-  if(K.cur!=null&&K.state==="play")ballDraw(sx+Math.cos(K.ang)*R*1.2,sy+Math.sin(K.ang)*R*1.2,d/2,{num:true,txt:String(K.cur)});
-  if(K.next!=null&&K.state==="play"){ballDraw(sx+R*.95,sy+R*.8,d*.3,{num:true,txt:String(K.next)});}
-  K.shots.forEach(s=>ballDraw(s.x,s.y,d/2,{num:true,txt:String(s.v)}));
+  // skjutkulan är vit med uttrycket; den får sin färg först när den skjuts ut
+  if(K.cur!=null&&K.state==="play")ballDraw(sx+Math.cos(K.ang)*R*1.2,sy+Math.sin(K.ang)*R*1.2,d/2*1.08,{white:true,txt:K.cur.txt});
+  if(K.next!=null&&K.state==="play"){ballDraw(sx+R*.98,sy+R*.82,d*.36,{white:true,txt:K.next.txt});}
+  K.shots.forEach(s=>ballDraw(s.x,s.y,d/2,{col:K.vc[s.v],txt:s.txt}));
   K.parts.forEach(p=>{cx.globalAlpha=1-p.t/.7;cx.fillStyle=p.col;cx.beginPath();cx.arc(p.x,p.y,p.r,0,Math.PI*2);cx.fill();});cx.globalAlpha=1;
   K.floats.forEach(f=>{cx.globalAlpha=Math.min(1,2-f.t*1.5);cx.font=`800 ${Math.round(d*.5)}px "Baloo 2","Trebuchet MS",sans-serif`;cx.textAlign="center";cx.lineWidth=5;cx.strokeStyle="rgba(60,30,5,.7)";cx.strokeText(f.txt,f.x,f.y-d*.6);cx.fillStyle="#FFE7A3";cx.fillText(f.txt,f.x,f.y-d*.6);});cx.globalAlpha=1;}
 
