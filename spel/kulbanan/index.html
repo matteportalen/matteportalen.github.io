@@ -155,14 +155,25 @@ function startGame(){stopGame();loadPet();const cfg0=TABS[data.tab];
   sndIcon();last=performance.now();raf=requestAnimationFrame(loop);}
 function stopGame(){cancelAnimationFrame(raf);raf=0;if(K)K.state="stop";}
 
-/* banan: en spiral som slutar vid pyramiden nära mitten */
+/* banan: en slingrig väg runt hela planen (lärarens önskan: inte en perfekt cirkel) som slutar med en krok runt djuret.
+   Punkterna är i en ruta 0–1 och dras ut till skärmens form; mellan dem en mjuk kurva (Catmull-Rom).
+   Kulornas storlek räknas fram så att slingorna aldrig kommer för nära varandra eller djuret. */
+const BANA=[[-.08,.12],[.12,.09],[.26,.17],[.4,.08],[.56,.1],[.7,.2],[.86,.1],[.95,.26],[.88,.42],[.95,.6],[.9,.8],[.74,.92],[.58,.84],[.44,.94],[.26,.92],[.1,.84],[.06,.64],[.14,.47],[.07,.32],[.2,.27],[.33,.36],[.48,.3],[.66,.34],[.75,.5],[.7,.66],[.56,.75],[.4,.77],[.28,.66]];
+const SKYTT=[.47,.55];
+function spline(P,steps){const out=[];for(let i=0;i<P.length-1;i++){const p0=P[Math.max(0,i-1)],p1=P[i],p2=P[i+1],p3=P[Math.min(P.length-1,i+2)];
+  for(let k=0;k<steps;k++){const t=k/steps,t2=t*t,t3=t2*t;out.push([0,1].map(c=>.5*(2*p1[c]+(-p0[c]+p2[c])*t+(2*p0[c]-5*p1[c]+4*p2[c]-p3[c])*t2+(-p0[c]+3*p1[c]-3*p2[c]+p3[c])*t3)));}}
+  out.push(P[P.length-1]);return out;}
 function resize(){if(!K)return;const dpr=Math.min(2,window.devicePixelRatio||1),W=cv.clientWidth,H=cv.clientHeight;cv.width=W*dpr;cv.height=H*dpr;cx.setTransform(dpr,0,0,dpr,0,0);
-  const top=58,ax=W/2-Math.max(26,W*.05),ay=(H-top)/2-26,cX=W/2,cY=top+(H-top)/2+6;
-  const turns=1.32,rMin=.44,pts=[];
-  for(let i=0;i<=700;i++){const t=i/700,th=-Math.PI*.95+t*turns*2*Math.PI,r=1-(1-rMin)*t;pts.push([cX+ax*r*Math.cos(th),cY+ay*r*Math.sin(th)]);}
+  const top=58,mx=Math.max(24,W*.04),my=22,bw=W-2*mx,bh=H-top-2*my,X=x=>mx+x*bw,Y=y=>top+my+y*bh;
+  const pts=spline(BANA,40).map(([x,y])=>[X(x),Y(y)]);
   const cum=[0];for(let i=1;i<pts.length;i++)cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]));
-  const m=Math.min(ax,ay),d=Math.max(30,Math.min(50,m*.23));
-  const oldLen=K.path&&K.path.len;K.path={pts,cum,len:cum[cum.length-1]};K.W=W;K.H=H;K.d=d;K.sx=cX;K.sy=cY;
+  const sX=X(SKYTT[0]),sY=Y(SKYTT[1]);
+  // minsta avstånd mellan två delar av banan som ligger långt ifrån varandra längs banan, och till djuret
+  let sep=1e9,toS=1e9;const st=3;
+  for(let a=0;a<pts.length;a+=st){toS=Math.min(toS,Math.hypot(pts[a][0]-sX,pts[a][1]-sY));
+    for(let b=a+st;b<pts.length;b+=st){if(cum[b]-cum[a]<Math.PI*sep*.6&&cum[b]-cum[a]<260)continue;const dd=Math.hypot(pts[a][0]-pts[b][0],pts[a][1]-pts[b][1]);if(dd<sep)sep=dd;}}
+  const d=Math.max(26,Math.min(50,sep/1.3,toS/2.3));
+  const oldLen=K.path&&K.path.len;K.path={pts,cum,len:cum[cum.length-1]};K.W=W;K.H=H;K.d=d;K.sx=sX;K.sy=sY;
   // kulorna behåller sin del av banan när storleken ändras
   if(oldLen&&K.dOld){const f=d/K.dOld;K.balls.forEach(b=>b.s*=f);}K.dOld=d;
   bg=makeBg();}
@@ -337,7 +348,8 @@ $("snd").onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);sndIcon();if(Lju
 
 /* ---------- Slut ---------- */
 function finish(win){const k=data.tab;stopGame();
-  let st=0;if(win){st=K.misses<=2?3:K.misses<=6?2:1;const old=data.stars[k]||0;data.stars[k]=Math.max(old,st);}
+  // stjärnor efter andelen missar (slingor kan stå i vägen, därför i förhållande till kedjans längd)
+  let st=0;if(win){st=K.misses<=Math.max(2,Math.round(K.total*.1))?3:K.misses<=Math.round(K.total*.3)?2:1;const old=data.stars[k]||0;data.stars[k]=Math.max(old,st);}
   const nyttRek=K.score>(data.best[k]||0);if(nyttRek)data.best[k]=K.score;data.played=(data.played||0)+1;save();
   $("rTitle").textContent=win?"Alla kulor borta! 🎉":"Kulorna rullade in i pyramiden";
   $("rStars").innerHTML=win?starHtml(st):"";
