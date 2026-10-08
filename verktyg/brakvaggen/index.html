@@ -41,15 +41,31 @@ h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
 .ruler{position:absolute;top:4px;bottom:4px;width:0;border-left:3px dashed #1D2B53;pointer-events:none}
 .rgrip{position:absolute;top:-16px;left:-16px;width:32px;height:32px;border-radius:50%;background:#FFC93C;border:3px solid #1D2B53;pointer-events:auto;cursor:ew-resize;touch-action:none;box-shadow:0 2px 0 rgba(29,43,83,.3)}
 .readout{margin:10px 0 0;font-weight:800;text-align:center;min-height:1.6em;font-size:1.15rem}
-/* Byggraden */
-.build{margin-top:14px;background:var(--card);border-radius:18px;padding:10px;box-shadow:0 5px 0 var(--line)}
-.build h3{margin:0 0 6px;font-size:1.1rem}
-.brow{position:relative;display:flex;height:clamp(38px,6.6vw,54px);border:3px dashed var(--line);border-radius:8px;background:#F7FAFF;overflow:visible}
-.brow .tile{flex:none}
-.brow.full{border-color:var(--good);background:#E8F8EF}
-.brow.over{border-color:var(--bad);background:#FDECEC}
-.bsum{font-weight:800;text-align:center;margin-top:6px;min-height:1.5em;font-size:1.15rem}
-.over-mark{position:absolute;top:-6px;bottom:-6px;left:100%;border-left:4px solid var(--bad)}
+/* Bygg (flyttat hit från Bråkbitarnas "Utforska fritt"): bitlåda och tre rader med en hel stav */
+.bwrap{display:grid;gap:10px}
+@media(min-width:820px){.bwrap{grid-template-columns:118px 1fr;align-items:start}}
+.palette{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:6px;background:#FFF8EC;border-radius:16px;padding:8px;box-shadow:inset 0 0 0 2px #F3E3C3}
+@media(min-width:820px){.palette{grid-template-columns:1fr}}
+.bit{height:46px;border-radius:9px;background:var(--c);color:var(--k);font-weight:800;font-size:.95rem;display:grid;place-items:center;box-shadow:0 3px 0 rgba(29,43,83,.3),inset 0 0 0 2px rgba(29,43,83,.18);touch-action:none;user-select:none;-webkit-user-select:none;line-height:1}
+.bit:active{transform:translateY(2px)}
+.rows{display:grid;gap:12px;background:var(--card);border-radius:20px;padding:12px;box-shadow:0 4px 0 var(--line);overflow:hidden}
+.row .rl{font-weight:800;font-size:.95rem;color:var(--muted);margin-bottom:3px}
+.track{position:relative;width:78%}
+.ref,.lane{position:relative;height:48px;display:flex}
+.ref{margin-bottom:4px}
+.lane{border-radius:10px;background:repeating-linear-gradient(90deg,transparent 0 11px,rgba(29,43,83,.05) 11px 12px),#F4F7FD;box-shadow:inset 0 0 0 2px #DCE4F2;cursor:pointer}
+.lane::after{content:"";position:absolute;right:-2px;top:-6px;bottom:-6px;width:3px;border-radius:2px;background:var(--ink);opacity:.35}
+.row.active .lane{box-shadow:inset 0 0 0 3px var(--accent)}
+.lane.full{box-shadow:inset 0 0 0 3px var(--good)!important}
+.piece{flex:none;height:100%;border-radius:7px;background:var(--c);color:var(--k);display:grid;place-items:center;font-weight:800;font-size:clamp(.7rem,2.4vw,1rem);line-height:1;box-shadow:inset 0 0 0 2px rgba(29,43,83,.25);overflow:hidden;white-space:nowrap}
+.lane .piece{cursor:pointer}.lane .piece.new{animation:pin .18s ease-out}
+@keyframes pin{from{transform:translateY(-10px);opacity:.3}}
+.piece.over{background:repeating-linear-gradient(-45deg,var(--c) 0 7px,rgba(255,255,255,.55) 7px 13px);box-shadow:inset 0 0 0 2px #E5484D}
+.overlab{position:absolute;right:6px;top:-11px;background:#E5484D;color:#fff;border-radius:999px;padding:0 8px;font-weight:800;font-size:.75rem;white-space:nowrap;z-index:2}
+.rsum{font-weight:800;font-size:.95rem;color:var(--muted);margin-top:3px;min-height:1.3em}.rsum.full{color:var(--good-dark)}
+.tools{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:10px}
+.drag{position:fixed;z-index:30;pointer-events:none;opacity:.9;transform:translate(-50%,-50%) scale(1.08)}
+@media (prefers-reduced-motion:reduce){.lane .piece.new{animation:none}}
 .note{color:var(--muted);font-size:.95rem;margin-top:12px}
 </style>
 </head>
@@ -59,13 +75,14 @@ h1{font-size:2.3rem;line-height:1;margin:8px 0 4px;font-weight:800}
   <h1>🧱 Bråkväggen</h1>
   <p class="lead" id="lead"></p>
   <div class="bar">
-    <div class="seg" id="segMode"><button data-m="hide">👁️ Dölj/visa</button><button data-m="build">➕ Bygg</button><button data-m="ruler">📏 Linjal</button></div>
-    <div class="seg" id="segLabel"><button data-l="frac">½ Bråk</button><button data-l="dec">0,5 Decimal</button><button data-l="none">Inga</button></div>
+    <div class="seg" id="segMode"><button data-m="hide">🧱 Väggen</button><button data-m="build">🧩 Bygg</button><button data-m="ruler">📏 Linjal</button></div>
+    <div class="seg" id="segLabel"><button data-l="frac">½ Bråk</button><button data-l="dec">0,5 Decimal</button><button data-l="pct">50 % Procent</button><button data-l="none">Inga</button></div>
     <button class="btn" id="btnAll">Visa alla</button>
   </div>
   <div class="wall" id="wall"></div>
   <div class="readout" id="readout"></div>
-  <div class="build" id="build" hidden><h3>Byggraden: lägg bitar tills det blir en hel</h3><div class="brow" id="brow"></div><div class="bsum" id="bsum"></div><div style="text-align:center;margin-top:6px"><button class="btn" id="btnClearB">↺ Töm byggraden</button></div></div>
+  <div class="build" id="build" hidden><div class="bwrap"><div class="palette" id="palette" aria-label="Bitlådan"></div><div><div class="rows" id="rows"></div>
+    <div class="tools"><button class="btn" id="bUndo">↶ Ångra</button><button class="btn" id="bClear">🧹 Rensa</button></div></div></div></div>
   <p class="note">Tips: dölj bitar och fråga vad som fattas, eller använd linjalen för att hitta bråk som är lika stora, till exempel ½ = 2/4 = 3/6.</p>
 </div>
 <script src="../../ljud.js"></script>
@@ -83,14 +100,14 @@ const st={mode:"hide",label:"frac",off:new Set(),build:[],ruler:.5};
 const gcd=(a,b)=>b?gcd(b,a%b):a;
 const frac=(n,d)=>`<span class="fr"><span>${n}</span><span>${d}</span></span>`;
 const decTxt=d=>{const v=1/d,s=(Math.round(v*100)/100).toString().replace(".",",");return(Math.abs(v*100-Math.round(v*100))>1e-9?"≈":"")+s;};
-const lab=d=>st.label==="none"?"":st.label==="dec"?`<span class="dec">${d===1?"1":decTxt(d)}</span>`:d===1?"1":frac(1,d);
+const lab=d=>st.label==="none"?"":st.label==="frac"?(d===1?"1":frac(1,d)):`<span class="dec">${MPBrak.label(1,d,st.label)}</span>`;
 function render(){
   $("wall").innerHTML=DEN.map(d=>`<div class="frow">${Array.from({length:d},(_,i)=>`<div class="tile${st.off.has(d+":"+i)?" off":""}" data-d="${d}" data-i="${i}" style="--c:${COL[d]}">${lab(d)}</div>`).join("")}</div>`).join("")+
     (st.mode==="ruler"?`<div class="ruler" id="ruler"><div class="rgrip" id="rgrip"></div></div>`:"");
   $("segMode").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===st.mode));
   $("segLabel").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.l===st.label));
-  $("build").hidden=st.mode!=="build";$("btnAll").hidden=st.mode!=="hide";
-  $("lead").textContent=st.mode==="hide"?"Tryck på en bit för att dölja eller visa den. Jämför: vilken är störst?":st.mode==="build"?"Tryck på bitar i väggen för att lägga dem i byggraden. Blir det en hel?":"Dra den gula knappen. Bråken som slutar precis vid linjen är lika stora.";
+  $("build").hidden=st.mode!=="build";$("btnAll").hidden=st.mode!=="hide";$("wall").hidden=st.mode==="build";$("readout").hidden=st.mode==="build";
+  $("lead").textContent=st.mode==="hide"?"Tryck på en bit för att dölja eller visa den. Jämför: vilken är störst?":st.mode==="build"?"Tryck på en bit i lådan för att lägga den i raden, eller dra den dit. Tryck på en lagd bit för att ta bort den. Blir det en hel?":"Dra den gula knappen. Bråken som slutar precis vid linjen är lika stora.";
   if(st.mode==="ruler")placeRuler();else $("readout").textContent="";
   renderBuild();
 }
@@ -105,20 +122,36 @@ function placeRuler(){
   const eq=[];DEN.forEach(d=>{const k=Math.round(st.ruler*d);if(Math.abs(k/d-st.ruler)<1e-6)eq.push(k===0?"0":k===d?(d===1?"1":`${k}/${d}`):`${k}/${d}`);});
   $("readout").innerHTML=eq.length?`Linjen står vid: ${eq.map(t=>t.includes("/")?frac(...t.split("/")):t).join(" = ")}`:"Dra linjen till en kant mellan två bitar.";
 }
+/* Bygg: tre rader med en hel stav; tryck på en bit i lådan = den läggs i markerad rad, dra = där man släpper, tryck på en lagd bit = ta bort */
+const BB={lanes:[[],[],[]],active:0,hist:[],nyss:null},B=MPBrak;
+const bitLab=d=>lab(d)||"&nbsp;";
 function renderBuild(){
   if(st.mode!=="build")return;
-  const sum=st.build.reduce((a,d)=>a+120/d,0);
-  $("brow").innerHTML=st.build.map((d,i)=>`<div class="tile" data-b="${i}" style="--c:${COL[d]};width:${100/d}%">${lab(d)}</div>`).join("")+(sum>120?`<div class="over-mark"></div>`:"");
-  $("brow").className="brow"+(sum===120?" full":sum>120?" over":"");
-  const g=gcd(sum,120),parts=st.build.length?st.build.map(d=>d===1?"1":`1/${d}`).join(" + "):"";
-  $("bsum").innerHTML=!st.build.length?"Tom. Tryck på en bit i väggen.":`${parts} = ${sum===120?"1":sum/g+"/"+120/g}`+(sum===120?" 🎉 En hel!":sum>120?" (mer än en hel)":"");
+  $("palette").innerHTML=DEN.map(d=>`<button class="bit" data-d="${d}" style="--c:${COL[d]};--k:${B.ink(d)}" aria-label="${d===1?"en hel":"en "+d+"-del"}">${bitLab(d)}</button>`).join("");
+  $("rows").innerHTML=BB.lanes.map((lane,ri)=>{const sum=B.sum(lane.map(d=>[1,d])),over=B.cmp(sum,[1,1])>0,full=B.eq(sum,[1,1]);let acc=[0,1];
+    const lp=lane.map((d,k)=>{acc=B.add(acc,[1,d]);const o=B.cmp(acc,[1,1])>0,nw=BB.nyss&&BB.nyss[0]===ri&&BB.nyss[1]===k;return`<div class="piece${o?" over":""}${nw?" new":""}" data-k="${k}" style="width:${100/d}%;--c:${COL[d]};--k:${B.ink(d)}">${lab(d)}</div>`;}).join("");
+    const sumTxt=!lane.length?"":`${lane.map(d=>d===1?"1":`1/${d}`).join(" + ")} = ${B.label(...sum,st.label==="none"?"frac":st.label)}${full?" 🎉 En hel!":over?" (mer än en hel)":""}`;
+    return`<div class="row${ri===BB.active?" active":""}" data-r="${ri}"><div class="rl">1</div><div class="track"><div class="ref"><div class="piece" style="width:100%;--c:${COL[1]};--k:#fff">${lab(1)}</div></div><div class="lane${full?" full":""}" data-r="${ri}">${lp}${over?`<span class="overlab">För mycket!</span>`:""}</div></div><div class="rsum${full?" full":""}">${sumTxt}</div></div>`;}).join("");
+  setTimeout(()=>{BB.nyss=null;},0);
 }
+function addPiece(d,ri){ri=ri==null?BB.active:ri;const lane=BB.lanes[ri],s2=B.sum(lane.map(x=>[1,x]));
+  if(B.cmp(B.add(s2,[1,d]),[3,2])>0)return;lane.push(d);BB.hist.push(ri);BB.active=ri;BB.nyss=[ri,lane.length-1];
+  const full=B.eq(B.sum(lane.map(x=>[1,x])),[1,1]);window.Ljud&&(full?Ljud.chime&&Ljud.chime():Ljud.pop&&Ljud.pop(Math.min(12,lane.length)));renderBuild();}
+$("rows").addEventListener("click",e=>{const row=e.target.closest(".row");if(!row)return;const ri=+row.dataset.r,pc=e.target.closest(".lane .piece[data-k]");
+  if(pc){BB.lanes[ri].splice(+pc.dataset.k,1);BB.active=ri;renderBuild();return;}if(BB.active!==ri){BB.active=ri;renderBuild();}});
+$("bUndo").onclick=()=>{if(!BB.hist.length)return;const ri=BB.hist.pop();BB.lanes[ri].pop();renderBuild();};
+$("bClear").onclick=()=>{BB.lanes=BB.lanes.map(()=>[]);BB.hist=[];renderBuild();};
+let drag=null;
+$("palette").addEventListener("pointerdown",e=>{const b=e.target.closest(".bit");if(!b)return;e.preventDefault();drag={d:+b.dataset.d,x:e.clientX,y:e.clientY,el:null};try{b.setPointerCapture(e.pointerId);}catch(_){}});
+$("palette").addEventListener("pointermove",e=>{if(!drag)return;if(!drag.el&&Math.hypot(e.clientX-drag.x,e.clientY-drag.y)>8){const w=$("rows").querySelector(".track").getBoundingClientRect().width/drag.d;
+    drag.el=document.createElement("div");drag.el.className="piece drag";drag.el.style.cssText=`width:${Math.max(30,w)}px;height:48px;--c:${COL[drag.d]};--k:${B.ink(drag.d)}`;drag.el.innerHTML=bitLab(drag.d);document.body.appendChild(drag.el);}
+  if(drag.el){drag.el.style.left=e.clientX+"px";drag.el.style.top=e.clientY+"px";}});
+function endDrag(e,cancel){if(!drag)return;const d=drag.d,el=drag.el;drag=null;if(el){el.remove();if(cancel)return;const t=document.elementFromPoint(e.clientX,e.clientY),row=t&&t.closest(".row");if(row)addPiece(d,+row.dataset.r);}else if(!cancel)addPiece(d);}
+$("palette").addEventListener("pointerup",e=>endDrag(e,false));$("palette").addEventListener("pointercancel",e=>endDrag(e,true));
 $("wall").addEventListener("click",e=>{
   const t=e.target.closest(".tile");if(!t)return;const d=+t.dataset.d,k=d+":"+t.dataset.i;
   if(st.mode==="hide"){st.off.has(k)?st.off.delete(k):st.off.add(k);t.classList.toggle("off");window.Ljud&&Ljud.pop&&Ljud.pop(DEN.indexOf(d));}
-  else if(st.mode==="build"){st.build.push(d);const sum=st.build.reduce((a,x)=>a+120/x,0);window.Ljud&&(sum===120?Ljud.fanfare&&Ljud.fanfare():Ljud.pop&&Ljud.pop(st.build.length));renderBuild();}
 });
-$("brow").onclick=e=>{const t=e.target.closest("[data-b]");if(!t)return;st.build.splice(+t.dataset.b,1);renderBuild();};
 let rdrag=false;
 $("wall").addEventListener("pointerdown",e=>{if(st.mode!=="ruler")return;rdrag=true;try{$("wall").setPointerCapture(e.pointerId);}catch(_){}moveRuler(e);});
 $("wall").addEventListener("pointermove",e=>{if(rdrag)moveRuler(e);});
@@ -127,8 +160,11 @@ function moveRuler(e){const {x0,width}=wallBox(),w=$("wall").getBoundingClientRe
 $("segMode").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;st.mode=b.dataset.m;render();};
 $("segLabel").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;st.label=b.dataset.l;render();};
 $("btnAll").onclick=()=>{st.off.clear();render();};
-$("btnClearB").onclick=()=>{st.build=[];renderBuild();};
 window.addEventListener("resize",()=>{if(st.mode==="ruler")placeRuler();});
+// direktlänk #bygg (från Bråkbitarnas "Utforska fritt"): öppna Bygg; kom man från Bråkbitarna leder tillbaka-länken dit
+if(location.hash==="#bygg"){st.mode="build";history.replaceState(history.state,"",location.pathname);
+  let fr=null;try{fr=document.referrer?new URL(document.referrer):null;}catch(e){}
+  if(fr&&fr.origin===location.origin&&/\/brakbitar\//.test(fr.pathname)){const a=document.querySelector("a.back");a.textContent="← Bråkbitarna";a.href="../../brakbitar/";a.onclick=e=>{e.preventDefault();history.back();};}}
 render();
 </script>
 </body>
