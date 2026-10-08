@@ -499,7 +499,7 @@ const STICKERS=[
   ["fulltos","🏁","Fullt ös","Vinn ett lopp på Racerbanan utan ett enda fel.",()=>!!S.spel.carPerfect],
   ["dragkamp","💪","Dragkampsmästaren","Vinn mot Roboten på Svår i Dragkampen.",()=>!!S.spel.tugHard],
   ["garage","🚗","Garagekungen","Skaffa alla fordon i Racerbanans garage.",()=>(S.spel.carOwned||[]).length>=6],
-  ["rymd","🚀","Rymdkadetten","Rädda rymden i Asteroidjakten.",()=>!!S.spel.spaceWon],
+  ["rymd","🚀","Rymdkadetten","Rädda rymden i Asteroidstormen.",()=>!!S.spel.spaceWon],
   ["kapten","☄️","Asteroidkaptenen","Rädda rymden utan att tappa en sköld.",()=>!!S.spel.spacePerfect],
   ["hoppjerka","🐸","Hoppjerkan","Ta grodan över alla floder i Grodhoppet.",()=>!!S.spel.frogWon],
   ["nackros","🪷","Näckrosmästaren","Klara Grodhoppet utan att bli blöt en enda gång.",()=>!!S.spel.frogPerfect],
@@ -551,8 +551,8 @@ const STICKERS=[
   ["rutjagare","🟩","Rutjägaren","Fyll fem kors i Rutjakten.",()=>Object.entries(S.rut).some(([k,v])=>!k.startsWith("t-")&&v>0)],
   ["rutmastare","🏅","Rutmästaren","Få tre stjärnor i en variant i Rutjakten.",()=>Object.values(S.rut).some(v=>v>=3)],
   ["skattmastare","🏴‍☠️","Skattmästaren","Hitta alla skatter på nivå 3 i Skattjakten.",()=>((S.sj.stars||{})[3]||0)>=3],
-  ["bubbelpoppare","🫧","Bubbelpopparen","Töm en hel bana i Bubbeljakten.",()=>Object.values(S.spel.bubbel||{}).some(r=>(r.bana||0)>=1)],
-  ["bubbelras","🌧️","Bubbelras","Få fem bubblor att ramla på ett enda skott i Bubbeljakten.",()=>!!S.spel.bubbelRas]
+  ["bubbelpoppare","🫧","Bubbelpopparen","Töm en hel bana i Bubbelskjutaren.",()=>Object.values(S.spel.bubbel||{}).some(r=>(r.bana||0)>=1)],
+  ["bubbelras","🌧️","Bubbelras","Få fem bubblor att ramla på ett enda skott i Bubbelskjutaren.",()=>!!S.spel.bubbelRas]
 ];
 const got=STICKERS.filter(x=>x[4]()).map(x=>x[0]);
 const kst=Object.assign({seen:[]},get("matteportalen-klister")||{});

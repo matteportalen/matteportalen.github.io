@@ -96,7 +96,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .towbar .tbar{flex:1;height:14px;border-radius:7px;background:rgba(0,0,0,.3);overflow:hidden}
 .towbar .tbar i{display:block;height:100%;background:linear-gradient(90deg,#FFC93C,#FF9F43);border-radius:7px}
 #choose.tower #btnStart{background:repeating-linear-gradient(-45deg,#FFC93C 0 14px,#F2B707 14px 28px);color:#1D2B53;box-shadow:0 5px 0 #B98A00}
-/* Bubbeljaktens meny: havsrubrik och världarna man reser genom */
+/* Bubbelskjutarens meny: havsrubrik och världarna man reser genom */
 .bubhero{position:relative;margin:6px 0 14px;padding:16px 16px 14px;border-radius:20px;color:#fff;overflow:hidden;
   background:radial-gradient(circle at 12% 30%,rgba(255,255,255,.35) 0 7px,transparent 8px),radial-gradient(circle at 22% 70%,rgba(255,255,255,.25) 0 4px,transparent 5px),radial-gradient(circle at 88% 25%,rgba(255,255,255,.3) 0 9px,transparent 10px),radial-gradient(circle at 78% 75%,rgba(255,255,255,.2) 0 5px,transparent 6px),linear-gradient(135deg,#17AFC4,#2F8FD8 55%,#1F64AE);box-shadow:0 5px 0 #164A86}
 .bubhero .top{display:flex;align-items:center;gap:12px}
@@ -180,7 +180,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .hearts svg{width:26px;height:26px;margin:0 1px;vertical-align:middle}
 .gamecard.space{background:linear-gradient(135deg,#141D3D,#7B61FF);box-shadow:0 6px 0 #0B1026;margin-top:14px}
 .gamecard.space:active{box-shadow:0 3px 0 #0B1026}
-/* Asteroidjaktens kontrollpanel: sexkantiga knappar ur Kenneys "Mobile Controls" (CC0) i spel/bilder/kontroller/ */
+/* Asteroidstormens kontrollpanel: sexkantiga knappar ur Kenneys "Mobile Controls" (CC0) i spel/bilder/kontroller/ */
 .spacebtns{position:relative;display:flex;align-items:center;justify-content:center;gap:14px;max-width:620px;margin:0 auto;padding:14px 14px 12px;border-radius:0 0 20px 20px;
   background:radial-gradient(circle at 12% 40%,rgba(255,255,255,.5) 0 1px,transparent 2px),radial-gradient(circle at 70% 70%,rgba(255,255,255,.4) 0 1px,transparent 2px),radial-gradient(circle at 88% 30%,rgba(255,255,255,.5) 0 1px,transparent 2px),linear-gradient(#1A2147,#0D1230);box-shadow:0 5px 0 #070A1C}
 .spacebtns::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent,#9B7BFF 20%,#5FE0FF 50%,#9B7BFF 80%,transparent);box-shadow:0 0 10px #7B61FF}
@@ -203,7 +203,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gamecard.tower{background:linear-gradient(180deg,#8FD3FF,#3D5AFE 60%,#141D3D);box-shadow:0 6px 0 #0B1026;margin-top:14px}
 .gamecard.tower:active{box-shadow:0 3px 0 #0B1026}
 #game.tower #cv{height:clamp(260px,46vh,460px)}
-/* Asteroidjakten: större spelyta (lärarens önskan) */
+/* Asteroidstormen: större spelyta (lärarens önskan) */
 #game.space #cv{height:clamp(380px,64vh,720px)}
 @media(min-width:760px){#game.space .stage{max-width:900px}}
 .towerpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:620px;margin:8px auto 0;padding:0 12px}
@@ -244,7 +244,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gamecard.kiosk:active{transform:translateY(3px)}
 .q{flex-wrap:wrap}
 .qnote{flex-basis:100%;font-size:.42em;line-height:1.2}
-/* Bubbeljakten */
+/* Bubbelskjutaren */
 .gamecard.bub{background:linear-gradient(135deg,#17AFC4,#2F8FD8 55%,#1F64AE);box-shadow:0 6px 0 #164A86;margin-top:14px}
 .gamecard.bub:active{transform:translateY(3px);box-shadow:0 3px 0 #164A86}
 #bub{position:fixed;inset:0;display:flex;flex-direction:column;background:#7FD3F4;z-index:5;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
@@ -366,7 +366,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <h1>Spelhörnan</h1>
   <p class="lead">Spela och räkna samtidigt!</p>
   <div class="glist">
-  <button class="gamecard bub" id="btnBub"><span class="pic shot"><img src="bilder/kort/bub.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Bubbeljakten</b><small>Sikta och skjut uppgiften mot bubblan med rätt svar. Poppa hela planen!</small></span></button>
+  <button class="gamecard bub" id="btnBub"><span class="pic shot"><img src="bilder/kort/bub.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Bubbelskjutaren</b><small>Sikta och skjut uppgiften mot bubblan med rätt svar. Poppa hela planen!</small></span></button>
   <button class="gamecard tower" id="btnTower"><span class="pic shot"><img src="bilder/kort/tower.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Tornbygget</b><small>Svara rätt, släpp balken från lyftkranen och bygg ända till månen. Prick rakt, annars rasar tornet!</small></span></button>
   <a class="gamecard jakt" href="skattjakten/"><span class="pic shot"><img src="bilder/kort/skatt.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Skattjakten</b><small>Utforska labyrinten, lös hindrens textuppgifter och fyll skattkammaren!</small></span></a>
   <a class="gamecard rut" href="../rutjakten/"><span class="pic rutpic"><svg viewBox="0 0 60 60" width="64" height="64" aria-hidden="true"><rect x="2" y="2" width="26" height="26" rx="5" fill="#fff"/><rect x="5" y="5" width="9" height="9" rx="2" fill="#2BB673"/><text x="9.5" y="12" font-size="7" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#fff">3</text><rect x="16" y="5" width="9" height="9" rx="2" fill="#E6EEFF"/><text x="20.5" y="12" font-size="7" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#1D2B53">5</text><rect x="5" y="16" width="9" height="9" rx="2" fill="#2BB673"/><text x="9.5" y="23" font-size="6" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#fff">10</text><rect x="16" y="16" width="9" height="9" rx="2" fill="#2BB673"/><text x="20.5" y="23" font-size="7" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#fff">7</text><rect x="32" y="2" width="26" height="26" rx="5" fill="#DDF5E7"/><rect x="35" y="5" width="9" height="9" rx="2" fill="#2BB673"/><rect x="46" y="5" width="9" height="9" rx="2" fill="#2BB673"/><rect x="35" y="16" width="9" height="9" rx="2" fill="#2BB673"/><rect x="46" y="16" width="9" height="9" rx="2" fill="#2BB673"/><rect x="2" y="32" width="26" height="26" rx="5" fill="#fff"/><rect x="5" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="16" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="5" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="16" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="32" y="32" width="26" height="26" rx="5" fill="#fff"/><rect x="35" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="46" y="35" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="35" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><rect x="46" y="46" width="9" height="9" rx="2" fill="#E6EEFF"/><circle cx="30" cy="30" r="8" fill="#3D5AFE" stroke="#fff" stroke-width="2"/><path d="M30 25.5v9M25.5 30h9" stroke="#fff" stroke-width="2.6" stroke-linecap="round"/></svg></span><span><b>Rutjakten</b><small>Hitta de tre talen som hör ihop i varje ruta. Fyll hela korset!</small></span></a>
@@ -376,7 +376,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <button class="gamecard tugc" id="btnTug"><span class="pair" title="Kan spelas två och två">🤝</span><span class="pic shot"><img src="bilder/kort/tug.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Dragkampen</b><small>Räkna snabbast och dra repet! Mot en vän eller Roboten.</small></span></button>
   </div>
   <button class="gamecard car" id="btnCar"><span class="pic shot"><img src="bilder/kort/car.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Racerbanan</b><small>Tävla mot tre bilar! Kör under bågen med rätt svar, undvik hinder och plocka mynt till garaget.</small></span></button>
-  <button class="gamecard space" id="btnSpace"><span class="pic shot"><img src="bilder/kort/space.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Asteroidjakten</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
+  <button class="gamecard space" id="btnSpace"><span class="pic shot"><img src="bilder/kort/space.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Asteroidstormen</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic shot"><img src="bilder/kort/frog.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
   <a class="gamecard kiosk" href="affaren/" style="text-decoration:none"><span class="pic shot"><img src="bilder/kort/affaren.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Affären</b><small>Stå i kassan! Räkna ihop, ge växel och bygg ut din egen affär.</small></span></a>
   </div>
@@ -547,7 +547,7 @@ function renderChoose(){
     $("towHero").innerHTML=`<div class="top"><span class="ic">🏗️</span><div><b>Tornbygget</b><small>Bygg ända till månen: 20 våningar!</small></div><span class="moon">🌕</span></div>
       <div class="towbar"><span>${best?`Rekord: ${best} ${best===1?"våning":"våningar"}`:"Inget rekord än"}</span><div class="tbar"><i style="width:${Math.min(100,best/20*100)}%"></i></div><span>🌕</span></div>`;}
   if(game==="bub"){const nx=((bs&&bs.bana)||0)+1;
-    $("bubHero").innerHTML=`<div class="top"><span class="ic">🫧</span><div><b>Bubbeljakten</b><small>En ny värld för varje bana!</small></div>${bs&&bs.best?`<div class="rec"><span>Rekord</span>${bs.best} p</div>`:""}</div>
+    $("bubHero").innerHTML=`<div class="top"><span class="ic">🫧</span><div><b>Bubbelskjutaren</b><small>En ny värld för varje bana!</small></div>${bs&&bs.best?`<div class="rec"><span>Rekord</span>${bs.best} p</div>`:""}</div>
       <div class="bubworlds">${VARLD.map((w,i)=>{const n=i+1,cls=n<nx?"":n===nx?"now":"lock";return`<div class="${cls}"><i>${w.ico}</i><b>${w.namn}</b><small>${n<nx?"✓ Bana "+n:n===nx?"Bana "+n:"🔒 Bana "+n}</small></div>`;}).join("")}</div>`;}
   if(bs&&bs.bana){const top=bs.bana+1,f=bubStart(bs);
     $("bubChips").innerHTML=Array.from({length:top},(_,i)=>i+1).map(n=>`<button data-f="${n===top?"cont":n}" aria-pressed="${f===n}">${VARLD[(n-1)%VARLD.length].ico} ${n===top?`Fortsätt på bana ${n}`:`Bana ${n}`}</button>`).join("");}
@@ -804,7 +804,7 @@ function finishCar(){
   showOnly("result");
   if(place<=2||rec){window.Ljud&&Ljud.fanfare();confetti();}
 }
-/* ---------- Asteroidjakten ---------- */
+/* ---------- Asteroidstormen ---------- */
 let A=null,araf=0;
 const shield=on=>`<svg viewBox="0 0 26 26" aria-hidden="true"><path d="M13 2 L23 6 V12 C23 18 18 22 13 24 C8 22 3 18 3 12 V6 Z" fill="${on?"#3D8BFD":"#C6D6F2"}" stroke="${on?"#1D2B53":"#C6D6F2"}" stroke-width="1.5"/><path d="M9 12 l3 3 5-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${on?1:0}"/></svg>`;
 function stopSpace(){if(A)A.over=true;cancelAnimationFrame(araf);A=null;$("spaceBtns").hidden=true;$("game").classList.remove("space");window.Ljud&&Ljud.space.stop();}
@@ -957,7 +957,7 @@ function spaceBg(){if(A.bg&&A.bgW===W&&A.bgH===H)return A.bg;const c=document.cr
   const pg=x.createRadialGradient(px-pr*.4,py-pr*.4,pr*.1,px,py,pr);pg.addColorStop(0,"#FFD9A0");pg.addColorStop(.6,"#E08A4A");pg.addColorStop(1,"#5A2A3A");x.fillStyle=pg;x.beginPath();x.arc(px,py,pr,0,7);x.fill();
   x.save();x.translate(px,py);x.rotate(-.3);x.strokeStyle="rgba(255,214,140,.6)";x.lineWidth=pr*.18;x.beginPath();x.ellipse(0,0,pr*1.9,pr*.45,0,0,Math.PI);x.stroke();x.restore();
   A.bg=c;A.bgW=W;A.bgH=H;return c;}
-/* Grafik i Asteroidjakten: skepp, meteorer och motorlågor ur Kenneys "Space Shooter Remastered" (CC0) i spel/bilder/rymd/ */
+/* Grafik i Asteroidstormen: skepp, meteorer och motorlågor ur Kenneys "Space Shooter Remastered" (CC0) i spel/bilder/rymd/ */
 const RYMD={};const rymd=n=>{if(!RYMD[n]){const im=new Image();im.src=`bilder/rymd/${n}.png`;RYMD[n]=im;}return RYMD[n];};
 const rymdOk=im=>im.complete&&im.naturalWidth>0;
 const METEOR=["meteorBrown_big1","meteorBrown_big3","meteorBrown_big4","meteorGrey_big1","meteorGrey_big2","meteorGrey_big4"];
@@ -1794,7 +1794,7 @@ function drawTug(){
   if(TG.won!=null&&TG.endT>.6&&TG.endT<1.6){const k=(TG.endT-.6);c.fillStyle="#7A4E2D";for(let j=0;j<8;j++){const a=j/8*Math.PI;c.beginPath();c.arc(cx+Math.cos(a)*cw*.6*(1+k),gy+H*.05-Math.sin(a)*cw*.5*k*2+k*k*cw,4,0,7);c.fill();}}
 }
 
-/* ---------- Bubbeljakten ---------- */
+/* ---------- Bubbelskjutaren ---------- */
 // Bubblorna har svar, skjutbubblan har en uppgift. Rätt granne: hela gruppen med samma tal spricker.
 // Fel: skjutbubblan fastnar och visar sitt svar. Varje uppgift har alltid ett svar som går att träffa.
 const BCOLS=10,BLIM=12; // 10 bubblor i bredd, 12 rader ner till strecket
@@ -2073,7 +2073,7 @@ function bFrame(now){
   bDraw();braf=requestAnimationFrame(bFrame);
 }
 
-/* ---------- Bubbeljaktens världar ----------
+/* ---------- Bubbelskjutarens världar ----------
    En ny värld för varje bana (bana 1 Havet, 2 Djungeln, 3 Godislandet, 4 Isvärlden, 5 Vulkanön, 6 Slottet, sedan om igen).
    Grafik från Kenney (CC0): Fish Pack, Platformer Art Deluxe/Candy/Winter, Platformer Pack Medieval, Background Elements Remastered
    och Animal Pack Remastered, ihopsatt till ett bildark per värld i spel/bilder/varldar/<id>.png. VRECT = [x, y, bredd, höjd] för varje bild.
@@ -2226,7 +2226,7 @@ function vCeil(x0,y0,w,y1){const c=VW0.ceil,T=Math.max(28,BL.D*1.1);bx.save();bx
   if(c.dark){bx.globalCompositeOperation="multiply";bx.fillStyle=c.dark;bx.fillRect(x0,y0,w,y1-y0+T*.2);bx.globalCompositeOperation="source-over";}
   bx.restore();}
 
-/* ---------- Ritning (Bubbeljakten) ---------- */
+/* ---------- Ritning (Bubbelskjutaren) ---------- */
 function bMix(a,b,k){const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),A=p(a),Bc=p(b);return"#"+A.map((v,i)=>Math.round(v+(Bc[i]-v)*k).toString(16).padStart(2,"0")).join("");}
 function bSprite(col,r){
   const k=col+"|"+Math.round(r*2);if(bSpr[k])return bSpr[k];

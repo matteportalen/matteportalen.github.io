@@ -1,3 +1,3 @@
-Knappar till Racerbanan, Asteroidjakten och Tornbygget från Kenney (www.kenney.nl), Creative Commons Zero (CC0):
+Knappar till Racerbanan, Asteroidstormen och Tornbygget från Kenney (www.kenney.nl), Creative Commons Zero (CC0):
 "Mobile Controls" (pilar, turbo, sexkanter, ikoner) och "UI Pack" (gul, gra, gron, gul_bred).
 http://creativecommons.org/publicdomain/zero/1.0/

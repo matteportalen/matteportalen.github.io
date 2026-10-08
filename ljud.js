@@ -76,7 +76,7 @@
     croak(n){if(!isOn())return;const c=ac();if(!c)return;for(let i=0;i<(n||2);i++)croakPulse(c,i*.16);},
     /* Plask när näckrosbladet sjunker */
     splash(){if(!isOn())return;const c=ac();if(!c)return;noiseBurst(c,0,.5,1400,.9,.3,180);tone(400,.02,.25,'sine',.06,90);},
-    /* Bubbeljakten: plopp (stiger i ton när många spricker) och skott */
+    /* Bubbelskjutaren: plopp (stiger i ton när många spricker) och skott */
     pop(i){if(!isOn())return;const c=ac();if(!c)return;const f=520*Math.pow(1.07,Math.min(i||0,14));tone(f,0,.09,'sine',.17,f*2.2);noiseBurst(c,0,.04,2600,1,.05);},
     shoot(){if(!isOn())return;tone(240,0,.14,'triangle',.09,560);},
     /* Dragkampen: ett ryck i repet */
@@ -100,7 +100,7 @@
         Object.assign(this,{g,nodes:[n,l]});this.timer=setTimeout(bub,900);},
       stop(){if(!this.g)return;clearTimeout(this.timer);const c=ac(),t=c.currentTime;this.g.gain.setTargetAtTime(0.0001,t,.25);this.nodes.forEach(x=>{try{x.stop(t+1.2)}catch(e){}});this.g=null;}
     },
-    /* Bakgrundsljud för Skattjakten och Bubbeljakten: start('tradgarden' | 'grottan' | 'vintern' | 'havet' | 'djungel' | 'godis' | 'vulkan' | 'slott'), stop() */
+    /* Bakgrundsljud för Skattjakten och Bubbelskjutaren: start('tradgarden' | 'grottan' | 'vintern' | 'havet' | 'djungel' | 'godis' | 'vulkan' | 'slott'), stop() */
     ambient:{
       start(kind){if(!isOn())return;this.stop(true);const c=ac();if(!c)return;
         const g=c.createGain();g.gain.setValueAtTime(0.0001,c.currentTime);g.gain.exponentialRampToValueAtTime(1,c.currentTime+2);g.connect(c.destination);
@@ -123,7 +123,7 @@
           const d=c.createDelay(1.5),fb=c.createGain(),eg=c.createGain();d.delayTime.value=.42;fb.gain.value=.38;eg.gain.value=.6;d.connect(fb).connect(d);d.connect(eg).connect(g);
           later(()=>{const fr=1300+Math.random()*900;blip(fr,0,.09,.06,fr*.45);blip(fr,0,.09,.05,fr*.45,d);},1400,4200);
         }else if(kind==='djungel'){
-          /* Bubbeljakten i djungeln: varm vind, många fåglar och ibland ett dovt hoande */
+          /* Bubbelskjutaren i djungeln: varm vind, många fåglar och ibland ett dovt hoande */
           wind('lowpass',650,.7,.025,.09,200);
           later(()=>{const b=1800+Math.random()*2200,n=2+Math.floor(Math.random()*5);for(let i=0;i<n;i++)blip(b*(1+Math.random()*.2),i*.09,.07,.03,b*(Math.random()<.5?1.5:.7));},900,3200);
           later(()=>{blip(330,0,.35,.03,270);blip(330,.45,.35,.025,270);},7000,15000);
@@ -141,7 +141,7 @@
           wind('bandpass',520,.7,.03,.08,220);
           later(()=>{const n=1+Math.floor(Math.random()*4);for(let i=0;i<n;i++)blip(1800+Math.random()*2200,i*.05,.025,.015);},600,2200);
         }else if(kind==='havet'){
-          /* Bubbeljakten under vatten: dovt brus som sväller och små bubblor */
+          /* Bubbelskjutaren under vatten: dovt brus som sväller och små bubblor */
           wind('lowpass',300,.6,.035,.06,110);
           later(()=>{const n=1+Math.floor(Math.random()*4);for(let i=0;i<n;i++){const fr=420+Math.random()*600;blip(fr,i*.09,.07,.02,fr*2.1);}},1500,4500);
         }else{
