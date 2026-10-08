@@ -49,6 +49,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .content>svg{width:min(70vw,260px);height:auto}
 .content .cmpv svg{width:220px}
 .feedback{min-height:1.4em;font-weight:800;font-size:1.1rem;margin-top:6px;text-align:center;color:var(--good)}
+.roll .tick{cursor:pointer}
 .opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
 .opts button{background:var(--bg);border-radius:14px;padding:10px 6px;font-weight:800;font-size:1.2rem;box-shadow:0 3px 0 var(--line);min-height:58px}
 .opts.emo button{font-size:2.3rem;min-height:70px}
@@ -214,11 +215,12 @@ function unequalCuts(n){let pts=[0];for(let i=1;i<n;i++){let p=i/n+(Math.random(
   return pts.slice(0,-1).map((p,i)=>[p,pts[i+1]]);}
 const pickN=list=>pickOne(list);
 const randSet=(n,k)=>new Set(shuffle([...Array(n).keys()]).slice(0,k));
-function fracOptions(k,n){
-  const c=new Set([`${k}/${n}`]);const cand=[`${n-k}/${n}`,`${k}/${n+1}`,`${k+1}/${n}`,`${Math.max(1,k-1)}/${n}`,`${k}/${Math.max(2,n-1)}`,`1/${n}`];
-  shuffle(cand).forEach(x=>{const[a,b]=x.split("/").map(Number);if(c.size<4&&a>0&&b>0&&a<b&&!c.has(x))c.add(x);});
-  let g=0;while(c.size<4&&g++<50){const b=pickOne([2,3,4,5,6,8,10]),a=rnd(1,b-1);c.add(`${a}/${b}`);}
-  return shuffle([...c]);
+function fracOptions(k,n,max){
+  max=max||1;const c=[`${k}/${n}`],val=x=>{const[a,b]=x.split("/").map(Number);return a/b;},ok=x=>{const[a,b]=x.split("/").map(Number);return a>0&&b>1&&a/b<max&&!c.some(y=>Math.abs(val(y)-a/b)<1e-9);};
+  const cand=[`${n-k}/${n}`,`${k}/${n+1}`,`${k+1}/${n}`,`${Math.max(1,k-1)}/${n}`,`${k}/${Math.max(2,n-1)}`,`1/${n}`,`${k+2}/${n}`,`${n}/${k}`];
+  shuffle(cand).forEach(x=>{if(c.length<4&&ok(x))c.push(x);});
+  let g=0;while(c.length<4&&g++<80){const b=pickOne([2,3,4,5,6,8,10]),a=rnd(1,Math.floor(b*max)-1),x=`${a}/${b}`;if(ok(x))c.push(x);}
+  return shuffle(c);
 }
 const frLabel=s=>{const[a,b]=s.split("/");return fr(a,b);};
 
@@ -282,6 +284,15 @@ function genDel(){
   return{kind:"opts",fr:true,instr:`Hur stor del av ${F.name} är kvar?`,speak:`${petName} har ätit lite. Hur stor del av ${F.name} är kvar? Vilket bråk är det?`,html:F.D(cuts,st),options:opts,labels:opts.map(frLabel),answer:`${k}/${n}`,
     help:()=>({vis:F.D(cuts,st,{num:true})+`<div class="big-fr">${fr(k,n)}</div>`,tip:`Räkna alla bitar, även de uppätna: ${n}. Det talet skrivs under strecket (nämnaren). Räkna bitarna som är kvar: ${k}. Det talet skrivs över strecket (täljaren). Alltså ${k}/${n}, ${ordOf(k,n)}.`})};
 }
+/* ---------- Ät och räkna: Ät rätt del och Hur stor del är kvar? ihop (lärarens önskan, de var för lika), plus en ny typ:
+   "Ugglan åt 3/8. Hur stor del är kvar?" där bilden visar hela maten, så att man måste tänka att delarna blir en hel. ---------- */
+function genKvarRest(){
+  const n=pickN([3,4,5,6,8,10]),k=rnd(1,n-1),F=food(),cuts=equalCuts(n),opts=fracOptions(n-k,n);
+  return{kind:"opts",fr:true,instr:`${petName} åt ${ordOf(k,n)} (${k}/${n}) av ${F.name}. Hur stor del är kvar?`,speak:`${petName} åt ${ordOf(k,n)} av ${F.name}. Hur stor del är kvar?`,
+    html:F.D(cuts,()=>"on"),options:opts,labels:opts.map(frLabel),answer:`${n-k}/${n}`,
+    help:()=>({vis:F.D(cuts,i=>i<k?"eaten":"on",{num:true})+`<div class="big-fr">${fr(n-k,n)}</div>`,tip:`Hela ${F.name} är ${n}/${n}. ${petName} åt ${k} av bitarna. Kvar blir ${n} − ${k} = ${n-k} bitar, alltså ${n-k}/${n}.`})};
+}
+function genAtRakna(){const x=Math.random();return x<.4?genFarg():x<.7?genDel():genKvarRest();}
 /* ---------- 3. Ät rätt del: eleven trycker på bitarna som djuret ska äta ---------- */
 function genFarg(){
   const n=pickN([2,3,4,4,5,6,8]),k=n===2?1:rnd(1,n-1),F=food(),cuts=equalCuts(n);
@@ -385,16 +396,29 @@ function genJamfor(){
 }
 /* ---------- 7. Bråk på tallinjen: rulltårtan är lika lång som sträckan 0–1 ---------- */
 function genLinje(){
-  const n=pickN([2,3,4,5,6,8,10]),k=rnd(1,n-1),x=v=>RX(v);
-  let s=rollEl([k/n],4)+`<line x1="10" y1="56" x2="190" y2="56" stroke="#1D2B53" stroke-width="3"/>`;
-  for(let i=0;i<=n;i++)s+=`<line x1="${x(i/n)}" y1="${i%n?49:45}" x2="${x(i/n)}" y2="${i%n?63:67}" stroke="#1D2B53" stroke-width="${i%n?2:3}"/>`;
-  s+=`<text x="10" y="84" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">0</text><text x="190" y="84" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">1</text>`;
-  const mark=`<line x1="${x(k/n)}" y1="38" x2="${x(k/n)}" y2="54" stroke="#E5484D" stroke-width="3" stroke-dasharray="4 2"/><circle cx="${x(k/n)}" cy="56" r="5" fill="#E5484D"/>`;
-  const opts=fracOptions(k,n),VB="0 0 200 90";
-  const hops=Array.from({length:k},(_,i)=>`<path d="M${x(i/n)} 54 Q${x((i+.5)/n)} 40 ${x((i+1)/n)} 54" fill="none" stroke="#FF9F43" stroke-width="3"/>`).join("");
-  return{kind:"opts",fr:true,instr:"Var är rulltårtan skuren? Vilket bråk?",speak:`${petName} har skurit rulltårtan. Rulltårtan är lika lång som sträckan från noll till ett. Vilket bråk på tallinjen visar den röda pricken?`,
-    html:`<svg viewBox="${VB}" class="roll" aria-hidden="true">${s+mark}</svg>`,options:opts,labels:opts.map(frLabel),answer:`${k}/${n}`,
-    help:()=>({vis:`<svg viewBox="${VB}" class="roll" aria-hidden="true">${s+hops+mark}</svg>`,tip:`Sträckan från 0 till 1 är delad i ${n} lika stora delar. Snittet står ${k} steg från 0, se de orange hoppen. Alltså ${k}/${n}.`})};
+  const late=G&&G.i>=G.n-3,two=late&&Math.random()<.6,place=Math.random()<.5;
+  let n,k,max=two?2:1;
+  if(two){n=pickN([2,3,4]);k=rnd(n+1,2*n-1);}else{n=pickN([2,3,4,5,6,8,10]);k=rnd(1,n-1);}
+  const L=10,Rr=190,X=v=>L+(Rr-L)*v/max,N=n*max,VB="0 0 200 96";
+  // rulltårtan (bara 0–1) skuren i n skivor, så att skivorna står precis ovanför strecken
+  let s=max===1?rollEl(Array.from({length:n-1},(_,i)=>(i+1)/n),4):"";
+  const ly=max===1?60:44;
+  s+=`<line x1="${L}" y1="${ly}" x2="${Rr}" y2="${ly}" stroke="#1D2B53" stroke-width="3"/>`;
+  for(let i=0;i<=N;i++){const whole=i%n===0;s+=`<line x1="${X(i/n)}" y1="${ly-(whole?11:7)}" x2="${X(i/n)}" y2="${ly+(whole?11:7)}" stroke="#1D2B53" stroke-width="${whole?3:2}"/>`;}
+  for(let w=0;w<=max;w++)s+=`<text x="${X(w)}" y="${ly+28}" text-anchor="middle" font-size="14" font-weight="800" fill="#1D2B53">${w}</text>`;
+  const dot=`<line x1="${X(k/n)}" y1="${ly-18}" x2="${X(k/n)}" y2="${ly-2}" stroke="#E5484D" stroke-width="3" stroke-dasharray="4 2"/><circle cx="${X(k/n)}" cy="${ly}" r="5" fill="#E5484D"/>`;
+  const hops=Array.from({length:k},(_,i)=>`<path d="M${X(i/n)} ${ly-2} Q${X((i+.5)/n)} ${ly-16} ${X((i+1)/n)} ${ly-2}" fill="none" stroke="#FF9F43" stroke-width="3"/>`).join("");
+  const svg=inner=>`<svg viewBox="${VB}" class="roll" aria-hidden="true">${inner}</svg>`;
+  const tip=`Sträckan från 0 till 1 är delad i ${n} lika stora delar, och varje del är 1/${n}. ${k}/${n} ligger ${k} steg från 0, se de orange hoppen.`+(k>n?` Det är mer än en hel: ${n}/${n} är 1, och sedan ${k-n} steg till.`:"");
+  if(place){
+    // Sätt pricken: tryck på rätt streck
+    return{kind:"place",instr:`Var ligger ${k}/${n}? Tryck på rätt streck.`,speak:`Var på tallinjen ligger ${ordOf(k,n)}? Tryck på rätt streck.`,frq:fr(k,n),
+      svg:(sel)=>svg(s+Array.from({length:N+1},(_,i)=>`<rect class="tick" data-i="${i}" x="${X(i/n)-Math.min(9,(Rr-L)/N/2)}" y="${ly-26}" width="${Math.min(18,(Rr-L)/N)}" height="44" fill="transparent"/>`).join("")+(sel!=null?`<circle cx="${X(sel/n)}" cy="${ly}" r="6" fill="#3D5AFE"/>`:"")),
+      answer:k,help:()=>({vis:svg(s+hops+dot),tip})};
+  }
+  const opts=fracOptions(k,n,max);
+  return{kind:"opts",fr:true,instr:max===1?"Var är pricken? Vilket bråk?":"Pricken är förbi 1. Vilket bråk?",speak:`Rulltårtan är lika lång som sträckan från noll till ett. Vilket bråk på tallinjen visar den röda pricken?`,
+    html:svg(s+dot),options:opts,labels:opts.map(frLabel),answer:`${k}/${n}`,help:()=>({vis:svg(s+hops+dot),tip})};
 }
 
 const ICON={
@@ -407,8 +431,7 @@ const ICON={
 const AREAS=[
   {id:"enhet",name:"Halva, tredjedel …",desc:"Hur stor bit får djuret?",ak:"Åk 1",c:"#FF9F43",gen:genEnhet},
   {id:"lika",name:"Lika stora delar",desc:"Rättvist? Skär själv!",ak:"Åk 1–2",c:"#2BB673",gen:genLika},
-  {id:"farg",name:"Ät rätt del",desc:"Hjälp djuret att äta rätt del.",ak:"Åk 1–2",c:"#FF5FA2",gen:genFarg},
-  {id:"del",name:"Hur stor del?",desc:"Hur mycket är kvar?",ak:"Åk 2–3",c:"#3D8BFD",gen:genDel},
+  {id:"farg",name:"Ät och räkna",desc:"Ät rätt del och räkna det som är kvar.",ak:"Åk 1–3",c:"#FF5FA2",gen:genAtRakna},
   {id:"antal",name:"Del av antal",desc:"Dela lika på tallrikar.",ak:"Åk 2–3",c:"#7B61FF",gen:genAntal},
   {id:"jamfor",name:"Jämför bråk",desc:"Vilket bråk är störst?",ak:"Åk 3",c:"#FF6B6B",gen:genJamfor},
   {id:"linje",name:"Bråk på tallinjen",desc:"Rulltårtan på tallinjen.",ak:"Åk 3",c:"#17AFC4",gen:genLinje}
@@ -471,6 +494,10 @@ function render(){
         if(t.spread&&G.cuts.length)c.querySelector("svg.cutsvg").outerHTML=t.spread(G.cuts);
         r===true?done():wrong(r);};};
     draw();
+  }else if(t.kind==="place"){
+    const draw=sel=>{c.innerHTML=`<div class="topfr">${t.frq}</div>`+t.svg(sel);
+      c.querySelectorAll(".tick").forEach(el=>el.onclick=()=>{if(G.busy)return;const i=+el.dataset.i;draw(i);i===t.answer?done():wrong(i===0?"0":`streck ${i}`);});};
+    draw(null);
   }else if(t.kind==="color"){
     G.state=new Set();const draw=()=>{c.innerHTML=`<div class="topfr">${t.topFr}</div>`+t.draw(G.state)+`<button class="go" id="done">Klar</button>`;
       c.querySelectorAll(".part").forEach(el=>el.onclick=()=>{if(G.busy)return;const p=+el.dataset.p;G.state.has(p)?G.state.delete(p):G.state.add(p);draw();});
