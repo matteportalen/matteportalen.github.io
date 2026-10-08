@@ -81,6 +81,71 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .bubble::after{content:"";position:absolute;left:-8px;bottom:12px;border:8px solid transparent;border-left:0;border-right-color:var(--card)}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:9;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:8}
+/* ---------- På tid (Femhörningarna och Rutnätet) ---------- */
+.sec{font-size:1.6rem;font-weight:800;margin:26px 0 2px;display:flex;align-items:center;gap:8px}
+.sub{margin:0 0 10px;color:var(--muted);font-weight:700;line-height:1.3}
+.rng{display:flex;gap:8px;margin:0 0 12px;flex-wrap:wrap}
+.rng button{height:46px;padding:0 16px;border-radius:12px;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:1.1rem}
+.rng button[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 3px 0 #0E1735}
+.tvars{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media(max-width:480px){.tvars{grid-template-columns:1fr}}
+.tvar{background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;align-items:center;gap:12px}
+.tvar:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.tvar svg{flex:none;width:76px;height:76px}
+.tvar b{display:block;font-size:1.2rem;line-height:1.15}
+.tvar small{display:block;color:var(--muted);font-size:.88rem;line-height:1.25}
+.tvar .rek{display:inline-block;margin-top:4px;font-weight:800;font-size:.9rem;background:#FFF4D1;color:#7A5B00;border-radius:999px;padding:1px 10px}
+.tbar{display:flex;align-items:center;gap:10px;margin:2px 0 8px;flex-wrap:wrap}
+.tbar .vn{font-weight:800;font-size:1.1rem}
+.clock{margin-left:auto;background:var(--ink);color:#fff;border-radius:12px;padding:4px 14px;font-weight:800;font-size:1.35rem;font-variant-numeric:tabular-nums;min-width:110px;text-align:center}
+.pen{font-weight:800;color:#B8323A;min-width:3.4em;text-align:right}
+.pen.pop{animation:penpop .6s}
+@keyframes penpop{30%{transform:scale(1.35)}}
+.tmsg{min-height:1.5em;text-align:center;font-weight:800;margin:8px 0 0;color:var(--muted)}
+.tmsg.ok{color:var(--good-dark)}.tmsg.bad{color:#B8323A}
+/* rutnätet: 3×3 block med 3×3 tal, varannat block blått */
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;width:min(94vw,640px,calc(100dvh - 230px));aspect-ratio:1;margin:0 auto;background:#1D2B53;padding:4px;border-radius:14px;user-select:none;-webkit-user-select:none}
+.gb{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;background:#fff;border-radius:6px;padding:2px;position:relative;transition:background .25s}
+.gb.alt{background:#CFE3FF}
+.gb button{background:#fff;border-radius:4px;font-weight:800;font-size:clamp(.9rem,3.6vmin,1.7rem);line-height:1;display:grid;place-items:center;font-variant-numeric:tabular-nums}
+.gb.alt button{background:#E3EEFF}
+.gb.cur{box-shadow:0 0 0 4px #FF9F43;z-index:1}
+.gb button.sel{background:#3D5AFE !important;color:#fff}
+.gb.shake{animation:shake .45s}
+.gb.shake button.sel{background:#E5484D !important}
+.gb.done{display:grid;grid-template-columns:1fr;place-items:stretch;padding:0;background:#DDF5E7}
+.gb.done.alt{background:#C2ECD3}
+.gb .sum{width:100%;height:100%;font-size:clamp(1.8rem,9vmin,3.4rem);border-radius:6px;background:transparent !important;color:var(--ink)}
+.gb .sum.sel{background:#3D5AFE !important;color:#fff}
+.grid.fin .gb.done{background:#FFF4D1}
+.grid.won .gb.done .sum.part{background:#2BB673 !important;color:#fff}
+/* femhörningarna (SVG) */
+.pent{display:block;width:min(94vw,600px,calc(100dvh - 230px));margin:0 auto;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.pent .w{cursor:pointer}
+.pent .w polygon{fill:#fff;stroke:#8D9CC9;stroke-width:1.5;transition:fill .12s}
+.pent .w text,.pent .s text{font-family:"Baloo 2","Trebuchet MS",sans-serif;font-weight:800;fill:#1D2B53;pointer-events:none}
+.pent .w.sel polygon{fill:#3D5AFE}.pent .w.sel text{fill:#fff}
+.pent .blk.shake{animation:shake .45s}
+.pent .blk.shake .w.sel polygon{fill:#E5484D}
+.pent .s{cursor:pointer}
+.pent .s.sel polygon{fill:#3D5AFE}.pent .s.sel text{fill:#fff}
+.pent .s.part polygon{fill:#2BB673}.pent .s.part text{fill:#fff}
+/* förstoringen på mobil */
+.zoom{display:grid;gap:6px;max-width:360px;margin:10px auto 0;background:var(--card);border-radius:16px;padding:8px;box-shadow:0 4px 0 var(--line)}
+.zoom button{height:58px;border-radius:12px;background:#EEF3FF;font-weight:800;font-size:1.7rem;font-variant-numeric:tabular-nums}
+.zoom button.sel{background:#3D5AFE;color:#fff}
+.zoom.shake{animation:shake .45s}.zoom.shake button.sel{background:#E5484D}
+.zoom p{grid-column:1/-1;margin:0;text-align:center;font-weight:700;color:var(--muted);font-size:.95rem}
+/* slutrutan */
+.tres{text-align:center;padding-top:16px}
+.tres h2{font-size:2rem;margin:6px 0}
+.tcard{background:var(--card);border-radius:20px;box-shadow:0 4px 0 var(--line);padding:14px 18px;max-width:380px;margin:0 auto 14px}
+.tcard .big{font-size:3rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums;margin:2px 0 8px}
+.tcard table{width:100%;font-weight:700;color:var(--muted);border-collapse:collapse}
+.tcard td{padding:2px 0}.tcard td:last-child{text-align:right;color:var(--ink);font-variant-numeric:tabular-nums}
+.newrec{display:inline-block;background:#FFF4D1;color:#7A5B00;font-weight:800;border-radius:999px;padding:2px 14px;margin-bottom:8px}
+.go{display:block;width:100%;max-width:380px;margin:8px auto 0;padding:13px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.3rem}
+.go.alt{background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--line)}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}.yay.show{opacity:1;transform:translate(-50%,-50%) rotate(-6deg)}}
 </style>
 </head>
@@ -92,11 +157,29 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
   <div class="how"><div class="mini"><i class="g">3</i><i>5</i><i class="g">10</i><i class="g">7</i></div><p>3 + 7 = 10. Tryck på de tre talen som hör ihop. Det fjärde talet passar inte. När alla fyra rutor är klara kommer nya.</p></div>
   <div class="vars" id="vars"></div>
   <div class="tabs" id="tabsBox"><p>Vilka tabeller i <b>Gånger, alla tabeller</b>?</p><div class="chips" id="tabChips"></div></div>
+  <h2 class="sec">⏱️ På tid</h2>
+  <p class="sub">För dig som vill ha en utmaning. Lös alla rutor så fort du kan, sedan bildar svaren en sista ruta. Varje fel ger 3 sekunder extra. Med addition eller multiplikation.</p>
+  <div class="rng" id="rng"></div>
+  <div class="rng" id="rng2"></div>
+  <div class="tvars" id="tvars"></div>
 </section>
 <section id="game" class="screen" hidden>
   <div class="gbar"><button class="back" id="quit">← Byt</button><span class="vn" id="vn"></span><span class="cnt" id="cnt"></span></div>
   <div class="board" id="board"></div>
   <div class="foot"><div class="pet" id="pet" aria-hidden="true"></div><div class="bubble" id="bubble" aria-live="polite"></div></div>
+</section>
+<section id="tid" class="screen" hidden>
+  <div class="tbar"><button class="back" id="tQuit">← Byt</button><span class="vn" id="tName"></span><span class="pen" id="tPen"></span><span class="clock" id="tClock" aria-live="off">0:00.0</span></div>
+  <div id="tBoard"></div>
+  <div class="zoom" id="tZoom" hidden></div>
+  <p class="tmsg" id="tMsg" aria-live="polite"></p>
+</section>
+<section id="result" class="screen tres" hidden>
+  <h2 id="rTitle">Klart!</h2>
+  <div class="tcard"><div class="newrec" id="rNew" hidden>🏆 Nytt rekord!</div><div class="big" id="rTime"></div>
+    <table><tr><td>Speltid</td><td id="rGame"></td></tr><tr><td>Straff</td><td id="rPen"></td></tr><tr><td>Ditt rekord</td><td id="rBest"></td></tr></table></div>
+  <button class="go" id="rAgain">Spela igen</button>
+  <button class="go alt" id="rHome">Byt spel</button>
 </section>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -156,10 +239,10 @@ const visa=x=>x[1]===1?String(x[0]):x[0]===x[1]?"1":`<span class="fr"><i>${x[0]}
 /* ---------- Skärmar ---------- */
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
-function openHome(){G=null;
+function openHome(){G=null;if(typeof tStop==="function")tStop();
   $("vars").innerHTML=VAR.map(v=>{const k=data.kors[v.id]||0;return`<button class="var" data-v="${v.id}" style="--c:${v.c}"><span class="t">${v.t}</span><b>${v.name}</b><small>${v.ex}</small>${starHtml(data.stars[v.id]||0)}<span class="cnt">${k?`🟩 ${k} kors klara`:v.desc}</span></button>`;}).join("");
   $("tabChips").innerHTML=[2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${data.tab.includes(t)}">${t}</button>`).join("");
-  show("home");}
+  renderTid();show("home");}
 $("vars").onclick=e=>{const b=e.target.closest("[data-v]");if(b)start(b.dataset.v);};
 $("tabChips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t,s=new Set(data.tab);
   if(s.has(t)){if(s.size===1){toast("Minst en tabell behövs.");return;}s.delete(t);}else s.add(t);data.tab=[...s].sort((a,b)=>a-b);save();openHome();};
@@ -209,7 +292,7 @@ function korsKlart(){
   setTimeout(()=>{if(!G)return;b.querySelectorAll(".box").forEach(x=>x.classList.add("out"));setTimeout(()=>{if(G)nyttKors(true);},320);},1150);
 }
 function petHop(c){const p=$("pet");p.classList.remove("hop","jump");void p.offsetWidth;p.classList.add(c);}
-document.addEventListener("keydown",e=>{if(e.key==="Escape"&&G&&!$("game").hidden)openHome();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&((G&&!$("game").hidden)||(T&&!$("tid").hidden)))openHome();});
 
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800);}
 function confetti(){
@@ -220,6 +303,146 @@ function confetti(){
   const t0=performance.now();(function f(now){x.clearRect(0,0,W2,H2);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
     if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W2,H2);c.hidden=true;}})(t0);
 }
+/* ---------- På tid: Femhörningarna och Rutnätet ----------
+   Varje block har n tal (5 eller 9) med exakt en trio a + b = c. Ett löst block blir sin summa c, och summorna bildar
+   det sista blocket, som också har exakt en trio. Generatorn börjar med sista blocket och bygger varje block runt sin summa.
+   Klockan startar vid första trycket och syns hela tiden; varje fel ger 3 sekunder straff. Inga stjärnor, bara rekordtid
+   (bästa sluttid per bräda och talområde). På smal skärm förstoras blocket man arbetar med under brädet. */
+const TB={fem:{n:5,name:"Femhörningarna",desc:"5 femhörningar med 5 tal, sedan en sista ring"},rut:{n:9,name:"Rutnätet",desc:"9 rutor med 9 tal, sedan en sista ruta"}},RNG=[20,25,100],STRAFF=3;
+if(!data.tid)data.tid={};if(!RNG.includes(data.rng))data.rng=20;
+// antal par vars summa också finns bland talen (talen är alltid olika)
+const trioCount=(nums,op)=>{const s=new Set(nums);let k=0;for(let i=0;i<nums.length;i++)for(let j=i+1;j<nums.length;j++)if(s.has(op==="·"?nums[i]*nums[j]:nums[i]+nums[j]))k++;return k;};
+// multiplikation: faktorerna 2–10 (1 · 7 = 7 vore för lätt), tal i tabellerna väljs gärna som störtal så att de ser rimliga ut
+const PROD=new Set();for(let a=2;a<=10;a++)for(let b=2;b<=10;b++)PROD.add(a*b);
+function mulPair(c,maxF){const p=[];for(let a=2;a<=maxF;a++)if(c%a===0){const b=c/a;if(b>a&&b<=maxF)p.push([a,b]);}return p.length?pick(p):null;}
+// ett block med n olika tal och exakt en trio; c = summan (null = valfri), lo = minsta tal i trion och bland störtalen.
+// Störtalen läggs till ett i taget och bara om de inte skapar en ny trio (mest ur övre halvan, där det sällan blir trior).
+function tBlock(n,max,c,lo,ok,tries,op,maxF){ok=ok||(()=>true);const mul=op==="·";
+  for(let t=0;t<(tries||300);t++){let a,b,cc;
+    if(mul){if(c!=null){const pr=mulPair(c,maxF||10);if(!pr)return null;[a,b]=pr;cc=c;}
+      else{const al=[];for(let x=lo;x<=(maxF||10);x++)if(ok(x))al.push(x);if(al.length<2)return null;a=pick(al);b=pick(al);cc=a*b;if(cc>max)continue;}}
+    else{cc=c??rnd(2*lo+1,max);if(cc<2*lo+1)return null;a=rnd(lo,cc-lo);b=cc-a;}
+    if(a===b||!ok(a)||!ok(b)||!ok(cc))continue;
+    const nums=[a,b,cc],pool=[];for(let x=lo;x<=max;x++)if(!nums.includes(x)&&ok(x))pool.push({x,k:Math.random()+(mul?(PROD.has(x)?.8:0):(x>max/2?.6:0))});
+    pool.sort((p,q)=>q.k-p.k);
+    for(const {x} of pool){if(nums.length===n)break;nums.push(x);if(trioCount(nums,op)!==1)nums.pop();}
+    if(nums.length===n)return shuffle(nums);}
+  return null;}
+// vilka summor det går att bygga ett block kring (med nio tal till 20 går t.ex. inte 6, 7, 8, 11 och 14); räknas en gång
+const FEAS={};
+function feas(n,max,op){const k=n+"-"+max+op;if(!FEAS[k]){const s=new Set();for(let c=3;c<=max;c++)for(let i=0;i<3;i++)if(tBlock(n,max,c,op==="·"?2:1,null,40,op)){s.add(c);break;}FEAS[k]=s;}return FEAS[k];}
+// sista blocket: vid multiplikation är dess faktorer själva svar från andra block (t.ex. 6 · 8 = 48), därför upp till 12
+function tGen(kind,max,op){const n=TB[kind].n,mul=op==="·",lo=mul?2:max>=100?8:3,f=feas(n,max,op);
+  for(let t=0;t<300;t++){const fin=tBlock(n,max,null,lo,x=>f.has(x),300,op,12);if(!fin)continue;
+    const blocks=fin.map(c=>tBlock(n,max,c,mul?2:1,null,300,op,10));if(blocks.some(b=>!b))continue;
+    return{fin,blocks};}
+  return null;}
+const fmt=ms=>{const s=ms/1000,m=Math.floor(s/60);return `${m}:${(s-m*60).toFixed(1).padStart(4,"0")}`;};
+const narrow=()=>innerWidth<600;
+let T=null;
+const tKey=k=>data.top==="·"?k+"-x":k+"-"+data.rng;
+function renderTid(){
+  $("rng").innerHTML=`<button data-o="+" aria-pressed="${data.top!=="·"}">＋ Addition</button><button data-o="·" aria-pressed="${data.top==="·"}">· Multiplikation</button>`;
+  $("rng2").innerHTML=data.top==="·"?`<span class="sub" style="margin:0">Tabellerna 2–10</span>`:RNG.map(r=>`<button data-r="${r}" aria-pressed="${data.rng===r}">Till ${r}</button>`).join("");
+  $("tvars").innerHTML=Object.keys(TB).map(k=>{const rec=data.tid[tKey(k)];
+    return `<button class="tvar" data-k="${k}">${k==="fem"?pentMini():gridMini()}<span><b>${TB[k].name}</b><small>${TB[k].desc}</small>${rec?`<span class="rek">🏆 ${fmt(rec.best)}</span>`:""}</span></button>`;}).join("");}
+$("rng").onclick=e=>{const b=e.target.closest("[data-o]");if(!b)return;data.top=b.dataset.o;save();renderTid();};
+$("rng2").onclick=e=>{const b=e.target.closest("[data-r]");if(!b)return;data.rng=+b.dataset.r;save();renderTid();};
+$("tvars").onclick=e=>{const b=e.target.closest("[data-k]");if(b)tStart(b.dataset.k);};
+function tStart(kind){clearInterval(T&&T.iv);G=null;
+  const op=data.top==="·"?"·":"+",max=op==="·"?100:data.rng;
+  T={kind,op,key:tKey(kind),max,d:tGen(kind,max,op),solved:Array(TB[kind].n).fill(false),cur:null,sel:new Set(),t0:0,pen:0,err:0,done:false,busy:false,iv:0};
+  $("tName").textContent=`${TB[kind].name} · ${op==="·"?"multiplikation":"till "+T.max}`;$("tClock").textContent="0:00.0";$("tPen").textContent="";
+  tMsg(`Hitta tre tal som hör ihop i en ruta (${op==="·"?"a · b = c":"a + b = c"}). Klockan startar när du trycker.`);
+  show("tid");tRender();}
+function tMsg(m,c){const e=$("tMsg");e.textContent=m;e.className="tmsg"+(c?" "+c:"");}
+const fin=()=>T.solved.every(x=>x);
+function tick(){if(T&&T.t0)$("tClock").textContent=fmt(performance.now()-T.t0);}
+
+/* ---------- Rita brädet ---------- */
+function tRender(){$("tBoard").innerHTML=T.kind==="rut"?gridHtml():pentHtml();tZoom();}
+function gridHtml(){const d=T.d;
+  return `<div class="grid${fin()?" fin":""}${T.done?" won":""}">`+d.blocks.map((nums,b)=>{const alt=b%2?" alt":"";
+    if(T.solved[b])return `<div class="gb done${alt}" data-b="${b}"><button class="sum${T.cur==="F"&&T.sel.has(b)?" sel":""}${T.done&&T.win.includes(b)?" part":""}" data-f="${b}">${d.fin[b]}</button></div>`;
+    return `<div class="gb${alt}${T.cur===b?" cur":""}" data-b="${b}">`+nums.map((x,j)=>`<button data-b="${b}" data-j="${j}" class="${T.cur===b&&T.sel.has(j)?"sel":""}">${x}</button>`).join("")+`</div>`;}).join("")+`</div>`;}
+// femhörningarna: fem runt en mitt, kant mot kant
+const PC={x:200,y:192},PR=70,PRI=PR*Math.cos(Math.PI/5);
+const pt=(cx,cy,r,deg)=>[cx+r*Math.cos(deg*Math.PI/180),cy+r*Math.sin(deg*Math.PI/180)];
+const poly=a=>a.map(p=>p.map(v=>v.toFixed(1)).join(",")).join(" ");
+const PASTEL=["#FFE3EE","#DDEBFF","#DDF5E7","#FFF1CC","#EAE3FF"];
+function pentHtml(){const d=T.d;let h=`<svg class="pent" viewBox="0 0 400 372" role="group" aria-label="Femhörningarna">`;
+  const cv=[0,1,2,3,4].map(j=>pt(PC.x,PC.y,PR,-54+j*72));
+  h+=`<polygon points="${poly(cv)}" fill="${fin()?"#FFF4D1":"#EEF3FF"}" stroke="#8D9CC9" stroke-width="1.5"/><circle cx="${PC.x}" cy="${PC.y}" r="17" fill="#3D5AFE"/>${T.op==="·"?`<circle cx="${PC.x}" cy="${PC.y}" r="4.5" fill="#fff"/>`:`<path d="M${PC.x} ${PC.y-8}v16M${PC.x-8} ${PC.y}h16" stroke="#fff" stroke-width="3.4" stroke-linecap="round"/>`}`;
+  d.blocks.forEach((nums,b)=>{const ang=-90+b*72,[cx,cy]=pt(PC.x,PC.y,2*PRI,ang),ov=[0,1,2,3,4].map(j=>pt(cx,cy,PR,ang+j*72));
+    if(T.solved[b]){const cls=(T.cur==="F"&&T.sel.has(b)?" sel":"")+(T.done&&T.win.includes(b)?" part":"");
+      h+=`<g class="s${cls}" data-f="${b}"><polygon points="${poly(ov)}" fill="${PASTEL[b]}" stroke="#8D9CC9" stroke-width="1.5"/><text x="${cx}" y="${cy+15}" font-size="44" text-anchor="middle">${d.fin[b]}</text></g>`;return;}
+    const iv=[0,1,2,3,4].map(j=>pt(cx,cy,PR*.32,ang+j*72));
+    h+=`<g class="blk" data-b="${b}">`;
+    nums.forEach((x,j)=>{const [tx,ty]=pt(cx,cy,PR*.57,ang+j*72+36);
+      h+=`<g class="w${T.cur===b&&T.sel.has(j)?" sel":""}" data-b="${b}" data-j="${j}"><polygon points="${poly([ov[j],ov[(j+1)%5],iv[(j+1)%5],iv[j]])}"/><text x="${tx.toFixed(1)}" y="${(ty+8).toFixed(1)}" font-size="${x>=100?19:23}" text-anchor="middle">${x}</text></g>`;});
+    h+=`<polygon points="${poly(iv)}" fill="${PASTEL[b]}" stroke="#8D9CC9" stroke-width="1.5" pointer-events="none"/>`;
+    if(T.cur===b)h+=`<polygon points="${poly(ov)}" fill="none" stroke="#FF9F43" stroke-width="5" stroke-linejoin="round" pointer-events="none"/>`;
+    h+=`</g>`;});
+  return h+`</svg>`;}
+function tZoom(){const z=$("tZoom");
+  if(!narrow()||T.done||fin()){z.hidden=true;return;}
+  z.hidden=false;const n=TB[T.kind].n;
+  if(typeof T.cur!=="number"){z.style.gridTemplateColumns="1fr";z.innerHTML=`<p>Tryck på en ${T.kind==="rut"?"ruta":"femhörning"} så blir den stor här.</p>`;return;}
+  z.style.gridTemplateColumns=`repeat(${n===9?3:5},1fr)`;
+  z.innerHTML=T.d.blocks[T.cur].map((x,j)=>`<button data-zj="${j}" class="${T.sel.has(j)?"sel":""}">${x}</button>`).join("");}
+
+/* ---------- Trycka ---------- */
+$("tBoard").addEventListener("click",e=>{if(!T||T.done||T.busy)return;
+  const f=e.target.closest("[data-f]");
+  if(f){if(!fin()){tMsg("Lös alla rutor först. Sedan bildar svaren den sista rutan.");return;}tSel("F",+f.dataset.f);return;}
+  const w=e.target.closest("[data-j]");if(!w)return;const b=+w.dataset.b;
+  // på smal skärm är talen små: första trycket väljer bara blocket, som förstoras under brädet
+  if(narrow()&&T.cur!==b){T.cur=b;T.sel=new Set();tRender();return;}
+  tSel(b,+w.dataset.j);});
+$("tZoom").addEventListener("click",e=>{const z=e.target.closest("[data-zj]");if(!z||!T||T.busy)return;tSel(T.cur,+z.dataset.zj);});
+function tSel(bk,j){
+  if(!T.t0){T.t0=performance.now();T.iv=setInterval(tick,100);}
+  if(T.cur!==bk){T.cur=bk;T.sel=new Set();}
+  if(T.sel.has(j))T.sel.delete(j);else{T.sel.add(j);window.Ljud&&Ljud.pop&&Ljud.pop(T.sel.size);}
+  tRender();if(T.sel.size<3)return;
+  const nums=bk==="F"?T.d.fin:T.d.blocks[bk],vals=[...T.sel].map(i=>nums[i]);
+  if(trioCount(vals,T.op)===1){const [a,b,c]=vals.slice().sort((x,y)=>x-y),eq=`${a} ${T.op} ${b} = ${c}`;
+    window.Ljud&&Ljud.ok&&Ljud.ok();
+    if(bk==="F"){T.win=[...T.sel];return tDone(eq);}
+    T.solved[bk]=true;T.cur=fin()?"F":null;T.sel=new Set();
+    tMsg(fin()?`${eq}. Alla klara! Hitta tre svar som hör ihop.`:eq,"ok");tRender();return;}
+  T.pen+=STRAFF;T.err++;window.Ljud&&Ljud.bad&&Ljud.bad();
+  const p=$("tPen");p.textContent=`+${T.pen} s`;p.classList.remove("pop");void p.offsetWidth;p.classList.add("pop");
+  tMsg(`${vals.join(", ")} hör inte ihop. +${STRAFF} sekunder.`,"bad");
+  T.busy=true;const el=bk==="F"?$("tBoard").firstElementChild:$("tBoard").querySelector(`[data-b="${bk}"].gb,g.blk[data-b="${bk}"]`),z=$("tZoom");
+  [el,z].forEach(x=>x&&x.classList.add("shake"));
+  setTimeout(()=>{[el,z].forEach(x=>x&&x.classList.remove("shake"));if(!T)return;T.sel=new Set();T.busy=false;tRender();},480);}
+function tDone(eq){T.done=true;clearInterval(T.iv);const game=performance.now()-T.t0,tot=game+T.pen*1000,key=T.key;
+  const rec=data.tid[key],nytt=!rec||tot<rec.best;data.tid[key]={best:nytt?Math.round(tot):rec.best,last:Math.round(tot),spelat:((rec&&rec.spelat)||0)+1};save();
+  $("tClock").textContent=fmt(game);tMsg(`${eq}. Klart!`,"ok");tRender();
+  setTimeout(()=>{if(!T)return;
+    $("rTitle").textContent=nytt&&rec?"Nytt rekord! 🏆":"Klart!";$("rNew").hidden=!(nytt&&rec);
+    $("rTime").textContent=fmt(tot);$("rGame").textContent=fmt(game);$("rPen").textContent=T.err?`${T.err} fel · ${T.pen} s`:"0 s";$("rBest").textContent=fmt(data.tid[key].best);
+    show("result");if(nytt){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}},900);}
+function tStop(){if(T)clearInterval(T.iv);T=null;}
+$("tQuit").onclick=()=>{tStop();openHome();};
+$("rAgain").onclick=()=>{const k=T?T.kind:"fem";tStart(k);};
+$("rHome").onclick=()=>{tStop();openHome();};
+addEventListener("resize",()=>{if(T&&!$("tid").hidden)tZoom();});
+
+/* små bilder till korten */
+function pentMini(){let h=`<svg viewBox="0 0 400 372" aria-hidden="true"><rect width="400" height="372" rx="40" fill="#F2F6FF"/>`;
+  for(let b=0;b<5;b++){const ang=-90+b*72,[cx,cy]=pt(PC.x,PC.y,2*PRI,ang),ov=[0,1,2,3,4].map(j=>pt(cx,cy,PR,ang+j*72));
+    h+=`<polygon points="${poly(ov)}" fill="${b<2?PASTEL[b]:"#fff"}" stroke="#56668F" stroke-width="6"/>`;
+    if(b<2)h+=`<text x="${cx}" y="${cy+20}" font-size="60" font-weight="800" text-anchor="middle" fill="#1D2B53" font-family="Baloo 2, Trebuchet MS, sans-serif">${b?9:13}</text>`;
+    else{const iv=[0,1,2,3,4].map(j=>pt(cx,cy,PR*.32,ang+j*72));h+=`<polygon points="${poly(iv)}" fill="${PASTEL[b]}" stroke="#56668F" stroke-width="4"/>`+[0,1,2,3,4].map(j=>`<line x1="${iv[j][0].toFixed(1)}" y1="${iv[j][1].toFixed(1)}" x2="${ov[j][0].toFixed(1)}" y2="${ov[j][1].toFixed(1)}" stroke="#56668F" stroke-width="4"/>`).join("");}}
+  return h+`<circle cx="${PC.x}" cy="${PC.y}" r="26" fill="#3D5AFE"/></svg>`;}
+function gridMini(){let h=`<svg viewBox="0 0 90 90" aria-hidden="true"><rect width="90" height="90" rx="10" fill="#1D2B53"/>`;
+  for(let b=0;b<9;b++){const x=3+(b%3)*28,y=3+Math.floor(b/3)*28,alt=b%2;
+    if(b===2||b===4)h+=`<rect x="${x}" y="${y}" width="26" height="26" rx="3" fill="#DDF5E7"/><text x="${x+13}" y="${y+19}" font-size="15" font-weight="800" text-anchor="middle" fill="#1D2B53" font-family="Baloo 2, Trebuchet MS, sans-serif">${b===2?17:25}</text>`;
+    else{h+=`<rect x="${x}" y="${y}" width="26" height="26" rx="3" fill="${alt?"#CFE3FF":"#fff"}"/>`;for(let c=0;c<9;c++)h+=`<rect x="${x+1.5+(c%3)*8}" y="${y+1.5+Math.floor(c/3)*8}" width="7" height="7" rx="1.2" fill="${alt?"#E3EEFF":"#F2F6FF"}"/>`;}}
+  return h+`</svg>`;}
+
 openHome();
 </script>
 </body>
