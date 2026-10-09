@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Högfrekventa ord – Övriga ämnen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@700&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF8F0; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#CBE6D2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --las:"Andika","Trebuchet MS",system-ui,sans-serif; /* läsinlärningstypsnitt */
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.wrap{max-width:820px;margin:0 auto;padding:12px 16px 40px}
+h1{font-size:2.4rem;line-height:1.05;margin:12px 0 4px;font-weight:800}
+h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
+.lead{margin:0 0 12px;color:var(--muted);font-weight:700}
+.back{color:var(--muted);font-weight:700;padding:6px 0;font-size:1rem}
+.stars{color:var(--gold);letter-spacing:1px}.stars .off{color:#D6E5DA}
+.w{font-family:var(--las);font-weight:700}
+/* paketen */
+.packs{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+@media(min-width:700px){.packs{grid-template-columns:repeat(10,1fr)}}
+.pk{background:var(--card);border-radius:14px;padding:6px 4px 5px;box-shadow:0 3px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:1px}
+.pk[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent),0 3px 0 var(--line)}
+.pk b{font-size:1.25rem;line-height:1.1}.pk .stars{font-size:.7rem;letter-spacing:0}
+.pk .bar{width:80%;height:5px;border-radius:3px;background:#E3EFE6;overflow:hidden;margin-top:2px}.pk .bar i{display:block;height:100%;background:var(--good)}
+.sel{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);margin-top:12px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{font-family:var(--las);font-weight:700;font-size:1.3rem;padding:2px 12px;border-radius:12px;background:#F2F8F3;color:var(--c);position:relative}
+.chip.kan{background:#DDF5E7}
+.chip.kan::after{content:"✓";position:absolute;right:-4px;top:-8px;font-family:var(--font);font-size:.8rem;color:#fff;background:var(--good);border-radius:50%;width:18px;height:18px;display:grid;place-items:center}
+.ear{font-size:.75em;margin-left:2px}
+.modes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+@media(min-width:700px){.modes{grid-template-columns:repeat(4,1fr)}}
+.mode{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;flex-direction:column;gap:2px}
+.mode:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.mode .ic{font-size:1.8rem}.mode b{font-size:1.15rem;line-height:1.15}.mode small{color:var(--muted);font-weight:700;line-height:1.2}
+.opts{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px;background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line)}
+.opts .lab{font-weight:800}
+.seg{display:flex;gap:4px;background:#EEF4EF;border-radius:12px;padding:3px}
+.seg button{padding:6px 10px;border-radius:9px;font-weight:800}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.mic{margin-left:auto;padding:8px 12px;border-radius:12px;font-weight:800;background:#EEF4EF}
+.mic[aria-pressed="true"]{background:#1E9E5E;color:#fff}
+/* spelskärmarna */
+.top{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.top .info{margin-left:auto;font-weight:800}
+.stage{position:relative;background:var(--card);border-radius:24px;box-shadow:0 5px 0 var(--line);min-height:min(52vh,380px);display:grid;place-items:center;overflow:hidden;padding:16px}
+.big{font-family:var(--las);font-weight:700;font-size:clamp(4rem,19vw,9rem);line-height:1;color:var(--c);text-align:center;transition:transform .15s}
+.big.in{animation:in .25s ease-out}
+@keyframes in{from{transform:scale(.6);opacity:0}}
+.big.ok{color:var(--good)!important;animation:pop .35s}
+@keyframes pop{50%{transform:scale(1.12)}}
+.timer{position:absolute;left:0;bottom:0;height:10px;background:var(--c,#3D5AFE);opacity:.55}
+.heard{position:absolute;top:10px;right:14px;font-weight:800;color:var(--muted);font-size:.9rem}
+.heard.on::before{content:"🎤 ";animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.3}}
+.go{display:block;width:100%;margin-top:12px;padding:14px;border-radius:20px;font-weight:800;font-size:1.35rem;color:#fff;background:var(--good);box-shadow:0 5px 0 var(--good-dark)}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
+.alt{display:block;width:100%;margin-top:10px;padding:12px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.15rem}
+.row2{display:flex;gap:10px;margin-top:12px}.row2>*{flex:1;margin:0}
+.note{color:var(--muted);font-weight:700;text-align:center;margin:10px 0 0}
+/* lär dig ordet */
+.letters{display:flex;justify-content:center;gap:2px}
+.letters span{transition:color .2s,transform .2s}
+.letters span.lit{color:#E5484D;transform:translateY(-8px)}
+.sounds{font-weight:800;font-size:1.3rem;color:#9B2C3A;background:#FFE9EC;border-radius:14px;padding:6px 14px;margin-top:10px;display:inline-block}
+/* efter blixtläsning: markera svåra ord */
+.marks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.mk{font-family:var(--las);font-weight:700;font-size:1.6rem;padding:4px 14px;border-radius:14px;background:#F2F8F3;color:var(--c);box-shadow:0 3px 0 var(--line)}
+.mk.hard{background:#FFE3E5;color:#B8323A;box-shadow:0 0 0 3px #F3A9AE}
+.mk.heard{background:#DDF5E7;box-shadow:0 0 0 3px #A9DFC0}
+/* hitta ordet */
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.choice{font-family:var(--las);font-weight:700;font-size:clamp(2rem,9vw,3.2rem);padding:14px 6px;border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);color:var(--c)}
+.choice.ok{background:#DDF5E7;color:var(--good-dark)}.choice.bad{background:#FFE3E5;color:#B8323A;animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.listen{display:block;margin:0 auto;width:min(260px,70vw);padding:18px;border-radius:999px;font-size:1.6rem;font-weight:800;background:var(--accent);color:#fff;box-shadow:0 5px 0 #2A3FB8}
+.listen:active{transform:translateY(3px)}
+/* ord på en minut */
+.sheet{display:grid;grid-template-columns:repeat(var(--cols,5),1fr);gap:4px 6px;background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line)}
+.sheet button{font-family:var(--las);font-weight:700;font-size:clamp(1.25rem,4.6vw,1.75rem);padding:4px 2px;border-radius:10px;text-align:center;color:var(--ink)}
+.sheet button.err{background:#FFE3E5;color:#B8323A;text-decoration:line-through}
+.sheet button.end{box-shadow:0 0 0 3px var(--accent);background:#E3E9FF}
+.sheet button.after{opacity:.35}
+.sheet.wait button{filter:blur(6px)}
+.clock{position:sticky;top:6px;z-index:5;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:14px;padding:6px 14px;margin-bottom:8px;font-weight:800}
+.clock .t{font-size:1.5rem;font-variant-numeric:tabular-nums;min-width:3ch}
+.clock .bar{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.2);overflow:hidden}.clock .bar i{display:block;height:100%;background:#7CF2A8;width:100%}
+.result{text-align:center}
+.result .n{font-size:4rem;font-weight:800;line-height:1;color:var(--good-dark)}
+.chart{display:flex;align-items:flex-end;gap:6px;height:120px;background:var(--card);border-radius:16px;padding:10px;box-shadow:0 4px 0 var(--line);margin-top:12px}
+.chart div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:.75rem;font-weight:800;color:var(--muted)}
+.chart i{display:block;width:100%;background:linear-gradient(#3FBF7F,#1E9E5E);border-radius:6px 6px 0 0}
+.modal{position:fixed;inset:0;background:rgba(29,43,83,.5);display:grid;place-items:center;z-index:20;padding:16px}
+.modal>div{background:var(--card);border-radius:22px;padding:18px;max-width:460px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.modal p{margin:0 0 10px;line-height:1.35}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:30;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:25}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<section id="home" class="screen">
+<div class="wrap">
+  <h1>Högfrekventa ord</h1>
+  <p class="lead">De 200 ord man läser allra oftast. Läs dem högt, snabbt och många gånger, så känner du igen dem direkt i böckerna.</p>
+  <h2>Välj ordpaket</h2>
+  <div class="packs" id="packs"></div>
+  <div class="sel" id="sel"></div>
+  <div class="modes">
+    <button class="mode" data-m="learn"><span class="ic">👀</span><b>Lär dig orden</b><small>Se och hör hur orden låter</small></button>
+    <button class="mode" data-m="flash"><span class="ic">⚡</span><b>Blixtläsning</b><small>Orden blixtrar förbi. Läs högt!</small></button>
+    <button class="mode" data-m="find"><span class="ic">🔍</span><b>Hitta ordet</b><small>Lyssna och tryck på rätt ord</small></button>
+    <button class="mode" data-m="minute"><span class="ic">⏱️</span><b>Ord på en minut</b><small>Hur många hinner du läsa? Med en vuxen</small></button>
+  </div>
+  <div class="opts"><span class="lab">Fart:</span><div class="seg" id="fart"></div><button class="mic" id="micBtn" aria-pressed="false">🎤 Lyssna på mig: av</button></div>
+  <p class="note">👂 betyder att ordet inte låter som det stavas, till exempel <span class="w">och</span> som låter "å".</p>
+</div>
+</section>
+
+<section id="learn" class="screen" hidden>
+<div class="wrap">
+  <div class="top"><button class="back" data-home>← Tillbaka</button><span class="info" id="lInfo"></span></div>
+  <div class="stage" id="lStage"></div>
+  <div class="row2"><button class="alt" id="lHear">🔊 Hör ordet</button><button class="alt" id="lShow">🔤 Visa ljuden</button></div>
+  <button class="go" id="lNext">Nästa ord ➜</button>
+</div>
+</section>
+
+<section id="flash" class="screen" hidden>
+<div class="wrap">
+  <div class="top"><button class="back" data-home>← Avsluta</button><span class="info" id="fInfo"></span></div>
+  <div class="stage" id="fStage"></div>
+  <div id="fAfter" hidden>
+    <h2 style="text-align:center">Tryck på orden som var svåra</h2>
+    <div class="marks" id="fMarks"></div>
+    <p class="note" id="fNote"></p>
+    <div class="row2"><button class="alt" id="fAgain">⚡ En gång till</button><button class="go" id="fDone">Klar ✓</button></div>
+  </div>
+  <p class="note" id="fHint">Läs ordet högt innan det försvinner!</p>
+</div>
+</section>
+
+<section id="find" class="screen" hidden>
+<div class="wrap">
+  <div class="top"><button class="back" data-home>← Avsluta</button><span class="info" id="hInfo"></span></div>
+  <button class="listen" id="hListen">🔊 Lyssna</button>
+  <div class="choices" id="hChoices"></div>
+  <p class="note" id="hNote">Tryck på 🔊 och lyssna. Tryck sedan på ordet du hörde.</p>
+  <button class="go" id="hNext" hidden>Nästa ➜</button>
+</div>
+</section>
+
+<section id="minute" class="screen" hidden>
+<div class="wrap">
+  <div class="top"><button class="back" data-home>← Avsluta</button><span class="info" id="mInfo"></span></div>
+  <div id="mIntro">
+    <div class="sel"><p style="margin:0 0 6px"><b>Så här gör ni:</b></p>
+      <p style="margin:0">1. Eleven läser orden högt, rad för rad från vänster, så snabbt som möjligt.<br>2. En vuxen eller kompis trycker på ord som blir fel, så blir de röda.<br>3. När minuten är slut trycker den vuxna på ordet där eleven slutade.</p></div>
+    <p class="lead" style="margin-top:10px" id="mFrom"></p>
+    <button class="go" id="mStart">Starta minuten ⏱️</button>
+  </div>
+  <div class="clock" id="mClock" hidden><span class="t" id="mT">60</span><span class="bar"><i id="mBar"></i></span><span id="mMsg">Läs!</span></div>
+  <div class="sheet wait" id="mSheet" hidden></div>
+  <div class="result" id="mRes" hidden></div>
+</div>
+</section>
+
+<section id="result" class="screen" hidden>
+<div class="wrap result">
+  <h2 id="rTitle"></h2><div id="rStars" class="stars" style="font-size:2.6rem"></div><p class="lead" id="rSub"></p>
+  <button class="go" id="rHome">Till ordpaketen</button>
+</div>
+</section>
+
+<div class="modal" id="micModal" hidden><div>
+  <h2 style="margin-top:0">🎤 Lyssna på mig</h2>
+  <p>Datorn försöker höra när du läser ordet och visar det med grönt. Den kan bara säga <b>rätt</b>, aldrig fel. Hör den inget gör det inget, du läser bara vidare.</p>
+  <p><b>Till den vuxna:</b> taligenkänningen är webbläsarens egen. I Chrome och Edge skickas ljudet till Google eller Microsoft för att bli text, i Safari till Apple. Inget sparas på Matte-Portalen. I skolan bör det stämmas av med skolans dataskyddsombud innan det används.</p>
+  <p>Korta ord som <span class="w">i</span> och <span class="w">en</span> är svåra för datorn att höra. Fungerar det dåligt, stäng av det igen.</p>
+  <div class="row2"><button class="alt" id="micNo">Nej tack</button><button class="go" id="micYes">Slå på</button></div>
+</div></div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Högfrekventa ord" data-ikon="📖" data-hem="../../" data-portal="ovriga"></script>
+<script>
+/* Högfrekventa ord: 200 vanliga ord i 20 paket (ordningen efter hur vanliga orden är i barntext; lärarens lista).
+   Lägen: Lär dig orden (bokstäverna och ljuden), Blixtläsning (orden blixtrar förbi i vald fart, eleven läser högt och
+   markerar själv svåra ord efteråt), Hitta ordet (🔊 och fyra ord, rättar sig självt) och Ord på en minut (lång lista,
+   en vuxen markerar fel och var eleven slutade). Taligenkänning som tillval ("Lyssna på mig", av från början): den kan
+   bara ge grönt, aldrig rött. Ett ord räknas som "kan" när det lästs rätt två olika dagar. */
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const KEY="mattespel-hogfrekventa-v1";
+const data=(()=>{try{return Object.assign({stars:{},ord:{},opm:[],pk:0,fart:2,mic:false},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},ord:{},opm:[],pk:0,fart:2,mic:false}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+const today=()=>{const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+"-"+d.getDate();};
+
+/* ---------- Orden ---------- */
+const PAKET=[
+ "i och det är jag att som på en för","med till har av inte om den de så var","han hon kan ett men man vi du sa nu",
+ "när vad ska mig dig sig mot ut upp in","där här hur vill får går kom bara också efter","alla hade blev sin sitt sina vara bli gå se",
+ "mamma pappa hem hus dag ner över under bort fram","stor liten lite mycket många ny gammal bra glad rolig","säger tar ser gör vet tror tycker kommer står sitter",
+ "dem honom henne oss er någon något ingen inget varje","från utan bakom mellan genom vid hos bredvid framför runt","barn skola bok katt hund vän ögon hand huvud säng",
+ "igen aldrig alltid ofta redan snart sedan först sist nog","ja nej tack hej kanske väl ju då eller fast","varför vem vilken vilket vilka vart hit dit borta hemma",
+ "äter dricker leker springer hoppar tittar frågar svarar skriker sover","idag imorgon igår morgon kväll natt mat vatten bil väg","två tre första andra hela tillsammans varandra själv egen samma",
+ "måste kunde skulle ville fick gick såg satt låg stod","tog gjorde sade visste trodde sprang tittade ropade började slutade"].map(s=>s.split(" "));
+const ALLA=PAKET.flat();
+// ord som inte låter som de stavas: så här låter de
+const LATER={och:"å",det:"de",är:"e",jag:"ja",de:"dom",var:"va",vad:"va",mig:"mej",dig:"dej",sig:"sej",också:"åkså",säger:"säjer",dem:"dom",honom:"hånnåm",sedan:"sen",sade:"sa"};
+const ODD=w=>LATER[w]!=null;
+const PAL=["#E5484D","#3D8BFD","#1E9E5E","#7B61FF","#FF5FA2","#D9772A","#17AFC4","#9C4DCC"];
+const col=w=>PAL[[...w].reduce((a,c)=>a+c.charCodeAt(0),0)%PAL.length];
+const kan=w=>((data.ord[w]||{}).d||[]).length>=2;
+function ratt(w){const o=data.ord[w]=data.ord[w]||{d:[],n:0};o.n++;const t=today();if(!o.d.includes(t))o.d.push(t);o.d=o.d.slice(-6);}
+function sett(w){if(!data.ord[w])data.ord[w]={d:[],n:0};}
+// stjärnor per paket: ett för att ha sett alla, två när hälften kan, tre när alla kan
+function pkStars(p){const ws=PAKET[p],k=ws.filter(kan).length;return(ws.every(w=>data.ord[w])?1:0)+(k>=5?1:0)+(k===10?1:0);}
+function updStars(){PAKET.forEach((_,p)=>{const s=pkStars(p);if(s>(data.stars[p]||0))data.stars[p]=s;});save();}
+
+/* ---------- Uppläsning (bara med 🔊) ---------- */
+let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800);}
+function speak(text){if(!("speechSynthesis" in window)){toast("Uppläsning fungerar inte i den här webbläsaren.");return false;}loadVoices();
+  if(!svVoice&&speechSynthesis.getVoices().length){toast("Den här datorn har ingen svensk röst för uppläsning.");return false;}
+  speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.85;speechSynthesis.speak(u);return true;}
+
+/* ---------- Taligenkänning (tillval) ----------
+   Webbläsarens egen (Chrome/Edge skickar ljudet till Google/Microsoft, Safari till Apple). Ordet räknas som hört om
+   någon av gissningarna innehåller ordet eller dess uttal (å för och, mej för mig ...). Kan bara ge grönt. */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const UTTAL={och:["å","o","och"],det:["de","dä","det"],är:["e","ä","är"],jag:["ja","jag"],de:["dom","de"],dem:["dom","dem"],var:["va","var"],vad:["va","vad"],
+  mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
+const norm=s=>s.toLowerCase().replace(/[.,!?;:"']/g," ").split(/\s+/).filter(Boolean);
+let REC=null,recWant=false,onHeard=null;
+function micOn(){return !!(data.mic&&SR);}
+function recStart(cb){if(!micOn())return;onHeard=cb;recWant=true;if(REC)return;
+  try{REC=new SR();REC.lang="sv-SE";REC.continuous=true;REC.interimResults=true;REC.maxAlternatives=5;
+    REC.onresult=e=>{const ord=[];for(let i=e.resultIndex;i<e.results.length;i++)for(let j=0;j<e.results[i].length;j++)ord.push(...norm(e.results[i][j].transcript));if(onHeard)onHeard(ord);};
+    REC.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){data.mic=false;save();micLabel();toast("Mikrofonen fick inte användas. Lyssna på mig är avstängt.");recWant=false;}};
+    REC.onend=()=>{REC=null;if(recWant)setTimeout(()=>recWant&&recStart(onHeard),150);};
+    REC.start();}catch(err){REC=null;}}
+function recStop(){recWant=false;onHeard=null;if(REC){try{REC.stop();}catch(e){}}}
+const hor=(w,ord)=>{const ok=UTTAL[w]||[w];return ord.some(o=>ok.includes(o)||o===w);};
+function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?"på":"av"}`;}
+$("micBtn").onclick=()=>{if(data.mic){data.mic=false;save();micLabel();return;}
+  if(!SR){toast("Den här webbläsaren kan inte lyssna. Prova Chrome, Edge eller Safari.");return;}$("micModal").hidden=false;};
+$("micNo").onclick=()=>$("micModal").hidden=true;
+$("micYes").onclick=()=>{$("micModal").hidden=true;data.mic=true;save();micLabel();toast("Lyssna på mig är på. Webbläsaren frågar om mikrofonen första gången.");};
+
+/* ---------- Startsidan ---------- */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+const wHtml=w=>`<span class="w">${w}</span>${ODD(w)?'<span class="ear" title="Låter inte som det stavas">👂</span>':""}`;
+function openHome(){stopAll();updStars();
+  $("packs").innerHTML=PAKET.map((ws,p)=>{const k=ws.filter(kan).length;return `<button class="pk" data-p="${p}" aria-pressed="${data.pk===p}" aria-label="Paket ${p+1}: ${ws.slice(0,3).join(", ")} …"><b>${p+1}</b><span class="bar"><i style="width:${k*10}%"></i></span>${starHtml(data.stars[p]||0)}</button>`;}).join("");
+  renderSel();
+  $("fart").innerHTML=[[3,"🐢 3 s"],[2,"2 s"],[1.5,"1,5 s"],[1,"🐇 1 s"]].map(([v,t])=>`<button data-f="${v}" aria-pressed="${data.fart==v}">${t}</button>`).join("");
+  micLabel();show("home");}
+function renderSel(){const ws=PAKET[data.pk],k=ws.filter(kan).length;
+  $("sel").innerHTML=`<b>Paket ${data.pk+1}</b> <span style="color:var(--muted);font-weight:700">· ${k} av 10 kan du</span><div class="chips" style="margin-top:6px">${ws.map(w=>`<span class="chip${kan(w)?" kan":""}" style="--c:${col(w)}">${w}${ODD(w)?'<span class="ear">👂</span>':""}</span>`).join("")}</div>`;}
+$("packs").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;data.pk=+b.dataset.p;save();$("packs").querySelectorAll("[data-p]").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.p===data.pk)));renderSel();};
+$("fart").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.fart=+b.dataset.f;save();$("fart").querySelectorAll("[data-f]").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.f===data.fart)));};
+document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>({learn:startLearn,flash:startFlash,find:startFind,minute:startMinute})[b.dataset.m]());
+document.querySelectorAll("[data-home]").forEach(b=>b.onclick=openHome);
+let timers=[];const later=(f,ms)=>timers.push(setTimeout(f,ms));
+function stopAll(){timers.forEach(clearTimeout);timers=[];recStop();cancelAnimationFrame(MIN.raf);if("speechSynthesis" in window)speechSynthesis.cancel();}
+
+/* ---------- Lär dig orden ---------- */
+let L=null;
+function startLearn(){stopAll();L={ws:PAKET[data.pk].slice(),i:0};show("learn");drawLearn();}
+function drawLearn(){const w=L.ws[L.i];sett(w);save();$("lInfo").textContent=`Ord ${L.i+1} av 10`;
+  $("lStage").innerHTML=`<div style="text-align:center"><div class="big in letters" id="lWord" style="--c:${col(w)}">${[...w].map(c=>`<span>${c}</span>`).join("")}</div>${ODD(w)?`<div class="sounds">👂 Låter som: <span class="w">${LATER[w]}</span></div>`:""}</div>`;
+  $("lNext").textContent=L.i<9?"Nästa ord ➜":"Klar ✓";}
+$("lHear").onclick=()=>speak(L.ws[L.i]);
+// bokstäverna lyser en i taget (som när man ljudar), sedan hela ordet
+$("lShow").onclick=()=>{const sp=[...document.querySelectorAll("#lWord span")];timers.forEach(clearTimeout);timers=[];
+  sp.forEach((s,i)=>{later(()=>{sp.forEach(x=>x.classList.remove("lit"));s.classList.add("lit");},i*450);});
+  later(()=>{sp.forEach(x=>x.classList.remove("lit"));$("lWord").classList.remove("ok");void $("lWord").offsetWidth;$("lWord").classList.add("ok");speak(L.ws[L.i]);},sp.length*450+200);};
+$("lNext").onclick=()=>{if(L.i<9){L.i++;drawLearn();}else{updStars();finish("Du har sett alla tio orden!","Prova Blixtläsning nu, och läs orden högt.");}};
+
+/* ---------- Blixtläsning ---------- */
+let F=null;
+function flashWords(){const ws=PAKET[data.pk],old=PAKET.slice(0,data.pk).flat();
+  // paketets ord två gånger och några tidigare ord (repetition), aldrig samma ord två gånger i rad
+  let list=[...ws,...ws,...shuffle(old.slice()).slice(0,old.length?4:0)];
+  for(let k=0;k<50;k++){shuffle(list);if(list.every((w,i)=>i===0||w!==list[i-1]))break;}return list;}
+function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:new Set()};show("flash");$("fAfter").hidden=true;$("fHint").hidden=false;$("fStage").hidden=false;
+  // nedräkning 3, 2, 1
+  let n=3;const cd=()=>{$("fStage").innerHTML=`<div class="big in" style="--c:#56668F">${n}</div>`;if(n-->1)later(cd,700);else later(nextFlash,700);};cd();
+  recStart(ord=>{const w=F&&F.list[F.i];if(w&&!F.heard.has(F.i)&&hor(w,ord)){F.heard.add(F.i);const el=$("fWord");if(el){el.classList.add("ok");}window.Ljud&&Ljud.ok&&Ljud.ok();}});}
+function nextFlash(){F.i++;if(F.i>=F.list.length)return flashAfter();const w=F.list[F.i],ms=data.fart*1000;sett(w);
+  $("fInfo").textContent=`${F.i+1} / ${F.list.length}`;
+  $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?'<span class="heard on">lyssnar</span>':""}`;
+  const t=$("fT");if(t&&!reduced()){t.animate([{width:"100%"},{width:"0%"}],{duration:ms,easing:"linear",fill:"forwards"});}
+  later(nextFlash,ms);}
+function flashAfter(){recStop();$("fStage").hidden=true;$("fHint").hidden=true;$("fAfter").hidden=false;$("fInfo").textContent="Klart!";
+  const uniq=[...new Set(F.list)],hw=new Set([...F.heard].map(i=>F.list[i]));F.hw=hw;
+  $("fMarks").innerHTML=uniq.map(w=>`<button class="mk${hw.has(w)?" heard":""}" data-w="${w}" style="--c:${col(w)}">${w}</button>`).join("");
+  $("fNote").textContent=micOn()?`Gröna ord hörde datorn. Tryck på de ord som var svåra.`:"Tryck på de ord som var svåra. Resten räknas som lästa.";
+  $("fMarks").querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{const w=b.dataset.w;if(F.hard.has(w))F.hard.delete(w);else F.hard.add(w);b.classList.toggle("hard",F.hard.has(w));});}
+$("fAgain").onclick=()=>{saveFlash();startFlash();};
+$("fDone").onclick=()=>{saveFlash();updStars();const ok=[...new Set(F.list)].filter(w=>!F.hard.has(w)).length;
+  finish(F.hard.size?"Bra läst!":"Alla ord lästa! 🎉",F.hard.size?`Svåra ord att öva på: ${[...F.hard].join(", ")}.`:`${ok} ord utan att något var svårt.`,F.hard.size===0);};
+function saveFlash(){if(!F||F.saved)return;F.saved=true;[...new Set(F.list)].forEach(w=>{if(!F.hard.has(w))ratt(w);});save();}
+
+/* ---------- Hitta ordet ---------- */
+let H=null;
+function liknande(w){// tre andra ord som liknar: samma första bokstav eller samma längd
+  const pool=ALLA.filter(x=>x!==w),lik=pool.filter(x=>x[0]===w[0]||Math.abs(x.length-w.length)<=1);
+  return shuffle(lik.length>=3?lik:pool).slice(0,3);}
+function startFind(){stopAll();H={list:shuffle(PAKET[data.pk].slice()),i:0,err:0,first:true};show("find");drawFind();}
+function drawFind(){const w=H.list[H.i];sett(w);H.first=true;H.done=false;$("hInfo").textContent=`${H.i+1} / 10`;$("hNext").hidden=true;
+  const ch=shuffle([w,...liknande(w)]);
+  $("hChoices").innerHTML=ch.map(x=>`<button class="choice" data-w="${x}" style="--c:${col(x)}">${x}</button>`).join("");
+  $("hNote").textContent="Tryck på 🔊 och lyssna. Tryck sedan på ordet du hörde.";
+  $("hChoices").querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>pickFind(b));}
+$("hListen").onclick=()=>{if(H)speak(H.list[H.i]);};
+function pickFind(b){if(H.done)return;const w=H.list[H.i];
+  if(b.dataset.w===w){b.classList.add("ok");H.done=true;window.Ljud&&Ljud.ok&&Ljud.ok();if(H.first)ratt(w);save();
+    $("hNote").textContent=ODD(w)?`Rätt! "${w}" låter som "${LATER[w]}".`:"Rätt!";$("hNext").hidden=false;$("hNext").focus({preventScroll:true});}
+  else{b.classList.remove("bad");void b.offsetWidth;b.classList.add("bad");H.first=false;H.err++;window.Ljud&&Ljud.bad&&Ljud.bad();$("hNote").textContent="Inte det. Lyssna igen med 🔊.";}}
+$("hNext").onclick=()=>{H.i++;if(H.i<10)drawFind();else{updStars();finish(H.err?"Alla tio hittade!":"Alla rätt direkt! 🎉",H.err?`Du valde fel ${H.err} ${H.err===1?"gång":"gånger"}.`:"Tio ord utan ett enda fel.",!H.err);}};
+
+/* ---------- Ord på en minut ---------- */
+const MIN={raf:0,list:[],errs:new Set(),end:-1,phase:"intro"};
+function minPool(){return PAKET.slice(0,data.pk+1).flat();}
+function startMinute(){stopAll();const pool=minPool();
+  // 150 ord: så många att även de snabbaste inte hinner klart (som på Legilexi); aldrig samma ord två gånger i rad
+  const list=[];while(list.length<150){const w=pick(pool);if(w!==list[list.length-1]&&w!==list[list.length-2])list.push(w);}
+  Object.assign(MIN,{list,errs:new Set(),end:-1,phase:"intro"});
+  $("mFrom").textContent=data.pk===0?"Orden kommer från paket 1.":`Orden kommer från paket 1–${data.pk+1} (${pool.length} olika ord), i blandad ordning.`;
+  $("mInfo").textContent="";$("mIntro").hidden=false;$("mClock").hidden=true;$("mRes").hidden=true;$("mSheet").hidden=false;
+  const cols=innerWidth<420?3:innerWidth<700?4:5;$("mSheet").style.setProperty("--cols",cols);
+  $("mSheet").className="sheet wait";$("mSheet").innerHTML=list.map((w,i)=>`<button data-i="${i}">${w}</button>`).join("");
+  show("minute");}
+$("mStart").onclick=()=>{$("mIntro").hidden=true;$("mClock").hidden=false;$("mMsg").textContent="Gör dig redo …";
+  let n=3;$("mT").textContent=n;const cd=()=>{if(--n>0){$("mT").textContent=n;later(cd,800);}else{runMinute();}};later(cd,800);};
+function runMinute(){MIN.phase="run";$("mSheet").classList.remove("wait");$("mMsg").textContent="Läs!";window.Ljud&&Ljud.chime&&Ljud.chime();
+  const t0=performance.now(),tick=()=>{const left=Math.max(0,60-(performance.now()-t0)/1000);$("mT").textContent=Math.ceil(left);$("mBar").style.width=(left/60*100)+"%";
+    if(left<=0){MIN.phase="end";$("mMsg").textContent="Tiden är slut! Tryck på ordet där eleven slutade.";window.Ljud&&Ljud.fanfare&&Ljud.fanfare();return;}
+    MIN.raf=requestAnimationFrame(tick);};tick();}
+$("mSheet").onclick=e=>{const b=e.target.closest("[data-i]");if(!b)return;const i=+b.dataset.i;
+  if(MIN.phase==="run"){if(MIN.errs.has(i))MIN.errs.delete(i);else MIN.errs.add(i);b.classList.toggle("err",MIN.errs.has(i));}
+  else if(MIN.phase==="end"){MIN.end=i;minResult();}};
+function minResult(){MIN.phase="done";const read=MIN.end+1,err=[...MIN.errs].filter(i=>i<=MIN.end).length,ok=read-err;
+  $("mSheet").querySelectorAll("[data-i]").forEach(b=>{const i=+b.dataset.i;b.classList.toggle("end",i===MIN.end);b.classList.toggle("after",i>MIN.end);});
+  MIN.list.slice(0,read).forEach((w,i)=>{if(!MIN.errs.has(i))ratt(w);});
+  const prev=data.opm.length?Math.max(...data.opm.map(x=>x.n)):0;data.opm.push({d:today(),n:ok,f:err});data.opm=data.opm.slice(-30);save();updStars();
+  const last=data.opm.slice(-10),max=Math.max(...last.map(x=>x.n),1);
+  $("mClock").hidden=true;$("mRes").hidden=false;
+  $("mRes").innerHTML=`<div class="n">${ok}</div><p class="lead" style="margin:4px 0">rätt lästa ord på en minut${err?` (${err} fel)`:""}${ok>prev&&data.opm.length>1?" · Nytt rekord! 🏆":""}</p>
+    <div class="chart">${last.map(x=>`<div><span>${x.n}</span><i style="height:${Math.max(4,x.n/max*80)}px"></i></div>`).join("")}</div>
+    <p class="note">De senaste gångerna. Felläsningarna är överstrukna i listan nedanför.</p>
+    <div class="row2"><button class="alt" id="mAgain">⏱️ En gång till</button><button class="go" id="mHome">Till ordpaketen</button></div>`;
+  $("mAgain").onclick=startMinute;$("mHome").onclick=openHome;
+  if(ok>prev&&data.opm.length>1)confetti();$("mRes").scrollIntoView({behavior:"smooth"});}
+
+/* ---------- Slut ---------- */
+function finish(title,sub,party){stopAll();const s=data.stars[data.pk]||0;
+  $("rTitle").textContent=title;$("rStars").innerHTML=starHtml(s);$("rSub").textContent=sub+` Paket ${data.pk+1}: ${PAKET[data.pk].filter(kan).length} av 10 ord kan du (ett ord räknas när du läst det rätt två olika dagar).`;
+  show("result");if(party){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
+$("rHome").onclick=openHome;
+document.addEventListener("visibilitychange",()=>{if(document.hidden)recStop();});
+function confetti(){
+  if(reduced())return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W=innerWidth,H2=innerHeight;c.width=W*dpr;c.height=H2*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:150},()=>({x:W/2+(Math.random()-.5)*120,y:H2*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pick(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H2);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W,H2);c.hidden=true;}})(t0);
+}
+openHome();
+</script>
+</body>
+</html>
