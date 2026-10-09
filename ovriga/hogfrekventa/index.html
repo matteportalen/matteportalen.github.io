@@ -160,10 +160,9 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 <section id="find" class="screen" hidden>
 <div class="wrap">
   <div class="top"><button class="back" data-home>← Avsluta</button><span class="info" id="hInfo"></span></div>
-  <button class="listen" id="hListen">🔊 Lyssna</button>
+  <button class="listen" id="hListen">🔊 Hör igen</button>
   <div class="choices" id="hChoices"></div>
-  <p class="note" id="hNote">Tryck på 🔊 och lyssna. Tryck sedan på ordet du hörde.</p>
-  <button class="go" id="hNext" hidden>Nästa ➜</button>
+  <p class="note" id="hNote">Lyssna och tryck på ordet du hör.</p>
 </div>
 </section>
 
@@ -252,7 +251,7 @@ let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().f
 if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
 let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800);}
 function speak(text){if(!("speechSynthesis" in window)){toast("Uppläsning fungerar inte i den här webbläsaren.");return false;}loadVoices();
-  if(!svVoice&&speechSynthesis.getVoices().length){toast("Den här datorn har ingen svensk röst för uppläsning.");return false;}
+  if(!svVoice&&speechSynthesis.getVoices().length){if(!speak.varnad){speak.varnad=true;toast("Den här datorn har ingen svensk röst för uppläsning.");}return false;}
   speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.85;speechSynthesis.speak(u);return true;}
 
 /* ---------- Taligenkänning (tillval) ----------
@@ -349,17 +348,19 @@ function liknande(w){// tre andra ord som liknar: samma första bokstav eller sa
   const pool=ALLA.filter(x=>x!==w),lik=pool.filter(x=>x[0]===w[0]||Math.abs(x.length-w.length)<=1);
   return shuffle(lik.length>=3?lik:pool).slice(0,3);}
 function startFind(){stopAll();H={list:shuffle(urval(10)),i:0,err:0,first:true};show("find");drawFind();}
-function drawFind(){const w=H.list[H.i];sett(w);H.first=true;H.done=false;$("hInfo").textContent=`${H.i+1} / ${H.list.length}`;$("hNext").hidden=true;
+function drawFind(){const w=H.list[H.i];sett(w);H.first=true;H.done=false;$("hInfo").textContent=`${H.i+1} / ${H.list.length}`;
   const ch=shuffle([w,...liknande(w)]);
   $("hChoices").innerHTML=ch.map(x=>`<button class="choice" data-w="${x}" style="--c:${col(x)}">${x}</button>`).join("");
-  $("hNote").textContent="Tryck på 🔊 och lyssna. Tryck sedan på ordet du hörde.";
+  $("hNote").textContent="Lyssna och tryck på ordet du hör.";
+  // lärarens val: här läses ordet upp direkt (undantag från "bara med 🔊"), så att det går snabbt
+  later(()=>speak(w),250);
   $("hChoices").querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>pickFind(b));}
 $("hListen").onclick=()=>{if(H)speak(H.list[H.i]);};
 function pickFind(b){if(H.done)return;const w=H.list[H.i];
   if(b.dataset.w===w){b.classList.add("ok");H.done=true;window.Ljud&&Ljud.ok&&Ljud.ok();if(H.first)ratt(w);save();
-    $("hNote").textContent=ODD(w)?`Rätt! "${w}" låter som "${LATER[w]}".`:"Rätt!";$("hNext").hidden=false;$("hNext").focus({preventScroll:true});}
-  else{b.classList.remove("bad");void b.offsetWidth;b.classList.add("bad");H.first=false;H.err++;window.Ljud&&Ljud.bad&&Ljud.bad();$("hNote").textContent="Inte det. Lyssna igen med 🔊.";}}
-$("hNext").onclick=()=>{H.i++;if(H.i<H.list.length)drawFind();else{updStars();finish(H.err?"Alla ord hittade!":"Alla rätt direkt! 🎉",H.err?`Du valde fel ${H.err} ${H.err===1?"gång":"gånger"}.`:`${H.list.length} ord utan ett enda fel.`,!H.err);}};
+    $("hNote").textContent=ODD(w)?`Rätt! "${w}" låter som "${LATER[w]}".`:"Rätt!";later(nextFind,ODD(w)?1300:650);}
+  else{b.classList.remove("bad");void b.offsetWidth;b.classList.add("bad");H.first=false;H.err++;window.Ljud&&Ljud.bad&&Ljud.bad();$("hNote").textContent="Inte det ordet. Lyssna igen!";later(()=>speak(w),350);}}
+function nextFind(){if(!H)return;H.i++;if(H.i<H.list.length)drawFind();else{updStars();finish(H.err?"Alla ord hittade!":"Alla rätt direkt! 🎉",H.err?`Du valde fel ${H.err} ${H.err===1?"gång":"gånger"}.`:`${H.list.length} ord utan ett enda fel.`,!H.err);}};
 
 /* ---------- Ord på en minut ---------- */
 const MIN={raf:0,list:[],errs:new Set(),end:-1,phase:"intro"};
