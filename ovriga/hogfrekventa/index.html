@@ -40,7 +40,6 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .chip{font-family:var(--las);font-weight:700;font-size:1.3rem;padding:2px 12px;border-radius:12px;background:#F2F8F3;color:var(--c);position:relative}
 .chip.kan{background:#DDF5E7}
 .chip.kan::after{content:"✓";position:absolute;right:-4px;top:-8px;font-family:var(--font);font-size:.8rem;color:#fff;background:var(--good);border-radius:50%;width:18px;height:18px;display:grid;place-items:center}
-.ear{font-size:.75em;margin-left:2px}
 .selb{font-size:.82rem;font-weight:800;padding:3px 10px;border-radius:10px;background:#EEF4EF;color:var(--muted)}
 .modes{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
 @media(min-width:700px){.modes{grid-template-columns:repeat(4,1fr)}}
@@ -76,7 +75,6 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .letters{display:flex;justify-content:center;gap:2px}
 .letters span{transition:color .2s,transform .2s}
 .letters span.lit{color:#E5484D;transform:translateY(-8px)}
-.sounds{font-weight:800;font-size:1.3rem;color:#9B2C3A;background:#FFE9EC;border-radius:14px;padding:6px 14px;margin-top:10px;display:inline-block}
 /* efter blixtläsning: markera svåra ord */
 .marks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .mk{font-family:var(--las);font-weight:700;font-size:1.6rem;padding:4px 14px;border-radius:14px;background:#F2F8F3;color:var(--c);box-shadow:0 3px 0 var(--line)}
@@ -130,7 +128,6 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
     <button class="mode" data-m="minute"><span class="ic">⏱️</span><b>Ord på en minut</b><small>Hur många hinner du läsa? Med en vuxen</small></button>
   </div>
   <div class="opts"><span class="lab">Fart:</span><div class="seg" id="fart"></div><button class="mic" id="micBtn" aria-pressed="false">🎤 Lyssna på mig: av</button></div>
-  <p class="note">👂 betyder att ordet inte låter som det stavas, till exempel <span class="w">och</span> som låter "å".</p>
 </div>
 </section>
 
@@ -226,9 +223,6 @@ const PAKET=[
  "äter dricker leker springer hoppar tittar frågar svarar skriker sover","idag imorgon igår morgon kväll natt mat vatten bil väg","två tre första andra hela tillsammans varandra själv egen samma",
  "måste kunde skulle ville fick gick såg satt låg stod","tog gjorde sade visste trodde sprang tittade ropade började slutade"].map(s=>s.split(" "));
 const ALLA=PAKET.flat();
-// ord som inte låter som de stavas: så här låter de
-const LATER={och:"å",det:"de",är:"e",jag:"ja",de:"dom",var:"va",vad:"va",mig:"mej",dig:"dej",sig:"sej",också:"åkså",säger:"säjer",dem:"dom",honom:"hånnåm",sedan:"sen",sade:"sa"};
-const ODD=w=>LATER[w]!=null;
 const PAL=["#E5484D","#3D8BFD","#1E9E5E","#7B61FF","#FF5FA2","#D9772A","#17AFC4","#9C4DCC"];
 const col=w=>PAL[[...w].reduce((a,c)=>a+c.charCodeAt(0),0)%PAL.length];
 const kan=w=>((data.ord[w]||{}).d||[]).length>=2;
@@ -280,7 +274,6 @@ $("micYes").onclick=()=>{$("micModal").hidden=true;data.mic=true;save();micLabel
 /* ---------- Startsidan ---------- */
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
-const wHtml=w=>`<span class="w">${w}</span>${ODD(w)?'<span class="ear" title="Låter inte som det stavas">👂</span>':""}`;
 function openHome(){stopAll();updStars();
   $("packs").innerHTML=PAKET.map((ws,p)=>{const k=ws.filter(kan).length;return `<button class="pk" data-p="${p}" aria-pressed="${data.pks.includes(p)}" aria-label="Paket ${p+1}: ${ws.slice(0,3).join(", ")} …"><b>${p+1}</b><span class="bar"><i style="width:${k*10}%"></i></span>${starHtml(data.stars[p]||0)}</button>`;}).join("");
   renderSel();
@@ -288,7 +281,7 @@ function openHome(){stopAll();updStars();
   micLabel();show("home");}
 function renderSel(){const ws=valdaOrd(),k=ws.filter(kan).length;
   $("sel").innerHTML=`<b>${valText()[0].toUpperCase()+valText().slice(1)}</b> <span style="color:var(--muted);font-weight:700">· ${k} av ${ws.length} kan du</span>
-    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button class="selb" data-sel="alla">Välj alla påbörjade</button>${data.pks.length>1?'<button class="selb" data-sel="ett">Bara ett paket</button>':""}</div><div class="chips" style="margin-top:6px">${ws.map(w=>`<span class="chip${kan(w)?" kan":""}" style="--c:${col(w)}">${w}${ODD(w)?'<span class="ear">👂</span>':""}</span>`).join("")}</div>`;}
+    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button class="selb" data-sel="alla">Välj alla påbörjade</button>${data.pks.length>1?'<button class="selb" data-sel="ett">Bara ett paket</button>':""}</div><div class="chips" style="margin-top:6px">${ws.map(w=>`<span class="chip${kan(w)?" kan":""}" style="--c:${col(w)}">${w}</span>`).join("")}</div>`;}
 // tryck = välj eller välj bort paketet (minst ett är alltid valt)
 $("packs").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;const p=+b.dataset.p;
   if(data.pks.includes(p)){if(data.pks.length>1)data.pks=data.pks.filter(x=>x!==p);}else data.pks.push(p);data.pk=valda()[0];save();
@@ -307,7 +300,7 @@ function stopAll(){timers.forEach(clearTimeout);timers=[];recStop();cancelAnimat
 let L=null;
 function startLearn(){stopAll();L={ws:valdaOrd(),i:0};show("learn");drawLearn();}
 function drawLearn(){const w=L.ws[L.i];sett(w);save();$("lInfo").textContent=`Ord ${L.i+1} av ${L.ws.length}`;
-  $("lStage").innerHTML=`<div style="text-align:center"><div class="big in letters" id="lWord" style="--c:${col(w)}">${[...w].map(c=>`<span>${c}</span>`).join("")}</div>${ODD(w)?`<div class="sounds">👂 Låter som: <span class="w">${LATER[w]}</span></div>`:""}</div>`;
+  $("lStage").innerHTML=`<div style="text-align:center"><div class="big in letters" id="lWord" style="--c:${col(w)}">${[...w].map(c=>`<span>${c}</span>`).join("")}</div></div>`;
   $("lNext").textContent=L.i<L.ws.length-1?"Nästa ord ➜":"Klar ✓";}
 $("lHear").onclick=()=>speak(L.ws[L.i]);
 // bokstäverna lyser en i taget (som när man ljudar), sedan hela ordet
@@ -358,7 +351,7 @@ function drawFind(){const w=H.list[H.i];sett(w);H.first=true;H.done=false;$("hIn
 $("hListen").onclick=()=>{if(H)speak(H.list[H.i]);};
 function pickFind(b){if(H.done)return;const w=H.list[H.i];
   if(b.dataset.w===w){b.classList.add("ok");H.done=true;window.Ljud&&Ljud.ok&&Ljud.ok();if(H.first)ratt(w);save();
-    $("hNote").textContent=ODD(w)?`Rätt! "${w}" låter som "${LATER[w]}".`:"Rätt!";later(nextFind,ODD(w)?1300:650);}
+    $("hNote").textContent="Rätt!";later(nextFind,650);}
   else{b.classList.remove("bad");void b.offsetWidth;b.classList.add("bad");H.first=false;H.err++;window.Ljud&&Ljud.bad&&Ljud.bad();$("hNote").textContent="Inte det ordet. Lyssna igen!";later(()=>speak(w),350);}}
 function nextFind(){if(!H)return;H.i++;if(H.i<H.list.length)drawFind();else{updStars();finish(H.err?"Alla ord hittade!":"Alla rätt direkt! 🎉",H.err?`Du valde fel ${H.err} ${H.err===1?"gång":"gånger"}.`:`${H.list.length} ord utan ett enda fel.`,!H.err);}};
 
