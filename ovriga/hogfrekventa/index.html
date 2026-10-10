@@ -83,6 +83,10 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .track .fill{position:absolute;left:0;top:0;bottom:0;border-radius:23px;background:rgba(61,90,254,.15);width:0}
 .track .dot{position:absolute;top:50%;width:26px;height:12px;margin:-6px 0 0 -13px;border-radius:6px;background:#3D5AFE;opacity:.8}
 .track .knob{position:absolute;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:14px;background:#7B2A55;box-shadow:0 3px 0 #4E1A36;pointer-events:none}
+.lvisa{justify-content:center;margin:0 auto 10px;width:max-content;max-width:100%}
+.letters.stav{gap:.18em}
+.letters.stav span:nth-child(2n){color:color-mix(in srgb,var(--c) 65%,#1D2B53)}
+.track .dot.wide{width:44px;margin-left:-22px}
 .lmsg{text-align:center;font-weight:800;color:var(--muted);margin:12px 0 0;min-height:1.4em}
 /* efter blixtläsning: markera svåra ord */
 .marks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
@@ -136,13 +140,14 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
     <button class="mode" data-m="find"><span class="ic">🔍</span><b>Hitta ordet</b><small>Lyssna och tryck på rätt ord</small></button>
     <button class="mode" data-m="minute"><span class="ic">⏱️</span><b>Ord på en minut</b><small>Hur många hinner du läsa? Med en vuxen</small></button>
   </div>
-  <div class="opts"><span class="lab">Fart:</span><div class="seg" id="fart"></div><button class="mic" id="micBtn" aria-pressed="false">🎤 Lyssna på mig: av</button></div>
+  <div class="opts"><span class="lab">Fart:</span><div class="seg" id="fart"></div><span class="lab">Lär dig orden:</span><div class="seg" id="visa"></div><button class="mic" id="micBtn" aria-pressed="false">🎤 Lyssna på mig: av</button></div>
 </div>
 </section>
 
 <section id="learn" class="screen" hidden>
 <div class="wrap">
   <div class="top"><button class="back" data-home>← Tillbaka</button><span class="info" id="lInfo"></span></div>
+  <div class="seg lvisa" id="lVisa" aria-label="Visa ordet som"></div>
   <div class="stage" id="lStage"></div>
   <div class="row2"><button class="alt" id="lHear">🔊 Hör ordet</button> </div>
   <button class="go" id="lNext">Nästa ord ➜</button>
@@ -290,6 +295,7 @@ const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class=
 function openHome(){stopAll();updStars();
   $("packs").innerHTML=PAKET.map((ws,p)=>{const k=ws.filter(kan).length;return `<button class="pk" data-p="${p}" aria-pressed="${data.pks.includes(p)}" aria-label="Paket ${p+1}: ${ws.slice(0,3).join(", ")} …"><b>${p+1}</b><span class="bar"><i style="width:${k*10}%"></i></span>${starHtml(data.stars[p]||0)}</button>`;}).join("");
   renderSel();
+  $("visa").innerHTML=visaHtml();
   $("fart").innerHTML=[[3,"🐢 3 s"],[2,"2 s"],[1.5,"1,5 s"],[1,"🐇 1 s"]].map(([v,t])=>`<button data-f="${v}" aria-pressed="${data.fart==v}">${t}</button>`).join("");
   micLabel();show("home");}
 function renderSel(){const ws=valdaOrd(),k=ws.filter(kan).length;
@@ -303,6 +309,7 @@ $("sel").onclick=e=>{const b=e.target.closest("[data-sel]");if(!b)return;
   if(b.dataset.sel==="ett")data.pks=[valda()[valda().length-1]];
   else{const p=PAKET.map((ws,i)=>ws.some(w=>data.ord[w])?i:-1).filter(i=>i>=0);data.pks=p.length?p:[0];}
   save();openHome();};
+$("visa").onclick=e=>{const b=e.target.closest("[data-v]");if(!b)return;data.visa=b.dataset.v;save();$("visa").innerHTML=visaHtml();};
 $("fart").onclick=e=>{const b=e.target.closest("[data-f]");if(!b)return;data.fart=+b.dataset.f;save();$("fart").querySelectorAll("[data-f]").forEach(x=>x.setAttribute("aria-pressed",String(+x.dataset.f===data.fart)));};
 document.querySelectorAll(".mode").forEach(b=>b.onclick=()=>({learn:startLearn,flash:startFlash,find:startFind,minute:startMinute})[b.dataset.m]());
 document.querySelectorAll("[data-home]").forEach(b=>b.onclick=openHome);
@@ -327,15 +334,35 @@ function ljud(w){if(HELORD.has(w))return[w];if(EGNA[w])return EGNA[w].slice();co
   return out;}
 let L=null;
 function startLearn(){stopAll();L={ws:valdaOrd(),i:0};show("learn");drawLearn();}
-function drawLearn(){const w=L.ws[L.i],units=ljud(w),hel=units.length===1&&HELORD.has(w);sett(w);save();
-  $("lInfo").textContent=`Ord ${L.i+1} av ${L.ws.length}`;
-  $("lStage").innerHTML=`<div class="lj"><div class="big in letters" id="lWord" style="--c:${col(w)}">${units.map((u,k)=>`<span class="u${u.length>1&&!hel?" multi":""}" data-u="${k}">${u}</span>`).join("")}</div>
-    ${hel?"":`<div class="track" id="lTrack"><i class="fill" id="lFill"></i>${units.map(()=>'<b class="dot"></b>').join("")}<span class="knob" id="lKnob" aria-hidden="true"></span></div>`}</div>
-    <p class="lmsg" id="lMsg">${hel?"Det här ordet lär man sig som ett helt ord. Tryck 🔊 och säg det!":"Dra den runda knappen under ordet och säg ljuden!"}</p>`;
+/* Stavelser (skolregeln): varje stavelse har en vokal; dubbelteckning och r-ljuden (rt, rd, rn, rs, rl, rg) delas
+   (mam·ma, bor·ta), ng och ck stannar i stavelsen före (spring·er, tyck·er), annars hamnar sista konsonanten före en
+   vokal i nästa stavelse (le·ker, kan·ske, till·sam·mans). Bygger på ljuden så att sj, sk, tj … aldrig delas. */
+const VOKAL=u=>/[aeiouyåäö]/.test(u);
+function stavelser(w){const u=ljud(w);if(u.length<2)return u;const nuc=u.map((x,k)=>VOKAL(x)?k:-1).filter(k=>k>=0);if(nuc.length<2)return[u.join("")];
+  const sy=[];let cur="";
+  for(let a=0;a<nuc.length;a++){const v=nuc[a];if(a===0)cur=u.slice(0,v+1).join("");
+    if(a===nuc.length-1){cur+=u.slice(v+1).join("");sy.push(cur);break;}
+    const mid=u.slice(v+1,nuc[a+1]);let till=[],fran=[];
+    if(mid.length){const last=mid[mid.length-1],rest=mid.slice(0,-1);
+      if(/^(ng|ck)$/.test(last)){till=mid;fran=[];}
+      else if(last.length===2&&(last[0]===last[1]||/^r[tdnslg]$/.test(last))){till=[...rest,last[0]];fran=[last[1]];}
+      else{till=rest;fran=[last];}}
+    sy.push(cur+till.join(""));cur=fran.join("")+u[nuc[a+1]];}
+  return sy;}
+const VISA=[["ljud","Ljud"],["stav","Stavelser"],["hel","Hela ordet"]];
+if(!["ljud","stav","hel"].includes(data.visa))data.visa="ljud";
+function visaHtml(){return VISA.map(([v,t])=>`<button data-v="${v}" aria-pressed="${data.visa===v}">${t}</button>`).join("");}
+function drawLearn(){const w=L.ws[L.i],helord=HELORD.has(w),sv=data.visa==="stav"?stavelser(w):null,stav=sv&&sv.length>1;
+  const units=data.visa==="hel"||helord?[w]:stav?sv:ljud(w),hel=units.length===1;sett(w);save();
+  $("lInfo").textContent=`Ord ${L.i+1} av ${L.ws.length}`;$("lVisa").innerHTML=visaHtml();
+  $("lStage").innerHTML=`<div class="lj"><div class="big in letters${stav?" stav":""}" id="lWord" style="--c:${col(w)}">${units.map((u,k)=>`<span class="u${u.length>1&&!hel&&!stav?" multi":""}" data-u="${k}">${u}</span>`).join("")}</div>
+    ${hel?"":`<div class="track" id="lTrack"><i class="fill" id="lFill"></i>${units.map(()=>`<b class="dot${stav?" wide":""}"></b>`).join("")}<span class="knob" id="lKnob" aria-hidden="true"></span></div>`}</div>
+    <p class="lmsg" id="lMsg">${helord?"Det här ordet lär man sig som ett helt ord. Tryck 🔊 och säg det!":hel?"Tryck 🔊 och säg ordet!":stav?"Dra den runda knappen och säg en stavelse i taget!":"Dra den runda knappen under ordet och säg ljuden!"}</p>`;
   $("lNext").textContent=L.i<L.ws.length-1?"Nästa ord ➜":"Klar ✓";
   // långa ord krymper tills de får plats (tillsammans, varandra …)
   requestAnimationFrame(()=>{const el=$("lWord"),max=$("lStage").clientWidth-56;let fs=parseFloat(getComputedStyle(el).fontSize);
-    while(el.scrollWidth>max&&fs>24){fs-=4;el.style.fontSize=fs+"px";}if(!hel)setupLjuda();});}
+    while(el.scrollWidth>max&&fs>24){fs-=4;el.style.fontSize=fs+"px";}if(!hel)setupLjuda();else LJ=null;});}
+$("lVisa").onclick=e=>{const b=e.target.closest("[data-v]");if(!b)return;data.visa=b.dataset.v;save();drawLearn();};
 $("lHear").onclick=()=>speak(L.ws[L.i]);
 /* Ljuda ordet (lärarens önskan, idén från en läsapp): barnet drar en knapp längs en skena under ordet; ljudet ovanför
    knappen lyser, bågar visar ljud med flera bokstäver. Långsamt = ljuda, fort = läsa ihop. Barnet säger ljuden själv
