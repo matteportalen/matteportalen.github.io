@@ -167,7 +167,9 @@ $("play").onclick=()=>start();
 function start(){const ks=shuffle([3,3,4,4,pickOne([3,4])]);G={ks,n:ROUND,i:0,err:0};show("game");next();}
 function next(){if(G.i>=G.n)return finish();
   const t=gen(G.ks[G.i]);G.t=t;G.known=t.saker.map(()=>false);G.shown=t.saker.map(()=>false);G.tries={};G.inp="";G.bad=false;
-  G.qDone=false;G.qShown=false;G.sel=0;G.done=false;G.flash=-1;
+  // svarsrutorna i blandad ordning (sakerna skapas i lösningsordning, och det ska inte avslöjas var man börjar)
+  const k=t.saker.length;let ord;do{ord=shuffle([...Array(k).keys()]);}while(k>1&&ord.every((x,i)=>x===i));G.ord=ord;
+  G.qDone=false;G.qShown=false;G.sel=ord[0];G.done=false;G.flash=-1;
   $("info").textContent=`${G.i+1} / ${G.n}`;$("prog").style.width=(G.i/G.n*100)+"%";
   $("next").hidden=true;$("pad").hidden=false;fb("");draw();}
 const slots=()=>G.t.saker.length+(G.t.qAns!=null?1:0);
@@ -186,7 +188,7 @@ const rowDone=r=>[...r.L,...r.R].every(it=>it.s==null||G.known[it.s])&&(!r.q||G.
 function draw(){const t=G.t;
   $("rows").innerHTML=t.rows.map((r,i)=>`<div class="row${i===G.flash?" flash":""}" ${r.q?'data-q="1"':""}>${sideHtml(r.L)}<span class="is">=</span>${sideHtml(r.R)}${rowDone(r)?'<span class="ok">✓</span>':""}</div>`).join("");
   const qr=document.querySelector(".row[data-q]");if(qr)qr.onclick=()=>pick(t.saker.length);
-  $("answers").innerHTML=t.saker.map((s,i)=>`<button class="ans" data-a="${i}">${s.e} = ${slotHtml(i)}</button>`).join("");
+  $("answers").innerHTML=G.ord.map(i=>`<button class="ans" data-a="${i}">${t.saker[i].e} = ${slotHtml(i)}</button>`).join("");
   document.querySelectorAll(".ans").forEach(b=>b.onclick=()=>pick(+b.dataset.a));}
 function pick(i){if(!G||G.done||solved(i))return;if(G.sel!==i){G.sel=i;G.inp="";G.bad=false;G.flash=-1;fb("");}draw();}
 function flash(ri){G.flash=ri;draw();setTimeout(()=>{if(G&&G.flash===ri){G.flash=-1;const el=$("rows").children[ri];if(el)el.classList.remove("flash");}},1300);}
@@ -197,7 +199,7 @@ function key(k){if(!G||G.done)return;const i=G.sel;if(solved(i))return;
   if(k==="ok"){if(G.inp!=="")check(i,+G.inp);return;}
   if(G.bad){G.bad=false;G.inp="";fb("");}
   if(G.inp.length<2){G.inp=(G.inp==="0"?"":G.inp)+k;draw();}}
-function nextSlot(){for(let d=1;d<=slots();d++){const j=(G.sel+d)%slots();if(!solved(j))return j;}return -1;}
+function nextSlot(){const o=G.ord.concat(slots()>G.t.saker.length?[G.t.saker.length]:[]),p=o.indexOf(G.sel);for(let d=1;d<=o.length;d++){const j=o[(p+d)%o.length];if(!solved(j))return j;}return -1;}
 const numTxt=(side,vals)=>side.map(it=>it.n!=null?it.n:vals[it.s]).join(" + ");
 function check(i,v){const t=G.t,vals=t.saker.map(s=>s.v);
   if(isQ(i)){const qi=t.rows.findIndex(r=>r.q),qr=t.rows[qi];
