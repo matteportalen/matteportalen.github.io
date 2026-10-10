@@ -63,6 +63,19 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .box.shake button.sel{background:#FFE3E5;box-shadow:inset 0 0 0 3px #F3A9AE;color:#B8323A}
 @keyframes shake{20%{transform:translateX(-7px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(2px)}}
 .box.out{transform:scale(.6);opacity:0}
+/* den stora rutan: de fyra svaren i mitten */
+.box button.svar{background:#FFE39A !important;color:#8A6D12 !important;box-shadow:inset 0 0 0 3px var(--gold) !important;animation:puls .6s}
+@keyframes puls{50%{transform:scale(1.12)}}
+.box[data-i="0"]{transform-origin:0 0}.box[data-i="1"]{transform-origin:100% 0}.box[data-i="2"]{transform-origin:0 100%}.box[data-i="3"]{transform-origin:100% 100%}
+.board.fin-on .box{transform:scale(.8);opacity:.35}
+.board.fin-on .op{opacity:0}
+.fin{position:absolute;left:23%;top:23%;width:54%;height:54%;display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px;border-radius:24px;background:#FFF6D6;border:4px solid var(--gold);box-shadow:0 6px 0 #D9A400;z-index:4;
+  transform:scale(.3);opacity:0;transition:transform .45s cubic-bezier(.3,1.4,.5,1),opacity .3s}
+.fin.on{transform:scale(1);opacity:1}
+.fin button{border-radius:16px;background:#fff;font-weight:800;font-size:clamp(1.6rem,8vmin,3rem);line-height:1;display:grid;place-items:center;box-shadow:inset 0 0 0 2px #F0D98A;color:#8A6D12}
+.fin button.sel{background:#DCE4FF;box-shadow:inset 0 0 0 3px var(--accent);color:var(--accent)}
+.fin.shake{animation:shake .45s}.fin.shake button.sel{background:#FFE3E5;box-shadow:inset 0 0 0 3px #F3A9AE;color:#B8323A}
+.fin.done{background:#DDF5E7;border-color:#2BB673;box-shadow:0 6px 0 #157548}.fin.done button.part{background:#2BB673;color:#fff;box-shadow:none}
 .box.in{transform:scale(.6);opacity:0;transition:none}
 .op{position:absolute;left:41%;top:41%;width:18%;height:18%;border-radius:50%;background:linear-gradient(135deg,#3D8BFD,#3D5AFE);color:#fff;display:grid;place-items:center;font-weight:800;font-size:clamp(1.6rem,8vmin,3rem);box-shadow:0 4px 0 #2A3FB8;z-index:2}
 .board.win .op{background:linear-gradient(135deg,#2BB673,#1E9E5E);box-shadow:0 4px 0 #157548}
@@ -182,7 +195,7 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 <section id="kval" class="screen" hidden>
   <button class="back" id="kBack">← Rutjakten</button>
   <h2 class="sec">🟩 Korset</h2>
-  <div class="how"><div class="mini"><i class="g">3</i><i>5</i><i class="g">10</i><i class="g">7</i></div><p>3 + 7 = 10. Tryck på de tre talen som hör ihop. Det fjärde talet passar inte. När alla fyra rutor är klara kommer nya.</p></div>
+  <div class="how"><div class="mini"><i class="g">3</i><i>5</i><i class="g">10</i><i class="g">7</i></div><p>3 + 7 = 10. Tryck på de tre talen som hör ihop. Det fjärde talet passar inte. När alla fyra rutor är klara flyger svaren in i <b>den stora rutan</b> i mitten, där tre tal också hör ihop. (I Bråk kommer nya rutor direkt.)</p></div>
   <div class="vars" id="vars"></div>
   <div class="tabs" id="tabsBox"><p>Vilka tabeller i <b>Gånger, alla tabeller</b>?</p><div class="chips" id="tabChips"></div></div>
 </section>
@@ -267,6 +280,38 @@ function nyRuta(v,undvik){
   }
   return null;
 }
+/* Den stora rutan (alla varianter utom Bråk): korset byggs baklänges. Först väljs fyra tal där exakt tre hör ihop,
+   sedan byggs en liten ruta runt vart och ett av dem, så att det talet blir rutans svar (det största talet i trion). */
+const DEL={p10:1,p20:1,p25:2,tio:10,p100:11},MAXV={p10:10,p20:20,p25:25,tio:100,p100:100};
+function faktorer(v){return v.id==="mA"?[2,3,4,5,10]:(data.tab&&data.tab.length?data.tab:[2,3,4,5,6,7,8,9,10]);}
+// en trio med c som svar, eller null
+function trioMed(v,c){
+  if(v.op==="·"){const p=[];for(const a of faktorer(v))for(let b=2;b<=10;b++)if(a*b===c)p.push([a,b]);if(!p.length)return null;return shuffle(pick(p).slice()).concat(c).map(W);}
+  const lo=DEL[v.id],steg=v.id==="tio"?10:1,a=[];for(let x=lo;x<=c-lo;x+=steg)a.push(x);if(!a.length)return null;
+  let val=a;if(v.id==="p20"&&c>10&&Math.random()<.7){const over=a.filter(x=>x<=9&&c-x<=9);if(over.length)val=over;}// helst över tiotalet
+  const x=pick(val);return[x,c-x,c].map(W);}
+// alla tal som kan vara svar i en liten ruta
+function svarsTal(v){const s=new Set();
+  if(v.op==="·"){for(const a of faktorer(v))for(let b=2;b<=10;b++)s.add(a*b);}
+  else{const lo=DEL[v.id],steg=v.id==="tio"?10:1;for(let c=2*lo;c<=MAXV[v.id];c+=steg)s.add(c);}
+  return[...s];}
+function rutaMed(v,c,undvik){
+  for(let k=0;k<200;k++){const tri=trioMed(v,c);if(!tri)return null;const s=storTal(v,tri),tal=[...tri,s],nyckel=tri.map(x=>x.join("/")).sort().join(",");
+    if(tal.slice(0,3).some(x=>lika(x,s)))continue;if(undvik.has(nyckel))continue;
+    let antal=0;for(let u=0;u<4;u++){if(trio(v.op,tal.filter((_,i)=>i!==u)))antal++;}if(antal!==1)continue;
+    undvik.add(nyckel);const ord=shuffle([0,1,2,3]);return{tal:ord.map(i=>tal[i]),ratt:ord.map(i=>i<3),svar:ord.indexOf(2),nyckel};}
+  return null;}
+function storaRutan(v){const V=svarsTal(v),Vs=new Set(V),mul=v.op==="·";
+  for(let k=0;k<600;k++){const x=pick(V),y=pick(V),z=mul?x*y:x+y;if(x===y||!Vs.has(z))continue;
+    const nara=(mul?[z+x,z-y,x+y,z+y,x*2,y+1]:v.id==="tio"?[z+10,z-10,x+10,y-10,z+20]:[z+1,z-1,x+1,y-1,z+2,y+2]).filter(w=>Vs.has(w)&&![x,y,z].includes(w));
+    if(!nara.length)continue;const w=pick(nara),tal=[x,y,z,w].map(W);
+    let antal=0;for(let u=0;u<4;u++){if(trio(v.op,tal.filter((_,i)=>i!==u)))antal++;}if(antal!==1)continue;
+    return shuffle([x,y,z,w]);}
+  return null;}
+function byggKors(v,undvik){if(v.id==="br")return null;
+  for(let f=0;f<100;f++){const F=storaRutan(v);if(!F)return null;const u=new Set(undvik),rutor=F.map(c=>rutaMed(v,c,u));
+    if(rutor.every(Boolean)){rutor.forEach(r=>undvik.add(r.nyckel));return{rutor,fin:{tal:F.map(W)}};}}
+  return null;}
 const visa=x=>x[1]===1?String(x[0]):x[0]===x[1]?"1":`<span class="fr"><i>${x[0]}</i><i>${x[1]}</i></span>`;
 
 /* ---------- Skärmar ---------- */
@@ -303,15 +348,19 @@ function start(id){const v=VAR.find(x=>x.id===id);G={v,boxes:[],senast:new Set()
   show("game");nyttKors(false);}
 function nyttKors(anim){
   const v=G.v,b=$("board"),undvik=new Set(G.senast);G.senast=new Set();
-  G.boxes=[0,1,2,3].map(()=>{const r=nyRuta(v,undvik);G.senast.add(r.nyckel);return Object.assign(r,{done:false});});
-  b.classList.remove("win");
+  const K=byggKors(v,undvik);G.fin=K?K.fin:null;G.finSel=new Set();G.finPa=false;
+  G.boxes=K?K.rutor.map(r=>{G.senast.add(r.nyckel);return Object.assign(r,{done:false});})
+    :[0,1,2,3].map(()=>{const r=nyRuta(v,undvik);G.senast.add(r.nyckel);return Object.assign(r,{done:false});});
+  b.classList.remove("win","fin-on");
   b.innerHTML=G.boxes.map((r,i)=>`<div class="box${anim?" in":""}" data-i="${i}" role="group" aria-label="Ruta ${i+1}">${r.tal.map((x,j)=>`<button data-j="${j}" aria-label="${x[1]===1?x[0]:x[0]+"/"+x[1]}">${visa(x)}</button>`).join("")}</div>`).join("")+
-    `<div class="op" aria-hidden="true">${v.op==="·"?"·":"＋"}</div><div class="yay" id="yay">Utmärkt!</div>`;
+    `<div class="op" aria-hidden="true">${v.op==="·"?"·":"＋"}</div>`+(G.fin?`<div class="fin" id="fin" role="group" aria-label="Den stora rutan">${G.fin.tal.map((x,j)=>`<button data-f="${j}">${visa(x)}</button>`).join("")}</div>`:"")+
+    `<div class="yay" id="yay">Utmärkt!</div>`;
   if(anim)requestAnimationFrame(()=>requestAnimationFrame(()=>b.querySelectorAll(".box").forEach((x,i)=>{x.style.transitionDelay=i*70+"ms";x.classList.remove("in");})));
   hud();G.busy=false;}
 function hud(){const k=data.kors[G.v.id]||0,st=data.stars[G.v.id]||0,next=STEG.find(s=>s>k);
   $("cnt").innerHTML=`🟩 ${k} <span class="st">${starHtml(st)}</span>`;$("cnt").title=next?`${next-k} kors kvar till nästa stjärna`:"Alla stjärnor!";}
 $("board").addEventListener("click",e=>{
+  const fb=e.target.closest(".fin button");if(fb){finTryck(fb);return;}
   const btn=e.target.closest(".box button");if(!btn||!G||G.busy)return;
   const box=btn.parentNode,i=+box.dataset.i,j=+btn.dataset.j,r=G.boxes[i];if(r.done)return;
   // man väljer i en ruta i taget; byter man ruta börjar valet om
@@ -323,12 +372,25 @@ $("board").addEventListener("click",e=>{
   if(trio(G.v.op,valda)){
     r.done=true;box.classList.add("done");[...G.sel].forEach(k=>box.querySelector(`button[data-j="${k}"]`).classList.add("part"));G.sel=new Set();G.cur=null;
     window.Ljud&&Ljud.ok&&Ljud.ok();petHop("hop");$("bubble").textContent=pick(["Bra!","Snyggt!","Rätt!","Ja!","Precis!"]);
-    if(G.boxes.every(x=>x.done))korsKlart();
+    if(G.boxes.every(x=>x.done))(G.fin?finStart():korsKlart());
   }else{
     G.busy=true;box.classList.add("shake");$("bubble").textContent=pick(["Prova igen!","Nästan, titta en gång till.","De tre hör inte ihop."]);
     setTimeout(()=>{box.classList.remove("shake");box.querySelectorAll("button.sel").forEach(x=>x.classList.remove("sel"));G.sel=new Set();G.cur=null;G.busy=false;},480);
   }
 });
+// alla fyra rutor klara: svaren lyser och flyger in i den stora rutan
+function finStart(){G.busy=true;const b=$("board");
+  G.boxes.forEach((r,i)=>{const bt=b.querySelector(`.box[data-i="${i}"] button[data-j="${r.svar}"]`);if(bt)bt.classList.add("svar");});
+  $("bubble").textContent="Svaren flyger in i den stora rutan!";
+  setTimeout(()=>{if(!G)return;b.classList.add("fin-on");$("fin").classList.add("on");G.finPa=true;G.busy=false;
+    $("bubble").textContent="Den stora rutan! Vilka tre tal hör ihop?";window.Ljud&&Ljud.whoosh&&Ljud.whoosh();},750);}
+function finTryck(btn){if(!G||!G.finPa||G.busy)return;const j=+btn.dataset.f,f=$("fin");
+  if(G.finSel.has(j)){G.finSel.delete(j);btn.classList.remove("sel");return;}
+  G.finSel.add(j);btn.classList.add("sel");window.Ljud&&Ljud.pop&&Ljud.pop(G.finSel.size);if(G.finSel.size<3)return;
+  const valda=[...G.finSel].map(k=>G.fin.tal[k]);
+  if(trio(G.v.op,valda)){G.finPa=false;f.classList.add("done");G.finSel.forEach(k=>f.querySelector(`button[data-f="${k}"]`).classList.add("part"));korsKlart();}
+  else{G.busy=true;f.classList.add("shake");$("bubble").textContent=pick(["Prova igen!","Nästan, titta en gång till.","De tre hör inte ihop."]);
+    setTimeout(()=>{f.classList.remove("shake");f.querySelectorAll("button.sel").forEach(x=>x.classList.remove("sel"));G.finSel=new Set();G.busy=false;},480);}}
 function korsKlart(){
   G.busy=true;const id=G.v.id,k=(data.kors[id]||0)+1,fore=data.stars[id]||0,st=STEG.filter(s=>k>=s).length;
   data.kors[id]=k;data.stars[id]=Math.max(fore,st);data.spelat=(data.spelat||0)+1;save();
