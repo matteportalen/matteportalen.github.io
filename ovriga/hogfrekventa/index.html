@@ -261,8 +261,12 @@ function recStart(cb){if(!micOn())return;onHeard=cb;recWant=true;if(REC)return;
   try{REC=new SR();REC.lang="sv-SE";REC.continuous=true;REC.interimResults=true;REC.maxAlternatives=5;
     REC.onresult=e=>{const ord=[],fin=[];for(let i=e.resultIndex;i<e.results.length;i++){for(let j=0;j<e.results[i].length;j++)ord.push(...norm(e.results[i][j].transcript));if(e.results[i].isFinal)fin.push(...norm(e.results[i][0].transcript));}if(onHeard)onHeard(ord,fin);};
     REC.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){data.mic=false;save();micLabel();toast("Mikrofonen fick inte användas. Lyssna på mig är avstängt.");recWant=false;}};
-    REC.onend=()=>{REC=null;if(recWant)setTimeout(()=>recWant&&recStart(onHeard),150);};
-    REC.start();}catch(err){REC=null;}}
+    // webbläsaren stänger av taligenkänningen efter en stunds tystnad: starta om direkt (lärarens fynd: förut blev det ett glapp)
+    REC.onstart=()=>micLamp(true);
+    REC.onend=()=>{REC=null;micLamp(false);if(recWant)recStart(onHeard);};
+    REC.start();}catch(err){REC=null;if(recWant)setTimeout(()=>recWant&&recStart(onHeard),100);}}
+// lampan "lyssnar": grön när mikrofonen faktiskt lyssnar, grå medan den startar om
+let micLyss=false;function micLamp(on){micLyss=on;document.querySelectorAll(".heard").forEach(x=>{x.classList.toggle("on",on);x.textContent=on?"lyssnar":"startar …";});}
 function recStop(){recWant=false;onHeard=null;if(REC){try{REC.stop();}catch(e){}}}
 const hor=(w,ord)=>{const ok=UTTAL[w]||[w];return ord.some(o=>ok.includes(o)||o===w);};
 function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?"på":"av"}`;}
@@ -297,10 +301,23 @@ let timers=[];const later=(f,ms)=>timers.push(setTimeout(f,ms));
 function stopAll(){timers.forEach(clearTimeout);timers=[];recStop();cancelAnimationFrame(MIN.raf);if("speechSynthesis" in window)speechSynthesis.cancel();}
 
 /* ---------- Lär dig orden ---------- */
+/* Ordet delat i ljud (lärarens fynd: bokstav för bokstav blev fel när flera bokstäver är ett ljud).
+   sk före mjuk vokal (skepp), sj, skj, stj, sch, tj, kj, dj, gj, hj, lj, ng, ck, ch och dubbelteckning (tt, mm …) är ett ljud.
+   Ord som inte följer reglerna lyser som en helhet. */
+const HELORD=new Set("och det är jag de dem var vad mig dig sig också säger honom sedan sade".split(" "));
+const MJUK="eiyäö",VOK="aeiouyåäö";
+function ljud(w){if(HELORD.has(w))return[w];const out=[];let i=0;
+  while(i<w.length){const r=w.slice(i);let n=1;
+    if(/^(skj|stj|sch)/.test(r))n=3;
+    else if(/^sk/.test(r)&&MJUK.includes(r[2]||""))n=2;
+    else if(/^(sj|tj|kj|dj|gj|hj|lj|ng|ck|ch)/.test(r))n=2;
+    else if(r[0]===r[1]&&!VOK.includes(r[0]))n=2;
+    out.push(r.slice(0,n));i+=n;}
+  return out;}
 let L=null;
 function startLearn(){stopAll();L={ws:valdaOrd(),i:0};show("learn");drawLearn();}
 function drawLearn(){const w=L.ws[L.i];sett(w);save();$("lInfo").textContent=`Ord ${L.i+1} av ${L.ws.length}`;
-  $("lStage").innerHTML=`<div style="text-align:center"><div class="big in letters" id="lWord" style="--c:${col(w)}">${[...w].map(c=>`<span>${c}</span>`).join("")}</div></div>`;
+  $("lStage").innerHTML=`<div style="text-align:center"><div class="big in letters" id="lWord" style="--c:${col(w)}">${ljud(w).map(c=>`<span>${c}</span>`).join("")}</div></div>`;
   $("lNext").textContent=L.i<L.ws.length-1?"Nästa ord ➜":"Klar ✓";}
 $("lHear").onclick=()=>speak(L.ws[L.i]);
 // bokstäverna lyser en i taget (som när man ljudar), sedan hela ordet
@@ -322,7 +339,7 @@ function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:n
   recStart(ord=>{const w=F&&F.list[F.i];if(w&&!F.heard.has(F.i)&&hor(w,ord)){F.heard.add(F.i);const el=$("fWord");if(el){el.classList.add("ok");}window.Ljud&&Ljud.ok&&Ljud.ok();}});}
 function nextFlash(){F.i++;if(F.i>=F.list.length)return flashAfter();const w=F.list[F.i],ms=data.fart*1000;sett(w);
   $("fInfo").textContent=`${F.i+1} / ${F.list.length}`;
-  $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?'<span class="heard on">lyssnar</span>':""}`;
+  $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?`<span class="heard${micLyss?" on":""}">${micLyss?"lyssnar":"startar …"}</span>`:""}`;
   const t=$("fT");if(t&&!reduced()){t.animate([{width:"100%"},{width:"0%"}],{duration:ms,easing:"linear",fill:"forwards"});}
   later(nextFlash,ms);}
 function flashAfter(){recStop();$("fStage").hidden=true;$("fHint").hidden=true;$("fAfter").hidden=false;$("fInfo").textContent="Klart!";
