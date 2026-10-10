@@ -311,15 +311,15 @@ function stopAll(){timers.forEach(clearTimeout);timers=[];recStop();cancelAnimat
 
 /* ---------- Lär dig orden ---------- */
 /* Ordet delat i ljud (lärarens fynd: bokstav för bokstav blev fel när flera bokstäver är ett ljud).
-   sk före mjuk vokal (skepp), sj, skj, stj, sch, tj, kj, dj, gj, hj, lj, ng, ck, ch, rs och dubbelteckning (tt, mm …) är ett ljud.
+   sk före mjuk vokal (skepp), sj, skj, stj, sch, tj, kj, dj, gj, hj, lj, ng, ck, ch, rs, rt, rd, rn, rl och dubbelteckning (tt, mm …) är ett ljud.
    Ord som inte följer reglerna lyser som en helhet. */
-const HELORD=new Set("och det är jag de dem var vad mig dig sig också säger honom sedan sade".split(" "));
+const HELORD=new Set("och det är jag de dem var vad mig dig sig också säger honom sedan sade morgon imorgon huvud".split(" "));
 const MJUK="eiyäö",VOK="aeiouyåäö";
 function ljud(w){if(HELORD.has(w))return[w];const out=[];let i=0;
   while(i<w.length){const r=w.slice(i);let n=1;
     if(/^(skj|stj|sch)/.test(r))n=3;
     else if(/^sk/.test(r)&&MJUK.includes(r[2]||""))n=2;
-    else if(/^(sj|tj|kj|dj|gj|hj|lj|ng|ck|ch|rs)/.test(r))n=2;   // rs som i första (lärarens påpekande)
+    else if(/^(sj|tj|kj|dj|gj|hj|lj|ng|ck|ch|rs|rt|rd|rn|rl)/.test(r))n=2;   // rs, rt, rd, rn, rl som i första, bort, barn (lärarens påpekande)
     else if(r[0]===r[1]&&!VOK.includes(r[0]))n=2;
     out.push(r.slice(0,n));i+=n;}
   return out;}
