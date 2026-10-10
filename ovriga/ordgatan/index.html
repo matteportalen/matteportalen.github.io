@@ -159,7 +159,7 @@ const RUNDA=10,POANG=100,KOSTAR=30;
 
 /* ---------- Lagring (följer med profilen: nyckeln finns i startsidans PKEYS) ---------- */
 const KEY="mattespel-ordgatan-v1";
-const data=(()=>{const tom={stars:{},rekord:{},sett:{},omg:0};try{return Object.assign(tom,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return tom;}})();
+const data=(()=>{const tom={stars:{},rekord:{},senast:{},vis:{},nr:0,omg:0};try{return Object.assign(tom,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return tom;}})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
 
 /* ---------- Orden: en fil per nivå i ord/ (så att läraren kan ändra utan att röra koden) ---------- */
@@ -167,7 +167,9 @@ const ORD={};
 const normOrd=s=>String(s||"").toLowerCase().normalize("NFC").replace(/[^a-zåäöéü]/g,"");
 function laddaNiva(n){if(ORD[n])return Promise.resolve(ORD[n]);
   return fetch(`ord/niva${n}.json`).then(r=>r.json()).then(d=>{const sett=new Set();
-    ORD[n]=(d.ord||[]).map(o=>({ord:normOrd(o.ord),led:String(o.ledtrad||"").trim()})).filter(o=>o.ord.length>=2&&o.led&&!sett.has(o.ord)&&sett.add(o.ord));return ORD[n];});}
+    // "ledtradar" är en lista (flera gåtor per ord); en ensam "ledtrad" går också bra
+    ORD[n]=(d.ord||[]).map(o=>({ord:normOrd(o.ord),led:[].concat(o.ledtradar||o.ledtrad||[]).map(x=>String(x).trim()).filter(Boolean)}))
+      .filter(o=>o.ord.length>=2&&o.led.length&&!sett.has(o.ord)&&sett.add(o.ord));return ORD[n];});}
 // alla nivåer laddas direkt, så att omgången kan starta i samma tryck (annars kommer inte tangentbordet upp på surfplattan)
 const klara=Promise.all(NIVAER.map(v=>laddaNiva(v.n).catch(()=>[])));
 
@@ -188,11 +190,15 @@ $("nivaer").onclick=e=>{const b=e.target.closest("[data-n]");if(b)starta(+b.data
 
 /* ---------- Omgången ---------- */
 let G=null,tidT=null,nastaT=null;
-// ord som eleven inte fått än på nivån; när alla är använda börjar listan om
-function valjOrd(n){const alla=ORD[n]||[];let sett=new Set(data.sett[n]||[]);let nya=alla.filter(o=>!sett.has(o.ord));
-  shuffle(nya);let val=nya.slice(0,RUNDA);
-  if(val.length<RUNDA){const fler=shuffle(alla.filter(o=>!val.includes(o)));val=val.concat(fler.slice(0,RUNDA-val.length));sett=new Set();}
-  val.forEach(o=>sett.add(o.ord));data.sett[n]=[...sett];save();return val;}
+// minnet: vilken omgång varje ord senast kom (senast) och hur många gånger det kommit (vis).
+// Omgången tar de ord som legat längst (aldrig använda först), så att inget ord kommer igen förrän alla har kommit;
+// kommer ordet tillbaka får det nästa ledtråd i listan.
+function valjOrd(n){const alla=ORD[n]||[];data.nr=(data.nr||0)+1;
+  const sen=data.senast[n]=data.senast[n]||{},vis=data.vis[n]=data.vis[n]||{};
+  if(data.sett&&data.sett[n]){data.sett[n].forEach(w=>{if(!(w in sen)){sen[w]=0;vis[w]=1;}});delete data.sett[n];}// äldre sparat format
+  const val=shuffle(alla.slice()).sort((a,b)=>(sen[a.ord]??-1)-(sen[b.ord]??-1)).slice(0,RUNDA)
+    .map(o=>{const k=vis[o.ord]||0;sen[o.ord]=data.nr;vis[o.ord]=k+1;return{ord:o.ord,led:o.led[k%o.led.length]};});
+  save();return val;}
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
 function starta(n){if(!ORD[n]){klara.then(()=>ORD[n]&&ORD[n].length&&starta(n));return;}
   stopp();const ord=valjOrd(n);

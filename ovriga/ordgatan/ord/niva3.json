@@ -1,17 +1,17 @@
 {
- "info": "Ordgåtan, nivå 3. Varje rad: \"ord\" = svaret (små bokstäver), \"ledtrad\" = det eleven läser. Ledtråden får inte innehålla svaret. Skriv ___ för en lucka i ett ordspråk.",
+ "info": "Ordgåtan, nivå 3. Ett ord per rad: \"ord\" = svaret (små bokstäver), \"ledtradar\" = en eller flera ledtrådar (spelet tar en ny varje gång ordet kommer). Ledtråden får inte innehålla svaret. Skriv ___ för en lucka i en mening eller ett ordspråk.",
  "ord": [
-  {"ord": "bäst", "ledtrad": "Borta bra men hemma ___"},
-  {"ord": "björnen", "ledtrad": "Man ska inte sälja skinnet förrän ___ är skjuten"},
-  {"ord": "guld", "ledtrad": "Morgonstund har ___ i mun"},
-  {"ord": "länge", "ledtrad": "Den som väntar på något gott väntar aldrig för ___"},
-  {"ord": "december", "ledtrad": "Årets tolfte och sista månad"},
-  {"ord": "kameleont", "ledtrad": "En ödla som kan byta färg"},
-  {"ord": "tandläkare", "ledtrad": "Personen som lagar hål i dina tänder"},
-  {"ord": "geografi", "ledtrad": "Skolämnet där man lär sig om länder, kartor och berg"},
-  {"ord": "giraff", "ledtrad": "Djuret med världens längsta hals"},
-  {"ord": "choklad", "ledtrad": "Brunt godis som görs av kakaobönor"},
-  {"ord": "åskväder", "ledtrad": "Väder med blixtar och mullrande ljud"},
-  {"ord": "piano", "ledtrad": "Ett instrument med svarta och vita tangenter"}
+  {"ord": "bäst", "ledtradar": ["Borta bra men hemma ___"]},
+  {"ord": "björnen", "ledtradar": ["Man ska inte sälja skinnet förrän ___ är skjuten"]},
+  {"ord": "guld", "ledtradar": ["Morgonstund har ___ i mun"]},
+  {"ord": "länge", "ledtradar": ["Den som väntar på något gott väntar aldrig för ___"]},
+  {"ord": "december", "ledtradar": ["Årets tolfte och sista månad"]},
+  {"ord": "kameleont", "ledtradar": ["En ödla som kan byta färg"]},
+  {"ord": "tandläkare", "ledtradar": ["Personen som lagar hål i dina tänder"]},
+  {"ord": "geografi", "ledtradar": ["Skolämnet där man lär sig om länder, kartor och berg"]},
+  {"ord": "giraff", "ledtradar": ["Djuret med världens längsta hals"]},
+  {"ord": "choklad", "ledtradar": ["Brunt godis som görs av kakaobönor"]},
+  {"ord": "åskväder", "ledtradar": ["Väder med blixtar och mullrande ljud"]},
+  {"ord": "piano", "ledtradar": ["Ett instrument med svarta och vita tangenter"]}
  ]
 }

@@ -1,17 +1,17 @@
 {
- "info": "Ordgåtan, nivå 2. Varje rad: \"ord\" = svaret (små bokstäver), \"ledtrad\" = det eleven läser. Ledtråden får inte innehålla svaret. Skriv ___ för en lucka i ett ordspråk.",
+ "info": "Ordgåtan, nivå 2. Ett ord per rad: \"ord\" = svaret (små bokstäver), \"ledtradar\" = en eller flera ledtrådar (spelet tar en ny varje gång ordet kommer). Ledtråden får inte innehålla svaret. Skriv ___ för en lucka i en mening eller ett ordspråk.",
  "ord": [
-  {"ord": "kall", "ledtrad": "Motsatsen till varm"},
-  {"ord": "lätt", "ledtrad": "Motsatsen till tung"},
-  {"ord": "slut", "ledtrad": "Motsatsen till början"},
-  {"ord": "mörk", "ledtrad": "Motsatsen till ljus"},
-  {"ord": "stark", "ledtrad": "Motsatsen till svag"},
-  {"ord": "tidig", "ledtrad": "Motsatsen till sen"},
-  {"ord": "stängd", "ledtrad": "Motsatsen till öppen"},
-  {"ord": "vacker", "ledtrad": "Ett annat ord för söt eller fin att titta på"},
-  {"ord": "klok", "ledtrad": "Ett annat ord för smart"},
-  {"ord": "viska", "ledtrad": "Att prata så tyst att bara en person hör"},
-  {"ord": "fnissa", "ledtrad": "Att skratta tyst och lite fånigt"},
-  {"ord": "kråka", "ledtrad": "En svart och grå fågel som säger kraa"}
+  {"ord": "kall", "ledtradar": ["Motsatsen till varm"]},
+  {"ord": "lätt", "ledtradar": ["Motsatsen till tung"]},
+  {"ord": "slut", "ledtradar": ["Motsatsen till början"]},
+  {"ord": "mörk", "ledtradar": ["Motsatsen till ljus"]},
+  {"ord": "stark", "ledtradar": ["Motsatsen till svag"]},
+  {"ord": "tidig", "ledtradar": ["Motsatsen till sen"]},
+  {"ord": "stängd", "ledtradar": ["Motsatsen till öppen"]},
+  {"ord": "vacker", "ledtradar": ["Ett annat ord för söt eller fin att titta på"]},
+  {"ord": "klok", "ledtradar": ["Ett annat ord för smart"]},
+  {"ord": "viska", "ledtradar": ["Att prata så tyst att bara en person hör"]},
+  {"ord": "fnissa", "ledtradar": ["Att skratta tyst och lite fånigt"]},
+  {"ord": "kråka", "ledtradar": ["En svart och grå fågel som säger kraa"]}
  ]
 }
