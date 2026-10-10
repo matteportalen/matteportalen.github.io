@@ -33,7 +33,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 @media(min-width:700px){.packs{grid-template-columns:repeat(10,1fr)}}
 .pk{background:var(--card);border-radius:14px;padding:6px 4px 5px;box-shadow:0 3px 0 var(--line);display:flex;flex-direction:column;align-items:center;gap:1px}
 .pk[aria-pressed="true"]{box-shadow:0 0 0 3px var(--accent),0 3px 0 var(--line)}
-.pk b{font-size:1.25rem;line-height:1.1}.pk .stars{font-size:.7rem;letter-spacing:0}
+.pk b{font-size:1.25rem;line-height:1.1}.pk.eg small{font-weight:800;font-size:.8rem;color:var(--muted)}.pk.eg{background:#FFF8E6}.pk .stars{font-size:.7rem;letter-spacing:0}
 .pk .bar{width:80%;height:5px;border-radius:3px;background:#E3EFE6;overflow:hidden;margin-top:2px}.pk .bar i{display:block;height:100%;background:var(--good)}
 .sel{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);margin-top:12px}
 .chips{display:flex;flex-wrap:wrap;gap:6px}
@@ -141,6 +141,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
     <button class="mode" data-m="minute"><span class="ic">⏱️</span><b>Ord på en minut</b><small>Hur många hinner du läsa? Med en vuxen</small></button>
   </div>
   <div class="opts"><span class="lab">Fart:</span><div class="seg" id="fart"></div><span class="lab">Lär dig orden:</span><div class="seg" id="visa"></div><button class="mic" id="micBtn" aria-pressed="false">🎤 Lyssna på mig: av</button></div>
+  <p class="note" style="font-size:.85rem">ℹ️ Orden är vanliga i barnböcker: tillsammans står de för ungefär <b>61 %</b> av alla ord i barnböckerna i Språkbankens textsamling LäSBarT (lättläst svenska och barnbokstext, CC BY 4.0). Ett barn som kan alla 200 känner alltså igen ungefär sex av tio ord i en vanlig barnbok direkt.</p>
 </div>
 </section>
 
@@ -207,6 +208,13 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
   <p>Korta ord som <span class="w">i</span> och <span class="w">en</span> är svåra för datorn att höra. Fungerar det dåligt, stäng av det igen.</p>
   <div class="row2"><button class="alt" id="micNo">Nej tack</button><button class="go" id="micYes">Slå på</button></div>
 </div></div>
+<div class="modal" id="egModal" hidden><div style="width:min(460px,100%)">
+  <h2 style="margin-top:0">✏️ Egna ord</h2>
+  <p>Skriv orden ni vill öva på, till exempel veckans ord eller ord från läseboken. Skilj orden åt med mellanslag eller kommatecken (högst 40 ord).</p>
+  <textarea id="egText" rows="4" style="width:100%;font:inherit;font-family:var(--las);font-size:1.3rem;border-radius:14px;border:2px solid var(--line);padding:8px" placeholder="sol måne stjärna himmel"></textarea>
+  <p class="note" id="egInfo" style="text-align:left"></p>
+  <div class="row2"><button class="alt" id="egNo">Avbryt</button><button class="go" id="egYes">Spara</button></div>
+</div></div>
 <div class="toast" id="toast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../../ljud.js"></script>
@@ -246,11 +254,15 @@ function sett(w){if(!data.ord[w])data.ord[w]={d:[],n:0};}
 // valda paket (lärarens önskan: kunna träna flera paket samtidigt); gamla sparningar hade bara ett paket i data.pk
 if(!Array.isArray(data.pks))data.pks=[data.pk||0];
 const valda=()=>data.pks.slice().sort((a,b)=>a-b);
-const valdaOrd=()=>valda().flatMap(p=>PAKET[p]);
+/* Egna ord (lärarens önskan): en vuxen skriver in egna ord, t.ex. veckans ord, som paket 21 ("egna ord"). */
+const EG=20;if(!Array.isArray(data.egna))data.egna=[];
+const pakOrd=p=>p===EG?data.egna:PAKET[p];
+const valdaOrd=()=>valda().flatMap(pakOrd);
 // n ord ur de valda paketen, helst sådana man inte kan än, aldrig samma två gånger
 function urval(n){const ws=shuffle(valdaOrd().slice());const ej=ws.filter(w=>!kan(w)),ja=ws.filter(kan);return[...ej,...ja].slice(0,n);}
-const valText=()=>{const v=valda().map(p=>p+1);if(v.length===1)return`paket ${v[0]}`;
-  const run=v.every((x,i)=>!i||x===v[i-1]+1);return run?`paket ${v[0]}–${v[v.length-1]}`:`paket ${v.slice(0,-1).join(", ")} och ${v[v.length-1]}`;};
+const valText=()=>{const eg=data.pks.includes(EG),v=valda().filter(p=>p!==EG).map(p=>p+1);let t="";
+  if(v.length===1)t=`paket ${v[0]}`;else if(v.length){const run=v.every((x,i)=>!i||x===v[i-1]+1);t=run?`paket ${v[0]}–${v[v.length-1]}`:`paket ${v.slice(0,-1).join(", ")} och ${v[v.length-1]}`;}
+  return eg?(t?`${t} och egna ord`:"egna ord"):t;};
 function pkStars(p){const ws=PAKET[p],k=ws.filter(kan).length;return(ws.every(w=>data.ord[w])?1:0)+(k>=5?1:0)+(k===10?1:0);}
 function updStars(){PAKET.forEach((_,p)=>{const s=pkStars(p);if(s>(data.stars[p]||0))data.stars[p]=s;});save();}
 
@@ -289,23 +301,33 @@ $("micBtn").onclick=()=>{if(data.mic){data.mic=false;save();micLabel();return;}
 $("micNo").onclick=()=>$("micModal").hidden=true;
 $("micYes").onclick=()=>{$("micModal").hidden=true;data.mic=true;save();micLabel();toast("Lyssna på mig är på. Webbläsaren frågar om mikrofonen första gången.");};
 
+function egnaOrd(t){const out=[];for(const r of t.toLowerCase().split(/[\s,;.]+/)){const w=r.trim();if(/^[a-zåäöéü-]{1,20}$/.test(w)&&!out.includes(w))out.push(w);}return out.slice(0,40);}
+function openEgna(){$("egText").value=data.egna.join(" ");$("egInfo").textContent="";$("egModal").hidden=false;setTimeout(()=>$("egText").focus(),50);}
+$("egText").oninput=()=>{const n=egnaOrd($("egText").value).length;$("egInfo").textContent=n?`${n} ord`:"";};
+$("egNo").onclick=()=>{$("egModal").hidden=true;};
+$("egYes").onclick=()=>{data.egna=egnaOrd($("egText").value);
+  if(data.egna.length){if(!data.pks.includes(EG))data.pks.push(EG);}else{data.pks=data.pks.filter(p=>p!==EG);if(!data.pks.length)data.pks=[0];}
+  save();$("egModal").hidden=true;openHome();};
 /* ---------- Startsidan ---------- */
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function openHome(){stopAll();updStars();
-  $("packs").innerHTML=PAKET.map((ws,p)=>{const k=ws.filter(kan).length;return `<button class="pk" data-p="${p}" aria-pressed="${data.pks.includes(p)}" aria-label="Paket ${p+1}: ${ws.slice(0,3).join(", ")} …"><b>${p+1}</b><span class="bar"><i style="width:${k*10}%"></i></span>${starHtml(data.stars[p]||0)}</button>`;}).join("");
+  $("packs").innerHTML=PAKET.map((ws,p)=>{const k=ws.filter(kan).length;return `<button class="pk" data-p="${p}" aria-pressed="${data.pks.includes(p)}" aria-label="Paket ${p+1}: ${ws.slice(0,3).join(", ")} …"><b>${p+1}</b><span class="bar"><i style="width:${k*10}%"></i></span>${starHtml(data.stars[p]||0)}</button>`;}).join("")+
+    `<button class="pk eg" data-p="${EG}" aria-pressed="${data.pks.includes(EG)}" aria-label="Egna ord"><b>✏️</b><small>Egna</small></button>`;
   renderSel();
   $("visa").innerHTML=visaHtml();
   $("fart").innerHTML=[[3,"🐢 3 s"],[2,"2 s"],[1.5,"1,5 s"],[1,"🐇 1 s"]].map(([v,t])=>`<button data-f="${v}" aria-pressed="${data.fart==v}">${t}</button>`).join("");
   micLabel();show("home");}
 function renderSel(){const ws=valdaOrd(),k=ws.filter(kan).length;
   $("sel").innerHTML=`<b>${valText()[0].toUpperCase()+valText().slice(1)}</b> <span style="color:var(--muted);font-weight:700">· ${k} av ${ws.length} kan du</span>
-    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button class="selb" data-sel="alla">Välj alla påbörjade</button>${data.pks.length>1?'<button class="selb" data-sel="ett">Bara ett paket</button>':""}</div><div class="chips" style="margin-top:6px">${ws.map(w=>`<span class="chip${kan(w)?" kan":""}" style="--c:${col(w)}">${w}</span>`).join("")}</div>`;}
+    <div style="display:flex;gap:6px;margin-top:6px;flex-wrap:wrap"><button class="selb" data-sel="alla">Välj alla påbörjade</button>${data.pks.length>1?'<button class="selb" data-sel="ett">Bara ett paket</button>':""}${data.pks.includes(EG)?'<button class="selb" data-sel="egna">✏️ Ändra egna ord</button>':""}</div><div class="chips" style="margin-top:6px">${ws.map(w=>`<span class="chip${kan(w)?" kan":""}" style="--c:${col(w)}">${w}</span>`).join("")}</div>`;}
 // tryck = välj eller välj bort paketet (minst ett är alltid valt)
 $("packs").onclick=e=>{const b=e.target.closest("[data-p]");if(!b)return;const p=+b.dataset.p;
+  if(p===EG&&!data.egna.length){openEgna();return;}
   if(data.pks.includes(p)){if(data.pks.length>1)data.pks=data.pks.filter(x=>x!==p);}else data.pks.push(p);data.pk=valda()[0];save();
   $("packs").querySelectorAll("[data-p]").forEach(x=>x.setAttribute("aria-pressed",String(data.pks.includes(+x.dataset.p))));renderSel();};
 $("sel").onclick=e=>{const b=e.target.closest("[data-sel]");if(!b)return;
+  if(b.dataset.sel==="egna"){openEgna();return;}
   if(b.dataset.sel==="ett")data.pks=[valda()[valda().length-1]];
   else{const p=PAKET.map((ws,i)=>ws.some(w=>data.ord[w])?i:-1).filter(i=>i>=0);data.pks=p.length?p:[0];}
   save();openHome();};
@@ -419,7 +441,7 @@ function saveFlash(){if(!F||F.saved)return;F.saved=true;[...new Set(F.list)].for
 /* ---------- Hitta ordet ---------- */
 let H=null;
 function liknande(w){// tre andra ord som liknar: samma första bokstav eller samma längd
-  const pool=ALLA.filter(x=>x!==w),lik=pool.filter(x=>x[0]===w[0]||Math.abs(x.length-w.length)<=1);
+  const pool=[...new Set([...ALLA,...data.egna])].filter(x=>x!==w),lik=pool.filter(x=>x[0]===w[0]||Math.abs(x.length-w.length)<=1);
   return shuffle(lik.length>=3?lik:pool).slice(0,3);}
 function startFind(){stopAll();H={list:shuffle(urval(10)),i:0,err:0,first:true};show("find");drawFind();}
 function drawFind(){const w=H.list[H.i];sett(w);H.first=true;H.done=false;$("hInfo").textContent=`${H.i+1} / ${H.list.length}`;
