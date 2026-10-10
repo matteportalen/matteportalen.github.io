@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Mikrofonlabbet – Högfrekventa ord</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@700&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF8F0; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#CBE6D2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --web:#3D5AFE; --kb:#C2410C;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --las:"Andika","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+button,select,textarea,input{font:inherit;color:inherit}
+button{cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.wrap{max-width:980px;margin:0 auto;padding:12px 16px 48px}
+h1{font-size:1.9rem;line-height:1.1;margin:8px 0 4px}
+.lead{color:var(--muted);font-weight:700;margin:0 0 14px}
+.box{background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:14px 16px;margin-bottom:14px}
+.box h2{font-size:1.15rem;margin:0 0 8px}
+.small{font-size:.9rem;color:var(--muted);font-weight:600}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.eng{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:14px;flex:1 1 280px}
+.eng input{width:22px;height:22px;margin-top:3px;accent-color:var(--good)}
+.eng b{display:block}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;vertical-align:middle;margin-right:4px}
+.dot.web{background:var(--web)}.dot.kb{background:var(--kb)}
+.btn{background:var(--good);color:#fff;font-weight:800;border-radius:14px;padding:10px 18px;box-shadow:0 4px 0 var(--good-dark);min-height:48px}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--good-dark)}
+.btn.stop{background:var(--bad);box-shadow:0 4px 0 #A8282C}
+.btn.alt{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line);border:2px solid var(--line)}
+.btn:disabled{opacity:.5;cursor:default}
+select{border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:#fff;min-height:44px}
+textarea{width:100%;border:2px solid var(--line);border-radius:12px;padding:8px 10px;font-family:var(--las);font-size:1rem;min-height:70px}
+.bar{height:10px;background:#E4EEE7;border-radius:6px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;width:0;background:var(--kb);transition:width .2s}
+.meter{height:14px;background:#E4EEE7;border-radius:7px;overflow:hidden;position:relative;flex:1 1 160px;min-width:120px}
+.meter i{position:absolute;inset:0 auto 0 0;width:0;background:#9AD3AE}
+.meter.tal i{background:var(--good)}
+.lamp{font-weight:800;font-size:.9rem;padding:2px 10px;border-radius:999px;background:#E4E8F0;color:var(--muted)}
+.lamp.on{background:#D7F2E1;color:var(--good-dark)}
+.lamp.kb.on{background:#FDE7D7;color:var(--kb)}
+#flash{font-family:var(--las);font-size:4rem;text-align:center;padding:10px 0;min-height:1.6em}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:8px}
+.w{background:#F6FAF7;border:2px solid var(--line);border-radius:12px;padding:6px 8px 4px;text-align:center}
+.w.nu{border-color:var(--gold);background:#FFF8DD}
+.w .t{font-family:var(--las);font-size:1.5rem;line-height:1.2}
+.w .m{display:flex;justify-content:center;gap:6px;font-size:.75rem;font-weight:800;min-height:1.3em}
+.w .m span{opacity:.18}.w .m span.ja{opacity:1}
+.w .m .web{color:var(--web)}.w .m .kb{color:var(--kb)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}
+.st{border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+.st b.big{font-size:1.6rem}
+#log{font-family:ui-monospace,Menlo,monospace;font-size:.8rem;background:#1D2B53;color:#E8EEFF;border-radius:12px;padding:10px;max-height:260px;overflow:auto;white-space:pre-wrap;margin:0}
+#log .web{color:#9DB0FF}#log .kb{color:#FFB98A}#log .sys{color:#9AD3AE}
+@media (max-width:600px){#flash{font-size:3rem}h1{font-size:1.6rem}}
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>🎤 Mikrofonlabbet</h1>
+  <p class="lead">En testsida för vuxna: jämför hur bra datorn hör orden med två olika sätt att lyssna. Inget sparas och inget räknas in i övningen.</p>
+
+  <section class="box">
+    <h2>1. Vem ska lyssna?</h2>
+    <div class="row">
+      <label class="eng"><input type="checkbox" id="useWeb" checked><span><b><span class="dot web"></span>Webbläsarens taligenkänning</b><span class="small" id="webInfo">Den som övningen använder i dag. Ljudet skickas till Google (Chrome), Microsoft (Edge) eller Apple (Safari).</span></span></label>
+      <label class="eng"><input type="checkbox" id="useKb" checked><span><b><span class="dot kb"></span>KB-Whisper (i enheten)</b><span class="small">Kungliga bibliotekets svenska modell, körs direkt i webbläsaren. Inget ljud lämnar enheten. Laddas ner en gång (ca 52 MB).</span>
+        <span class="row" style="margin-top:6px"><select id="kbDev" aria-label="Hur KB-Whisper ska räkna"><option value="auto">Automatiskt</option><option value="webgpu">Grafikkortet (WebGPU)</option><option value="wasm">Processorn (WASM)</option></select><button class="btn alt" id="kbLoad" type="button">Ladda KB-Whisper</button></span>
+        <span class="small" id="kbInfo"></span><span class="bar" id="kbBar" hidden><i></i></span></span></label>
+    </div>
+  </section>
+
+  <section class="box">
+    <h2>2. Vilka ord?</h2>
+    <div class="row" style="margin-bottom:8px">
+      <select id="lista" aria-label="Ordlista"><option value="p1">Paket 1–3 (30 korta ord)</option><option value="p4">Paket 4–6</option><option value="egen">Egna ord</option></select>
+      <select id="lage" aria-label="Läge"><option value="lista">Hela listan, läs i din takt</option><option value="blixt">Ett ord i taget (som Blixtläsning)</option></select>
+      <select id="fart" aria-label="Fart i Blixtläsning"><option value="2000">2 s per ord</option><option value="1500" selected>1,5 s per ord</option><option value="1000">1 s per ord</option><option value="500">0,5 s per ord</option></select>
+      <button class="btn alt" id="blanda" type="button">🔀 Blanda</button>
+    </div>
+    <textarea id="ord" aria-label="Orden" spellcheck="false"></textarea>
+    <p class="small" style="margin:6px 0 0">Läs orden i ordning. Hoppar du över ett ord letar datorn några ord framåt.</p>
+  </section>
+
+  <section class="box">
+    <div class="row">
+      <button class="btn" id="start" type="button">▶ Starta</button>
+      <button class="btn stop" id="stopp" type="button" hidden>■ Stoppa</button>
+      <span class="lamp web" id="lWeb">🌐 av</span><span class="lamp kb" id="lKb">🧠 av</span>
+      <span class="meter" id="meter" title="Ljudnivå"><i></i></span>
+    </div>
+    <div id="flash" hidden></div>
+    <div class="grid" id="grid" style="margin-top:12px"></div>
+  </section>
+
+  <section class="box">
+    <h2>3. Resultat</h2>
+    <div class="stats">
+      <div class="st"><span class="dot web"></span><b>Webbläsaren</b><br><b class="big" id="sWeb">–</b><div class="small" id="sWeb2"></div></div>
+      <div class="st"><span class="dot kb"></span><b>KB-Whisper</b><br><b class="big" id="sKb">–</b><div class="small" id="sKb2"></div></div>
+    </div>
+    <div class="row" style="margin-top:10px"><button class="btn alt" id="kopiera" type="button">📋 Kopiera resultatet</button><span class="small" id="enhet"></span></div>
+  </section>
+
+  <section class="box">
+    <h2>Vad datorn hörde</h2>
+    <pre id="log"></pre>
+  </section>
+</main>
+<script src="../../../ljud.js"></script>
+<script src="../../../djur.js"></script>
+<script src="../../../huvud.js" data-titel="Mikrofonlabbet" data-ikon="🎤" data-hem="../../../" data-portal="ovriga"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const LISTOR={
+  p1:"i och det är jag att som på en för med till har av inte om den de så var han hon kan ett men man vi du sa nu",
+  p4:"när vad ska mig dig sig mot ut upp in där här hur vill får går kom bara också efter alla hade blev sin sitt sina vara bli gå se"
+};
+// samma uttalsformer som i övningen
+const UTTAL={och:["å","o","och"],det:["de","dä","det"],är:["e","ä","är"],jag:["ja","jag"],de:["dom","de"],dem:["dom","dem"],var:["va","var"],vad:["va","vad"],
+  mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
+const norm=s=>s.toLowerCase().replace(/[.,!?;:"'…–-]/g," ").split(/\s+/).filter(Boolean);
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
+// stämmer det hörda ordet med ordet i listan? längre ord får skilja en bokstav
+function passar(mal,h){if(h===mal||(UTTAL[mal]||[]).includes(h))return true;return mal.length>=5&&lev(mal,h)<=1;}
+
+/* ---------- Orden och rutnätet ---------- */
+let ORD=[];
+function lasOrd(){ORD=norm($("ord").value);ritaGrid();}
+$("lista").onchange=()=>{const v=$("lista").value;if(v!=="egen")$("ord").value=LISTOR[v];lasOrd();};
+$("ord").oninput=()=>{$("lista").value="egen";lasOrd();};
+$("blanda").onclick=()=>{const a=norm($("ord").value);for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]];}$("ord").value=a.join(" ");lasOrd();};
+function ritaGrid(){$("grid").innerHTML=ORD.map((w,i)=>`<div class="w" id="w${i}"><div class="t">${w}</div><div class="m"><span class="web" id="mw${i}">🌐</span><span class="kb" id="mk${i}">🧠</span></div></div>`).join("");}
+
+/* ---------- Logg och mätning ---------- */
+let T0=0;const sek=()=>((performance.now()-T0)/1000).toFixed(1).padStart(5);
+function logga(typ,txt){const l=$("log");const d=document.createElement("div");d.className=typ;d.textContent=`${sek()} s  ${typ==="web"?"🌐":typ==="kb"?"🧠":"•"} ${txt}`;l.appendChild(d);while(l.children.length>200)l.firstChild.remove();l.scrollTop=l.scrollHeight;}
+// per lyssnare: vilka ord som hörts, var i listan man är och hur lång tid det tog
+const R={web:null,kb:null};
+function nyR(){return{hord:new Set(),sista:-1,ford:[]};}
+let blixtI=-1,visadVid=[],senasteTal=0;
+function markera(typ,ordList,tSlut){const r=R[typ];if(!r)return;
+  for(const h of ordList){let hit=-1;
+    if(lage==="blixt"){// i Blixtläsning: ordet som visas nu eller de tre före (KB-Whisper svarar en till två sekunder senare)
+      for(let i=blixtI;i>=Math.max(0,blixtI-3);i--)if(!r.hord.has(i)&&passar(ORD[i],h)){hit=i;break;}}
+    else{// först några ord efter det senast hörda, sedan bakåt bland missade ord
+      const fran=r.sista+1;for(let i=fran;i<Math.min(ORD.length,fran+4);i++)if(!r.hord.has(i)&&passar(ORD[i],h)){hit=i;break;}
+      if(hit<0)for(let i=Math.max(0,fran-4);i<fran;i++)if(!r.hord.has(i)&&passar(ORD[i],h)){hit=i;break;}}
+    if(hit<0)continue;r.hord.add(hit);if(hit>r.sista)r.sista=hit;
+    const el=$((typ==="web"?"mw":"mk")+hit);if(el)el.classList.add("ja");
+    const ref=lage==="blixt"?(visadVid[hit]||0):tSlut||senasteTal;if(ref)r.ford.push(performance.now()-ref);}
+  visaStat();}
+function medel(a){return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0;}
+function visaStat(){
+  const fyll=(typ,id,extra)=>{const r=R[typ];if(!r){$(id).textContent="–";$(id+"2").textContent="Inte med i testet.";return;}
+    const n=lage==="blixt"?Math.max(0,Math.min(ORD.length,blixtI+1)):ORD.length;
+    $(id).textContent=`${r.hord.size} av ${n} ord`;$(id+"2").textContent=(r.ford.length?`Svarstid i snitt ${(medel(r.ford)/1000).toFixed(1)} s. `:"")+extra();};
+  fyll("web","sWeb",()=>`Stängde av ${web.slut} gånger, var döv ${(web.dov/1000).toFixed(1)} s totalt${web.slut?` (i snitt ${Math.round(web.dov/Math.max(1,web.slut))} ms per omstart)`:""}.`);
+  fyll("kb","sKb",()=>`${kb.korn} körningar, ${(medel(kb.tider)/1000).toFixed(1)} s per körning${kb.backend?`, ${kb.backend}`:""}.`);}
+
+/* ---------- Webbläsarens taligenkänning ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(!SR){$("useWeb").checked=false;$("useWeb").disabled=true;$("webInfo").textContent="Finns inte i den här webbläsaren.";}
+const web={rec:null,vill:false,slut:0,dov:0,tSlut:0};
+function webStart(){if(!web.vill)return;
+  try{const rec=new SR();web.rec=rec;rec.lang="sv-SE";rec.continuous=true;rec.interimResults=true;rec.maxAlternatives=5;
+    rec.onstart=()=>{if(web.tSlut){web.dov+=performance.now()-web.tSlut;web.tSlut=0;}lamp("lWeb",true,"🌐 lyssnar");visaStat();};
+    rec.onresult=e=>{const alla=[],ut=[];for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i];for(let j=0;j<res.length;j++)alla.push(...norm(res[j].transcript));
+        ut.push((res.isFinal?"":"(prel.) ")+res[0].transcript.trim());}
+      logga("web",ut.join(" | "));markera("web",alla);};
+    rec.onerror=e=>{logga("sys","webbläsaren: "+e.error);if(e.error==="not-allowed"||e.error==="service-not-allowed")web.vill=false;};
+    rec.onend=()=>{web.rec=null;if(!web.vill){lamp("lWeb",false,"🌐 av");return;}web.slut++;web.tSlut=performance.now();lamp("lWeb",false,"🌐 startar om …");webStart();};
+    rec.start();}catch(err){web.rec=null;logga("sys","webbläsaren: "+err.message);if(web.vill)setTimeout(webStart,100);}}
+function webStopp(){web.vill=false;if(web.rec)try{web.rec.stop();}catch(e){}}
+function lamp(id,on,txt){const l=$(id);l.classList.toggle("on",on);l.textContent=txt;}
+
+/* ---------- KB-Whisper ---------- */
+const kb={pipe:null,laddar:null,backend:"",ko:[],upptagen:false,korn:0,tider:[]};
+const HALLU=/tack för att|textning|undertext|prenumerera|svensktextning|musik|♪/i;
+async function kbLadda(){if(kb.pipe)return kb.pipe;if(kb.laddar)return kb.laddar;
+  kb.laddar=(async()=>{$("kbBar").hidden=false;$("kbInfo").textContent=" Laddar …";$("kbLoad").disabled=true;
+    const T=await import("https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/dist/transformers.min.js");
+    T.env.allowLocalModels=false;
+    let dev=$("kbDev").value,dtype={encoder_model:"q4f16",decoder_model_merged:"q4f16"};
+    if(dev!=="wasm"){let ad=null;try{ad=navigator.gpu&&await navigator.gpu.requestAdapter();}catch(e){}
+      if(ad){dev="webgpu";if(!ad.features.has("shader-f16"))dtype={encoder_model:"fp32",decoder_model_merged:"q4"};}
+      else{if(dev==="webgpu")logga("sys","WebGPU finns inte här, använder processorn.");dev="wasm";}}
+    // räkna i en egen tråd när det går, så att sidan inte hackar
+    if(dev==="wasm"){try{T.env.backends.onnx.wasm.proxy=true;}catch(e){}}
+    const filer={};const t0=performance.now();
+    const pipe=await T.pipeline("automatic-speech-recognition","KBLab/kb-whisper-tiny",{device:dev,dtype,progress_callback:x=>{
+      if(x.status==="progress"&&x.total){filer[x.file]=[x.loaded,x.total];let a=0,b=0;for(const k in filer){a+=filer[k][0];b+=filer[k][1];}
+        $("kbBar").firstElementChild.style.width=(a/b*100).toFixed(0)+"%";$("kbInfo").textContent=` Laddar ${(a/1e6).toFixed(0)} av ${(b/1e6).toFixed(0)} MB …`;}}});
+    // första körningen är alltid långsam: värm upp med en halv sekund tystnad
+    await pipe(new Float32Array(8000),{language:"swedish",task:"transcribe"});
+    kb.backend=dev==="webgpu"?"grafikkortet":"processorn";kb.pipe=pipe;
+    $("kbBar").hidden=true;$("kbLoad").textContent="✓ KB-Whisper laddad";$("kbInfo").textContent=` Klar på ${((performance.now()-t0)/1000).toFixed(0)} s, räknar med ${kb.backend}.`;
+    logga("sys",`KB-Whisper laddad (${kb.backend}, ${JSON.stringify(dtype)})`);return pipe;})()
+    .catch(e=>{kb.laddar=null;$("kbLoad").disabled=false;$("kbBar").hidden=true;$("kbInfo").textContent=" Det gick inte att ladda: "+e.message;logga("sys","KB-Whisper: "+e.message);throw e;});
+  return kb.laddar;}
+$("kbLoad").onclick=()=>kbLadda().catch(()=>{});
+// alla ljudbitar som väntar körs tillsammans: en körning tar ungefär lika lång tid oavsett hur många ord den har
+async function kbKor(){if(kb.upptagen||!kb.pipe||!kb.ko.length)return;kb.upptagen=true;
+  const bitar=kb.ko.splice(0);const paus=new Float32Array(3200);let n=0;bitar.forEach(b=>n+=b.ljud.length+paus.length);
+  const all=new Float32Array(n);let o=0;for(const b of bitar){all.set(b.ljud,o);o+=b.ljud.length+paus.length;}
+  const t=performance.now();lamp("lKb",true,"🧠 tänker …");
+  try{const r=await kb.pipe(all,{language:"swedish",task:"transcribe"});const ms=performance.now()-t;kb.korn++;kb.tider.push(ms);
+    const txt=(r.text||"").trim();const sl=bitar[bitar.length-1].tSlut;
+    if(!txt||HALLU.test(txt))logga("kb",`(inget ord) ${(all.length/16000).toFixed(1)} s ljud, ${Math.round(ms)} ms`);
+    else{logga("kb",`"${txt}"  ${(all.length/16000).toFixed(1)} s ljud, ${Math.round(ms)} ms`);markera("kb",norm(txt),sl);}}
+  catch(e){logga("sys","KB-Whisper: "+e.message);}
+  kb.upptagen=false;if(mic.igang)lamp("lKb",true,"🧠 lyssnar");else if(!kb.ko.length)lamp("lKb",false,"🧠 av");visaStat();kbKor();}
+
+/* ---------- Egen mikrofon som aldrig stängs av (för KB-Whisper) ---------- */
+const mic={ctx:null,strom:null,igang:false};
+const VAD={golv:.004,tal:false,ljud:[],fore:[],tyst:0,ramar:0};
+async function micStart(){mic.strom=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  let ctx;try{ctx=new AudioContext({sampleRate:16000});}catch(e){ctx=new AudioContext();}mic.ctx=ctx;
+  const kod=`class R extends AudioWorkletProcessor{process(i){const c=i[0]&&i[0][0];if(c)this.port.postMessage(c.slice(0));return true}}registerProcessor("rec",R);`;
+  await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([kod],{type:"application/javascript"})));
+  const src=ctx.createMediaStreamSource(mic.strom),node=new AudioWorkletNode(ctx,"rec");src.connect(node);
+  const steg=ctx.sampleRate/16000;let buf=[];const RAM=320;// 20 ms
+  node.port.onmessage=e=>{const d=e.data;// gör om till 16 kHz om webbläsaren inte gick med på det
+    if(steg===1)buf.push(...d);else for(let i=0;i<d.length/steg;i++)buf.push(d[Math.floor(i*steg)]);
+    while(buf.length>=RAM){ram(Float32Array.from(buf.splice(0,RAM)));}};
+  mic.igang=true;}
+// enkel röstvakt: ljudet delas i bitar vid pauser
+function ram(r){let s=0;for(const x of r)s+=x*x;const rms=Math.sqrt(s/r.length);
+  const m=$("meter");m.firstElementChild.style.width=Math.min(100,rms*600)+"%";
+  const pa=Math.max(VAD.golv*3.5,.012),av=Math.max(VAD.golv*2,.008);
+  if(!VAD.tal){VAD.golv=VAD.golv*.98+Math.min(rms,.05)*.02;VAD.fore.push(r);if(VAD.fore.length>10)VAD.fore.shift();
+    if(rms>pa){VAD.ramar++;if(VAD.ramar>=2){VAD.tal=true;VAD.ljud=[...VAD.fore];VAD.tyst=0;m.classList.add("tal");}}else VAD.ramar=0;}
+  else{VAD.ljud.push(r);if(rms<av)VAD.tyst++;else VAD.tyst=0;
+    if(VAD.tyst>=15||VAD.ljud.length>=300){// 0,3 s tystnad eller 6 s tal
+      VAD.tal=false;VAD.ramar=0;m.classList.remove("tal");const n=VAD.ljud.length;senasteTal=performance.now();
+      if(n>=8){const a=new Float32Array(n*320);VAD.ljud.forEach((x,i)=>a.set(x,i*320));if(R.kb){kb.ko.push({ljud:a,tSlut:senasteTal});kbKor();}}
+      VAD.ljud=[];VAD.fore=[];}}}
+function micStopp(){mic.igang=false;try{mic.strom&&mic.strom.getTracks().forEach(t=>t.stop());}catch(e){}try{mic.ctx&&mic.ctx.close();}catch(e){}mic.ctx=null;mic.strom=null;
+  $("meter").firstElementChild.style.width="0";}
+
+/* ---------- Start och stopp ---------- */
+let lage="lista",blixtT=null;
+$("start").onclick=async()=>{lasOrd();if(!ORD.length)return;lage=$("lage").value;
+  const medWeb=$("useWeb").checked&&!!SR,medKb=$("useKb").checked;if(!medWeb&&!medKb){alert("Välj minst en som ska lyssna.");return;}
+  $("start").disabled=true;
+  if(medKb){try{await kbLadda();}catch(e){$("start").disabled=false;return;}}
+  R.web=medWeb?nyR():null;R.kb=medKb?nyR():null;Object.assign(web,{slut:0,dov:0,tSlut:0});Object.assign(kb,{ko:[],korn:0,tider:[]});
+  $("log").innerHTML="";T0=performance.now();ritaGrid();
+  try{if(medKb){await micStart();lamp("lKb",true,"🧠 lyssnar");}}catch(e){logga("sys","Mikrofonen: "+e.message);$("start").disabled=false;return;}
+  if(medWeb){web.vill=true;webStart();}
+  $("start").hidden=true;$("start").disabled=false;$("stopp").hidden=false;
+  logga("sys",`start: ${medWeb?"webbläsaren ":""}${medKb?"KB-Whisper ":""}· ${lage==="blixt"?"ett ord i taget":"hela listan"} · ${ORD.length} ord`);
+  if(lage==="blixt"){$("flash").hidden=false;$("grid").hidden=true;blixtI=-1;visadVid=[];const fart=+$("fart").value;
+    const nasta=()=>{blixtI++;if(blixtI>=ORD.length){$("flash").textContent="✓";blixtT=setTimeout(stopp,2500);return;}
+      $("flash").textContent=ORD[blixtI];visadVid[blixtI]=performance.now();document.querySelectorAll(".w.nu").forEach(x=>x.classList.remove("nu"));$("w"+blixtI).classList.add("nu");visaStat();blixtT=setTimeout(nasta,fart);};
+    blixtT=setTimeout(nasta,1200);$("flash").textContent="Gör dig redo …";}
+  else{$("flash").hidden=true;$("grid").hidden=false;}
+  visaStat();};
+function stopp(){clearTimeout(blixtT);webStopp();micStopp();lamp("lKb",false,"🧠 av");$("start").hidden=false;$("stopp").hidden=true;$("grid").hidden=false;$("flash").hidden=true;
+  logga("sys","stopp");visaStat();}
+$("stopp").onclick=stopp;
+
+/* ---------- Kopiera resultatet ---------- */
+function enhet(){const u=navigator.userAgent;const b=/Edg\//.test(u)?"Edge":/Chrome\//.test(u)?"Chrome":/Safari\//.test(u)?"Safari":/Firefox\//.test(u)?"Firefox":"okänd";
+  const d=/iPad|Macintosh/.test(u)&&navigator.maxTouchPoints>1?"iPad":/Windows/.test(u)?"Windows":/CrOS/.test(u)?"Chromebook":/Mac/.test(u)?"Mac":/Android/.test(u)?"Android":/iPhone/.test(u)?"iPhone":"okänd";
+  return `${b} på ${d}${"gpu" in navigator?", WebGPU finns":""}`;}
+$("enhet").textContent=enhet();
+$("kopiera").onclick=()=>{const rad=(n,id)=>`${n}: ${$(id).textContent}. ${$(id+"2").textContent}`;
+  const missWeb=R.web?ORD.filter((w,i)=>!R.web.hord.has(i)).join(", "):"",missKb=R.kb?ORD.filter((w,i)=>!R.kb.hord.has(i)).join(", "):"";
+  const t=[`Mikrofonlabbet · ${enhet()} · ${lage==="blixt"?"ett ord i taget, "+$("fart").selectedOptions[0].text:"hela listan"}`,rad("Webbläsaren","sWeb"),missWeb?"  missade: "+missWeb:"",rad("KB-Whisper","sKb"),missKb?"  missade: "+missKb:"","",$("log").innerText].filter(x=>x!=="").join("\n");
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>{$("kopiera").textContent="✓ Kopierat";setTimeout(()=>$("kopiera").textContent="📋 Kopiera resultatet",2000);})
+    .catch(()=>{const ta=document.createElement("textarea");ta.value=t;document.body.appendChild(ta);ta.select();document.execCommand("copy");ta.remove();});};
+
+$("ord").value=LISTOR.p1;lasOrd();visaStat();
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&!$("stopp").hidden)stopp();});
+</script>
+</body>
+</html>
