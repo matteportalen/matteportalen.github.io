@@ -141,7 +141,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
     <button class="mode" data-m="minute"><span class="ic">⏱️</span><b>Ord på en minut</b><small>Hur många hinner du läsa? Med en vuxen</small></button>
   </div>
   <div class="opts"><span class="lab">Fart:</span><div class="seg" id="fart"></div><span class="lab">Lär dig orden:</span><div class="seg" id="visa"></div><button class="mic" id="micBtn" aria-pressed="false">🎤 Lyssna på mig: av</button></div>
-  <p class="note" style="font-size:.85rem">ℹ️ Orden är vanliga i barnböcker: tillsammans står de för ungefär <b>61 %</b> av alla ord i barnböckerna i Språkbankens textsamling LäSBarT (lättläst svenska och barnbokstext, CC BY 4.0). Ett barn som kan alla 200 känner alltså igen ungefär sex av tio ord i en vanlig barnbok direkt.</p>
+  <p class="note" style="font-size:.85rem">ℹ️ Orden är vanliga i barnböcker: tillsammans står de för ungefär <b>63 %</b> av alla ord i barnböckerna i Språkbankens textsamling LäSBarT (lättläst svenska och barnbokstext, CC BY 4.0). Ett barn som kan alla 200 känner alltså igen ungefär sex av tio ord i en vanlig barnbok direkt.</p>
 </div>
 </section>
 
@@ -239,11 +239,11 @@ const today=()=>{const d=new Date();return d.getFullYear()+"-"+(d.getMonth()+1)+
 const PAKET=[
  "i och det är jag att som på en för","med till har av inte om den de så var","han hon kan ett men man vi du sa nu",
  "när vad ska mig dig sig mot ut upp in","där här hur vill får går kom bara också efter","alla hade blev sin sitt sina vara bli gå se",
- "mamma pappa hem hus dag ner över under bort fram","stor liten lite mycket många ny gammal bra glad rolig","säger tar ser gör vet tror tycker kommer står sitter",
- "dem honom henne oss er någon något ingen inget varje","från utan bakom mellan genom vid hos bredvid framför runt","barn skola bok katt hund vän ögon hand huvud säng",
- "igen aldrig alltid ofta redan snart sedan först sist nog","ja nej tack hej kanske väl ju då eller fast","varför vem vilken vilket vilka vart hit dit borta hemma",
- "äter dricker leker springer hoppar tittar frågar svarar skriker sover","idag imorgon igår morgon kväll natt mat vatten bil väg","två tre första andra hela tillsammans varandra själv egen samma",
- "måste kunde skulle ville fick gick såg satt låg stod","tog gjorde sade visste trodde sprang tittade ropade började slutade"].map(s=>s.split(" "));
+ "mamma pappa hem hus dag ner över under bort fram","stor liten lite mycket många mer allt gammal bra glad","säger tar ser gör vet tror tycker kommer står sitter",
+ "dem honom henne oss er någon något ingen inget varje","från utan bakom mellan genom vid hos bredvid framför runt","barn min mitt din hans hennes ni ögon hand huvud",
+ "igen aldrig alltid ofta redan snart sedan först sist nog","ja nej tack hej kanske väl ju då eller fast","varför vem vilken vilka några ingenting hit dit borta hemma",
+ "ha blir få göra ta springer hoppar tittar frågar svarar","idag morgon kväll mat vatten bil väg tillbaka kvar ihop","två tre första andra hela tillsammans varandra själv egen samma",
+ "måste kunde skulle ville fick gick såg satt låg stod","tog gjorde säga finns visste trodde sprang tittade ropade började"].map(s=>s.split(" "));
 const ALLA=PAKET.flat();
 const PAL=["#E5484D","#3D8BFD","#1E9E5E","#7B61FF","#FF5FA2","#D9772A","#17AFC4","#9C4DCC"];
 const col=w=>PAL[[...w].reduce((a,c)=>a+c.charCodeAt(0),0)%PAL.length];
@@ -265,6 +265,8 @@ const valText=()=>{const eg=data.pks.includes(EG),v=valda().filter(p=>p!==EG).ma
   return eg?(t?`${t} och egna ord`:"egna ord"):t;};
 function pkStars(p){const ws=PAKET[p],k=ws.filter(kan).length;return(ws.every(w=>data.ord[w])?1:0)+(k>=5?1:0)+(k===10?1:0);}
 function updStars(){PAKET.forEach((_,p)=>{const s=pkStars(p);if(s>(data.stars[p]||0))data.stars[p]=s;});save();}
+// listan ändrades okt 2026 (20 ovanliga ord byttes mot vanligare enligt LäSBarT): räkna om stjärnorna en gång
+if(data.lista!==2){PAKET.forEach((_,p)=>{data.stars[p]=pkStars(p);});data.lista=2;save();}
 
 /* ---------- Uppläsning (bara med 🔊) ---------- */
 let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
@@ -316,7 +318,7 @@ function openHome(){stopAll();updStars();
     `<button class="pk eg" data-p="${EG}" aria-pressed="${data.pks.includes(EG)}" aria-label="Egna ord"><b>✏️</b><small>Egna</small></button>`;
   renderSel();
   $("visa").innerHTML=visaHtml();
-  $("fart").innerHTML=[[3,"🐢 3 s"],[2,"2 s"],[1.5,"1,5 s"],[1,"🐇 1 s"]].map(([v,t])=>`<button data-f="${v}" aria-pressed="${data.fart==v}">${t}</button>`).join("");
+  $("fart").innerHTML=[[3,"🐢 3 s"],[2,"2 s"],[1.5,"1,5 s"],[1,"🐇 1 s"],[.5,"⚡ 0,5 s"]].map(([v,t])=>`<button data-f="${v}" aria-pressed="${data.fart==v}">${t}</button>`).join("");
   micLabel();show("home");}
 function renderSel(){const ws=valdaOrd(),k=ws.filter(kan).length;
   $("sel").innerHTML=`<b>${valText()[0].toUpperCase()+valText().slice(1)}</b> <span style="color:var(--muted);font-weight:700">· ${k} av ${ws.length} kan du</span>
