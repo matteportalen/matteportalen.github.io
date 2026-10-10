@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Draw it! – Övriga ämnen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@700&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C9D6F2;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif; --las:"Andika","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.wrap{max-width:820px;margin:0 auto;padding:12px 16px 40px}
+h1{font-size:2.6rem;line-height:1;margin:12px 0 4px;font-weight:800}
+.lead{margin:0 0 14px;color:var(--muted);font-weight:700}
+.stars{color:var(--gold);letter-spacing:1px}.stars .off{color:#D5DDEC}
+/* teman */
+.themes{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.th{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;flex-direction:column;gap:2px}
+.th:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.th .ic{font-size:2rem;line-height:1}.th b{font-size:1.2rem}.th small{color:var(--muted);font-weight:700;line-height:1.2}
+.how{background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 var(--line);margin:0 0 16px;font-weight:700;line-height:1.35}
+/* spelet */
+.top{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.top .info{margin-left:auto;font-weight:800}
+.back{color:var(--muted);font-weight:700;padding:6px 0;font-size:1rem}
+.task{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:var(--card);border-radius:18px;padding:8px 12px;box-shadow:0 4px 0 var(--line)}
+.task .draw{font-weight:800;color:var(--muted)}
+.task .en{font-family:var(--las);font-weight:700;font-size:clamp(1.8rem,7vw,2.4rem);line-height:1.1;color:var(--accent)}
+.task .sv{font-weight:800;color:#9C4DCC}
+.sm{padding:6px 12px;border-radius:12px;background:#EEF3FF;font-weight:800;font-size:.95rem}
+.timer{height:10px;border-radius:5px;background:#DCE5F7;overflow:hidden;margin:8px 0}
+.timer i{display:block;height:100%;background:linear-gradient(90deg,#2BB673,#F2B707,#E5484D);width:100%}
+.pad{position:relative;background:#fff;border-radius:22px;box-shadow:0 5px 0 var(--line);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+#cv{display:block;width:100%;height:min(58vh,520px);cursor:crosshair}
+.guess{position:absolute;left:12px;right:12px;bottom:10px;text-align:center;font-weight:800;font-size:1.25rem;color:var(--ink);pointer-events:none;text-shadow:0 1px 0 #fff}
+.guess.ok{color:var(--good-dark);font-size:1.5rem}
+.row2{display:flex;gap:10px;margin-top:10px}.row2>*{flex:1}
+.alt{padding:12px;border-radius:16px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.05rem}
+.go{display:block;width:100%;margin-top:12px;padding:14px;border-radius:20px;font-weight:800;font-size:1.35rem;color:#fff;background:var(--good);box-shadow:0 5px 0 var(--good-dark)}
+.go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
+.card{position:fixed;inset:0;display:grid;place-items:center;background:rgba(29,43,83,.35);z-index:10}
+.card>div{background:#fff;border-radius:24px;padding:20px 26px;text-align:center;box-shadow:0 8px 30px rgba(0,0,0,.25);animation:pop .3s}
+@keyframes pop{from{transform:scale(.7);opacity:0}}
+.card .en{font-family:var(--las);font-weight:700;font-size:3rem;color:var(--accent);line-height:1.1}
+.card p{margin:4px 0;color:var(--muted);font-weight:800}
+/* resultat */
+.res{text-align:center}
+.res h2{font-size:2rem;margin:8px 0}
+.gal{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+@media(min-width:700px){.gal{grid-template-columns:repeat(6,1fr)}}
+.gal div{background:#fff;border-radius:16px;box-shadow:0 3px 0 var(--line);padding:6px;font-weight:800}
+.gal canvas{width:100%;height:auto;display:block;border-radius:10px;background:#fff}
+.gal .y{color:var(--good-dark)}.gal .n{color:#B8323A}
+.gal small{display:block;color:var(--muted);font-size:.75rem;line-height:1.2}
+.load{text-align:center;color:var(--muted);font-weight:800;padding:20px}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:30;max-width:90vw;text-align:center}
+#fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:25}
+@media (prefers-reduced-motion:reduce){*{transition:none !important;animation:none !important}}
+</style>
+</head>
+<body>
+<section id="home" class="screen">
+<div class="wrap">
+  <h1>Draw it! 🎨</h1>
+  <p class="lead">Rita ordet på engelska, så försöker datorn gissa vad det är!</p>
+  <div class="how">Du får ett engelskt ord, till exempel <span style="font-family:var(--las);color:var(--accent)">a cat</span>. Rita det så fort du kan, du har 20 sekunder. Datorn gissar högt på engelska medan du ritar. Vet du inte vad ordet betyder? Tryck på 🇸🇪.</div>
+  <div class="themes" id="themes"></div>
+  <p class="lead" style="margin-top:16px;font-size:.85rem">Datorns gissningar görs av en liten AI-modell (DoodleNet, tränad på Googles öppna Quick, Draw!-teckningar) som körs direkt i webbläsaren. Teckningarna skickas inte någonstans.</p>
+</div>
+</section>
+<section id="game" class="screen" hidden>
+<div class="wrap">
+  <div class="top"><button class="back" id="quit">← Avsluta</button><span class="info" id="gInfo"></span></div>
+  <div class="task"><span class="draw">Draw:</span><span class="en" id="gEn"></span><button class="sm" id="gSay" aria-label="Hör ordet">🔊</button><button class="sm" id="gSv">🇸🇪 Visa på svenska</button><span class="sv" id="gSvT" hidden></span></div>
+  <div class="timer"><i id="gT"></i></div>
+  <div class="pad"><canvas id="cv"></canvas><div class="guess" id="gGuess"></div></div>
+  <div class="row2"><button class="alt" id="gClear">🧽 Sudda allt</button><button class="alt" id="gSkip">⏭ Hoppa över</button></div>
+  <div class="load" id="gLoad" hidden></div>
+</div>
+</section>
+<section id="result" class="screen" hidden>
+<div class="wrap res">
+  <h2 id="rTitle"></h2><div id="rStars" class="stars" style="font-size:2.4rem"></div><p class="lead" id="rSub"></p>
+  <div class="gal" id="rGal"></div>
+  <button class="go" id="rAgain">Rita igen ✏️</button>
+  <button class="alt" id="rHome" style="width:100%;margin-top:10px">Välj ett annat tema</button>
+</div>
+</section>
+<div class="card" id="intro" hidden><div><p>Draw:</p><div class="en" id="iEn"></div><p id="iNr"></p></div></div>
+<div class="toast" id="toast" hidden></div>
+<canvas id="fx" hidden></canvas>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Draw it!" data-ikon="🎨" data-hem="../../" data-portal="ovriga"></script>
+<script>
+/* Draw it! (engelska): eleven får ett engelskt ord och ritar det på 20 sekunder; en AI-modell gissar på engelska.
+   Modellen: DoodleNet (ml5.js, MIT) tränad på Googles Quick, Draw!-data (CC BY 4.0), 345 saker, i modell/ (2,2 MB),
+   körs med TensorFlow.js i webbläsaren (laddas först här, kräver internet första gången). Teckningen lämnar inte datorn.
+   Förberedelse: teckningen beskärs, skalas till 28 × 28 med vita streck på svart (som Quick, Draw!-datan).
+   Rätt = ordet finns bland modellens tre bästa gissningar (barnteckningar känns annars orättvisa). */
+const $=id=>document.getElementById(id);
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+const KEY="mattespel-rita-v1";
+const data=(()=>{try{return Object.assign({stars:{},ritat:0},JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){return{stars:{},ritat:0}}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}};
+const reduced=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---------- Orden: [engelska, svenska, modellens kategorier] ---------- */
+const TEMAN=[
+ {id:"djur",ic:"🐾",name:"Animals",sv:"Djur",ord:[["a cat","en katt",["cat"]],["a dog","en hund",["dog"]],["a fish","en fisk",["fish"]],["a bird","en fågel",["bird"]],["a horse","en häst",["horse"]],["a cow","en ko",["cow"]],["a pig","en gris",["pig"]],["a rabbit","en kanin",["rabbit"]],["a duck","en anka",["duck"]],["a frog","en groda",["frog"]],["a snake","en orm",["snake"]],["a spider","en spindel",["spider"]],["a butterfly","en fjäril",["butterfly"]],["an elephant","en elefant",["elephant"]],["a giraffe","en giraff",["giraffe"]],["a snail","en snigel",["snail"]],["an octopus","en bläckfisk",["octopus"]],["a mouse","en mus",["mouse"]]]},
+ {id:"mat",ic:"🍎",name:"Food",sv:"Mat",ord:[["an apple","ett äpple",["apple"]],["a banana","en banan",["banana"]],["a strawberry","en jordgubbe",["strawberry"]],["a pear","ett päron",["pear"]],["grapes","vindruvor",["grapes"]],["a carrot","en morot",["carrot"]],["a pizza","en pizza",["pizza"]],["a cake","en tårta",["cake","birthday_cake"]],["a cookie","en kaka",["cookie"]],["an ice cream","en glass",["ice_cream","popsicle"]],["bread","bröd",["bread"]],["a hamburger","en hamburgare",["hamburger"]],["a donut","en munk",["donut"]],["a sandwich","en smörgås",["sandwich"]],["a watermelon","en vattenmelon",["watermelon"]],["a lollipop","en klubba",["lollipop"]],["a mushroom","en svamp",["mushroom"]]]},
+ {id:"hem",ic:"🏠",name:"At home",sv:"Hemma",ord:[["a house","ett hus",["house"]],["a door","en dörr",["door"]],["a bed","en säng",["bed"]],["a chair","en stol",["chair"]],["a table","ett bord",["table"]],["a cup","en kopp",["cup","coffee_cup","mug"]],["a spoon","en sked",["spoon"]],["a fork","en gaffel",["fork"]],["a key","en nyckel",["key"]],["a clock","en klocka",["clock","alarm_clock"]],["a book","en bok",["book"]],["a pencil","en penna",["pencil","crayon"]],["scissors","en sax",["scissors"]],["a TV","en tv",["television"]],["an umbrella","ett paraply",["umbrella"]],["a candle","ett ljus",["candle"]],["a teddy bear","en nalle",["teddy-bear"]],["a toothbrush","en tandborste",["toothbrush"]]]},
+ {id:"natur",ic:"🌳",name:"Nature",sv:"Naturen",ord:[["the sun","solen",["sun"]],["the moon","månen",["moon"]],["a star","en stjärna",["star"]],["a cloud","ett moln",["cloud"]],["rain","regn",["rain"]],["a rainbow","en regnbåge",["rainbow"]],["a tree","ett träd",["tree"]],["a flower","en blomma",["flower"]],["a leaf","ett löv",["leaf"]],["a mountain","ett berg",["mountain"]],["a snowflake","en snöflinga",["snowflake"]],["a snowman","en snögubbe",["snowman"]],["lightning","en blixt",["lightning"]],["grass","gräs",["grass"]],["a cactus","en kaktus",["cactus"]],["a palm tree","en palm",["palm_tree"]]]},
+ {id:"kropp",ic:"👕",name:"Body and clothes",sv:"Kroppen och kläder",ord:[["an eye","ett öga",["eye"]],["an ear","ett öra",["ear"]],["a nose","en näsa",["nose"]],["a mouth","en mun",["mouth"]],["a hand","en hand",["hand"]],["a foot","en fot",["foot"]],["a face","ett ansikte",["face","smiley_face"]],["a tooth","en tand",["tooth"]],["a hat","en hatt",["hat"]],["a shoe","en sko",["shoe"]],["a sock","en strumpa",["sock"]],["a T-shirt","en t-shirt",["t-shirt"]],["pants","byxor",["pants"]],["glasses","glasögon",["eyeglasses"]],["a crown","en krona",["crown"]]]},
+ {id:"fordon",ic:"🚲",name:"Vehicles and toys",sv:"Fordon och lek",ord:[["a car","en bil",["car","police_car"]],["a bus","en buss",["bus","school_bus"]],["a bicycle","en cykel",["bicycle"]],["a train","ett tåg",["train"]],["an airplane","ett flygplan",["airplane"]],["a boat","en båt",["sailboat","speedboat","canoe","cruise_ship"]],["a truck","en lastbil",["truck","pickup_truck","firetruck"]],["a helicopter","en helikopter",["helicopter"]],["a tractor","en traktor",["tractor"]],["a ball","en boll",["soccer_ball","basketball","baseball"]],["a guitar","en gitarr",["guitar"]],["drums","trummor",["drums"]],["a balloon","en ballong",["hot_air_balloon"]],["a ladder","en stege",["ladder"]],["a skateboard","en skateboard",["skateboard"]]]}];
+const RUNDA=6,TID=20;
+
+/* ---------- Modellen ---------- */
+let MODEL=null,NAMES=null,laddar=null;
+function loadScript(src){return new Promise((ok,fel)=>{const s=document.createElement("script");s.src=src;s.onload=ok;s.onerror=fel;document.head.appendChild(s);});}
+function ladda(){if(!laddar)laddar=(async()=>{if(!window.tf)await loadScript("https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.22.0/dist/tf.min.js");
+  MODEL=await tf.loadLayersModel("modell/model.json");NAMES=(await (await fetch("modell/class_names.txt")).text()).split(/\r?\n/).filter(Boolean);
+  tf.tidy(()=>MODEL.predict(tf.zeros([1,28,28,1])));})();return laddar;}
+// teckningen beskärs, centreras och skalas ned till 28 × 28 med vita streck på svart
+function bild28(strokes){const pts=strokes.flat();if(pts.length<2)return null;
+  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),x0=Math.min(...xs),y0=Math.min(...ys),w=Math.max(...xs)-x0||1,h=Math.max(...ys)-y0||1,S=112,sc=(S-24)/Math.max(w,h);
+  const c=document.createElement("canvas");c.width=c.height=S;const g=c.getContext("2d");g.fillStyle="#000";g.fillRect(0,0,S,S);
+  g.strokeStyle="#fff";g.lineWidth=7;g.lineCap="round";g.lineJoin="round";const ox=(S-w*sc)/2,oy=(S-h*sc)/2;
+  strokes.forEach(s=>{g.beginPath();s.forEach(([x,y],i)=>{const X=ox+(x-x0)*sc,Y=oy+(y-y0)*sc;i?g.lineTo(X,Y):g.moveTo(X,Y);});if(s.length===1)g.lineTo(ox+(s[0][0]-x0)*sc+.1,oy+(s[0][1]-y0)*sc);g.stroke();});
+  const d=document.createElement("canvas");d.width=d.height=28;d.getContext("2d").drawImage(c,0,0,28,28);return d;}
+function gissa(strokes){if(!MODEL)return[];const b=bild28(strokes);if(!b)return[];
+  return tf.tidy(()=>{const p=MODEL.predict(tf.browser.fromPixels(b,1).toFloat().div(255).expandDims(0)).dataSync();
+    return[...p].map((v,i)=>({n:NAMES[i],p:v})).sort((a,b)=>b.p-a.p).slice(0,3);});}
+// kategorinamn som engelska ord med a/an
+const enNamn=n=>{const w=n.replace(/_/g," ").replace("teddy-bear","teddy bear").replace("t-shirt","T-shirt");if(/^(The |grass|rain|bread|pants|grapes|drums|scissors|peas|eyeglasses|lightning|snow)/.test(w))return w.replace("eyeglasses","glasses");return(/^[aeiou]/i.test(w)?"an ":"a ")+w;};
+
+/* ---------- Engelsk röst ---------- */
+let enVoice=null;function loadVoices(){try{const v=speechSynthesis.getVoices();enVoice=v.find(x=>/^en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;}catch(e){}}
+if("speechSynthesis" in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices;}
+const ljudPa=()=>!window.Ljud||Ljud.on;
+function say(t,force){if(!("speechSynthesis" in window)||(!ljudPa()&&!force))return;loadVoices();speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="en-GB";if(enVoice)u.voice=enVoice;u.rate=.95;speechSynthesis.speak(u);}
+let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>t.hidden=true,2800);}
+
+/* ---------- Skärmar ---------- */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
+function openHome(){stop();
+  $("themes").innerHTML=[...TEMAN,{id:"mix",ic:"🎲",name:"Mixed",sv:"Blandat",ord:[]}].map(t=>`<button class="th" data-t="${t.id}"><span class="ic">${t.ic}</span><b>${t.name}</b><small>${t.sv}</small>${starHtml(data.stars[t.id]||0)}</button>`).join("");
+  show("home");ladda().catch(()=>{});}
+$("themes").onclick=e=>{const b=e.target.closest("[data-t]");if(b)start(b.dataset.t);};
+
+/* ---------- Spelet ---------- */
+let G=null;
+function start(tema){stop();const pool=tema==="mix"?TEMAN.flatMap(t=>t.ord):TEMAN.find(t=>t.id===tema).ord;
+  G={tema,ord:shuffle(pool.slice()).slice(0,RUNDA),i:0,res:[]};show("game");
+  if(!MODEL){$("gLoad").hidden=false;$("gLoad").textContent="Datorn gör sig redo att gissa …";
+    ladda().then(()=>{$("gLoad").hidden=true;nasta();}).catch(()=>{$("gLoad").textContent="Det gick inte att ladda datorns gissare. Den behöver internet första gången. Försök igen senare.";});}
+  else nasta();}
+const cv=$("cv"),cx=cv.getContext("2d");
+function storlek(){const r=cv.getBoundingClientRect(),dpr=Math.min(2,devicePixelRatio||1);cv.width=r.width*dpr;cv.height=r.height*dpr;cx.setTransform(dpr,0,0,dpr,0,0);rita();}
+function rita(){const r=cv.getBoundingClientRect();cx.clearRect(0,0,r.width,r.height);cx.strokeStyle="#1D2B53";cx.lineWidth=6;cx.lineCap="round";cx.lineJoin="round";
+  if(!G)return;G.strokes.forEach(s=>{cx.beginPath();s.forEach(([x,y],i)=>i?cx.lineTo(x,y):cx.moveTo(x,y));if(s.length===1)cx.lineTo(s[0][0]+.1,s[0][1]);cx.stroke();});}
+function nasta(){if(G.i>=G.ord.length)return slut();
+  const [en,sv,k]=G.ord[G.i];Object.assign(G,{en,sv,k,strokes:[],klar:false,t0:0,last:"",sagt:0,top:""});
+  $("gEn").textContent=en;$("gSvT").textContent=`(${sv})`;$("gSvT").hidden=true;$("gSv").hidden=false;$("gInfo").textContent=`${G.i+1} / ${G.ord.length}`;
+  $("gGuess").textContent="";$("gGuess").className="guess";$("gT").style.width="100%";storlek();
+  // kortet "Draw: a cat" en stund, sedan börjar tiden
+  $("iEn").textContent=en;$("iNr").textContent=`Ord ${G.i+1} av ${G.ord.length}`;$("intro").hidden=false;say(`Draw ${en}!`);
+  G.tm=setTimeout(()=>{$("intro").hidden=true;G.t0=performance.now();tick();},1600);}
+function tick(){if(!G||G.klar)return;const kvar=TID-(performance.now()-G.t0)/1000;$("gT").style.width=Math.max(0,kvar/TID*100)+"%";
+  if(kvar<=0)return klart(false);G.raf=requestAnimationFrame(tick);}
+// datorn gissar medan man ritar (högst ungefär tre gånger i sekunden)
+let gT=0;function gissaNu(){if(!G||G.klar||!MODEL||!G.strokes.length)return;const now=performance.now();if(now-gT<300)return;gT=now;
+  const g=gissa(G.strokes);if(!g.length)return;G.top=g[0].n;
+  const traff=g.find(x=>G.k.includes(x.n)&&x.p>=.06);if(traff)return klart(true);
+  const best=g[0];if(best.p<.12)return;const txt=enNamn(best.n);
+  $("gGuess").textContent=pick(["I see","Is it","Hmm, maybe","Could it be"])+` ${txt}?`;
+  if(txt!==G.last&&now-G.sagt>1800){G.last=txt;G.sagt=now;say(`${txt}?`);}}
+function klart(ok){if(G.klar)return;G.klar=true;cancelAnimationFrame(G.raf);
+  G.res.push({en:G.en,sv:G.sv,ok,strokes:G.strokes.map(s=>s.slice()),top:G.top||""});data.ritat=(data.ritat||0)+1;save();
+  const gg=$("gGuess");
+  if(ok){gg.className="guess ok";gg.textContent=`Oh, I know! It's ${G.en}! 🎉`;say(`Oh, I know! It's ${G.en}!`);window.Ljud&&Ljud.ok&&Ljud.ok();miniKonfetti();}
+  else{gg.className="guess";gg.textContent=G.top?`Sorry, I couldn't guess it. I thought it was ${enNamn(G.top)}!`:"Sorry, time is up!";say(G.top?`Sorry, I couldn't guess it. I thought it was ${enNamn(G.top)}!`:"Sorry, time is up!");}
+  G.tm=setTimeout(()=>{if(!G)return;G.i++;nasta();},2400);}
+function slut(){const n=G.res.filter(r=>r.ok).length,st=n>=5?3:n>=3?2:1,old=data.stars[G.tema]||0;data.stars[G.tema]=Math.max(old,st);save();
+  $("rTitle").textContent=n===G.res.length?"Wow! I guessed them all! 🎉":`I guessed ${n} of ${G.res.length}!`;
+  $("rStars").innerHTML=starHtml(st);$("rSub").textContent=n===G.res.length?"Datorn gissade alla dina teckningar.":`Datorn gissade ${n} av ${G.res.length} teckningar.`;
+  $("rGal").innerHTML=G.res.map((r,i)=>`<div><canvas data-i="${i}" width="140" height="140"></canvas><span class="${r.ok?"y":"n"}">${r.ok?"✓":"✗"} ${r.en}</span><small>${r.sv}${!r.ok&&r.top?` · datorn trodde: ${enNamn(r.top)}`:""}</small></div>`).join("");
+  G.res.forEach((r,i)=>tumme($("rGal").querySelector(`[data-i="${i}"]`),r.strokes));
+  show("result");if(n>=5){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();konfetti();}}
+function tumme(c,strokes){const g=c.getContext("2d");g.fillStyle="#fff";g.fillRect(0,0,140,140);const pts=strokes.flat();if(!pts.length)return;
+  const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]),x0=Math.min(...xs),y0=Math.min(...ys),w=Math.max(...xs)-x0||1,h=Math.max(...ys)-y0||1,sc=110/Math.max(w,h),ox=(140-w*sc)/2,oy=(140-h*sc)/2;
+  g.strokeStyle="#1D2B53";g.lineWidth=3;g.lineCap="round";g.lineJoin="round";strokes.forEach(s=>{g.beginPath();s.forEach(([x,y],i)=>{const X=ox+(x-x0)*sc,Y=oy+(y-y0)*sc;i?g.lineTo(X,Y):g.moveTo(X,Y);});g.stroke();});}
+function stop(){if(G){clearTimeout(G.tm);cancelAnimationFrame(G.raf);}G=null;$("intro").hidden=true;if("speechSynthesis" in window)speechSynthesis.cancel();}
+
+/* ---------- Rita med finger eller mus ---------- */
+let ner=null;
+const pos=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];};
+cv.addEventListener("pointerdown",e=>{if(!G||G.klar||!G.t0)return;e.preventDefault();ner=e.pointerId;try{cv.setPointerCapture(e.pointerId);}catch(_){}G.strokes.push([pos(e)]);rita();});
+cv.addEventListener("pointermove",e=>{if(ner!==e.pointerId||!G||G.klar)return;const s=G.strokes[G.strokes.length-1],p=pos(e),q=s[s.length-1];if(Math.hypot(p[0]-q[0],p[1]-q[1])<2)return;s.push(p);
+  cx.beginPath();cx.moveTo(q[0],q[1]);cx.lineTo(p[0],p[1]);cx.stroke();gissaNu();});
+const upp=e=>{if(ner!==e.pointerId)return;ner=null;gT=0;gissaNu();};
+cv.addEventListener("pointerup",upp);cv.addEventListener("pointercancel",upp);
+$("gClear").onclick=()=>{if(!G||G.klar)return;G.strokes=[];G.last="";$("gGuess").textContent="";rita();};
+$("gSkip").onclick=()=>{if(!G||G.klar||!G.t0)return;klart(false);};
+$("gSay").onclick=()=>{if(G)say(G.en,true);};
+$("gSv").onclick=()=>{$("gSvT").hidden=false;$("gSv").hidden=true;};
+$("quit").onclick=openHome;$("rHome").onclick=openHome;$("rAgain").onclick=()=>start(G?G.tema:"djur");
+addEventListener("resize",()=>{if(G&&!$("game").hidden)storlek();});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&"speechSynthesis" in window)speechSynthesis.cancel();});
+
+function miniKonfetti(){if(reduced())return;konfetti(60);}
+function konfetti(n){
+  if(reduced())return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"];
+  const c=$("fx"),x=c.getContext("2d"),dpr=window.devicePixelRatio||1,W=innerWidth,H=innerHeight;c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:n||150},()=>({x:W/2+(Math.random()-.5)*120,y:H*.35,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:pick(cols),a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2200)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);
+}
+openHome();
+</script>
+</body>
+</html>

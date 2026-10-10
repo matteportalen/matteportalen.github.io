@@ -1,0 +1,3 @@
+DoodleNet (model.json, group1-shard1of1.bin, class_names.txt)
+Källa: ml5.js, ml5-data-and-models (https://github.com/ml5js/ml5-data-and-models), MIT-licens.
+Modellen är tränad på Googles Quick, Draw!-data (https://github.com/googlecreativelab/quickdraw-dataset), CC BY 4.0.
