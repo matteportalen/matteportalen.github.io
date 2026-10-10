@@ -103,6 +103,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 /* ord på en minut */
 .sheet{display:grid;grid-template-columns:repeat(var(--cols,5),1fr);gap:4px 6px;background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line)}
 .sheet button{font-family:var(--las);font-weight:700;font-size:clamp(1.25rem,4.6vw,1.75rem);padding:4px 2px;border-radius:10px;text-align:center;color:var(--ink)}
+.sheet button.mell{font-size:clamp(1.05rem,4vw,1.6rem)}.sheet button.lang{font-size:clamp(.85rem,3.2vw,1.35rem)}
 .sheet button.err{background:#FFE3E5;color:#B8323A;text-decoration:line-through}
 .sheet button.end{box-shadow:0 0 0 3px var(--accent);background:#E3E9FF}
 .sheet button.after{opacity:.35}
@@ -185,6 +186,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
     <div class="sel"><p style="margin:0 0 6px"><b>Så här gör ni:</b></p>
       <p style="margin:0">1. Eleven läser orden högt, rad för rad från vänster, så snabbt som möjligt.<br>2. En vuxen eller kompis trycker på ord som blir fel, så blir de röda.<br>3. När minuten är slut trycker den vuxna på ordet där eleven slutade.</p>
       <p style="margin:6px 0 0;color:var(--muted);font-weight:700" id="mMicInfo"></p></div>
+    <p class="lab" style="font-weight:800;margin:12px 0 6px">Vilken lista?</p><div class="seg" id="mLista" style="width:max-content;max-width:100%;flex-wrap:wrap"></div>
     <p class="lead" style="margin-top:10px" id="mFrom"></p>
     <button class="go" id="mStart">Starta minuten ⏱️</button>
   </div>
@@ -462,17 +464,25 @@ function nextFind(){if(!H)return;H.i++;if(H.i<H.list.length)drawFind();else{updS
 
 /* ---------- Ord på en minut ---------- */
 const MIN={raf:0,list:[],errs:new Set(),end:-1,phase:"intro"};
+/* Stigande lista (lärarens önskan, i samma anda som H4/AVK1 men en egen lista): 150 vanliga ord ur barnböckerna i
+   LäSBarT i sex steg, från korta ljudenliga ord (om, av, nu) till långa ord (fortfarande, vardagsrummet). Samma ord
+   varje gång så att resultaten kan jämföras över tid; två versioner (A och B) som är byggda likadant. Inte normerad,
+   så inga nivåer visas. */
+const STIG={"A": ["om", "av", "nu", "ut", "då", "in", "ju", "ha", "att", "han", "hon", "med", "men", "har", "den", "upp", "hur", "får", "kom", "vet", "bra", "oss", "gör", "två", "sen", "hem", "nog", "nej", "låg", "ens", "vem", "till", "från", "fram", "hans", "allt", "bort", "just", "mitt", "helt", "fall", "häst", "tyst", "sitt", "inte", "bara", "över", "igen", "ändå", "sina", "glad", "enda", "mamma", "pappa", "måste", "något", "andra", "någon", "några", "under", "varit", "innan", "komma", "redan", "snart", "stora", "medan", "känns", "liten", "visst", "ropar", "satte", "inget", "ensam", "tänka", "deras", "samma", "borta", "annat", "kunna", "skulle", "kanske", "mycket", "aldrig", "tänkte", "tycker", "frågar", "varför", "dörren", "känner", "visste", "börjar", "handen", "alltid", "sätter", "första", "framför", "bredvid", "förstår", "vattnet", "ropade", "vidare", "frågade", "utanför", "berätta", "behöver", "verkade", "pratade", "armarna", "väntade", "ansikte", "minuter", "tillbaka", "alldeles", "försöker", "äntligen", "försökte", "ansiktet", "eftersom", "istället", "tydligen", "berättar", "ingenting", "skrattade", "föräldrar", "samtidigt", "ögonblick", "fortsätta", "upptäckte", "blommorna", "tävlingen", "bestämmer", "allvarlig", "förklarar", "försvinna", "förbjudet", "egentligen", "försiktigt", "trädgården", "försvinner", "skolgården", "allvarligt", "annorlunda", "födelsedag", "försvunnit", "förklarade", "fortfarande", "klassrummet", "sommarlovet", "fotbollsplanen"], "B": ["på", "en", "så", "du", "vi", "som", "för", "när", "ett", "ska", "kan", "där", "här", "mot", "ser", "man", "såg", "går", "ner", "väl", "sin", "vid", "min", "bli", "tar", "tog", "mer", "tag", "dag", "vill", "blir", "står", "runt", "blev", "stod", "fast", "tror", "kvar", "satt", "rätt", "slut", "fått", "hand", "tänk", "hade", "vara", "alla", "lite", "göra", "hela", "utan", "säga", "ihop", "iväg", "lika", "stor", "henne", "efter", "kunde", "eller", "ville", "finns", "först", "genom", "bakom", "stund", "tiden", "prata", "kände", "huset", "hemma", "gamla", "ingen", "länge", "vägen", "sidan", "låter", "kommer", "hennes", "nästan", "gjorde", "precis", "sitter", "tänker", "undrar", "skolan", "längre", "tittar", "håller", "ligger", "svarar", "morgon", "säkert", "brukar", "tyckte", "heller", "trodde", "riktigt", "omkring", "förstås", "ögonen", "senare", "öronen", "huvudet", "började", "undrade", "tittade", "nickade", "viskade", "svarade", "brukade", "axlarna", "skakade", "närmare", "hittade", "hoppade", "kastade", "varandra", "händerna", "kompisar", "stannade", "dessutom", "verkligen", "någonting", "fortsatte", "förresten", "berättade", "telefonen", "spännande", "människor", "klättrade", "fingrarna", "hemlighet", "funderade", "bokstäver", "stövlarna", "fortsätter", "ordentligt", "åtminstone", "någonstans", "ryggsäcken", "korridoren", "motvilligt", "tillsammans", "visserligen", "veterinären", "eftermiddag", "naturligtvis", "tillräckligt", "vardagsrummet"]};
+if(!["ovade","A","B"].includes(data.mlista))data.mlista="ovade";
 function minPool(){return valdaOrd();}
-function startMinute(){stopAll();const pool=minPool();
+function startMinute(){stopAll();const pool=minPool(),stig=data.mlista!=="ovade";
   // 150 ord: så många att även de snabbaste inte hinner klart (som på Legilexi); aldrig samma ord två gånger i rad
-  const list=[];while(list.length<150){const w=pick(pool);if(w!==list[list.length-1]&&w!==list[list.length-2])list.push(w);}
-  Object.assign(MIN,{list,errs:new Set(),end:-1,phase:"intro"});
+  let list=[];if(stig)list=STIG[data.mlista].slice();else while(list.length<150){const w=pick(pool);if(w!==list[list.length-1]&&w!==list[list.length-2])list.push(w);}
+  Object.assign(MIN,{list,errs:new Set(),end:-1,phase:"intro",stig});
+  $("mLista").innerHTML=[["ovade","Övade ord"],["A","📈 Stigande A"],["B","📈 Stigande B"]].map(([v,t])=>`<button data-l="${v}" aria-pressed="${data.mlista===v}">${t}</button>`).join("");
   $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna.":"";
-  $("mFrom").textContent=`Orden kommer från ${valText()} (${pool.length} olika ord), i blandad ordning.`;
+  $("mFrom").textContent=stig?`Stigande lista ${data.mlista}: samma 150 ord varje gång, från korta till långa ord. Bra för att följa läsflytet över tid. Det är en egen lista, inte H4/AVK1, så resultaten är inte normerade.`:`Orden kommer från ${valText()} (${pool.length} olika ord), i blandad ordning.`;
   $("mInfo").textContent="";$("mIntro").hidden=false;$("mClock").hidden=true;$("mRes").hidden=true;$("mSheet").hidden=false;
   const cols=innerWidth<420?3:innerWidth<700?4:5;$("mSheet").style.setProperty("--cols",cols);
-  $("mSheet").className="sheet wait";$("mSheet").innerHTML=list.map((w,i)=>`<button data-i="${i}">${w}</button>`).join("");
+  $("mSheet").className="sheet wait";$("mSheet").innerHTML=list.map((w,i)=>`<button data-i="${i}"${w.length>9?' class="lang"':w.length>6?' class="mell"':""}>${w}</button>`).join("");
   show("minute");}
+$("mLista").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.mlista=b.dataset.l;save();startMinute();};
 $("mStart").onclick=()=>{$("mIntro").hidden=true;$("mClock").hidden=false;$("mMsg").textContent="Gör dig redo …";
   let n=3;$("mT").textContent=n;const cd=()=>{if(--n>0){$("mT").textContent=n;later(cd,800);}else{runMinute();}};later(cd,800);};
 // med 🎤: datorn följer med i listan; ett hört ord (eller något av de två nästa, om eleven hoppat över) blir grönt
@@ -494,16 +504,20 @@ $("mSheet").onclick=e=>{const b=e.target.closest("[data-i]");if(!b)return;const 
   else if(MIN.phase==="end"){MIN.end=i;minResult();}};
 function minResult(){MIN.phase="done";recStop();const read=MIN.end+1,err=[...MIN.errs].filter(i=>i<=MIN.end).length,ok=read-err;
   $("mSheet").querySelectorAll("[data-i]").forEach(b=>{const i=+b.dataset.i;b.classList.toggle("end",i===MIN.end);b.classList.toggle("after",i>MIN.end);});
-  MIN.list.slice(0,read).forEach((w,i)=>{if(!MIN.errs.has(i))ratt(w);});
-  const prev=data.opm.length?Math.max(...data.opm.map(x=>x.n)):0;data.opm.push({d:today(),n:ok,f:err});data.opm=data.opm.slice(-30);save();updStars();
-  const last=data.opm.slice(-10),max=Math.max(...last.map(x=>x.n),1);
+  // bara övningens egna ord räknas som lästa (den stigande listan har många andra ord)
+  const egen=new Set([...ALLA,...data.egna]);MIN.list.slice(0,read).forEach((w,i)=>{if(!MIN.errs.has(i)&&egen.has(w))ratt(w);});
+  // resultaten sparas för sig: övade ord i opm, stigande lista i stig (A och B tillsammans)
+  if(!data.stig)data.stig=[];const hist=MIN.stig?data.stig:data.opm;
+  const prev=hist.length?Math.max(...hist.map(x=>x.n)):0;hist.push({d:today(),n:ok,f:err,v:MIN.stig?data.mlista:undefined});
+  if(MIN.stig)data.stig=data.stig.slice(-30);else data.opm=data.opm.slice(-30);save();updStars();
+  const H2=MIN.stig?data.stig:data.opm,last=H2.slice(-10),max=Math.max(...last.map(x=>x.n),1);
   $("mClock").hidden=true;$("mRes").hidden=false;
-  $("mRes").innerHTML=`<div class="n">${ok}</div><p class="lead" style="margin:4px 0">rätt lästa ord på en minut${err?` (${err} fel)`:""}${ok>prev&&data.opm.length>1?" · Nytt rekord! 🏆":""}</p>
-    <div class="chart">${last.map(x=>`<div><span>${x.n}</span><i style="height:${Math.max(4,x.n/max*80)}px"></i></div>`).join("")}</div>
-    <p class="note">De senaste gångerna. Felläsningarna är överstrukna i listan nedanför.</p>
+  $("mRes").innerHTML=`<div class="n">${ok}</div><p class="lead" style="margin:4px 0">rätt lästa ord på en minut${err?` (${err} fel)`:""}${ok>prev&&H2.length>1?" · Nytt rekord! 🏆":""}</p>
+    <div class="chart">${last.map(x=>`<div><span>${x.n}${x.v?` <small>${x.v}</small>`:""}</span><i style="height:${Math.max(4,x.n/max*80)}px"></i></div>`).join("")}</div>
+    <p class="note">De senaste gångerna ${MIN.stig?"med stigande lista":"med övade ord"}. Felläsningarna är överstrukna i listan nedanför.</p>
     <div class="row2"><button class="alt" id="mAgain">⏱️ En gång till</button><button class="go" id="mHome">Till ordpaketen</button></div>`;
   $("mAgain").onclick=startMinute;$("mHome").onclick=openHome;
-  if(ok>prev&&data.opm.length>1)confetti();$("mRes").scrollIntoView({behavior:"smooth"});}
+  if(ok>prev&&H2.length>1)confetti();$("mRes").scrollIntoView({behavior:"smooth"});}
 
 /* ---------- Slut ---------- */
 function finish(title,sub,party){stopAll();const v=valda(),ws=valdaOrd(),s=v.length===1?data.stars[v[0]]||0:Math.min(...v.map(p=>data.stars[p]||0));
