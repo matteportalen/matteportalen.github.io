@@ -109,6 +109,13 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .sheet button.after{opacity:.35}
 .sheet button.hrd{background:#DDF5E7;color:var(--good-dark)}
 .tips{background:#FFF6D6;border-radius:12px;padding:8px 12px}
+.mval{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:14px;padding:9px 12px;margin:0 0 8px;background:var(--card)}
+.mval[aria-pressed="true"]{border-color:var(--good);background:#EAF8EF;box-shadow:inset 0 0 0 1px var(--good)}
+.mval small{display:block;color:var(--muted);font-weight:600;line-height:1.3;margin-top:2px;font-size:.9rem}
+.mval .fs{display:inline-block;background:var(--gold);color:var(--ink);border-radius:999px;padding:0 8px;font-size:.75rem;margin-left:6px;vertical-align:middle}
+.mval:disabled{opacity:.5}
+.kbbar{height:10px;background:#E4EEE7;border-radius:6px;overflow:hidden}.kbbar i{display:block;height:100%;width:0;background:var(--good);transition:width .2s}
+.small{font-size:.9rem;color:var(--muted);font-weight:700}
 .sheet button.sug{box-shadow:0 0 0 3px var(--accent);background:#E3E9FF}
 .sheet.wait button{filter:blur(6px)}
 .clock{position:sticky;top:6px;z-index:5;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:14px;padding:6px 14px;margin-bottom:8px;font-weight:800}
@@ -121,7 +128,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .chart div{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;font-size:.75rem;font-weight:800;color:var(--muted)}
 .chart i{display:block;width:100%;background:linear-gradient(#3FBF7F,#1E9E5E);border-radius:6px 6px 0 0}
 .modal{position:fixed;inset:0;background:rgba(29,43,83,.5);display:grid;place-items:center;z-index:20;padding:16px}
-.modal>div{background:var(--card);border-radius:22px;padding:18px;max-width:460px;box-shadow:0 8px 30px rgba(0,0,0,.25)}
+.modal>div{background:var(--card);border-radius:22px;padding:18px;max-width:460px;max-height:calc(100dvh - 32px);overflow:auto;box-shadow:0 8px 30px rgba(0,0,0,.25)}
 .modal p{margin:0 0 10px;line-height:1.35}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:30;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:25}
@@ -207,9 +214,12 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 <div class="modal" id="micModal" hidden><div>
   <h2 style="margin-top:0">🎤 Lyssna på mig</h2>
   <p>Datorn försöker höra när du läser och visar det med grönt, i <b>Blixtläsning</b> och <b>Ord på en minut</b>. Den kan bara säga <b>rätt</b>, aldrig fel. Hör den inget gör det inget, du läser bara vidare.</p>
-  <p><b>Till den vuxna:</b> taligenkänningen är webbläsarens egen och <b>kräver internet</b>. Ljudet skickas för att bli text: i Chrome till Google, i Edge till Microsoft, i Safari och på iPad till Apple. Inget sparas på Matte-Portalen. I skolan bör det stämmas av med skolans dataskyddsombud innan det används.</p>
+  <p style="margin-bottom:6px"><b>Hur ska datorn lyssna?</b></p>
+  <button class="mval" data-motor="web" id="mvWeb"><b>🌐 Webbläsaren</b><small>Startar direkt och kräver internet. Ljudet skickas för att bli text: i Chrome till Google, i Edge till Microsoft, i Safari och på iPad till Apple. Fungerar bäst i Chrome på dator.</small></button>
+  <button class="mval" data-motor="kb" id="mvKb"><b>🧠 I enheten (KB-Whisper)</b><small>Kungliga bibliotekets svenska taligenkänning. Laddas ner en gång (ca 52 MB), sedan fungerar den utan internet. <b>Inget ljud lämnar enheten.</b><span id="kbLangsam" hidden> Den här enheten saknar grafikkort för det, så det kan gå långsamt.</span></small></button>
+  <div id="kbProg" hidden style="margin-bottom:10px"><div class="kbbar"><i></i></div><p class="small" id="kbProgT" style="margin:4px 0 0">Laddar ner …</p></div>
+  <p><b>Till den vuxna:</b> inget sparas på Matte-Portalen. Med 🌐 Webbläsaren skickas ljudet till Google, Microsoft eller Apple, så i skolan bör det stämmas av med skolans dataskyddsombud. Med 🧠 I enheten stannar ljudet i enheten.</p>
   <p>Korta ord som <span class="w">i</span> och <span class="w">en</span> kan vara svåra för datorn att höra. Fungerar det dåligt, stäng av det igen.</p>
-  <p class="tips" id="micTips" hidden>💡 <b>Fungerar bäst i Chrome på dator.</b> I Edge och på iPad stänger webbläsaren av lyssnandet efter korta pauser, och då kan ord missas.</p>
   <div class="row2"><button class="alt" id="micNo">Nej tack</button><button class="go" id="micYes">Slå på</button></div>
 </div></div>
 <div class="modal" id="egModal" hidden><div style="width:min(460px,100%)">
@@ -224,6 +234,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 <script src="../../ljud.js"></script>
 <script src="../../djur.js"></script>
 <script src="../../huvud.js" data-titel="Högfrekventa ord" data-ikon="📖" data-hem="../../" data-portal="ovriga"></script>
+<script src="kbwhisper.js"></script>
 <script>
 /* Högfrekventa ord: 200 vanliga ord i 20 paket (ordningen efter hur vanliga orden är i barntext; lärarens lista).
    Lägen: Lär dig orden (bokstäverna och ljuden), Blixtläsning (orden blixtrar förbi i vald fart, eleven läser högt och
@@ -285,11 +296,12 @@ function speak(text){if(!("speechSynthesis" in window)){toast("Uppläsning funge
    någon av gissningarna innehåller ordet eller dess uttal (å för och, mej för mig ...). Kan bara ge grönt. */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const UTTAL={och:["å","o","och"],det:["de","dä","det"],är:["e","ä","är"],jag:["ja","jag"],de:["dom","de"],dem:["dom","dem"],var:["va","var"],vad:["va","vad"],
-  har:["har","ha","hör"],mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
+  har:["har","ha","hör"],mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn","1"],ett:["ett","ätt","1"],men:["men","män"]};
+const SIFFROR=["noll","ett","två","tre","fyra","fem","sex","sju","åtta","nio","tio"];// KB-Whisper skriver ibland siffror
 const norm=s=>s.toLowerCase().replace(/[.,!?;:"']/g," ").split(/\s+/).filter(Boolean);
 let REC=null,recWant=false,onHeard=null,recSess=0;
-function micOn(){return !!(data.mic&&SR);}
-function recStart(cb){if(!micOn())return;onHeard=cb;recWant=true;if(REC)return;
+function micOn(){return !!(data.mic&&(data.motor==="kb"||SR));}
+function recStart(cb){if(!micOn())return;if(data.motor==="kb")return kbStart(cb);onHeard=cb;recWant=true;if(REC)return;
   try{REC=new SR();REC.lang="sv-SE";REC.continuous=true;REC.interimResults=true;REC.maxAlternatives=5;
     const sess=++recSess;
     // delar = hela texten sedan lyssnandet startade (Chrome flyttar gränserna mellan de preliminära resultaten, men hela texten växer bara)
@@ -302,12 +314,17 @@ function recStart(cb){if(!micOn())return;onHeard=cb;recWant=true;if(REC)return;
     REC.onend=()=>{REC=null;micLamp(false);if(recWant)recStart(onHeard);};
     REC.start();}catch(err){REC=null;if(recWant)setTimeout(()=>recWant&&recStart(onHeard),100);}}
 // lampan "lyssnar": grön när mikrofonen faktiskt lyssnar, grå medan den startar om
-let micLyss=false;function micLamp(on){micLyss=on;document.querySelectorAll(".heard").forEach(x=>{x.classList.toggle("on",on);x.textContent=on?"lyssnar":"startar …";});}
-function recStop(){recWant=false;onHeard=null;if(REC){try{REC.stop();}catch(e){}}}
+let micLyss=false,micTxt="startar …";function micLamp(on,txt){micLyss=on;micTxt=txt||"startar …";document.querySelectorAll(".heard").forEach(x=>{x.classList.toggle("on",on);x.textContent=on?"lyssnar":micTxt;});}
+// 🧠 I enheten: KB-Whisper (kbwhisper.js) lyssnar med en egen mikrofon som aldrig stängs av.
+// Varje körning ger hela textens ord för en ljudbit; preliminära och slutliga körningar av samma bit har samma id.
+function kbStart(cb){onHeard=cb;recWant=true;micLamp(false,MPWhisper.laddad?"startar …":"laddar …");
+  MPWhisper.start(r=>{if(!onHeard)return;const t=norm(r.text);onHeard(t,r.final?t:[],[{id:"kb"+r.seg,ord:t}]);})
+    .then(()=>{if(recWant)micLamp(true);}).catch(()=>{recWant=false;micLamp(false,"");toast("Mikrofonen gick inte att starta.");});}
+function recStop(){recWant=false;onHeard=null;if(REC){try{REC.stop();}catch(e){}}if(window.MPWhisper)MPWhisper.stop();}
 // stämmer ett hört ord med ordet? (samma regler som i Mikrofonlabbet, där de prövades)
 function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
   for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
-function passar(mal,h,lista){if(!h)return false;if(h===mal||(UTTAL[mal]||[]).includes(h))return true;
+function passar(mal,h,lista){if(!h)return false;if(/^\d+$/.test(h)&&SIFFROR[+h])h=SIFFROR[+h];if(h===mal||(UTTAL[mal]||[]).includes(h))return true;
   // korta ord: en extra bokstav på slutet räknas (vi/vid) om det inte är ett annat ord i listan; längre ord får skilja en bokstav
   if(mal.length<=3&&h.length===mal.length+1&&h.startsWith(mal)&&!(lista||[]).includes(h))return true;
   return mal.length>=5&&lev(mal,h)<=1;}
@@ -317,11 +334,27 @@ const hor=(w,ord,lista)=>ord.some(o=>passar(w,o,lista));
 // fungerar taligenkänningen bra här? Chrome på dator stänger inte av; Edge, Safari och alla webbläsare på iPad gör det ofta
 const UA=navigator.userAgent,iOS=/iPad|iPhone|iPod/.test(UA)||(/Macintosh/.test(UA)&&navigator.maxTouchPoints>1);
 const CHROME=/Chrome\//.test(UA)&&!/Edg\/|OPR\//.test(UA)&&!iOS;
-function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?"på":"av"}`;}
+function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?(data.motor==="kb"?"på (i enheten)":"på"):"av"}`;}
+// förslag: webbläsaren i Chrome på dator, annars i enheten (Edge och Safari stänger av lyssnandet efter korta pauser)
+const FORSLAG=CHROME&&SR?"web":"kb";let micVal=FORSLAG,kbLaddar=false;
+function micValj(v){micVal=v;document.querySelectorAll(".mval").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.motor===v)));}
+document.querySelectorAll(".mval").forEach(b=>b.onclick=()=>{if(!kbLaddar)micValj(b.dataset.motor);});
 $("micBtn").onclick=()=>{if(data.mic){data.mic=false;save();micLabel();return;}
-  if(!SR){toast("Den här webbläsaren kan inte lyssna. Prova Chrome på en dator.");return;}$("micTips").hidden=CHROME;$("micModal").hidden=false;};
-$("micNo").onclick=()=>$("micModal").hidden=true;
-$("micYes").onclick=()=>{$("micModal").hidden=true;data.mic=true;save();micLabel();toast("Lyssna på mig är på. Webbläsaren frågar om mikrofonen första gången.");};
+  $("mvWeb").disabled=!SR;if(!SR)$("mvWeb").querySelector("small").textContent="Finns inte i den här webbläsaren.";
+  document.querySelectorAll(".mval .fs").forEach(x=>x.remove());$(FORSLAG==="web"?"mvWeb":"mvKb").querySelector("b").insertAdjacentHTML("beforeend",'<span class="fs">Föreslås här</span>');
+  $("kbLangsam").hidden="gpu" in navigator;$("kbProg").hidden=true;micValj(data.motor&&(data.motor==="kb"||SR)?data.motor:FORSLAG);$("micModal").hidden=false;};
+$("micNo").onclick=()=>{if(!kbLaddar)$("micModal").hidden=true;};
+function micPa(){data.mic=true;data.motor=micVal;save();micLabel();$("micModal").hidden=true;
+  toast(micVal==="kb"?"Klart! Datorn lyssnar i enheten. Webbläsaren frågar om mikrofonen första gången.":"Lyssna på mig är på. Webbläsaren frågar om mikrofonen första gången.");}
+$("micYes").onclick=()=>{if(kbLaddar)return;if(micVal!=="kb"||MPWhisper.laddad)return micPa();
+  // ladda ner KB-Whisper först, med en mätare
+  kbLaddar=true;$("micYes").disabled=$("micNo").disabled=true;$("kbProg").hidden=false;$("kbProgT").textContent="Laddar ner …";
+  // totalen växer medan filerna hittas, så mätaren räknar mot ungefär 52 MB
+  MPWhisper.ladda(a=>{const mb=a/1e6;$("kbProg").querySelector("i").style.width=Math.min(100,mb/52*100).toFixed(0)+"%";$("kbProgT").textContent=`Laddar ner ${Math.min(52,mb).toFixed(0)} av ca 52 MB …`;})
+    .then(()=>{kbLaddar=false;$("micYes").disabled=$("micNo").disabled=false;micPa();})
+    .catch(()=>{kbLaddar=false;$("micYes").disabled=$("micNo").disabled=false;$("kbProgT").textContent="Det gick inte att ladda ner. Kontrollera internet och försök igen.";});};
+// är 🧠 I enheten på laddas modellen i förväg (från webbläsarens cache efter första gången)
+if(data.mic&&data.motor==="kb")setTimeout(()=>MPWhisper.ladda().catch(()=>{}),1500);
 
 function egnaOrd(t){const out=[];for(const r of t.toLowerCase().split(/[\s,;.]+/)){const w=r.trim();if(/^[a-zåäöéü-]{1,20}$/.test(w)&&!out.includes(w))out.push(w);}return out.slice(0,40);}
 function openEgna(){$("egText").value=data.egna.join(" ");$("egInfo").textContent="";$("egModal").hidden=false;setTimeout(()=>$("egText").focus(),50);}
@@ -446,11 +479,11 @@ function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:n
   let n=3;const cd=()=>{$("fStage").innerHTML=`<div class="big in" style="--c:#56668F">${n}</div>`;if(n-->1)later(cd,700);else later(nextFlash,700);};cd();
   recStart(ord=>{if(!F||F.i<0)return;const L=F.list,nu=F.i,gron=k=>{if(F.heard.has(k))return;F.heard.add(k);if(k===F.i){const el=$("fWord");if(el)el.classList.add("ok");}window.Ljud&&Ljud.ok&&Ljud.ok();};
     // ordet som visas nu eller det förra (det kan ha bytts innan datorn hunnit höra), eller båda ihop
-    for(const k of [nu,nu-1])if(k>=0&&!F.heard.has(k)&&hor(L[k],ord,L))gron(k);
+    for(const k of data.motor==="kb"?[nu,nu-1,nu-2]:[nu,nu-1])if(k>=0&&!F.heard.has(k)&&hor(L[k],ord,L))gron(k);
     if(nu>0&&ord.some(o=>ihop(L[nu-1],L[nu],o))){gron(nu-1);gron(nu);}});}
 function nextFlash(){F.i++;if(F.i>=F.list.length)return flashAfter();const w=F.list[F.i],ms=data.fart*1000;sett(w);
   $("fInfo").textContent=`${F.i+1} / ${F.list.length}`;
-  $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?`<span class="heard${micLyss?" on":""}">${micLyss?"lyssnar":"startar …"}</span>`:""}`;
+  $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?`<span class="heard${micLyss?" on":""}">${micLyss?"lyssnar":micTxt}</span>`:""}`;
   const t=$("fT");if(t&&!reduced()){t.animate([{width:"100%"},{width:"0%"}],{duration:ms,easing:"linear",fill:"forwards"});}
   later(nextFlash,ms);}
 function flashAfter(){recStop();$("fStage").hidden=true;$("fHint").hidden=true;$("fAfter").hidden=false;$("fInfo").textContent="Klart!";
@@ -497,7 +530,7 @@ function startMinute(){stopAll();const pool=minPool(),stig=data.mlista!=="ovade"
   let list=[];if(stig)list=STIG[data.mlista].slice();else while(list.length<150){const w=pick(pool);if(w!==list[list.length-1]&&w!==list[list.length-2])list.push(w);}
   Object.assign(MIN,{list,errs:new Set(),end:-1,phase:"intro",stig});
   $("mLista").innerHTML=[["ovade","Övade ord"],["A","📈 Stigande A"],["B","📈 Stigande B"]].map(([v,t])=>`<button data-l="${v}" aria-pressed="${data.mlista===v}">${t}</button>`).join("");
-  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna."+(CHROME?"":" 💡 Fungerar bäst i Chrome på dator."):"";
+  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna."+(data.motor!=="kb"&&!CHROME?" 💡 Fungerar bäst i Chrome på dator, eller välj 🧠 I enheten.":""):"";
   $("mFrom").textContent=stig?`Stigande lista ${data.mlista}: samma 150 ord varje gång, från korta till långa ord. Bra för att följa läsflytet över tid. Det är en egen lista, inte H4/AVK1, så resultaten är inte normerade.`:`Orden kommer från ${valText()} (${pool.length} olika ord), i blandad ordning.`;
   $("mInfo").textContent="";$("mIntro").hidden=false;$("mClock").hidden=true;$("mRes").hidden=true;$("mSheet").hidden=false;
   const cols=innerWidth<420?3:innerWidth<700?4:5;$("mSheet").style.setProperty("--cols",cols);

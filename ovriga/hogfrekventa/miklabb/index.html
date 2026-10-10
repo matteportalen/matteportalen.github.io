@@ -128,12 +128,13 @@ const LISTOR={
 };
 // samma uttalsformer som i övningen
 const UTTAL={och:["å","o","och"],det:["de","dä","det"],är:["e","ä","är"],jag:["ja","jag"],de:["dom","de"],dem:["dom","dem"],var:["va","var"],vad:["va","vad"],
-  har:["har","ha","hör"],mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
+  har:["har","ha","hör"],mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn","1"],ett:["ett","ätt","1"],men:["men","män"]};
+const SIFFROR=["noll","ett","två","tre","fyra","fem","sex","sju","åtta","nio","tio"];// KB-Whisper skriver ibland siffror
 const norm=s=>s.toLowerCase().replace(/[.,!?;:"'…–-]/g," ").split(/\s+/).filter(Boolean);
 function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
   for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
 // stämmer det hörda ordet med ordet i listan? längre ord får skilja en bokstav
-function passar(mal,h){if(!h)return false;if(h===mal||(UTTAL[mal]||[]).includes(h))return true;
+function passar(mal,h){if(!h)return false;if(/^\d+$/.test(h)&&SIFFROR[+h])h=SIFFROR[+h];if(h===mal||(UTTAL[mal]||[]).includes(h))return true;
   // korta ord: en extra bokstav på slutet räknas (vi/vid) om det inte är ett annat ord i listan
   if(mal.length<=3&&h.length===mal.length+1&&h.startsWith(mal)&&!ORD.includes(h))return true;
   return mal.length>=5&&lev(mal,h)<=1;}
