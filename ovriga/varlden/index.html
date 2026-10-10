@@ -42,6 +42,8 @@ h2{font-size:1.5rem;margin:0 0 6px;line-height:1.15}
 .map .hole{fill:rgba(255,255,255,.7)!important;stroke:#7C8AA5;stroke-dasharray:4 3;stroke-width:1.4}
 .map .piece{stroke:#fff;stroke-width:1.5;cursor:grab;filter:drop-shadow(0 3px 0 rgba(29,43,83,.35))}
 .map .piece.done{cursor:default;filter:none}
+/* Antarktis är nästan vit: som pusselbit isblå med blå kant, annars syns den inte (lärarens fynd på mobil) */
+.map .piece.is{fill:#CFE6FF!important;stroke:#5B9BD5;stroke-width:2.5}
 .map text{font-family:var(--font);pointer-events:none}
 .map .lbl{font-weight:800;fill:#1D2B53;paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round}
 .map .olbl{font-weight:800;font-style:italic;fill:#0B3F8C;paint-order:stroke;stroke:rgba(255,255,255,.85);stroke-width:4px;stroke-linejoin:round}
@@ -356,10 +358,14 @@ function startPuzzle(){const conts=DELAR.filter(d=>d.typ==='k');G={mode:'pussel'
     conts.forEach(d=>m.paths[d.id].classList.add('hole'));
     // bitarna ligger på rad under kartan
     const area={x:0,y:M.h+20,w:M.w,h:M.h*.5},cw=area.w/4,ch=area.h/2;let drag=null;
-    shuffle(conts.slice()).forEach((d,i)=>{const bb=m.paths[d.id].getBBox(),s=Math.min(1,cw*.85/bb.width,ch*.85/bb.height),cx=area.x+cw*(i%4+.5),cy=area.y+ch*(Math.floor(i/4)+.5);
-      const p=el('path',{d:d.d,class:'piece','fill-rule':'evenodd'});p.style.fill=`var(--${d.id})`;p._d=d;p._s=s;p._pos={x:cx-(bb.x+bb.width/2)*s,y:cy-(bb.y+bb.height/2)*s};setT(p);m.g.append(p);});
+    // Antarktis är lång och smal: den ligger sist och får två platser i bredd (raden har ändå en ledig plats)
+    shuffle(conts.filter(d=>d.id!=='antarktis')).concat(conts.filter(d=>d.id==='antarktis')).forEach((d,i)=>{const bb=m.paths[d.id].getBBox(),bred=d.id==='antarktis',
+        s=Math.min(1,cw*(bred?1.8:.85)/bb.width,ch*.85/bb.height),cx=area.x+cw*(i%4+(bred?1:.5)),cy=area.y+ch*(Math.floor(i/4)+.5);
+      const p=el('path',{d:d.d,class:'piece'+(bred?' is':''),'fill-rule':'evenodd'});p.style.fill=`var(--${d.id})`;p._d=d;p._s=s;p._pos={x:cx-(bb.x+bb.width/2)*s,y:cy-(bb.y+bb.height/2)*s};setT(p);m.g.append(p);});
     const toW=e=>{const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(svg.getScreenCTM().inverse());};
-    svg.onpointerdown=e=>{const p=e.target.closest('.piece');if(!p||p.classList.contains('done'))return;e.preventDefault();svg.setPointerCapture(e.pointerId);
+    // smala bitar (Antarktis) är svåra att träffa med fingret: ett tryck nära en bit räknas också
+    const nara=e=>{let bast=null,d0=16;svg.querySelectorAll('.piece:not(.done)').forEach(q=>{const r=q.getBoundingClientRect(),dx=Math.max(r.left-e.clientX,0,e.clientX-r.right),dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom),d=Math.hypot(dx,dy);if(d<d0){d0=d;bast=q;}});return bast;};
+    svg.onpointerdown=e=>{let p=e.target.closest('.piece');if(!p||p.classList.contains('done'))p=nara(e);if(!p)return;e.preventDefault();svg.setPointerCapture(e.pointerId);
       const w=toW(e),bx=(w.x-p._pos.x)/p._s,by=(w.y-p._pos.y)/p._s;p._s=1;p._pos={x:w.x-bx,y:w.y-by};setT(p);m.g.append(p);drag={p,dx:p._pos.x-w.x,dy:p._pos.y-w.y};window.Ljud&&Ljud.pop&&Ljud.pop(2);};
     svg.onpointermove=e=>{if(!drag)return;const w=toW(e);drag.p._pos={x:w.x+drag.dx,y:w.y+drag.dy};setT(drag.p);};
     svg.onpointerup=svg.onpointercancel=()=>{if(!drag)return;const p=drag.p;drag=null;
