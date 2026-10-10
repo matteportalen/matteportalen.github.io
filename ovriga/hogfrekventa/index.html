@@ -313,7 +313,7 @@ function stopAll(){timers.forEach(clearTimeout);timers=[];recStop();cancelAnimat
 /* Ordet delat i ljud (lärarens fynd: bokstav för bokstav blev fel när flera bokstäver är ett ljud).
    sk före mjuk vokal (skepp), sj, skj, stj, sch, tj, kj, dj, gj, hj, lj, ng, ck, ch, rs, rt, rd, rn, rl och dubbelteckning (tt, mm …) är ett ljud.
    Ord som inte följer reglerna lyser som en helhet. */
-const HELORD=new Set("och det är jag de dem var vad mig dig sig också säger honom sedan sade morgon imorgon huvud aldrig bredvid".split(" "));
+const HELORD=new Set("och det är jag de dem var vad mig dig sig också säger honom sedan sade morgon imorgon bredvid".split(" "));
 const MJUK="eiyäö",VOK="aeiouyåäö";
 function ljud(w){if(HELORD.has(w))return[w];const out=[];let i=0;
   while(i<w.length){const r=w.slice(i);let n=1;
