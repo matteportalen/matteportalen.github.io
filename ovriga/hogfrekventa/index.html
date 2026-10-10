@@ -331,9 +331,10 @@ function passar(mal,h,lista){if(!h)return false;if(/^\d+$/.test(h)&&SIFFROR[+h])
 // två ord som hörts ihop till ett, som "förmed" = för + med
 function ihop(a,b,h){if(!a||!b)return false;for(let k=1;k<h.length;k++)if(passar(a,h.slice(0,k))&&passar(b,h.slice(k)))return true;return false;}
 const hor=(w,ord,lista)=>ord.some(o=>passar(w,o,lista));
-// fungerar taligenkänningen bra här? Chrome på dator stänger inte av; Edge, Safari och alla webbläsare på iPad gör det ofta
+// fungerar taligenkänningen bra här? Chrome på dator stänger inte av; Edge, Safari, alla webbläsare på iPad och mobiler gör det ofta
 const UA=navigator.userAgent,iOS=/iPad|iPhone|iPod/.test(UA)||(/Macintosh/.test(UA)&&navigator.maxTouchPoints>1);
-const CHROME=/Chrome\//.test(UA)&&!/Edg\/|OPR\//.test(UA)&&!iOS;
+// bara Chrome på dator: Chrome på Android lyssnar annorlunda (lärarens mobiltest: webbläsaren hörde inget, KB-Whisper 22 av 30)
+const CHROME=/Chrome\//.test(UA)&&!/Edg\/|OPR\//.test(UA)&&!iOS&&!/Android|Mobile/.test(UA);
 function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?(data.motor==="kb"?"på (i enheten)":"på"):"av"}`;}
 // förslag: webbläsaren i Chrome på dator, annars i enheten (Edge och Safari stänger av lyssnandet efter korta pauser)
 const FORSLAG=CHROME&&SR?"web":"kb";let micVal=FORSLAG,kbLaddar=false;
