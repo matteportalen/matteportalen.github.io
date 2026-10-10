@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tangentbordet – Övriga ämnen</title>
+<meta name="description" content="Lär dig tangentbordet med rätt fingrar: lektioner, alfabetet på tid, hitta tangenten och skriv orden.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@700&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8F7EE; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#BFE3CF;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707; --rosa:#FFD9DC;
+  /* en färg per finger, samma på båda händerna */
+  --lill:#D9C8FF; --ring:#BFDBFF; --lang:#C6F0CF; --pek:#FFE39A; --tumme:#E3E8F2;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --las:"Andika","Trebuchet MS",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:980px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+h1{font-size:clamp(2.2rem,8vw,2.9rem);line-height:1;margin:10px 0 4px;font-weight:800}
+h2{margin:6px 0 10px}
+.lead{margin:0 0 16px;color:var(--muted);font-size:1.08rem}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 5px 0 var(--line)}
+.pill{background:var(--card);border-radius:999px;padding:6px 14px;font-weight:800;box-shadow:0 3px 0 var(--line);white-space:nowrap}
+.tips{background:#FFF6D6;border-radius:16px;padding:10px 14px;margin:0 0 14px;font-weight:700}
+.tips button{margin-top:6px}
+
+/* ---------- startskärm och lektioner ---------- */
+.lagen{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:14px}
+.lage{display:flex;align-items:center;gap:14px;text-align:left;background:var(--card);border-radius:22px;padding:14px 16px;box-shadow:0 5px 0 var(--line);transition:transform .12s}
+.lage:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+@media(hover:hover){.lage:hover{transform:translateY(-2px)}}
+.lage .ic{flex:none;width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-size:2.1rem;transform:rotate(-4deg);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12)}
+.lage .txt{flex:1;min-width:0}.lage b{display:block;font-size:1.25rem;line-height:1.15}
+.lage small{display:block;color:var(--muted);font-weight:700;line-height:1.3}
+.st{color:var(--gold);letter-spacing:1px}.st .off{color:#D5DDEC}
+.lage .rek{font-size:.85rem;color:var(--muted);font-weight:700}
+.lekt{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.lek{display:flex;gap:12px;align-items:center;text-align:left;background:var(--card);border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 var(--line)}
+.lek:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lek .nr{flex:none;width:44px;height:44px;border-radius:14px;background:var(--pek);display:grid;place-items:center;font-weight:800;font-size:1.3rem}
+.lek b{display:block;line-height:1.2}.lek small{display:block;color:var(--muted);font-weight:700;font-family:var(--las);letter-spacing:1px}
+.val{display:flex;gap:10px;flex-wrap:wrap;margin:6px 0 14px}
+.val button{background:var(--card);border-radius:14px;padding:8px 14px;font-weight:800;box-shadow:0 3px 0 var(--line);border:2px solid transparent}
+.val button[aria-pressed="true"]{border-color:var(--good);background:#EAF8EF}
+
+/* ---------- spelet ---------- */
+.gtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.sp{flex:1}
+.rubrik{font-weight:800;font-size:1.15rem;margin:0 0 8px;text-align:center}
+.text{font-family:var(--las);font-size:clamp(1.5rem,3.6vw,2.2rem);line-height:1.7;letter-spacing:1px;background:#fff;border-radius:20px;padding:14px 18px;box-shadow:0 5px 0 var(--line);min-height:3.6em;word-break:break-word}
+.text span{border-radius:6px;padding:0 1px;transition:background .1s}
+.text .ok{color:var(--good-dark)}
+.text .nu{background:#FFE39A;box-shadow:0 3px 0 var(--gold)}
+.text .fel{background:var(--rosa);color:#B4232A}
+.text .mell{display:inline-block;min-width:.55em}
+.text .mell.nu::after{content:"␣";color:#8A6D12;font-size:.7em}
+.stor{font-family:var(--las);font-size:clamp(4rem,14vw,7rem);line-height:1;text-align:center;background:#fff;border-radius:24px;padding:18px;box-shadow:0 5px 0 var(--line)}
+.stor.fel{animation:skak .35s;background:var(--rosa)}
+.ordrad{display:flex;gap:14px;justify-content:center;align-items:baseline;flex-wrap:wrap;font-family:var(--las)}
+.ordrad .nu{font-size:clamp(2.2rem,7vw,3.4rem);background:#fff;border-radius:18px;padding:6px 18px;box-shadow:0 5px 0 var(--line)}
+.ordrad .nu span.ok{color:var(--good-dark)}.ordrad .nu span.c{background:#FFE39A;border-radius:6px}.ordrad .nu span.fel{background:var(--rosa)}
+.ordrad .sen{font-size:1.4rem;color:var(--muted)}
+@keyframes skak{20%,60%{transform:translateX(-6px)}40%,80%{transform:translateX(6px)}}
+.siffror{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.siffror div{background:#fff;border-radius:16px;padding:6px 14px;min-width:92px;text-align:center;box-shadow:0 3px 0 var(--line)}
+.siffror b{display:block;font-size:1.35rem;line-height:1.1}.siffror small{color:var(--muted);font-weight:700}
+.hjalp{text-align:center;color:var(--muted);font-weight:700;min-height:1.5em;margin:6px 0}
+.dold-kb{display:flex;justify-content:center;margin-top:6px}
+
+/* ---------- tangentbordet på skärmen ---------- */
+.kb{--u:min(56px,calc((100vw - 40px)/15));margin:12px auto 0;width:calc(var(--u)*15 + 8px);background:#2B3A63;border-radius:16px;padding:4px;box-shadow:0 6px 0 #18224A;user-select:none}
+.kbr{display:flex}
+.k{position:relative;height:calc(var(--u)*.92);margin:calc(var(--u)*.04);border-radius:calc(var(--u)*.16);display:grid;place-items:center;font-weight:800;font-size:calc(var(--u)*.42);line-height:1;
+  background:var(--f,#fff);color:var(--ink);box-shadow:0 calc(var(--u)*.07) 0 rgba(0,0,0,.28);transition:transform .06s,filter .1s;text-transform:uppercase}
+.k.liten{font-size:calc(var(--u)*.27);text-transform:none}
+.k.lp{--f:var(--lill)}.k.lr{--f:var(--ring)}.k.lm{--f:var(--lang)}.k.li{--f:var(--pek)}
+.k.rp{--f:var(--lill)}.k.rr{--f:var(--ring)}.k.rm{--f:var(--lang)}.k.ri{--f:var(--pek)}.k.t{--f:var(--tumme)}
+.k.grå{--f:#C9D0DE;color:#56668F}
+.k.knopp::after{content:"";position:absolute;bottom:18%;width:28%;height:calc(var(--u)*.05);border-radius:2px;background:rgba(29,43,83,.55)}
+.k.mal{animation:blinka .9s infinite;z-index:1}
+@keyframes blinka{0%,100%{filter:none;box-shadow:0 0 0 3px #fff,0 0 0 6px var(--accent)}50%{filter:brightness(1.08);box-shadow:0 0 0 3px #fff,0 0 0 9px rgba(61,90,254,.35)}}
+.k.ner{transform:translateY(calc(var(--u)*.06));box-shadow:none;filter:brightness(.9)}
+.k.ratt{background:#7BD39C}.k.fel{background:#FF9AA2}
+.kb.tyst .k{--f:#EEF1F7}
+/* händerna: fem fingrar per hand i samma färger som tangenterna */
+.hander{display:flex;justify-content:center;gap:clamp(18px,6vw,70px);margin-top:12px}
+.hand{display:flex;align-items:flex-end;gap:6px}
+.hand .fi{width:clamp(22px,4.6vw,34px);border-radius:14px 14px 8px 8px;background:var(--f);box-shadow:0 3px 0 rgba(29,43,83,.18);display:flex;align-items:flex-end;justify-content:center;font-size:.62rem;font-weight:800;color:rgba(29,43,83,.7);padding-bottom:3px;transition:transform .15s}
+.hand .fi.aktiv{transform:translateY(-8px);box-shadow:0 0 0 3px #fff,0 0 0 6px var(--accent)}
+.handnamn{text-align:center;font-weight:800;color:var(--muted);font-size:.85rem}
+.fingertext{text-align:center;font-weight:800;margin-top:6px;min-height:1.4em}
+
+/* ---------- resultat ---------- */
+.res{text-align:center}
+.res .owl{width:100px;height:100px}
+.res h2{font-size:1.7rem;line-height:1.15;margin:4px 0}
+.storst{font-size:2.6rem;color:var(--gold);letter-spacing:4px}.storst .off{color:#D5DDEC}
+.big{display:block;width:100%;margin-top:12px;padding:14px;border-radius:20px;font-weight:800;font-size:1.3rem;color:#fff;background:var(--good);box-shadow:0 5px 0 var(--good-dark)}
+.big.sek{background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--line)}
+.big:active{transform:translateY(3px)}
+#mjuk{position:fixed;left:0;bottom:0;width:1px;height:1px;opacity:0;border:0;padding:0;font-size:16px}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+@media (prefers-reduced-motion:reduce){.k.mal{animation:none;box-shadow:0 0 0 3px #fff,0 0 0 6px var(--accent)}.stor.fel{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="home" class="screen">
+  <h1>⌨️ Tangentbordet</h1>
+  <p class="lead">Lär dig skriva med rätt fingrar. Varje finger har sin färg, och tangenterna har samma färg som fingret som ska trycka.</p>
+  <div class="tips" id="pekTips" hidden>⌨️ Den här övningen behöver ett riktigt tangentbord: en dator, en Chromebook eller en iPad med tangentbord.
+    <br><button class="pill" id="mjukBtn">Skriv ändå med skärmens tangentbord</button></div>
+  <div class="lagen" id="lagen"></div>
+  <p class="lead" style="margin-top:16px;font-size:.95rem">💡 Lägg fingrarna på <b>hemraden</b>: vänster pekfinger på F och höger pekfinger på J. Där finns små streck som du kan känna med fingertopparna. Tummarna vilar på mellanslaget.</p>
+</section>
+
+<section id="lektioner" class="screen" hidden>
+  <div class="gtop"><button class="pill" data-home id="lekHem">← Tillbaka</button></div>
+  <h2>🏠 Lektioner</h2>
+  <p class="lead">Börja med hemraden och lär dig en ny del av tangentbordet i taget.</p>
+  <div class="lekt" id="lekt"></div>
+</section>
+
+<section id="hittaval" class="screen" hidden>
+  <div class="gtop"><button class="pill" data-home>← Tillbaka</button></div>
+  <h2>🎯 Hitta tangenten</h2>
+  <p class="lead">En bokstav dyker upp. Tryck på den så fort du kan, utan att titta ner på tangentbordet! 20 bokstäver.</p>
+  <div class="lagen" id="hittalagen"></div>
+</section>
+
+<section id="game" class="screen" hidden>
+  <div class="gtop">
+    <button class="pill" id="quit">← Tillbaka</button>
+    <span class="pill" id="gInfo"></span>
+    <span class="sp"></span>
+    <span class="pill" id="gTid">⏱️ 0:00</span>
+    <span class="pill" id="gFel">❌ 0</span>
+  </div>
+  <p class="rubrik" id="gRubrik"></p>
+  <div id="gYta"></div>
+  <p class="hjalp" id="gHjalp"></p>
+  <div class="kb" id="kb" aria-hidden="true"></div>
+  <p class="fingertext" id="fingertext"></p>
+  <div class="hander" id="hander" aria-hidden="true"></div>
+  <div class="dold-kb"><button class="pill" id="kbVisa">🙈 Dölj tangentbordet på skärmen</button></div>
+</section>
+
+<section id="result" class="screen" hidden>
+  <div class="card res" id="res"></div>
+</section>
+
+</div>
+<input id="mjuk" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" aria-label="Skriv här">
+<canvas id="fx" hidden></canvas>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Tangentbordet" data-ikon="⌨️" data-hem="../../" data-portal="ovriga"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+
+/* ---------- Lagring (följer med profilen: nyckeln finns i startsidans PKEYS) ---------- */
+const KEY="mattespel-tangentbord-v1";
+const data=(()=>{const tom={stars:{},rekord:{},kbDold:false};try{return Object.assign(tom,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return tom;}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
+
+/* ---------- Tangentbordet (svensk layout) ---------- */
+// [tecken, finger, bredd]; finger: l/r = vänster/höger hand, p/r/m/i = lill-, ring-, lång-, pekfinger, t = tumme
+const RADER=[
+  [["§","lp"],["1","lp"],["2","lr"],["3","lm"],["4","li"],["5","li"],["6","ri"],["7","ri"],["8","rm"],["9","rr"],["0","rp"],["+","rp"],["´","rp"],["⌫","rp",2,"Backspace"]],
+  [["⇥","lp",1.5,"Tab"],["q","lp"],["w","lr"],["e","lm"],["r","li"],["t","li"],["y","ri"],["u","ri"],["i","rm"],["o","rr"],["p","rp"],["å","rp"],["¨","rp"],["⏎","rp",1.5,"Enter"]],
+  [["⇪","lp",1.75,"CapsLock"],["a","lp"],["s","lr"],["d","lm"],["f","li"],["g","li"],["h","ri"],["j","ri"],["k","rm"],["l","rr"],["ö","rp"],["ä","rp"],["'","rp"],["","rp",1.25,"Enter2"]],
+  [["⇧","lp",1.25,"ShiftLeft"],["<","lp"],["z","lp"],["x","lr"],["c","lm"],["v","li"],["b","li"],["n","ri"],["m","ri"],[",","rm"],[".","rr"],["-","rp"],["⇧","rp",2.75,"ShiftRight"]],
+  [["","",4.5,"tom1"],["mellanslag","t",6," "],["","",4.5,"tom2"]]];
+const FINGER={lp:"vänster lillfinger",lr:"vänster ringfinger",lm:"vänster långfinger",li:"vänster pekfinger",ri:"höger pekfinger",rm:"höger långfinger",rr:"höger ringfinger",rp:"höger lillfinger",t:"tummen"};
+const KEYS={};// tecken eller kod → element
+function ritaKb(){$("kb").innerHTML=RADER.map(r=>`<div class="kbr">${r.map(([c,f,w,kod])=>{const id=kod||c;const tom=!f;
+  const cls=["k",tom?"":f,(c==="f"||c==="j")?"knopp":"",(c.length>1||kod)?"liten":"",tom?"":(kod&&kod!==" "?"grå":"")].join(" ");
+  return `<span class="${cls}" data-k="${id}" style="width:calc(var(--u)*${w||1} - var(--u)*.08)${tom?";visibility:hidden":""}">${c==="mellanslag"?"":c}</span>`;}).join("")}</div>`).join("");
+  $("kb").querySelectorAll(".k").forEach(el=>KEYS[el.dataset.k]=el);KEYS["Enter2"]&&KEYS["Enter2"].classList.add("liten");
+  $("hander").innerHTML=["l","r"].map(h=>{const f=h==="l"?["p","r","m","i","t"]:["t","i","m","r","p"],hojd={p:42,r:56,m:62,i:56,t:30},var_={p:"--lill",r:"--ring",m:"--lang",i:"--pek",t:"--tumme"},namn={p:"lill",r:"ring",m:"lång",i:"pek",t:"tumme"};
+    return `<div><div class="hand">${f.map(x=>`<span class="fi" data-f="${x==="t"?"t":h+x}" style="height:${hojd[x]}px;--f:var(${var_[x]})">${namn[x]}</span>`).join("")}</div><div class="handnamn">${h==="l"?"Vänster hand":"Höger hand"}</div></div>`;}).join("");
+  $("kb").classList.toggle("tyst",false);}
+ritaKb();
+const fingerAv=ch=>{for(const r of RADER)for(const [c,f] of r)if(c===ch)return f;return ch===" "?"t":null;};
+// vilken tangent (och skift) som behövs för ett tecken
+function tangenter(ch){if(ch===" ")return[" "];const l=ch.toLowerCase();if(!KEYS[l])return[];
+  if(ch!==l){const f=fingerAv(l)||"";return[l,f[0]==="l"?"ShiftRight":"ShiftLeft"];}// skift med andra handen
+  return[l];}
+function visaMal(ch){document.querySelectorAll(".k.mal,.fi.aktiv").forEach(x=>x.classList.remove("mal","aktiv"));if(ch==null){$("fingertext").textContent="";return;}
+  const t=tangenter(ch);t.forEach(k=>KEYS[k]&&KEYS[k].classList.add("mal"));
+  const f=fingerAv(ch.toLowerCase())||(ch===" "?"t":null);if(f){const el=document.querySelector(`.fi[data-f="${f}"]`);if(el)el.classList.add("aktiv");}
+  $("fingertext").textContent=f?`Tryck ${ch===" "?"mellanslag":`på ${ch.toUpperCase()}`} med ${FINGER[f]}${t.length>1?" och håll inne skift med andra handen":""}`:"";}
+function blinka(k,cls){const el=KEYS[k];if(!el)return;el.classList.add("ner",cls||"");setTimeout(()=>el.classList.remove("ner","ratt","fel"),160);}
+
+/* ---------- Tangenttryck ---------- */
+let H=null;// hanteraren för det spel som pågår: H.tecken(ch)
+const iGang=()=>!$("game").hidden&&H;
+window.addEventListener("keydown",e=>{
+  // tangenten lyser även när den inte räknas (skift, backsteg …)
+  const kod={ShiftLeft:"ShiftLeft",ShiftRight:"ShiftRight",Backspace:"Backspace",Enter:"Enter",Tab:"Tab",CapsLock:"CapsLock"}[e.code];
+  if(kod&&iGang()){blinka(kod);if(kod==="Tab"||kod==="Backspace")e.preventDefault();return;}
+  if(e.ctrlKey||e.metaKey||e.altKey)return;
+  if(e.key&&e.key.length===1&&iGang()){e.preventDefault();H.tecken(e.key);}},true);
+// skärmens tangentbord (iPad utan tangentbord, mobil): tecknen kommer som text
+$("mjuk").addEventListener("input",()=>{const v=$("mjuk").value;$("mjuk").value="";if(iGang())for(const ch of v)H.tecken(ch);});
+const PEK=matchMedia("(pointer:coarse)").matches&&!matchMedia("(pointer:fine)").matches;
+let mjukt=false;
+$("mjukBtn").onclick=()=>{mjukt=true;$("pekTips").hidden=true;fokusMjuk();};
+// fältet har fokus under hela spelet: tecken som kommer som text (å, ä, ö på vissa datorer, skärmtangentbord) fångas där
+function fokusMjuk(){try{$("mjuk").focus({preventScroll:true});}catch(e){}}
+
+/* ---------- Skärmar ---------- */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+const starHtml=n=>[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("");
+const mmss=ms=>{const s=Math.floor(ms/1000);return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;};
+const sek=ms=>(ms/1000).toFixed(1).replace(".",",")+" s";
+const LAGEN=[
+  {id:"lek",ic:"🏠",c:"#FFE39A",namn:"Lektioner",txt:"Lär dig tangentbordet steg för steg, från hemraden till hela meningar"},
+  {id:"alfa",ic:"⏱️",c:"#C6F0CF",namn:"Alfabetet på tid",txt:"Skriv a till ö så fort du kan. Slå ditt rekord!"},
+  {id:"hitta",ic:"🎯",c:"#BFDBFF",namn:"Hitta tangenten",txt:"Tryck på bokstaven som dyker upp, utan att titta ner"},
+  {id:"ord",ic:"✍️",c:"#D9C8FF",namn:"Skriv orden",txt:"Hur många ord hinner du skriva på en minut?"}];
+function openHome(){stopp();H=null;$("pekTips").hidden=!PEK||mjukt;
+  const lk=LEKTIONER.filter(l=>(data.stars["l"+l.n]||0)>0).length;
+  const info={lek:`<span class="rek">${lk} av ${LEKTIONER.length} lektioner klara</span>`,
+    alfa:`<span class="st">${starHtml(data.stars.alfa||0)}</span>${data.rekord.alfa?` <span class="rek">Rekord ${sek(data.rekord.alfa)}</span>`:""}`,
+    hitta:`<span class="st">${starHtml(Math.max(data.stars["hitta-hem"]||0,data.stars["hitta-alla"]||0))}</span>`,
+    ord:`<span class="st">${starHtml(data.stars.ord||0)}</span>${data.rekord.ord?` <span class="rek">Rekord ${data.rekord.ord} ord/min</span>`:""}`};
+  $("lagen").innerHTML=LAGEN.map(l=>`<button class="lage" data-l="${l.id}"><span class="ic" style="background:${l.c}">${l.ic}</span><span class="txt"><b>${l.namn}</b><small>${l.txt}</small>${info[l.id]}</span></button>`).join("");
+  show("home");}
+$("lagen").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;const l=b.dataset.l;
+  if(l==="lek")visaLektioner();else if(l==="alfa")startAlfa();else if(l==="hitta")visaHitta();else startOrd();};
+document.querySelectorAll("[data-home]").forEach(b=>b.onclick=openHome);
+
+/* ---------- Lektionerna ---------- */
+// nya: bokstäverna som lektionen lär ut; alla lektioner bygger på de föregående
+const LEKTIONER=[
+  {n:1,namn:"Hemraden, vänster hand",nya:"asdf"},
+  {n:2,namn:"Hemraden, höger hand",nya:"jklö"},
+  {n:3,namn:"Mitten: G, H och Ä",nya:"ghä"},
+  {n:4,namn:"Övre raden: E, R, U, I",nya:"erui"},
+  {n:5,namn:"Övre raden: T, O, P, Å",nya:"topå"},
+  {n:6,namn:"Övre raden: W, Y, Q",nya:"wyq"},
+  {n:7,namn:"Nedre raden: C, V, B, N, M",nya:"cvbnm"},
+  {n:8,namn:"Nedre raden: Z, X och tecken",nya:"zx,.-"},
+  {n:9,namn:"Stora bokstäver med skift",nya:"",stora:true},
+  {n:10,namn:"Allt på en gång: meningar",nya:"",meningar:true}];
+const ORDBANK=("all fall kall skal sal dal ska lösa falla slösa dök hall hals häl dag glad gäss lägg ljus sjö "+
+ "risk rädd säker ser se hus is ris ugn under resa läsa sida fika dela leka heja jul ek eld ord ros sol tåg ost öra "+
+ "stor torr tak potatis tröja sport post pasta röra frukt rida sitta peta trä tre jord hjul lök fisk djur fjäril "+
+ "katt hatt kort tid här hej tyst stig stol klo påse åka båt spår sår går får hår rök tröst glass väska koja "+
+ "yxa yster wok quiz vy ny by sy dyr fyra yla sylt "+
+ "bil boll bok buss mamma pappa barn ben brun blå blomma vind vinter sommar natt mus mjölk morot banan näsa "+
+ "ninja nisse moln mun maj november vecka cykel citron vas varm vante kvast kanin knappar snö snabb människor "+
+ "zebra zoo xylofon taxi lax sex box växa").split(" ");
+const MENINGAR=["Det är kallt ute i dag.","Katten sover i soffan.","Vi åker buss till skolan.","Min hund heter Bosse.","Hon äter en glass i solen.",
+  "Pappa bakar bullar på lördag.","Jag kan skriva med tio fingrar.","Mormor bor i Malmö.","Snön faller på taket.","Ekorren gömmer nötter i skogen.",
+  "Vi spelar fotboll på rasten.","Anna har en röd cykel.","I Sverige finns många sjöar.","Klockan är tre.","Glad sommar, alla barn."];
+const STORA=["Anna","Bosse","Lisa","Omar","Sara","Ella","Noah","Elsa","Kim","Malmö","Lund","Umeå","Sverige","Stockholm","Göteborg","Vilma","Hugo","Olle"];
+const tillat=n=>LEKTIONER.filter(l=>l.n<=n).map(l=>l.nya).join("");
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+function lektionText(L){
+  if(L.meningar){const m=[...MENINGAR].sort(()=>Math.random()-.5).slice(0,4);return m.join(" ");}
+  if(L.stora){const o=[...STORA].sort(()=>Math.random()-.5).slice(0,10);return o.join(" ");}
+  const ny=[...L.nya].filter(c=>/[a-zåäö]/.test(c)),alla=[...tillat(L.n)].filter(c=>/[a-zåäö]/.test(c)),delar=[];
+  // 1) varje ny bokstav tre gånger, och par av nya bokstäver
+  ny.forEach(c=>delar.push(c+c+c));
+  for(let i=0;i<3;i++)delar.push(rnd(ny)+rnd(ny)+rnd(ny));
+  // 2) korta grupper där de nya bokstäverna blandas med tidigare
+  for(let i=0;i<4;i++){let g="";for(let j=0;j<4;j++)g+=Math.random()<.55?rnd(ny):rnd(alla);delar.push(g);}
+  // 3) riktiga ord med bara de bokstäver man har lärt sig (helst med en ny bokstav)
+  const ok=ORDBANK.filter(w=>[...w].every(c=>alla.includes(c)));const med=ok.filter(w=>[...w].some(c=>ny.includes(c)));
+  const ordv=[...(med.length>=4?med:ok)].sort(()=>Math.random()-.5).slice(0,6);delar.push(...ordv);
+  // tecken: komma och punkt i lektion 8
+  if(L.n===8)delar.push("ja, nej.","hej - då.");
+  return delar.join(" ");}
+function visaLektioner(){$("lekt").innerHTML=LEKTIONER.map(L=>`<button class="lek" data-n="${L.n}"><span class="nr">${L.n}</span><span><b>${L.namn}</b>
+  <small>${L.stora?"Aa Bb Cc":L.meningar?"Det är kallt.":L.nya.toUpperCase().split("").join(" ")}</small><span class="st">${starHtml(data.stars["l"+L.n]||0)}</span></span></button>`).join("");show("lektioner");}
+$("lekt").onclick=e=>{const b=e.target.closest("[data-n]");if(b)startLektion(+b.dataset.n);};
+
+/* ---------- Gemensamt: skriv en text ---------- */
+let T=null,tidT=null;
+function stopp(){clearInterval(tidT);clearTimeout(T&&T.slutT);visaMal(null);}
+function startSpel(o){stopp();T=Object.assign({pos:0,fel:0,t0:0,ratt:0},o);show("game");$("gInfo").textContent=o.info;$("gRubrik").textContent=o.rubrik;
+  $("gHjalp").textContent=o.hjalp||"";$("gFel").textContent="❌ 0";$("gTid").textContent=o.nedrakning?"⏱️ 1:00":"⏱️ 0:00";
+  $("kb").hidden=$("hander").hidden=$("fingertext").hidden=!!data.kbDold;$("kbVisa").textContent=data.kbDold?"⌨️ Visa tangentbordet på skärmen":"🙈 Dölj tangentbordet på skärmen";
+  tidT=setInterval(()=>{if(!T||!T.t0)return;const ms=performance.now()-T.t0;$("gTid").textContent="⏱️ "+(o.nedrakning?mmss(Math.max(0,60000-ms)+999):mmss(ms));if(o.nedrakning&&ms>=60000&&!T.klar){T.klar=true;o.vidSlut();}},200);
+  fokusMjuk();}
+$("game").addEventListener("pointerdown",e=>{if(!e.target.closest("button"))setTimeout(fokusMjuk,0);});
+$("kbVisa").onclick=()=>{data.kbDold=!data.kbDold;save();$("kb").hidden=$("hander").hidden=$("fingertext").hidden=data.kbDold;
+  $("kbVisa").textContent=data.kbDold?"⌨️ Visa tangentbordet på skärmen":"🙈 Dölj tangentbordet på skärmen";fokusMjuk();};
+$("quit").onclick=()=>{const t=T&&T.tillbaka;stopp();H=null;T=null;(t||openHome)();};
+// ett tecken i taget: rätt = nästa, fel = räknas och samma tecken igen
+function skriv(ch,mal,rattFn){if(!T.t0)T.t0=performance.now();
+  // stor bokstav där det ska vara liten: Caps Lock är troligen på, det räknas inte som fel
+  if(ch!==mal&&ch.toLowerCase()===mal){ch=mal;$("gHjalp").textContent="🔠 Det blir stora bokstäver. Är Caps Lock på? Tryck på ⇪ för att stänga av.";}
+  const keys=tangenter(ch).length?tangenter(ch):[ch.toLowerCase()];
+  if(ch===mal){keys.forEach(k=>blinka(k,"ratt"));T.ratt++;rattFn();return true;}
+  keys.forEach(k=>blinka(k,"fel"));T.fel++;$("gFel").textContent="❌ "+T.fel;return false;}
+
+/* ---------- Lektion ---------- */
+function startLektion(n){const L=LEKTIONER[n-1],txt=lektionText(L);
+  startSpel({info:`Lektion ${n}`,rubrik:L.namn,hjalp:L.stora?"Håll inne skift med andra handen och tryck på bokstaven.":"Titta på texten, inte på händerna!",tillbaka:visaLektioner});
+  T.text=[...txt];$("gYta").innerHTML=`<div class="text" id="txt">${T.text.map((c,i)=>`<span class="${c===" "?"mell":""}" data-i="${i}">${c===" "?" ":esc(c)}</span>`).join("")}</div>`;
+  const span=i=>$("txt").children[i];
+  const visa=()=>{const s=span(T.pos);if(s){s.classList.add("nu");}visaMal(T.text[T.pos]);};visa();
+  H={tecken(ch){if(T.klar)return;const mal=T.text[T.pos],s=span(T.pos);
+    const ok=skriv(ch,mal,()=>{s.classList.remove("nu","fel");s.classList.add("ok");T.pos++;if(T.pos>=T.text.length)return klarLektion(L);visa();});
+    if(!ok){s.classList.remove("fel");void s.offsetWidth;s.classList.add("fel");}}};}
+function klarLektion(L){T.klar=true;visaMal(null);const ms=performance.now()-T.t0,tpm=Math.round(T.ratt/(ms/60000));
+  // ⭐ klar, ⭐⭐ högst 3 fel, ⭐⭐⭐ högst 1 fel och minst 30 tecken i minuten
+  const st=T.fel<=1&&tpm>=30?3:T.fel<=3?2:1;
+  resultat({id:"l"+L.n,st,rubrik:`Lektion ${L.n} klar!`,siffror:[[mmss(ms),"tid"],[T.fel,"fel"],[tpm,"tecken/min"]],
+    mal:st<2?"Högst 3 fel ger två stjärnor.":st<3?"Högst 1 fel och minst 30 tecken i minuten ger tre stjärnor.":"Full pott!",
+    igen:()=>startLektion(L.n),nasta:L.n<LEKTIONER.length?["Nästa lektion ›",()=>startLektion(L.n+1)]:null,tillbaka:visaLektioner});}
+
+/* ---------- Alfabetet på tid ---------- */
+const ALFA=[..."abcdefghijklmnopqrstuvwxyzåäö"];
+function startAlfa(){startSpel({info:"Alfabetet",rubrik:"Skriv a till ö så fort du kan!",hjalp:data.rekord.alfa?`Ditt rekord: ${sek(data.rekord.alfa)}. Tiden startar när du trycker på A.`:"Tiden startar när du trycker på A.",tillbaka:openHome});
+  T.text=ALFA;$("gYta").innerHTML=`<div class="text" id="txt" style="text-align:center;letter-spacing:4px">${ALFA.map((c,i)=>`<span data-i="${i}">${c}</span>`).join("")}</div>`;
+  const span=i=>$("txt").children[i];span(0).classList.add("nu");visaMal("a");
+  H={tecken(ch){if(T.klar)return;if(!T.t0&&ch.toLowerCase()!=="a")return;const s=span(T.pos);
+    const ok=skriv(ch.toLowerCase(),ALFA[T.pos],()=>{s.classList.remove("nu","fel");s.classList.add("ok");T.pos++;if(T.pos>=ALFA.length)return klarAlfa();span(T.pos).classList.add("nu");visaMal(ALFA[T.pos]);});
+    if(!ok){s.classList.remove("fel");void s.offsetWidth;s.classList.add("fel");}}};}
+function klarAlfa(){T.klar=true;visaMal(null);const ms=performance.now()-T.t0,old=data.rekord.alfa,nytt=!old||ms<old;if(nytt)data.rekord.alfa=Math.round(ms);
+  // ⭐ under 60 s, ⭐⭐ under 30 s, ⭐⭐⭐ under 15 s
+  const st=ms<15000?3:ms<30000?2:ms<60000?1:0;
+  resultat({id:"alfa",st,rubrik:nytt&&old?"🏆 Nytt rekord!":"Hela alfabetet!",siffror:[[sek(ms),"tid"],[T.fel,"fel"],[sek(data.rekord.alfa),"rekord"]],nyttRek:nytt&&!!old,
+    mal:st<1?"Under 60 sekunder ger en stjärna.":st<2?"Under 30 sekunder ger två stjärnor.":st<3?"Under 15 sekunder ger tre stjärnor.":"Blixtsnabbt!",igen:startAlfa,tillbaka:openHome});}
+
+/* ---------- Hitta tangenten ---------- */
+const HITTA=[{id:"hem",ic:"🏠",c:"#FFE39A",namn:"Hemraden",txt:"A S D F G H J K L Ö Ä",tecken:"asdfghjklöä"},{id:"alla",ic:"🔤",c:"#BFDBFF",namn:"Alla bokstäver",txt:"Hela alfabetet",tecken:ALFA.join("")}];
+function visaHitta(){$("hittalagen").innerHTML=HITTA.map(v=>`<button class="lage" data-h="${v.id}"><span class="ic" style="background:${v.c}">${v.ic}</span><span class="txt"><b>${v.namn}</b><small>${v.txt}</small>
+  <span class="st">${starHtml(data.stars["hitta-"+v.id]||0)}</span>${data.rekord["hitta-"+v.id]?` <span class="rek">Rekord ${sek(data.rekord["hitta-"+v.id])}</span>`:""}</span></button>`).join("");show("hittaval");}
+$("hittalagen").onclick=e=>{const b=e.target.closest("[data-h]");if(b)startHitta(b.dataset.h);};
+function startHitta(id){const v=HITTA.find(x=>x.id===id);startSpel({info:"Hitta tangenten",rubrik:`${v.namn}: tryck på bokstaven!`,hjalp:"Titta på skärmen, inte på tangenterna.",tillbaka:visaHitta});
+  const seq=[];while(seq.length<20){const c=rnd([...v.tecken]);if(c!==seq[seq.length-1])seq.push(c);}T.text=seq;
+  const visa=()=>{$("gYta").innerHTML=`<div class="stor" id="bok">${T.text[T.pos].toUpperCase()}</div>`;$("gInfo").textContent=`${T.pos+1} / 20`;visaMal(null);};visa();
+  H={tecken(ch){if(T.klar)return;const ok=skriv(ch.toLowerCase(),T.text[T.pos],()=>{T.pos++;if(T.pos>=T.text.length)return klarHitta(v);visa();});
+    // fel: bokstaven skakar och tangenten visas som hjälp
+    if(!ok){const b=$("bok");b.classList.remove("fel");void b.offsetWidth;b.classList.add("fel");visaMal(T.text[T.pos]);}}};}
+function klarHitta(v){T.klar=true;visaMal(null);const ms=performance.now()-T.t0,k="hitta-"+v.id,old=data.rekord[k],nytt=T.fel<=2&&(!old||ms<old);if(nytt)data.rekord[k]=Math.round(ms);
+  // ⭐ klar, ⭐⭐ högst 2 fel, ⭐⭐⭐ utan fel och under 40 sekunder
+  const st=T.fel===0&&ms<40000?3:T.fel<=2?2:1;
+  resultat({id:k,st,rubrik:`${v.namn}: klart!`,siffror:[[sek(ms),"tid"],[T.fel,"fel"]].concat(data.rekord[k]?[[sek(data.rekord[k]),"rekord"]]:[]),nyttRek:nytt&&!!old,
+    mal:st<2?"Högst 2 fel ger två stjärnor.":st<3?"Inga fel och under 40 sekunder ger tre stjärnor.":"Du hittar utan att titta!",igen:()=>startHitta(v.id),tillbaka:visaHitta});}
+
+/* ---------- Skriv orden ---------- */
+let ORDLISTA=ORDBANK.filter(w=>w.length>=2);
+// fler ord från Ordgåtan (nivå 1 och 2), om de går att ladda
+Promise.all([1,2].map(n=>fetch(`../ordgatan/ord/niva${n}.json`).then(r=>r.json()).catch(()=>null))).then(ds=>{ds.forEach(d=>{if(d&&d.ord)d.ord.forEach(o=>{if(/^[a-zåäö]{2,7}$/.test(o.ord))ORDLISTA.push(o.ord);});});ORDLISTA=[...new Set(ORDLISTA)];});
+function startOrd(){startSpel({info:"Skriv orden",rubrik:"Skriv orden och tryck mellanslag efter varje ord!",hjalp:"Tiden startar när du börjar skriva. Du har en minut.",nedrakning:true,vidSlut:klarOrd,tillbaka:openHome});
+  T.ord=[];for(let i=0;i<80;i++){let w;do{w=rnd(ORDLISTA);}while(T.ord[T.ord.length-1]===w);T.ord.push(w);}T.wi=0;T.ci=0;T.klaraOrd=0;
+  const visa=()=>{const w=T.ord[T.wi]+" ";$("gYta").innerHTML=`<div class="ordrad"><span class="nu">${[...w].map((c,i)=>`<span class="${i<T.ci?"ok":i===T.ci?"c":""}">${c===" "?"␣":esc(c)}</span>`).join("")}</span>
+    <span class="sen">${T.ord.slice(T.wi+1,T.wi+3).join(" ")}</span></div><div class="siffror"><div><b>${T.klaraOrd}</b><small>ord</small></div></div>`;visaMal(w[T.ci]);};visa();
+  H={tecken(ch){if(T.klar)return;const w=T.ord[T.wi]+" ";
+    const ok=skriv(ch,w[T.ci],()=>{T.ci++;if(T.ci>=w.length){T.klaraOrd++;T.wi++;T.ci=0;}visa();});
+    if(!ok){const c=$("gYta").querySelector(".nu .c");if(c){c.classList.add("fel");setTimeout(()=>c.classList.remove("fel"),250);}}}};}
+function klarOrd(){visaMal(null);const n=T.klaraOrd,old=data.rekord.ord||0,nytt=n>old;if(nytt)data.rekord.ord=n;
+  // ⭐ minst 5, ⭐⭐ minst 10, ⭐⭐⭐ minst 15 ord på en minut
+  const st=n>=15?3:n>=10?2:n>=5?1:0;
+  resultat({id:"ord",st,rubrik:`${n} ord på en minut!`,siffror:[[n,"ord/min"],[T.fel,"fel"],[data.rekord.ord,"rekord"]],nyttRek:nytt&&old>0,
+    mal:st<1?"Minst 5 ord ger en stjärna.":st<2?"Minst 10 ord ger två stjärnor.":st<3?"Minst 15 ord ger tre stjärnor.":"Fingrarna flyger!",igen:startOrd,tillbaka:openHome});}
+
+/* ---------- Resultat ---------- */
+function resultat(r){clearInterval(tidT);H=null;const old=data.stars[r.id]||0;if(r.st>old)data.stars[r.id]=r.st;save();
+  const pet=window.owlSVG&&window.lasDjur?owlSVG(lasDjur(),"owl"):"";
+  $("res").innerHTML=`${pet}<h2>${r.rubrik}</h2><div class="storst">${starHtml(r.st)}</div>
+    <div class="siffror">${r.siffror.map(([v,t])=>`<div><b>${v}</b><small>${t}</small></div>`).join("")}</div>
+    <p style="margin:4px 0;color:var(--muted);font-weight:700">${r.st>old&&r.st>0?"⭐ Ny stjärna! ":""}${r.mal}</p>
+    ${r.nasta?`<button class="big" id="rNasta">${r.nasta[0]}</button>`:""}<button class="big${r.nasta?" sek":""}" id="rIgen">🔄 Försök igen</button><button class="big sek" id="rHome">Tillbaka</button>`;
+  const ow=$("res").querySelector("svg");if(ow)ow.classList.add("owl");
+  if(r.nasta)$("rNasta").onclick=r.nasta[1];$("rIgen").onclick=r.igen;$("rHome").onclick=r.tillbaka;
+  $("mjuk").blur();show("result");if(r.st===3||r.nyttRek)confetti();else window.Ljud&&Ljud.ok&&Ljud.ok();}
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function confetti(){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"],c=$("fx"),x=c.getContext("2d"),dpr=devicePixelRatio||1,W=innerWidth,H2=innerHeight;
+  c.width=W*dpr;c.height=H2*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:140},()=>({x:W/2+(Math.random()-.5)*120,y:H2*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:cols[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H2);P.forEach(p=>{p.vy+=.45;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2600)requestAnimationFrame(f);else{x.clearRect(0,0,W,H2);c.hidden=true;}})(t0);}
+openHome();
+window.TB={T:()=>T,data:()=>data,LEKTIONER,lektionText,ORDBANK,tillat};
+</script>
+</body>
+</html>
