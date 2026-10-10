@@ -352,12 +352,13 @@ function stavelser(w){const u=ljud(w);if(u.length<2)return u;const nuc=u.map((x,
 const VISA=[["ljud","Ljud"],["stav","Stavelser"],["hel","Hela ordet"]];
 if(!["ljud","stav","hel"].includes(data.visa))data.visa="ljud";
 function visaHtml(){return VISA.map(([v,t])=>`<button data-v="${v}" aria-pressed="${data.visa===v}">${t}</button>`).join("");}
-function drawLearn(){const w=L.ws[L.i],helord=HELORD.has(w),sv=data.visa==="stav"?stavelser(w):null,stav=sv&&sv.length>1;
-  const units=data.visa==="hel"||helord?[w]:stav?sv:ljud(w),hel=units.length===1;sett(w);save();
+function drawLearn(){const w=L.ws[L.i],helord=HELORD.has(w),stav=data.visa==="stav";
+  // i läget Stavelser får ord med en stavelse en enda markering (lärarens önskan: annars blir det förvirrande)
+  const units=data.visa==="hel"||helord?[w]:stav?stavelser(w):ljud(w),hel=data.visa==="hel"||helord;sett(w);save();
   $("lInfo").textContent=`Ord ${L.i+1} av ${L.ws.length}`;$("lVisa").innerHTML=visaHtml();
   $("lStage").innerHTML=`<div class="lj"><div class="big in letters${stav?" stav":""}" id="lWord" style="--c:${col(w)}">${units.map((u,k)=>`<span class="u${u.length>1&&!hel&&!stav?" multi":""}" data-u="${k}">${u}</span>`).join("")}</div>
     ${hel?"":`<div class="track" id="lTrack"><i class="fill" id="lFill"></i>${units.map(()=>`<b class="dot${stav?" wide":""}"></b>`).join("")}<span class="knob" id="lKnob" aria-hidden="true"></span></div>`}</div>
-    <p class="lmsg" id="lMsg">${helord?"Det här ordet lär man sig som ett helt ord. Tryck 🔊 och säg det!":hel?"Tryck 🔊 och säg ordet!":stav?"Dra den runda knappen och säg en stavelse i taget!":"Dra den runda knappen under ordet och säg ljuden!"}</p>`;
+    <p class="lmsg" id="lMsg">${helord?"Det här ordet lär man sig som ett helt ord. Tryck 🔊 och säg det!":hel?"Tryck 🔊 och säg ordet!":stav?(units.length>1?"Dra den runda knappen och säg en stavelse i taget!":"Ordet har bara en stavelse. Dra knappen och säg hela ordet!"):"Dra den runda knappen under ordet och säg ljuden!"}</p>`;
   $("lNext").textContent=L.i<L.ws.length-1?"Nästa ord ➜":"Klar ✓";
   // långa ord krymper tills de får plats (tillsammans, varandra …)
   requestAnimationFrame(()=>{const el=$("lWord"),max=$("lStage").clientWidth-56;let fs=parseFloat(getComputedStyle(el).fontSize);
