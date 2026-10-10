@@ -131,7 +131,7 @@ const TEMAN=[
  {id:"stan",ic:"🏙️",name:"In town",sv:"I stan",ord:[["a castle","ett slott",["castle"]],["a church","en kyrka",["church"]],["a hospital","ett sjukhus",["hospital"]],["a lighthouse","en fyr",["lighthouse"]],["a skyscraper","en skyskrapa",["skyscraper"]],["a windmill","en väderkvarn",["windmill"]],["a barn","en lada",["barn"]],["a fence","ett staket",["fence"]],["a garden","en trädgård",["garden"]],["a mailbox","en brevlåda",["mailbox"]],["a stop sign","en stoppskylt",["stop_sign"]],["a fire hydrant","en brandpost",["fire_hydrant"]],["a streetlight","en gatlykta",["streetlight"]],["the Eiffel Tower","Eiffeltornet",["The_Eiffel_Tower"]],["the Great Wall of China","Kinesiska muren",["The_Great_Wall_of_China"]],["the Mona Lisa","Mona Lisa (en berömd tavla)",["The_Mona_Lisa"]]]},
  {id:"verktyg",ic:"🔨",name:"Tools",sv:"Verktyg",ord:[["a hammer","en hammare",["hammer"]],["a nail","en spik",["nail"]],["a saw","en såg",["saw"]],["a screwdriver","en skruvmejsel",["screwdriver"]],["a drill","en borrmaskin",["drill"]],["pliers","en tång",["pliers"]],["an axe","en yxa",["axe"]],["a shovel","en spade",["shovel"]],["a rake","en kratta",["rake"]],["a broom","en kvast",["broom"]],["a bucket","en hink",["bucket"]],["a ladder","en stege",["ladder"]],["a paint can","en färgburk",["paint_can"]],["a garden hose","en trädgårdsslang",["garden_hose"]],["a wheel","ett hjul",["wheel"]],["a flashlight","en ficklampa",["flashlight"]],["an anvil","ett städ",["anvil"]]]},
  {id:"saga",ic:"🐉",name:"Fairy tales",sv:"Sagor och äventyr",ord:[["a dragon","en drake",["dragon"]],["a mermaid","en sjöjungfru",["mermaid"]],["an angel","en ängel",["angel"]],["a sword","ett svärd",["sword"]],["a diamond","en diamant",["diamond"]],["a crown","en krona",["crown"]],["a lantern","en lykta",["lantern"]],["a compass","en kompass",["compass"]],["binoculars","en kikare",["binoculars"]],["a treasure map","en skattkarta",["map"]],["a sleeping bag","en sovsäck",["sleeping_bag"]],["a flying saucer","ett flygande tefat",["flying_saucer"]],["a skull","en dödskalle",["skull"]]]}];
-const RUNDA=8,TID=20,SAKER=.25;
+const RUNDA=8,TID=20,SAKER=.6,MINTID=3000;
 
 /* ---------- Modellen ---------- */
 let MODEL=null,NAMES=null,laddar=null;
@@ -179,20 +179,24 @@ function storlek(){const r=cv.getBoundingClientRect(),dpr=Math.min(2,devicePixel
 function rita(){const r=cv.getBoundingClientRect();cx.clearRect(0,0,r.width,r.height);cx.strokeStyle="#1D2B53";cx.lineWidth=6;cx.lineCap="round";cx.lineJoin="round";
   if(!G)return;G.strokes.forEach(s=>{cx.beginPath();s.forEach(([x,y],i)=>i?cx.lineTo(x,y):cx.moveTo(x,y));if(s.length===1)cx.lineTo(s[0][0]+.1,s[0][1]);cx.stroke();});}
 function nasta(){if(G.i>=G.ord.length)return slut();
-  const [en,sv,k]=G.ord[G.i];Object.assign(G,{en,sv,k,strokes:[],klar:false,t0:0,last:"",sagt:0,top:""});
+  const [en,sv,k]=G.ord[G.i];Object.assign(G,{en,sv,k,strokes:[],klar:false,t0:0,last:"",sagt:0,top:"",saker:0,forst:0,g:null,nPts:0});
   $("gEn").textContent=en;$("gSvT").textContent=`(${sv})`;$("gSvT").hidden=true;$("gSv").hidden=false;$("gInfo").textContent=`${G.i+1} / ${G.ord.length}`;
   $("gGuess").textContent="";$("gGuess").className="guess";$("gT").style.width="100%";storlek();
   // kortet "Draw: a cat" en stund, sedan börjar tiden
   $("iEn").textContent=en;$("iNr").textContent=`Ord ${G.i+1} av ${G.ord.length}`;$("intro").hidden=false;say(`Draw ${en}!`);
   G.tm=setTimeout(()=>{$("intro").hidden=true;G.t0=performance.now();tick();},1600);}
 function tick(){if(!G||G.klar)return;const kvar=TID-(performance.now()-G.t0)/1000;$("gT").style.width=Math.max(0,kvar/TID*100)+"%";
-  if(kvar<=0)return klart(false);G.raf=requestAnimationFrame(tick);}
+  if(kvar<=0)return klart(false);gissaNu();if(G.klar)return;G.raf=requestAnimationFrame(tick);}
 // datorn gissar medan man ritar (högst ungefär tre gånger i sekunden)
 let gT=0;function gissaNu(){if(!G||G.klar||!MODEL||!G.strokes.length)return;const now=performance.now();if(now-gT<300)return;gT=now;
-  const g=gissa(G.strokes);if(!g.length)return;G.top=g[0].n;
-  // rätt först när datorn är ganska säker: ordet är förstahandsgissningen (minst 25 %) eller ordets kategorier har tillsammans minst hälften
+  // samma teckning som förra gången: använd samma gissning
+  const nPts=G.strokes.reduce((a,s)=>a+s.length,0);if(nPts!==G.nPts||!G.g){G.g=gissa(G.strokes);G.nPts=nPts;}
+  const g=G.g;if(!g.length)return;G.top=g[0].n;
+  // rätt först när datorn är riktigt säker (minst 60 %), har varit det tre gånger i rad (ungefär en sekund)
+  // och eleven har ritat i minst tre sekunder
   const best=g[0],mal=g.filter(x=>G.k.includes(x.n)).reduce((a,x)=>a+x.p,0);
-  if((G.k.includes(best.n)&&best.p>=SAKER)||mal>=.5)return klart(true);
+  if(G.k.includes(best.n)&&mal>=SAKER)G.saker++;else G.saker=0;
+  if(G.saker>=3&&now-G.forst>=MINTID)return klart(true);
   if(G.k.includes(best.n)){$("gGuess").textContent="Hmm … I think I know … 🤔";return;}
   if(best.p<.12)return;const txt=enNamn(best.n);
   $("gGuess").textContent=pick(["I see","Is it","Hmm, maybe","Could it be"])+` ${txt}?`;
@@ -217,12 +221,12 @@ function stop(){if(G){clearTimeout(G.tm);cancelAnimationFrame(G.raf);}G=null;$("
 /* ---------- Rita med finger eller mus ---------- */
 let ner=null;
 const pos=e=>{const r=cv.getBoundingClientRect();return[e.clientX-r.left,e.clientY-r.top];};
-cv.addEventListener("pointerdown",e=>{if(!G||G.klar||!G.t0)return;e.preventDefault();ner=e.pointerId;try{cv.setPointerCapture(e.pointerId);}catch(_){}G.strokes.push([pos(e)]);rita();});
+cv.addEventListener("pointerdown",e=>{if(!G||G.klar||!G.t0)return;e.preventDefault();ner=e.pointerId;try{cv.setPointerCapture(e.pointerId);}catch(_){}if(!G.forst)G.forst=performance.now();G.strokes.push([pos(e)]);rita();});
 cv.addEventListener("pointermove",e=>{if(ner!==e.pointerId||!G||G.klar)return;const s=G.strokes[G.strokes.length-1],p=pos(e),q=s[s.length-1];if(Math.hypot(p[0]-q[0],p[1]-q[1])<2)return;s.push(p);
   cx.beginPath();cx.moveTo(q[0],q[1]);cx.lineTo(p[0],p[1]);cx.stroke();gissaNu();});
 const upp=e=>{if(ner!==e.pointerId)return;ner=null;gT=0;gissaNu();};
 cv.addEventListener("pointerup",upp);cv.addEventListener("pointercancel",upp);
-$("gClear").onclick=()=>{if(!G||G.klar)return;G.strokes=[];G.last="";$("gGuess").textContent="";rita();};
+$("gClear").onclick=()=>{if(!G||G.klar)return;G.strokes=[];G.last="";G.saker=0;G.g=null;G.nPts=0;$("gGuess").textContent="";rita();};
 $("gSkip").onclick=()=>{if(!G||G.klar||!G.t0)return;klart(false);};
 $("gSay").onclick=()=>{if(G)say(G.en,true);};
 $("gSv").onclick=()=>{$("gSvT").hidden=false;$("gSv").hidden=true;};
