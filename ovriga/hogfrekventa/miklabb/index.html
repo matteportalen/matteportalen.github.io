@@ -128,12 +128,15 @@ const LISTOR={
 };
 // samma uttalsformer som i övningen
 const UTTAL={och:["å","o","och"],det:["de","dä","det"],är:["e","ä","är"],jag:["ja","jag"],de:["dom","de"],dem:["dom","dem"],var:["va","var"],vad:["va","vad"],
-  mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
+  har:["har","ha","hör"],mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
 const norm=s=>s.toLowerCase().replace(/[.,!?;:"'…–-]/g," ").split(/\s+/).filter(Boolean);
 function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
   for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
 // stämmer det hörda ordet med ordet i listan? längre ord får skilja en bokstav
-function passar(mal,h){if(h===mal||(UTTAL[mal]||[]).includes(h))return true;return mal.length>=5&&lev(mal,h)<=1;}
+function passar(mal,h){if(!h)return false;if(h===mal||(UTTAL[mal]||[]).includes(h))return true;
+  // korta ord: en extra bokstav på slutet räknas (vi/vid) om det inte är ett annat ord i listan
+  if(mal.length<=3&&h.length===mal.length+1&&h.startsWith(mal)&&!ORD.includes(h))return true;
+  return mal.length>=5&&lev(mal,h)<=1;}
 
 /* ---------- Orden och rutnätet ---------- */
 let ORD=[];
@@ -149,23 +152,25 @@ function logga(typ,txt){const l=$("log");const d=document.createElement("div");d
 // per lyssnare: vilka ord som hörts, var i listan man är och hur lång tid det tog
 const R={web:null,kb:null};
 function nyR(){return{hord:new Set(),sista:-1,ford:[]};}
-let blixtI=-1,visadVid=[],senasteTal=0;
-function markera(typ,ordList,tSlut){const r=R[typ];if(!r)return;
-  for(const h of ordList){let hit=-1;
-    if(lage==="blixt"){// i Blixtläsning: ordet som visas nu eller de tre före (KB-Whisper svarar en till två sekunder senare)
-      for(let i=blixtI;i>=Math.max(0,blixtI-3);i--)if(!r.hord.has(i)&&passar(ORD[i],h)){hit=i;break;}}
-    else{// först några ord efter det senast hörda, sedan bakåt bland missade ord
-      const fran=r.sista+1;for(let i=fran;i<Math.min(ORD.length,fran+4);i++)if(!r.hord.has(i)&&passar(ORD[i],h)){hit=i;break;}
-      if(hit<0)for(let i=Math.max(0,fran-4);i<fran;i++)if(!r.hord.has(i)&&passar(ORD[i],h)){hit=i;break;}}
-    if(hit<0)continue;r.hord.add(hit);if(hit>r.sista)r.sista=hit;
-    const el=$((typ==="web"?"mw":"mk")+hit);if(el)el.classList.add("ja");
-    const ref=lage==="blixt"?(visadVid[hit]||0):tSlut||senasteTal;if(ref)r.ford.push(performance.now()-ref);}
+let blixtI=-1,visadVid=[];
+function markera(typ,ordList,ref){const r=R[typ];if(!r)return;
+  const ledig=(i,h)=>i>=0&&i<ORD.length&&!r.hord.has(i)&&passar(ORD[i],h);
+  // två ord som hörts ihop till ett, som "förmed" eller "tillhör"
+  const ihop=(i,h)=>{if(i<0||i+1>=ORD.length)return false;for(let k=1;k<h.length;k++)if(passar(ORD[i],h.slice(0,k))&&passar(ORD[i+1],h.slice(k)))return true;return false;};
+  for(const h of ordList){let hits=[];
+    // i Blixtläsning: ordet som visas nu eller de tre före; annars upp till åtta ord efter det senast hörda, sedan bakåt bland missade ord
+    const omr=lage==="blixt"?[...Array(4)].map((_,k)=>blixtI-k):[...Array(8)].map((_,k)=>r.sista+1+k).concat([...Array(4)].map((_,k)=>r.sista-k));
+    for(const i of omr)if(ledig(i,h)){hits=[i];break;}
+    if(!hits.length)for(const i of omr.concat(omr.map(x=>x-1)))if(ihop(i,h)){hits=[i,i+1].filter(x=>!r.hord.has(x));break;}
+    for(const hit of hits){r.hord.add(hit);if(hit>r.sista)r.sista=hit;
+      const el=$((typ==="web"?"mw":"mk")+hit);if(el)el.classList.add("ja");
+      const fr=lage==="blixt"?visadVid[hit]:ref;if(fr)r.ford.push(performance.now()-fr);}}
   visaStat();}
 function medel(a){return a.length?Math.round(a.reduce((x,y)=>x+y,0)/a.length):0;}
 function visaStat(){
   const fyll=(typ,id,extra)=>{const r=R[typ];if(!r){$(id).textContent="–";$(id+"2").textContent="Inte med i testet.";return;}
     const n=lage==="blixt"?Math.max(0,Math.min(ORD.length,blixtI+1)):ORD.length;
-    $(id).textContent=`${r.hord.size} av ${n} ord`;$(id+"2").textContent=(r.ford.length?`Svarstid i snitt ${(medel(r.ford)/1000).toFixed(1)} s. `:"")+extra();};
+    $(id).textContent=`${r.hord.size} av ${n} ord`;$(id+"2").textContent=(r.ford.length?(lage==="blixt"?`Från att ordet visades till grönt: ${(medel(r.ford)/1000).toFixed(1)} s i snitt. `:`Släpar efter talet: ${(medel(r.ford)/1000).toFixed(1)} s i snitt. `):"")+extra();};
   fyll("web","sWeb",()=>`Stängde av ${web.slut} gånger, var döv ${(web.dov/1000).toFixed(1)} s totalt${web.slut?` (i snitt ${Math.round(web.dov/Math.max(1,web.slut))} ms per omstart)`:""}.`);
   fyll("kb","sKb",()=>`${kb.korn} körningar, ${(medel(kb.tider)/1000).toFixed(1)} s per körning${kb.backend?`, ${kb.backend}`:""}.`);}
 
@@ -178,7 +183,7 @@ function webStart(){if(!web.vill)return;
     rec.onstart=()=>{if(web.tSlut){web.dov+=performance.now()-web.tSlut;web.tSlut=0;}lamp("lWeb",true,"🌐 lyssnar");visaStat();};
     rec.onresult=e=>{const alla=[],ut=[];for(let i=e.resultIndex;i<e.results.length;i++){const res=e.results[i];for(let j=0;j<res.length;j++)alla.push(...norm(res[j].transcript));
         ut.push((res.isFinal?"":"(prel.) ")+res[0].transcript.trim());}
-      logga("web",ut.join(" | "));markera("web",alla);};
+      logga("web",ut.join(" | "));markera("web",alla,null);};
     rec.onerror=e=>{logga("sys","webbläsaren: "+e.error);if(e.error==="not-allowed"||e.error==="service-not-allowed")web.vill=false;};
     rec.onend=()=>{web.rec=null;if(!web.vill){lamp("lWeb",false,"🌐 av");return;}web.slut++;web.tSlut=performance.now();lamp("lWeb",false,"🌐 startar om …");webStart();};
     rec.start();}catch(err){web.rec=null;logga("sys","webbläsaren: "+err.message);if(web.vill)setTimeout(webStart,100);}}
@@ -210,21 +215,24 @@ async function kbLadda(){if(kb.pipe)return kb.pipe;if(kb.laddar)return kb.laddar
     .catch(e=>{kb.laddar=null;$("kbLoad").disabled=false;$("kbBar").hidden=true;$("kbInfo").textContent=" Det gick inte att ladda: "+e.message;logga("sys","KB-Whisper: "+e.message);throw e;});
   return kb.laddar;}
 $("kbLoad").onclick=()=>kbLadda().catch(()=>{});
-// alla ljudbitar som väntar körs tillsammans: en körning tar ungefär lika lång tid oavsett hur många ord den har
+// alla ljudbitar som väntar körs tillsammans: en körning tar ungefär lika lång tid oavsett hur många ord den har.
+// Medan någon pratar länge utan paus körs det som hittills sagts som en preliminär körning (som webbläsarens "prel.").
 async function kbKor(){if(kb.upptagen||!kb.pipe||!kb.ko.length)return;kb.upptagen=true;
-  const bitar=kb.ko.splice(0);const paus=new Float32Array(3200);let n=0;bitar.forEach(b=>n+=b.ljud.length+paus.length);
+  let bitar=kb.ko.splice(0);bitar=bitar.some(b=>!b.prel)?bitar.filter(b=>!b.prel):[bitar[bitar.length-1]];const prel=bitar[0].prel;
+  const paus=new Float32Array(3200);let n=0;bitar.forEach(b=>n+=b.ljud.length+paus.length);
   const all=new Float32Array(n);let o=0;for(const b of bitar){all.set(b.ljud,o);o+=b.ljud.length+paus.length;}
   const t=performance.now();lamp("lKb",true,"🧠 tänker …");
   try{const r=await kb.pipe(all,{language:"swedish",task:"transcribe"});const ms=performance.now()-t;kb.korn++;kb.tider.push(ms);
-    const txt=(r.text||"").trim();const sl=bitar[bitar.length-1].tSlut;
-    if(!txt||HALLU.test(txt))logga("kb",`(inget ord) ${(all.length/16000).toFixed(1)} s ljud, ${Math.round(ms)} ms`);
-    else{logga("kb",`"${txt}"  ${(all.length/16000).toFixed(1)} s ljud, ${Math.round(ms)} ms`);markera("kb",norm(txt),sl);}}
+    const txt=(r.text||"").trim(),sl=bitar[bitar.length-1].tSlut,info=`${(all.length/16000).toFixed(1)} s ljud, ${Math.round(ms)} ms`;
+    if(!txt||HALLU.test(txt))logga("kb",`${prel?"(prel.) ":""}(inget ord) ${info}`);
+    else{logga("kb",`${prel?"(prel.) ":""}"${txt}"  ${info}`);markera("kb",norm(txt),sl);}}
   catch(e){logga("sys","KB-Whisper: "+e.message);}
   kb.upptagen=false;if(mic.igang)lamp("lKb",true,"🧠 lyssnar");else if(!kb.ko.length)lamp("lKb",false,"🧠 av");visaStat();kbKor();}
+const hopa=ramar=>{const a=new Float32Array(ramar.length*320);ramar.forEach((x,i)=>a.set(x,i*320));return a;};
 
 /* ---------- Egen mikrofon som aldrig stängs av (för KB-Whisper) ---------- */
 const mic={ctx:null,strom:null,igang:false};
-const VAD={golv:.004,tal:false,ljud:[],fore:[],tyst:0,ramar:0};
+const VAD={golv:.004,tal:false,ljud:[],fore:[],tyst:0,ramar:0,prel:0};
 async function micStart(){mic.strom=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
   let ctx;try{ctx=new AudioContext({sampleRate:16000});}catch(e){ctx=new AudioContext();}mic.ctx=ctx;
   const kod=`class R extends AudioWorkletProcessor{process(i){const c=i[0]&&i[0][0];if(c)this.port.postMessage(c.slice(0));return true}}registerProcessor("rec",R);`;
@@ -240,12 +248,15 @@ function ram(r){let s=0;for(const x of r)s+=x*x;const rms=Math.sqrt(s/r.length);
   const m=$("meter");m.firstElementChild.style.width=Math.min(100,rms*600)+"%";
   const pa=Math.max(VAD.golv*3.5,.012),av=Math.max(VAD.golv*2,.008);
   if(!VAD.tal){VAD.golv=VAD.golv*.98+Math.min(rms,.05)*.02;VAD.fore.push(r);if(VAD.fore.length>10)VAD.fore.shift();
-    if(rms>pa){VAD.ramar++;if(VAD.ramar>=2){VAD.tal=true;VAD.ljud=[...VAD.fore];VAD.tyst=0;m.classList.add("tal");}}else VAD.ramar=0;}
+    if(rms>pa){VAD.ramar++;if(VAD.ramar>=2){VAD.tal=true;VAD.ljud=[...VAD.fore];VAD.tyst=0;VAD.prel=VAD.ljud.length;m.classList.add("tal");}}else VAD.ramar=0;}
   else{VAD.ljud.push(r);if(rms<av)VAD.tyst++;else VAD.tyst=0;
-    if(VAD.tyst>=15||VAD.ljud.length>=300){// 0,3 s tystnad eller 6 s tal
-      VAD.tal=false;VAD.ramar=0;m.classList.remove("tal");const n=VAD.ljud.length;senasteTal=performance.now();
-      if(n>=8){const a=new Float32Array(n*320);VAD.ljud.forEach((x,i)=>a.set(x,i*320));if(R.kb){kb.ko.push({ljud:a,tSlut:senasteTal});kbKor();}}
-      VAD.ljud=[];VAD.fore=[];}}}
+    const slut=VAD.tyst>=15,lang=VAD.ljud.length>=300;// 0,3 s tystnad eller 6 s tal
+    if(slut||lang){VAD.tal=false;VAD.ramar=0;m.classList.remove("tal");const n=VAD.ljud.length;
+      if(n>=8&&R.kb){kb.ko.push({ljud:hopa(VAD.ljud),tSlut:performance.now()});kbKor();}
+      // klipps ljudet mitt i tal tas de sista 0,3 s med i nästa bit, så att inget ord delas itu
+      if(lang&&!slut){VAD.tal=true;VAD.ljud=VAD.ljud.slice(-15);VAD.prel=VAD.ljud.length;m.classList.add("tal");}else{VAD.ljud=[];VAD.fore=[];}}
+    else if(R.kb&&kb.pipe&&!kb.upptagen&&!kb.ko.length&&VAD.ljud.length-VAD.prel>=40){// en sekund nytt tal: preliminär körning
+      VAD.prel=VAD.ljud.length;kb.ko.push({ljud:hopa(VAD.ljud),tSlut:performance.now(),prel:true});kbKor();}}}
 function micStopp(){mic.igang=false;try{mic.strom&&mic.strom.getTracks().forEach(t=>t.stop());}catch(e){}try{mic.ctx&&mic.ctx.close();}catch(e){}mic.ctx=null;mic.strom=null;
   $("meter").firstElementChild.style.width="0";}
 
