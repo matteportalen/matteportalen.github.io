@@ -1,0 +1,17 @@
+{
+ "info": "Ordgåtan, nivå 2. Varje rad: \"ord\" = svaret (små bokstäver), \"ledtrad\" = det eleven läser. Ledtråden får inte innehålla svaret. Skriv ___ för en lucka i ett ordspråk.",
+ "ord": [
+  {"ord": "kall", "ledtrad": "Motsatsen till varm"},
+  {"ord": "lätt", "ledtrad": "Motsatsen till tung"},
+  {"ord": "slut", "ledtrad": "Motsatsen till början"},
+  {"ord": "mörk", "ledtrad": "Motsatsen till ljus"},
+  {"ord": "stark", "ledtrad": "Motsatsen till svag"},
+  {"ord": "tidig", "ledtrad": "Motsatsen till sen"},
+  {"ord": "stängd", "ledtrad": "Motsatsen till öppen"},
+  {"ord": "vacker", "ledtrad": "Ett annat ord för söt eller fin att titta på"},
+  {"ord": "klok", "ledtrad": "Ett annat ord för smart"},
+  {"ord": "viska", "ledtrad": "Att prata så tyst att bara en person hör"},
+  {"ord": "fnissa", "ledtrad": "Att skratta tyst och lite fånigt"},
+  {"ord": "kråka", "ledtrad": "En svart och grå fågel som säger kraa"}
+ ]
+}

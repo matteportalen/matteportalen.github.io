@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ordgåtan – Övriga ämnen</title>
+<meta name="description" content="Ordgåta: läs ledtråden och skriv rätt ord. Tio ord per omgång, tre nivåer.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@700&family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E8F7EE; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#BFE3CF;
+  --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
+  --lapp:#FFF6D6; --lapp-kant:#F0D98A; --rosa:#FFE3E5;
+  --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
+  --las:"Andika","Trebuchet MS",system-ui,sans-serif; /* läsinlärningstypsnitt: tydliga bokstäver */
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:18px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:760px;margin:0 auto;padding:12px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;border:0;background:none}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+h1{font-size:clamp(2.2rem,8vw,2.9rem);line-height:1;margin:10px 0 4px;font-weight:800}
+.lead{margin:0 0 16px;color:var(--muted);font-size:1.08rem}
+.card{background:var(--card);border-radius:22px;padding:16px;box-shadow:0 5px 0 var(--line)}
+
+/* ---------- nivåer ---------- */
+.nivaer{display:grid;gap:14px}
+.niva{display:flex;align-items:center;gap:14px;text-align:left;background:var(--card);border-radius:22px;padding:14px 16px;box-shadow:0 5px 0 var(--line);transition:transform .12s}
+.niva:active{transform:translateY(3px);box-shadow:0 2px 0 var(--line)}
+@media(hover:hover){.niva:hover{transform:translateY(-2px)}}
+.niva .ic{flex:none;width:68px;height:68px;border-radius:18px;display:grid;place-items:center;font-size:2.3rem;transform:rotate(-4deg);box-shadow:inset 0 -5px 0 rgba(0,0,0,.14)}
+.niva .txt{flex:1;min-width:0}
+.niva b{display:block;font-size:1.35rem;line-height:1.15}
+.niva small{display:block;color:var(--muted);font-weight:700;line-height:1.3}
+.niva .st{color:var(--gold);font-size:1.15rem;letter-spacing:1px}.niva .st .off{color:#D5DDEC}
+.niva .rek{font-size:.85rem;color:var(--muted);font-weight:700}
+.niva .chev{flex:none;color:#A9CBB8;font-size:1.6rem;font-weight:800}
+.note{color:var(--muted);font-size:.95rem;margin-top:18px}
+
+/* ---------- spelet ---------- */
+.gtop{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.pill{background:var(--card);border-radius:999px;padding:6px 14px;font-weight:800;box-shadow:0 3px 0 var(--line);white-space:nowrap}
+.sp{flex:1}
+.prickar{display:flex;gap:6px;justify-content:center;margin:0 0 12px}
+.prickar i{width:12px;height:12px;border-radius:50%;background:#CFE3D7}
+.prickar i.nu{background:var(--ink);transform:scale(1.25)}
+.prickar i.ratt{background:var(--good)}.prickar i.tips{background:var(--gold)}.prickar i.miss{background:#B9C3D9}
+.gata{position:relative;background:var(--lapp);border:3px solid var(--lapp-kant);border-radius:22px;padding:16px 18px 14px;box-shadow:0 5px 0 rgba(160,130,40,.25);text-align:center}
+.gata .info{font-weight:800;color:#8A6D12;font-size:.95rem}
+.gata .led{font-family:var(--las);font-size:clamp(1.35rem,5vw,1.8rem);line-height:1.3;margin:6px 0 2px;padding:0 40px}
+.gata .hor{position:absolute;top:10px;right:10px;width:44px;height:44px;border-radius:50%;background:#fff;box-shadow:0 3px 0 var(--lapp-kant);font-size:1.3rem}
+.gata .djur{position:absolute;left:-6px;bottom:-14px;width:64px;height:64px;pointer-events:none}
+.gata .djur svg{width:100%;height:100%}
+.gata .djur.hopp{animation:hopp .6s}
+@keyframes hopp{30%{transform:translateY(-16px)}60%{transform:translateY(0)}80%{transform:translateY(-5px)}}
+/* rutorna: ett riktigt textfält ligger ovanpå, osynligt, så att tangentbordet kommer upp */
+.rutbox{position:relative;margin:22px auto 6px;width:max-content;max-width:100%}
+.rutor{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap}
+.ruta{width:var(--rs,58px);height:calc(var(--rs,58px)*1.14);border-radius:14px;background:#fff;border:3px solid #C9D6EA;box-shadow:0 4px 0 #C9D6EA;display:grid;place-items:center;
+  font-family:var(--las);font-size:calc(var(--rs,58px)*.58);text-transform:uppercase;line-height:1;transition:background .2s,border-color .2s}
+.ruta.nu{border-color:var(--accent);box-shadow:0 4px 0 #9FB0FF}
+.rutbox.fokus .ruta.nu::after{content:"";width:3px;height:52%;background:var(--accent);border-radius:2px;animation:blink 1s steps(1) infinite}
+@keyframes blink{50%{opacity:0}}
+.ruta.visad{background:#FFE9A8;border-color:var(--gold);box-shadow:0 4px 0 #D9A400}
+.rutbox.ratt .ruta{background:#D7F2E1;border-color:var(--good);box-shadow:0 4px 0 var(--good-dark)}
+.rutbox.fel .ruta{background:var(--rosa);border-color:#F2A3A8;box-shadow:0 4px 0 #E59096}
+.rutbox.fel .rutor{animation:skak .4s}
+.rutbox.svar .ruta{background:#EEF1F7;border-color:#B9C3D9;box-shadow:0 4px 0 #B9C3D9;color:var(--muted)}
+@keyframes skak{20%,60%{transform:translateX(-7px)}40%,80%{transform:translateX(7px)}}
+#inp{position:absolute;inset:0;width:100%;height:100%;opacity:0;font-size:16px;border:0;padding:0;color:transparent;background:transparent;caret-color:transparent}
+.hjalp{text-align:center;color:var(--muted);font-weight:700;min-height:1.6em;margin:6px 0 8px}
+.hjalp.ok{color:var(--good-dark)}.hjalp.fel{color:#B4232A}
+.knappar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+.kn{background:var(--card);border-radius:16px;padding:10px 16px;min-height:52px;font-weight:800;box-shadow:0 4px 0 var(--line)}
+.kn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.kn:disabled{opacity:.45;cursor:default;transform:none}
+.kn.tips{background:#FFF1C2;box-shadow:0 4px 0 #E6CB6B}
+
+/* ---------- resultat ---------- */
+.res{text-align:center}
+.res .owl{width:110px;height:110px}
+.res h2{margin:4px 0 0;font-size:1.8rem;line-height:1.15}
+.stor{font-size:2.6rem;color:var(--gold);letter-spacing:4px}.stor .off{color:#D5DDEC}
+.siffror{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:10px 0}
+.siffror div{background:#F3FAF6;border-radius:16px;padding:8px 14px;min-width:96px}
+.siffror b{display:block;font-size:1.5rem;line-height:1.1}.siffror small{color:var(--muted);font-weight:700}
+.lista{list-style:none;padding:0;margin:14px 0 0;text-align:left}
+.lista li{display:flex;gap:10px;align-items:baseline;padding:8px 4px;border-top:2px solid #EEF4F0}
+.lista .m{flex:none;width:1.6em;text-align:center}
+.lista .o{font-family:var(--las);font-size:1.15rem;text-transform:uppercase;min-width:5.5em}
+.lista .l{color:var(--muted);font-size:.95rem;flex:1}
+.lista .p{font-weight:800;white-space:nowrap}
+.big{display:block;width:100%;margin-top:12px;padding:14px;border-radius:20px;font-weight:800;font-size:1.3rem;color:#fff;background:var(--good);box-shadow:0 5px 0 var(--good-dark)}
+.big.sek{background:var(--card);color:var(--ink);box-shadow:0 4px 0 var(--line)}
+.big:active{transform:translateY(3px)}
+#fx{position:fixed;inset:0;pointer-events:none;z-index:50}
+@media (max-width:520px){.gata{padding:14px 14px 12px}.kn{padding:8px 12px;font-size:.95rem;min-height:48px}}
+@media (prefers-reduced-motion:reduce){.rutbox.fel .rutor,.gata .djur.hopp,.rutbox.fokus .ruta.nu::after{animation:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<section id="home" class="screen">
+  <h1>❓ Ordgåtan</h1>
+  <p class="lead">Läs ledtråden och gissa ordet. Rutorna visar hur många bokstäver det har. Tio ord i varje omgång!</p>
+  <div class="nivaer" id="nivaer"></div>
+  <p class="note">Du får 100 poäng för varje ord. Varje bokstav du ber att få se kostar 30 poäng.</p>
+</section>
+
+<section id="game" class="screen" hidden>
+  <div class="gtop">
+    <button class="pill" id="quit">← Nivåer</button>
+    <span class="pill" id="nr" aria-live="polite"></span>
+    <span class="sp"></span>
+    <span class="pill" id="tid" aria-label="Tid">⏱️ 0:00</span>
+    <span class="pill" id="poang">⭐ 0 p</span>
+  </div>
+  <div class="prickar" id="prickar"></div>
+  <div class="gata">
+    <div class="info" id="info"></div>
+    <div class="led" id="led"></div>
+    <button class="hor" id="hor" aria-label="Läs upp ledtråden">🔊</button>
+    <div class="djur" id="djur"></div>
+  </div>
+  <div class="rutbox" id="rutbox">
+    <div class="rutor" id="rutor" aria-hidden="true"></div>
+    <input id="inp" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" enterkeyhint="done" aria-label="Skriv ordet">
+  </div>
+  <p class="hjalp" id="hjalp" aria-live="polite"></p>
+  <div class="knappar">
+    <button class="kn tips" id="visa">💡 Visa en bokstav −30 p</button>
+    <button class="kn" id="hoppa">⏭️ Hoppa över</button>
+    <button class="kn" id="geupp">🏳️ Ge upp</button>
+  </div>
+</section>
+
+<section id="result" class="screen" hidden>
+  <div class="card res" id="res"></div>
+</section>
+
+</div>
+<canvas id="fx" hidden></canvas>
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Ordgåtan" data-ikon="❓" data-hem="../../" data-portal="ovriga"></script>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const NIVAER=[
+  {n:1,ic:"🌱",c:"#C9F0D6",namn:"Nivå 1",txt:"Korta vardagsord med tydliga ledtrådar"},
+  {n:2,ic:"🌿",c:"#FFE7A3",namn:"Nivå 2",txt:"Motsatser, synonymer och sammansatta ord"},
+  {n:3,ic:"🌳",c:"#FFD0D4",namn:"Nivå 3",txt:"Långa ord, ordspråk och knepig stavning"}];
+const RUNDA=10,POANG=100,KOSTAR=30;
+
+/* ---------- Lagring (följer med profilen: nyckeln finns i startsidans PKEYS) ---------- */
+const KEY="mattespel-ordgatan-v1";
+const data=(()=>{const tom={stars:{},rekord:{},sett:{},omg:0};try{return Object.assign(tom,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return tom;}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
+
+/* ---------- Orden: en fil per nivå i ord/ (så att läraren kan ändra utan att röra koden) ---------- */
+const ORD={};
+const normOrd=s=>String(s||"").toLowerCase().normalize("NFC").replace(/[^a-zåäöéü]/g,"");
+function laddaNiva(n){if(ORD[n])return Promise.resolve(ORD[n]);
+  return fetch(`ord/niva${n}.json`).then(r=>r.json()).then(d=>{const sett=new Set();
+    ORD[n]=(d.ord||[]).map(o=>({ord:normOrd(o.ord),led:String(o.ledtrad||"").trim()})).filter(o=>o.ord.length>=2&&o.led&&!sett.has(o.ord)&&sett.add(o.ord));return ORD[n];});}
+// alla nivåer laddas direkt, så att omgången kan starta i samma tryck (annars kommer inte tangentbordet upp på surfplattan)
+const klara=Promise.all(NIVAER.map(v=>laddaNiva(v.n).catch(()=>[])));
+
+/* ---------- Uppläsning (bara när man trycker på 🔊) ---------- */
+let svVoice=null;const lv=()=>{try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null;}catch(e){}};
+if("speechSynthesis" in window){lv();speechSynthesis.onvoiceschanged=lv;}
+function speak(t){if(!("speechSynthesis" in window))return;lv();speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.85;speechSynthesis.speak(u);}
+
+/* ---------- Skärmar ---------- */
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+const starHtml=n=>[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("");
+const mmss=ms=>{const s=Math.floor(ms/1000);return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`;};
+function openHome(){stopp();G=null;
+  $("nivaer").innerHTML=NIVAER.map(v=>{const r=data.rekord[v.n];return `<button class="niva" data-n="${v.n}"><span class="ic" style="background:${v.c}">${v.ic}</span>
+    <span class="txt"><b>${v.namn}</b><small>${v.txt}</small><span class="st">${starHtml(data.stars[v.n]||0)}</span>${r?` <span class="rek">Rekord ${r.p} p</span>`:""}</span><span class="chev">›</span></button>`;}).join("");
+  show("home");}
+$("nivaer").onclick=e=>{const b=e.target.closest("[data-n]");if(b)starta(+b.dataset.n);};
+
+/* ---------- Omgången ---------- */
+let G=null,tidT=null,nastaT=null;
+// ord som eleven inte fått än på nivån; när alla är använda börjar listan om
+function valjOrd(n){const alla=ORD[n]||[];let sett=new Set(data.sett[n]||[]);let nya=alla.filter(o=>!sett.has(o.ord));
+  shuffle(nya);let val=nya.slice(0,RUNDA);
+  if(val.length<RUNDA){const fler=shuffle(alla.filter(o=>!val.includes(o)));val=val.concat(fler.slice(0,RUNDA-val.length));sett=new Set();}
+  val.forEach(o=>sett.add(o.ord));data.sett[n]=[...sett];save();return val;}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function starta(n){if(!ORD[n]){klara.then(()=>ORD[n]&&ORD[n].length&&starta(n));return;}
+  stopp();const ord=valjOrd(n);
+  G={n,ko:ord.map(o=>({...o,tips:0,hoppad:false,status:null,p:0})),i:0,klara:0,poang:0,t0:0,tid:0,las:false};
+  show("game");$("inp").focus();// samma tryck som startade: då kommer tangentbordet upp på surfplattan
+  const pet=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";$("djur").innerHTML=pet;
+  G.t0=performance.now();tidT=setInterval(()=>{if(G)$("tid").textContent="⏱️ "+mmss(performance.now()-G.t0);},500);
+  visaOrd();}
+function stopp(){clearInterval(tidT);clearTimeout(nastaT);if("speechSynthesis" in window)speechSynthesis.cancel();}
+const nu=()=>G.ko[G.i];
+function visaOrd(){const o=nu();G.las=false;G.skrivet="";G.visade=new Set();
+  $("nr").textContent=`${G.klara+1} / ${RUNDA}`;$("info").textContent=`${o.ord.length} bokstäver${o.hoppad?" · tillbaka igen":""}`;
+  $("led").textContent=o.led;$("hjalp").className="hjalp";$("hjalp").textContent=o.hoppad?"Det här ordet hoppade du över. Prova igen!":"";
+  // större ord: mindre rutor så att de får plats på en rad
+  const bredd=Math.min(innerWidth-32,700),rs=Math.max(30,Math.min(62,Math.floor((bredd-(o.ord.length-1)*8)/o.ord.length)));
+  $("rutbox").style.setProperty("--rs",rs+"px");$("rutbox").className="rutbox"+(document.activeElement===$("inp")?" fokus":"");
+  $("inp").value="";$("prickar").innerHTML=G.ko.slice(0,RUNDA).map((x,i)=>`<i class="${prick(i)}"></i>`).join("");
+  ritaRutor();knappar();}
+function prick(i){const st=G.res&&G.res[i];return st||(i===G.klara?"nu":"");}
+// rutorna: visade bokstäver ligger låsta, det eleven skriver fyller de andra rutorna i tur och ordning
+function ritaRutor(){const o=nu(),fri=[...G.skrivet];let k=0,nuSatt=false;
+  $("rutor").innerHTML=[...o.ord].map((ch,i)=>{if(G.visade.has(i))return `<span class="ruta visad">${ch}</span>`;
+    const c=fri[k++]||"";let cls="ruta";if(!c&&!nuSatt&&!G.las){cls+=" nu";nuSatt=true;}return `<span class="${cls}">${c}</span>`;}).join("");}
+function knappar(){const o=nu(),kvar=o.ord.length-G.visade.size;$("visa").disabled=G.las||kvar<=1;$("hoppa").disabled=G.las;$("geupp").disabled=G.las;
+  $("poang").textContent=`⭐ ${G.poang} p`;}
+const friaAntal=()=>nu().ord.length-G.visade.size;
+$("inp").addEventListener("input",()=>{if(!G||G.las){$("inp").value=G?G.skrivet:"";return;}
+  const v=normOrd($("inp").value).slice(0,friaAntal());G.skrivet=v;$("inp").value=v;
+  $("rutbox").classList.remove("fel");if(!$("hjalp").textContent.startsWith("Det här"))$("hjalp").textContent="";$("hjalp").className="hjalp";
+  ritaRutor();if(v.length===friaAntal())setTimeout(svara,120);});
+$("inp").addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();svara();}});
+$("inp").addEventListener("focus",()=>$("rutbox").classList.add("fokus"));
+$("inp").addEventListener("blur",()=>$("rutbox").classList.remove("fokus"));
+// hela ordet som eleven har skrivit, med de visade bokstäverna på sina platser
+function helaOrdet(){const o=nu(),fri=[...G.skrivet];let k=0;return [...o.ord].map((ch,i)=>G.visade.has(i)?ch:(fri[k++]||"")).join("");}
+function svara(){if(!G||G.las)return;const o=nu();if(G.skrivet.length<friaAntal()){$("hjalp").className="hjalp";$("hjalp").textContent=`Ordet har ${o.ord.length} bokstäver.`;return;}
+  if(helaOrdet()===o.ord){G.las=true;const p=Math.max(0,POANG-KOSTAR*o.tips);o.p=p;o.status=o.tips?"tips":"ratt";G.poang+=p;
+    $("rutbox").classList.add("ratt");$("hjalp").className="hjalp ok";$("hjalp").textContent=`Rätt! +${p} p${o.tips?` (${o.tips} ${o.tips===1?"bokstav":"bokstäver"} visade)`:""}`;
+    window.Ljud&&Ljud.ok&&Ljud.ok();const d=$("djur");d.classList.remove("hopp");void d.offsetWidth;d.classList.add("hopp");knappar();nastaT=setTimeout(nasta,1300);}
+  else{$("rutbox").classList.remove("fel");void $("rutbox").offsetWidth;$("rutbox").classList.add("fel");
+    $("hjalp").className="hjalp fel";$("hjalp").textContent="Inte riktigt, prova igen! Sudda med ⌫ och skriv om.";}}
+// 💡 nästa bokstav från vänster som inte syns än; det eleven skrivit flyttar med
+$("visa").onclick=()=>{if(!G||G.las)return;const o=nu();if(friaAntal()<=1)return;
+  const hel=helaOrdet();let k=[...o.ord].findIndex((ch,i)=>!G.visade.has(i)&&hel[i]!==ch);if(k<0)k=[...o.ord].findIndex((ch,i)=>!G.visade.has(i));
+  // behåll det eleven skrivit på de andra platserna
+  const fore=[...o.ord].map((ch,i)=>G.visade.has(i)?null:hel[i]||"");G.visade.add(k);o.tips++;
+  G.skrivet=fore.filter((c,i)=>!G.visade.has(i)&&c!==null).join("").slice(0,friaAntal());
+  $("inp").value=G.skrivet;$("rutbox").classList.remove("fel");$("hjalp").className="hjalp";
+  $("hjalp").textContent=`Bokstaven ${o.ord[k].toUpperCase()} visas. Ordet ger nu högst ${Math.max(0,POANG-KOSTAR*o.tips)} p.`;
+  window.Ljud&&Ljud.magic&&Ljud.magic();ritaRutor();knappar();$("inp").focus();
+  if(G.skrivet.length===friaAntal())setTimeout(svara,150);};
+// ⏭️ ordet läggs sist i omgången och kommer tillbaka en gång; andra gången räknas det som överhoppat
+$("hoppa").onclick=()=>{if(!G||G.las)return;const o=nu();
+  if(!o.hoppad&&G.ko.length-G.i>1){o.hoppad=true;G.ko.splice(G.i,1);G.ko.push(o);window.Ljud&&Ljud.whoosh&&Ljud.whoosh();visaOrd();$("hjalp").textContent="Ordet kommer tillbaka i slutet.";$("inp").focus();return;}
+  o.status="miss";o.p=0;G.las=true;visaSvar(o,"Hoppade över.");};
+$("geupp").onclick=()=>{if(!G||G.las)return;const o=nu();o.status="miss";o.p=0;o.gav=true;G.las=true;visaSvar(o,"Ordet var:");};
+function visaSvar(o,txt){$("rutor").innerHTML=[...o.ord].map(ch=>`<span class="ruta">${ch}</span>`).join("");$("rutbox").className="rutbox svar";
+  $("hjalp").className="hjalp";$("hjalp").textContent=`${txt} ${o.ord.toUpperCase()}`;knappar();nastaT=setTimeout(nasta,2200);}
+function nasta(){if(!G)return;G.res=G.res||[];G.res[G.klara]=nu().status;G.klara++;G.i++;
+  if(G.i>=G.ko.length||G.klara>=RUNDA)return slut();visaOrd();$("inp").focus();}
+$("hor").onclick=()=>{if(G)speak(nu().led.replace(/_{2,}/g," … "));$("inp").focus();};
+$("rutbox").addEventListener("pointerdown",()=>setTimeout(()=>$("inp").focus(),0));
+$("quit").onclick=openHome;
+
+/* ---------- Slut ---------- */
+function slut(){stopp();const n=G.n,ms=performance.now()-G.t0,ratt=G.ko.filter(o=>o.status==="ratt"||o.status==="tips").length;
+  const st=ratt===RUNDA&&G.poang>=800?3:ratt>=8?2:ratt>=6?1:0,old=data.stars[n]||0;if(st>old)data.stars[n]=st;
+  const rek=data.rekord[n],nyttRek=!rek||G.poang>rek.p||(G.poang===rek.p&&ms<rek.tid);if(nyttRek&&G.poang>0)data.rekord[n]={p:G.poang,tid:Math.round(ms)};
+  data.omg=(data.omg||0)+1;save();
+  const pet=window.owlSVG&&window.lasDjur?owlSVG(lasDjur(),"owl"):"";
+  const mal=st<1?"Klara minst 6 ord för en stjärna.":st<2?"Klara minst 8 ord för två stjärnor.":st<3?"Klara alla 10 ord med minst 800 poäng för tre stjärnor.":"Full pott!";
+  const ikon=o=>o.status==="ratt"?"✅":o.status==="tips"?"💡":o.gav?"🏳️":"⏭️";
+  $("res").innerHTML=`${pet}<h2>${ratt===RUNDA?"🎉 Alla tio rätt!":`Du klarade ${ratt} av ${RUNDA} ord!`}</h2>
+    <div class="stor">${starHtml(st)}</div>
+    <div class="siffror"><div><b>${ratt} / ${RUNDA}</b><small>rätt</small></div><div><b>${G.poang} p</b><small>poäng</small></div><div><b>${mmss(ms)}</b><small>tid</small></div></div>
+    <p style="margin:4px 0;font-weight:700">${nyttRek&&G.poang>0?"🏆 Nytt rekord på "+NIVAER[n-1].namn.toLowerCase()+"!":rek?`Rekord: ${rek.p} p`:""}</p>
+    <p style="margin:0;color:var(--muted);font-weight:700">${st>old&&st>0?"⭐ Ny stjärna! ":""}${mal}</p>
+    <ul class="lista">${G.ko.slice(0,RUNDA).map(o=>`<li><span class="m">${ikon(o)}</span><span class="o">${o.ord}</span><span class="l">${esc(o.led)}</span><span class="p">${o.p} p</span></li>`).join("")}</ul>
+    <button class="big" id="rNy">🔄 Ny omgång</button><button class="big sek" id="rHome">Välj nivå</button>`;
+  const ow=$("res").querySelector("svg");if(ow)ow.classList.add("owl");
+  $("rNy").onclick=()=>starta(n);$("rHome").onclick=openHome;
+  if(document.activeElement)document.activeElement.blur();show("result");if(ratt===RUNDA||(nyttRek&&G.poang>0))confetti();}
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function confetti(){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  const cols=["#3D8BFD","#FF9F43","#2BB673","#FFC93C","#7B61FF","#FF6B6B"],c=$("fx"),x=c.getContext("2d"),dpr=devicePixelRatio||1,W=innerWidth,H=innerHeight;
+  c.width=W*dpr;c.height=H*dpr;x.setTransform(dpr,0,0,dpr,0,0);c.hidden=false;
+  const P=Array.from({length:140},()=>({x:W/2+(Math.random()-.5)*120,y:H*.3,vx:(Math.random()-.5)*16,vy:-Math.random()*15-4,r:Math.random()*7+5,c:cols[Math.floor(Math.random()*6)],a:Math.random()*6,va:(Math.random()-.5)*.4}));
+  const t0=performance.now();(function f(now){x.clearRect(0,0,W,H);P.forEach(p=>{p.vy+=.45;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
+    if(now-t0<2600)requestAnimationFrame(f);else{x.clearRect(0,0,W,H);c.hidden=true;}})(t0);}
+openHome();
+window.OGA={G:()=>G,data:()=>data,ORD};
+</script>
+</body>
+</html>

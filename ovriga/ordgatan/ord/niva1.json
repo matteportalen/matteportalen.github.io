@@ -1,0 +1,25 @@
+{
+ "info": "Ordgåtan, nivå 1. Varje rad: \"ord\" = svaret (små bokstäver), \"ledtrad\" = det eleven läser. Ledtråden får inte innehålla svaret. Skriv ___ för en lucka i ett ordspråk.",
+ "ord": [
+  {"ord": "säl", "ledtrad": "Ett djur som simmar i havet och vilar på klipporna"},
+  {"ord": "häst", "ledtrad": "Ett stort djur som man kan rida på"},
+  {"ord": "bok", "ledtrad": "Den har många sidor och man läser i den"},
+  {"ord": "sol", "ledtrad": "Den lyser på himlen på dagen och värmer"},
+  {"ord": "snö", "ledtrad": "Vit och kall, den faller från himlen på vintern"},
+  {"ord": "ost", "ledtrad": "Gul mat som görs av mjölk och läggs på smörgåsen"},
+  {"ord": "bil", "ledtrad": "Den har fyra hjul och kör på vägen"},
+  {"ord": "båt", "ledtrad": "Den flyter på vattnet och man kan åka i den"},
+  {"ord": "sked", "ledtrad": "Man äter soppa med den"},
+  {"ord": "mus", "ledtrad": "Ett litet grått djur som katten vill fånga"},
+  {"ord": "kam", "ledtrad": "Man drar den genom håret så att det blir slätt"},
+  {"ord": "glas", "ledtrad": "Man dricker mjölk eller vatten ur det"},
+  {"ord": "tåg", "ledtrad": "Det åker på räls och har många vagnar"},
+  {"ord": "ägg", "ledtrad": "Hönan värper det, och en kyckling kan kläckas ur det"},
+  {"ord": "ros", "ledtrad": "En blomma som har vassa taggar på stjälken"},
+  {"ord": "moln", "ledtrad": "Vitt eller grått på himlen, regnet kommer därifrån"},
+  {"ord": "myra", "ledtrad": "En liten insekt som bor i en stor stack i skogen"},
+  {"ord": "orm", "ledtrad": "Ett långt djur utan ben som ringlar på marken"},
+  {"ord": "fisk", "ledtrad": "Den simmar i sjön och andas med gälar"},
+  {"ord": "hatt", "ledtrad": "Något man har på huvudet, trollkarlar har en spetsig"}
+ ]
+}
