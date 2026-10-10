@@ -108,6 +108,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .sheet button.end{box-shadow:0 0 0 3px var(--accent);background:#E3E9FF}
 .sheet button.after{opacity:.35}
 .sheet button.hrd{background:#DDF5E7;color:var(--good-dark)}
+.tips{background:#FFF6D6;border-radius:12px;padding:8px 12px}
 .sheet button.sug{box-shadow:0 0 0 3px var(--accent);background:#E3E9FF}
 .sheet.wait button{filter:blur(6px)}
 .clock{position:sticky;top:6px;z-index:5;display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;border-radius:14px;padding:6px 14px;margin-bottom:8px;font-weight:800}
@@ -208,6 +209,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
   <p>Datorn försöker höra när du läser ordet och visar det med grönt. Den kan bara säga <b>rätt</b>, aldrig fel. Hör den inget gör det inget, du läser bara vidare.</p>
   <p><b>Till den vuxna:</b> taligenkänningen är webbläsarens egen. I Chrome och Edge skickas ljudet till Google eller Microsoft för att bli text, i Safari till Apple. Inget sparas på Matte-Portalen. I skolan bör det stämmas av med skolans dataskyddsombud innan det används.</p>
   <p>Korta ord som <span class="w">i</span> och <span class="w">en</span> är svåra för datorn att höra. Fungerar det dåligt, stäng av det igen.</p>
+  <p class="tips" id="micTips" hidden>💡 <b>Fungerar bäst i Chrome på dator.</b> I Edge och på iPad stänger webbläsaren av lyssnandet efter korta pauser, och då kan ord missas.</p>
   <div class="row2"><button class="alt" id="micNo">Nej tack</button><button class="go" id="micYes">Slå på</button></div>
 </div></div>
 <div class="modal" id="egModal" hidden><div style="width:min(460px,100%)">
@@ -283,13 +285,17 @@ function speak(text){if(!("speechSynthesis" in window)){toast("Uppläsning funge
    någon av gissningarna innehåller ordet eller dess uttal (å för och, mej för mig ...). Kan bara ge grönt. */
 const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
 const UTTAL={och:["å","o","och"],det:["de","dä","det"],är:["e","ä","är"],jag:["ja","jag"],de:["dom","de"],dem:["dom","dem"],var:["va","var"],vad:["va","vad"],
-  mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
+  har:["har","ha","hör"],mig:["mej","mig","mä"],dig:["dej","dig","dä"],sig:["sej","sig"],också:["också","åxå","åkså"],säger:["säger","säjer"],sedan:["sen","sedan"],sade:["sa","sade"],i:["i","e"],en:["en","enn"],ett:["ett","ätt"]};
 const norm=s=>s.toLowerCase().replace(/[.,!?;:"']/g," ").split(/\s+/).filter(Boolean);
-let REC=null,recWant=false,onHeard=null;
+let REC=null,recWant=false,onHeard=null,recSess=0;
 function micOn(){return !!(data.mic&&SR);}
 function recStart(cb){if(!micOn())return;onHeard=cb;recWant=true;if(REC)return;
   try{REC=new SR();REC.lang="sv-SE";REC.continuous=true;REC.interimResults=true;REC.maxAlternatives=5;
-    REC.onresult=e=>{const ord=[],fin=[];for(let i=e.resultIndex;i<e.results.length;i++){for(let j=0;j<e.results[i].length;j++)ord.push(...norm(e.results[i][j].transcript));if(e.results[i].isFinal)fin.push(...norm(e.results[i][0].transcript));}if(onHeard)onHeard(ord,fin);};
+    const sess=++recSess;
+    // delar = hela texten sedan lyssnandet startade (Chrome flyttar gränserna mellan de preliminära resultaten, men hela texten växer bara)
+    REC.onresult=e=>{const ord=[],fin=[],hela=[];for(let i=e.resultIndex;i<e.results.length;i++){for(let j=0;j<e.results[i].length;j++)ord.push(...norm(e.results[i][j].transcript));
+        if(e.results[i].isFinal)fin.push(...norm(e.results[i][0].transcript));}
+      for(let i=0;i<e.results.length;i++)hela.push(...norm(e.results[i][0].transcript));if(onHeard)onHeard(ord,fin,[{id:sess,ord:hela}]);};
     REC.onerror=e=>{if(e.error==="not-allowed"||e.error==="service-not-allowed"){data.mic=false;save();micLabel();toast("Mikrofonen fick inte användas. Lyssna på mig är avstängt.");recWant=false;}};
     // webbläsaren stänger av taligenkänningen efter en stunds tystnad: starta om direkt (lärarens fynd: förut blev det ett glapp)
     REC.onstart=()=>micLamp(true);
@@ -298,10 +304,22 @@ function recStart(cb){if(!micOn())return;onHeard=cb;recWant=true;if(REC)return;
 // lampan "lyssnar": grön när mikrofonen faktiskt lyssnar, grå medan den startar om
 let micLyss=false;function micLamp(on){micLyss=on;document.querySelectorAll(".heard").forEach(x=>{x.classList.toggle("on",on);x.textContent=on?"lyssnar":"startar …";});}
 function recStop(){recWant=false;onHeard=null;if(REC){try{REC.stop();}catch(e){}}}
-const hor=(w,ord)=>{const ok=UTTAL[w]||[w];return ord.some(o=>ok.includes(o)||o===w);};
+// stämmer ett hört ord med ordet? (samma regler som i Mikrofonlabbet, där de prövades)
+function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
+  for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
+function passar(mal,h,lista){if(!h)return false;if(h===mal||(UTTAL[mal]||[]).includes(h))return true;
+  // korta ord: en extra bokstav på slutet räknas (vi/vid) om det inte är ett annat ord i listan; längre ord får skilja en bokstav
+  if(mal.length<=3&&h.length===mal.length+1&&h.startsWith(mal)&&!(lista||[]).includes(h))return true;
+  return mal.length>=5&&lev(mal,h)<=1;}
+// två ord som hörts ihop till ett, som "förmed" = för + med
+function ihop(a,b,h){if(!a||!b)return false;for(let k=1;k<h.length;k++)if(passar(a,h.slice(0,k))&&passar(b,h.slice(k)))return true;return false;}
+const hor=(w,ord,lista)=>ord.some(o=>passar(w,o,lista));
+// fungerar taligenkänningen bra här? Chrome på dator stänger inte av; Edge, Safari och alla webbläsare på iPad gör det ofta
+const UA=navigator.userAgent,iOS=/iPad|iPhone|iPod/.test(UA)||(/Macintosh/.test(UA)&&navigator.maxTouchPoints>1);
+const CHROME=/Chrome\//.test(UA)&&!/Edg\/|OPR\//.test(UA)&&!iOS;
 function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?"på":"av"}`;}
 $("micBtn").onclick=()=>{if(data.mic){data.mic=false;save();micLabel();return;}
-  if(!SR){toast("Den här webbläsaren kan inte lyssna. Prova Chrome, Edge eller Safari.");return;}$("micModal").hidden=false;};
+  if(!SR){toast("Den här webbläsaren kan inte lyssna. Prova Chrome på en dator.");return;}$("micTips").hidden=CHROME;$("micModal").hidden=false;};
 $("micNo").onclick=()=>$("micModal").hidden=true;
 $("micYes").onclick=()=>{$("micModal").hidden=true;data.mic=true;save();micLabel();toast("Lyssna på mig är på. Webbläsaren frågar om mikrofonen första gången.");};
 
@@ -426,7 +444,10 @@ function flashWords(){const ws=valdaOrd(),old=PAKET.slice(0,valda()[0]).flat();
 function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:new Set()};show("flash");$("fAfter").hidden=true;$("fHint").hidden=false;$("fStage").hidden=false;
   // nedräkning 3, 2, 1
   let n=3;const cd=()=>{$("fStage").innerHTML=`<div class="big in" style="--c:#56668F">${n}</div>`;if(n-->1)later(cd,700);else later(nextFlash,700);};cd();
-  recStart(ord=>{const w=F&&F.list[F.i];if(w&&!F.heard.has(F.i)&&hor(w,ord)){F.heard.add(F.i);const el=$("fWord");if(el){el.classList.add("ok");}window.Ljud&&Ljud.ok&&Ljud.ok();}});}
+  recStart(ord=>{if(!F||F.i<0)return;const L=F.list,nu=F.i,gron=k=>{if(F.heard.has(k))return;F.heard.add(k);if(k===F.i){const el=$("fWord");if(el)el.classList.add("ok");}window.Ljud&&Ljud.ok&&Ljud.ok();};
+    // ordet som visas nu eller det förra (det kan ha bytts innan datorn hunnit höra), eller båda ihop
+    for(const k of [nu,nu-1])if(k>=0&&!F.heard.has(k)&&hor(L[k],ord,L))gron(k);
+    if(nu>0&&ord.some(o=>ihop(L[nu-1],L[nu],o))){gron(nu-1);gron(nu);}});}
 function nextFlash(){F.i++;if(F.i>=F.list.length)return flashAfter();const w=F.list[F.i],ms=data.fart*1000;sett(w);
   $("fInfo").textContent=`${F.i+1} / ${F.list.length}`;
   $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?`<span class="heard${micLyss?" on":""}">${micLyss?"lyssnar":"startar …"}</span>`:""}`;
@@ -476,7 +497,7 @@ function startMinute(){stopAll();const pool=minPool(),stig=data.mlista!=="ovade"
   let list=[];if(stig)list=STIG[data.mlista].slice();else while(list.length<150){const w=pick(pool);if(w!==list[list.length-1]&&w!==list[list.length-2])list.push(w);}
   Object.assign(MIN,{list,errs:new Set(),end:-1,phase:"intro",stig});
   $("mLista").innerHTML=[["ovade","Övade ord"],["A","📈 Stigande A"],["B","📈 Stigande B"]].map(([v,t])=>`<button data-l="${v}" aria-pressed="${data.mlista===v}">${t}</button>`).join("");
-  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna.":"";
+  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna."+(CHROME?"":" 💡 Fungerar bäst i Chrome på dator."):"";
   $("mFrom").textContent=stig?`Stigande lista ${data.mlista}: samma 150 ord varje gång, från korta till långa ord. Bra för att följa läsflytet över tid. Det är en egen lista, inte H4/AVK1, så resultaten är inte normerade.`:`Orden kommer från ${valText()} (${pool.length} olika ord), i blandad ordning.`;
   $("mInfo").textContent="";$("mIntro").hidden=false;$("mClock").hidden=true;$("mRes").hidden=true;$("mSheet").hidden=false;
   const cols=innerWidth<420?3:innerWidth<700?4:5;$("mSheet").style.setProperty("--cols",cols);
@@ -485,11 +506,17 @@ function startMinute(){stopAll();const pool=minPool(),stig=data.mlista!=="ovade"
 $("mLista").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.mlista=b.dataset.l;save();startMinute();};
 $("mStart").onclick=()=>{$("mIntro").hidden=true;$("mClock").hidden=false;$("mMsg").textContent="Gör dig redo …";
   let n=3;$("mT").textContent=n;const cd=()=>{if(--n>0){$("mT").textContent=n;later(cd,800);}else{runMinute();}};later(cd,800);};
-// med 🎤: datorn följer med i listan; ett hört ord (eller något av de två nästa, om eleven hoppat över) blir grönt
-function minuteHear(_,fin){if(MIN.phase!=="run")return;
-  fin.forEach(tok=>{for(let k=MIN.ptr;k<Math.min(MIN.list.length,MIN.ptr+3);k++){if(hor(MIN.list[k],[tok])){MIN.ptr=k+1;MIN.last=k;
-    const b=$("mSheet").querySelector(`[data-i="${k}"]`);if(b){b.classList.add("hrd");if(k%5===0)b.scrollIntoView({block:"center",behavior:"smooth"});}break;}}});}
-function runMinute(){MIN.phase="run";MIN.ptr=0;MIN.last=-1;$("mSheet").classList.remove("wait");$("mMsg").textContent=micOn()?"Läs! 🎤 Datorn lyssnar":"Läs!";window.Ljud&&Ljud.chime&&Ljud.chime();
+// med 🎤: datorn följer med i listan. Webbläsarens preliminära resultat används, så orden blir gröna medan eleven läser,
+// men bara nya ord i varje resultat räknas (annars kunde ett ord som upprepas i listan bli grönt två gånger).
+// Ett hört ord letas upp till åtta ord efter det senast hörda och fyra bakåt bland missade; två ord som hörts ihop delas.
+function minuteHear(_,__,delar){if(MIN.phase!=="run")return;const L=MIN.list;
+  const gron=k=>{MIN.hord.add(k);if(k>MIN.last)MIN.last=k;const b=$("mSheet").querySelector(`[data-i="${k}"]`);if(b){b.classList.add("hrd");if(k%5===0)b.scrollIntoView({block:"center",behavior:"smooth"});}};
+  const ledig=k=>k>=0&&k<L.length&&!MIN.hord.has(k);
+  for(const d of delar){const fore=MIN.sett[d.id]||0;if(d.ord.length<=fore)continue;MIN.sett[d.id]=d.ord.length;
+    for(const tok of d.ord.slice(fore)){const omr=[...Array(8)].map((_,n)=>MIN.last+1+n).concat([...Array(4)].map((_,n)=>MIN.last-n));
+      const k=omr.find(k=>ledig(k)&&passar(L[k],tok,L));if(k!==undefined){gron(k);continue;}
+      const k2=omr.find(k=>ledig(k)&&ledig(k+1)&&ihop(L[k],L[k+1],tok));if(k2!==undefined){gron(k2);gron(k2+1);}}}}
+function runMinute(){MIN.phase="run";MIN.hord=new Set();MIN.sett={};MIN.last=-1;$("mSheet").classList.remove("wait");$("mMsg").textContent=micOn()?"Läs! 🎤 Datorn lyssnar":"Läs!";window.Ljud&&Ljud.chime&&Ljud.chime();
   if(micOn())recStart(minuteHear);
   const t0=performance.now(),tick=()=>{const left=Math.max(0,60-(performance.now()-t0)/1000);$("mT").textContent=Math.ceil(left);$("mBar").style.width=(left/60*100)+"%";
     if(left<=0){MIN.phase="end";recStop();window.Ljud&&Ljud.fanfare&&Ljud.fanfare();
