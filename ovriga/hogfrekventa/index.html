@@ -218,7 +218,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
   <button class="mval" data-motor="web" id="mvWeb"><b>🌐 Webbläsaren</b><small>Startar direkt och kräver internet. Ljudet skickas för att bli text: i Chrome till Google, i Edge till Microsoft, i Safari och på iPad till Apple. Fungerar bäst i Chrome på dator.</small></button>
   <button class="mval" data-motor="kb" id="mvKb"><b>🧠 I enheten (KB-Whisper)</b><small>Kungliga bibliotekets svenska taligenkänning. Laddas ner en gång (ca 52 MB), sedan fungerar den utan internet. <b>Inget ljud lämnar enheten.</b><span id="kbLangsam" hidden> Den här enheten saknar grafikkort för det, så det kan gå långsamt.</span></small></button>
   <div id="kbProg" hidden style="margin-bottom:10px"><div class="kbbar"><i></i></div><p class="small" id="kbProgT" style="margin:4px 0 0">Laddar ner …</p></div>
-  <p><b>Till den vuxna:</b> inget sparas på Matte-Portalen. Med 🌐 Webbläsaren skickas ljudet till Google, Microsoft eller Apple, så i skolan bör det stämmas av med skolans dataskyddsombud. Med 🧠 I enheten stannar ljudet i enheten.</p>
+  <p><b>Till den vuxna:</b> inget sparas på Matte-Portalen. Väljer du <b>Webbläsaren</b> skickas ljudet till Google, Microsoft eller Apple, så i skolan bör det stämmas av med skolans dataskyddsombud. Väljer du <b>I enheten (KB-Whisper)</b> stannar ljudet i elevens dator, iPad eller mobil.</p>
   <p>Korta ord som <span class="w">i</span> och <span class="w">en</span> kan vara svåra för datorn att höra. Fungerar det dåligt, stäng av det igen.</p>
   <div class="row2"><button class="alt" id="micNo">Nej tack</button><button class="go" id="micYes">Slå på</button></div>
 </div></div>
@@ -530,7 +530,7 @@ function startMinute(){stopAll();const pool=minPool(),stig=data.mlista!=="ovade"
   let list=[];if(stig)list=STIG[data.mlista].slice();else while(list.length<150){const w=pick(pool);if(w!==list[list.length-1]&&w!==list[list.length-2])list.push(w);}
   Object.assign(MIN,{list,errs:new Set(),end:-1,phase:"intro",stig});
   $("mLista").innerHTML=[["ovade","Övade ord"],["A","📈 Stigande A"],["B","📈 Stigande B"]].map(([v,t])=>`<button data-l="${v}" aria-pressed="${data.mlista===v}">${t}</button>`).join("");
-  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna."+(data.motor!=="kb"&&!CHROME?" 💡 Fungerar bäst i Chrome på dator, eller välj 🧠 I enheten.":""):"";
+  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna."+(data.motor!=="kb"&&!CHROME?" 💡 Fungerar bäst i Chrome på dator. Annars kan du välja att datorn lyssnar i enheten (KB-Whisper) under Lyssna på mig.":""):"";
   $("mFrom").textContent=stig?`Stigande lista ${data.mlista}: samma 150 ord varje gång, från korta till långa ord. Bra för att följa läsflytet över tid. Det är en egen lista, inte H4/AVK1, så resultaten är inte normerade.`:`Orden kommer från ${valText()} (${pool.length} olika ord), i blandad ordning.`;
   $("mInfo").textContent="";$("mIntro").hidden=false;$("mClock").hidden=true;$("mRes").hidden=true;$("mSheet").hidden=false;
   const cols=innerWidth<420?3:innerWidth<700?4:5;$("mSheet").style.setProperty("--cols",cols);
