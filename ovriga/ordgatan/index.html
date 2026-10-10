@@ -59,8 +59,8 @@ h1{font-size:clamp(2.2rem,8vw,2.9rem);line-height:1;margin:10px 0 4px;font-weigh
 @keyframes hopp{30%{transform:translateY(-16px)}60%{transform:translateY(0)}80%{transform:translateY(-5px)}}
 /* rutorna: ett riktigt textfält ligger ovanpå, osynligt, så att tangentbordet kommer upp */
 .rutbox{position:relative;margin:22px auto 6px;width:max-content;max-width:100%}
-.rutor{display:flex;gap:8px;justify-content:center;flex-wrap:nowrap}
-.ruta{width:var(--rs,58px);height:calc(var(--rs,58px)*1.14);border-radius:14px;background:#fff;border:3px solid #C9D6EA;box-shadow:0 4px 0 #C9D6EA;display:grid;place-items:center;
+.rutor{display:flex;gap:var(--rg,8px);justify-content:center;flex-wrap:nowrap}
+.ruta{width:var(--rs,58px);height:calc(var(--rs,58px)*1.14);border-radius:calc(var(--rs,58px)*.24);background:#fff;border:3px solid #C9D6EA;box-shadow:0 4px 0 #C9D6EA;display:grid;place-items:center;
   font-family:var(--las);font-size:calc(var(--rs,58px)*.58);text-transform:uppercase;line-height:1;transition:background .2s,border-color .2s}
 .ruta.nu{border-color:var(--accent);box-shadow:0 4px 0 #9FB0FF}
 .rutbox.fokus .ruta.nu::after{content:"";width:3px;height:52%;background:var(--accent);border-radius:2px;animation:blink 1s steps(1) infinite}
@@ -213,8 +213,11 @@ function visaOrd(){const o=nu();G.las=false;G.skrivet="";G.visade=new Set();
   $("nr").textContent=`${G.klara+1} / ${RUNDA}`;$("info").textContent=`${o.ord.length} bokstäver${o.hoppad?" · tillbaka igen":""}`;
   $("led").textContent=o.led;$("hjalp").className="hjalp";$("hjalp").textContent=o.hoppad?"Det här ordet hoppade du över. Prova igen!":"";
   // större ord: mindre rutor så att de får plats på en rad
-  const bredd=Math.min(innerWidth-32,700),rs=Math.max(30,Math.min(62,Math.floor((bredd-(o.ord.length-1)*8)/o.ord.length)));
-  $("rutbox").style.setProperty("--rs",rs+"px");$("rutbox").className="rutbox"+(document.activeElement===$("inp")?" fokus":"");
+  // långa ord på smal skärm: två rader med större rutor i stället för pyttesmå rutor på en rad
+  const n=o.ord.length,rg=n>8?5:8,bredd=Math.min(innerWidth-32,700),passar=k=>Math.min(62,Math.floor((bredd-(k-1)*rg)/k));
+  let k=n,rs=passar(n);if(rs<34&&n>6){k=Math.ceil(n/2);rs=passar(k);}
+  const rb=$("rutbox");rb.style.setProperty("--rs",rs+"px");rb.style.setProperty("--rg",rg+"px");
+  $("rutor").style.flexWrap=k<n?"wrap":"nowrap";$("rutor").style.maxWidth=k<n?(k*rs+(k-1)*rg+1)+"px":"";$("rutor").style.rowGap=k<n?"10px":"";$("rutbox").className="rutbox"+(document.activeElement===$("inp")?" fokus":"");
   $("inp").value="";$("prickar").innerHTML=G.ko.slice(0,RUNDA).map((x,i)=>`<i class="${prick(i)}"></i>`).join("");
   ritaRutor();knappar();}
 function prick(i){const st=G.res&&G.res[i];return st||(i===G.klara?"nu":"");}
