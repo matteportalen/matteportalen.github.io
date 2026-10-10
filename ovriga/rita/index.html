@@ -150,7 +150,7 @@ function gissa(strokes){if(!MODEL)return[];const b=bild28(strokes);if(!b)return[
   return tf.tidy(()=>{const p=MODEL.predict(tf.browser.fromPixels(b,1).toFloat().div(255).expandDims(0)).dataSync();
     return[...p].map((v,i)=>({n:NAMES[i],p:v})).sort((a,b)=>b.p-a.p).slice(0,3);});}
 // kategorinamn som engelska ord med a/an
-const enNamn=n=>{const w=n.replace(/_/g," ").replace("teddy-bear","teddy bear").replace("t-shirt","T-shirt").replace("rollerskates","roller skates").replace("see saw","seesaw").replace("flip flops","flip-flops").replace("tennis racquet","tennis racket");if(/^(The |grass|rain|bread|pants|grapes|drums|scissors|peas|eyeglasses|lightning|snow|shorts|headphones|roller skates|flip-flops|stairs|broccoli|asparagus|underwear|camouflage|yoga|animal migration)/.test(w))return w.replace("eyeglasses","glasses");return(/^[aeiou]/i.test(w)?"an ":"a ")+w;};
+const enNamn=n=>{const w=n.replace(/_/g," ").replace("teddy-bear","teddy bear").replace("t-shirt","T-shirt").replace("rollerskates","roller skates").replace("see saw","seesaw").replace("flip flops","flip-flops").replace("tennis racquet","tennis racket").replace("string bean","green bean");if(/^(The |grass|rain|bread|pants|grapes|drums|scissors|peas|eyeglasses|lightning|snow|shorts|headphones|roller skates|flip-flops|stairs|broccoli|asparagus|underwear|camouflage|yoga|animal migration)/.test(w))return w.replace("eyeglasses","glasses");return(/^[aeiou]/i.test(w)?"an ":"a ")+w;};
 
 /* ---------- Engelsk röst ---------- */
 let enVoice=null;function loadVoices(){try{const v=speechSynthesis.getVoices();enVoice=v.find(x=>/^en-GB/i.test(x.lang))||v.find(x=>/^en/i.test(x.lang))||null;}catch(e){}}
@@ -188,17 +188,22 @@ function nasta(){if(G.i>=G.ord.length)return slut();
 function tick(){if(!G||G.klar)return;const kvar=TID-(performance.now()-G.t0)/1000;$("gT").style.width=Math.max(0,kvar/TID*100)+"%";
   if(kvar<=0)return klart(false);gissaNu();if(G.klar)return;G.raf=requestAnimationFrame(tick);}
 // datorn gissar medan man ritar (högst ungefär tre gånger i sekunden)
+const TYST=["line","squiggle","zigzag"];
+function nogRitat(now){if(G.strokes.length>=2)return true;const s=G.strokes[0];if(now-G.forst<1500)return false;
+  const xs=s.map(p=>p[0]),ys=s.map(p=>p[1]),w=Math.max(...xs)-Math.min(...xs),h=Math.max(...ys)-Math.min(...ys);
+  return Math.min(w,h)>Math.max(w,h)*.2;}
 let gT=0;function gissaNu(){if(!G||G.klar||!MODEL||!G.strokes.length)return;const now=performance.now();if(now-gT<300)return;gT=now;
   // samma teckning som förra gången: använd samma gissning
   const nPts=G.strokes.reduce((a,s)=>a+s.length,0);if(nPts!==G.nPts||!G.g){G.g=gissa(G.strokes);G.nPts=nPts;}
-  const g=G.g;if(!g.length)return;G.top=g[0].n;
+  const g=G.g;if(!g.length)return;if(!TYST.includes(g[0].n))G.top=g[0].n;
   // rätt först när datorn är riktigt säker (minst 60 %), har varit det tre gånger i rad (ungefär en sekund)
   // och eleven har ritat i minst tre sekunder
   const best=g[0],mal=g.filter(x=>G.k.includes(x.n)).reduce((a,x)=>a+x.p,0);
   if(G.k.includes(best.n)&&mal>=SAKER)G.saker++;else G.saker=0;
   if(G.saker>=3&&now-G.forst>=MINTID)return klart(true);
   if(G.k.includes(best.n)){$("gGuess").textContent="Hmm … I think I know … 🤔";return;}
-  if(best.p<.12)return;const txt=enNamn(best.n);
+  // inga gissningar på ett enda streck i början (en linje blir annars alltid "string bean") eller på kategorier som inte är saker
+  if(best.p<.12||TYST.includes(best.n)||!nogRitat(now))return;const txt=enNamn(best.n);
   $("gGuess").textContent=pick(["I see","Is it","Hmm, maybe","Could it be"])+` ${txt}?`;
   if(txt!==G.last&&now-G.sagt>1800){G.last=txt;G.sagt=now;say(`${txt}?`);}}
 function klart(ok){if(G.klar)return;G.klar=true;cancelAnimationFrame(G.raf);
