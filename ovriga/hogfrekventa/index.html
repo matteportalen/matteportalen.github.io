@@ -74,7 +74,16 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 /* lär dig ordet */
 .letters{display:flex;justify-content:center;gap:2px}
 .letters span{transition:color .2s,transform .2s}
-.letters span.lit{color:#E5484D;transform:translateY(-8px)}
+.letters span.lit{color:#E5484D !important;transform:translateY(-8px) scale(1.12)}
+.letters span.past{opacity:.6}
+.lj{display:inline-flex;flex-direction:column;align-items:stretch}
+.u{position:relative;display:inline-block}
+.u.multi::before{content:"";position:absolute;left:10%;right:10%;top:-.06em;height:.22em;border:.055em solid currentColor;border-bottom:0;border-radius:.4em .4em 0 0;opacity:.45}
+.track{position:relative;height:46px;margin:18px -24px 0;padding:0 24px;border-radius:23px;background:#E8EEF8;touch-action:none;cursor:pointer;box-shadow:inset 0 2px 4px rgba(29,43,83,.12)}
+.track .fill{position:absolute;left:0;top:0;bottom:0;border-radius:23px;background:rgba(61,90,254,.15);width:0}
+.track .dot{position:absolute;top:50%;width:26px;height:12px;margin:-6px 0 0 -13px;border-radius:6px;background:#3D5AFE;opacity:.8}
+.track .knob{position:absolute;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:14px;background:#7B2A55;box-shadow:0 3px 0 #4E1A36;pointer-events:none}
+.lmsg{text-align:center;font-weight:800;color:var(--muted);margin:12px 0 0;min-height:1.4em}
 /* efter blixtläsning: markera svåra ord */
 .marks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 .mk{font-family:var(--las);font-weight:700;font-size:1.6rem;padding:4px 14px;border-radius:14px;background:#F2F8F3;color:var(--c);box-shadow:0 3px 0 var(--line)}
@@ -135,7 +144,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 <div class="wrap">
   <div class="top"><button class="back" data-home>← Tillbaka</button><span class="info" id="lInfo"></span></div>
   <div class="stage" id="lStage"></div>
-  <div class="row2"><button class="alt" id="lHear">🔊 Hör ordet</button><button class="alt" id="lShow">🔤 Visa ljuden</button></div>
+  <div class="row2"><button class="alt" id="lHear">🔊 Hör ordet</button> </div>
   <button class="go" id="lNext">Nästa ord ➜</button>
 </div>
 </section>
@@ -316,14 +325,39 @@ function ljud(w){if(HELORD.has(w))return[w];const out=[];let i=0;
   return out;}
 let L=null;
 function startLearn(){stopAll();L={ws:valdaOrd(),i:0};show("learn");drawLearn();}
-function drawLearn(){const w=L.ws[L.i];sett(w);save();$("lInfo").textContent=`Ord ${L.i+1} av ${L.ws.length}`;
-  $("lStage").innerHTML=`<div style="text-align:center"><div class="big in letters" id="lWord" style="--c:${col(w)}">${ljud(w).map(c=>`<span>${c}</span>`).join("")}</div></div>`;
-  $("lNext").textContent=L.i<L.ws.length-1?"Nästa ord ➜":"Klar ✓";}
+function drawLearn(){const w=L.ws[L.i],units=ljud(w),hel=units.length===1&&HELORD.has(w);sett(w);save();
+  $("lInfo").textContent=`Ord ${L.i+1} av ${L.ws.length}`;
+  $("lStage").innerHTML=`<div class="lj"><div class="big in letters" id="lWord" style="--c:${col(w)}">${units.map((u,k)=>`<span class="u${u.length>1&&!hel?" multi":""}" data-u="${k}">${u}</span>`).join("")}</div>
+    ${hel?"":`<div class="track" id="lTrack"><i class="fill" id="lFill"></i>${units.map(()=>'<b class="dot"></b>').join("")}<span class="knob" id="lKnob" aria-hidden="true"></span></div>`}</div>
+    <p class="lmsg" id="lMsg">${hel?"Det här ordet lär man sig som ett helt ord. Tryck 🔊 och säg det!":"Dra den runda knappen under ordet och säg ljuden!"}</p>`;
+  $("lNext").textContent=L.i<L.ws.length-1?"Nästa ord ➜":"Klar ✓";
+  // långa ord krymper tills de får plats (tillsammans, varandra …)
+  requestAnimationFrame(()=>{const el=$("lWord"),max=$("lStage").clientWidth-56;let fs=parseFloat(getComputedStyle(el).fontSize);
+    while(el.scrollWidth>max&&fs>24){fs-=4;el.style.fontSize=fs+"px";}if(!hel)setupLjuda();});}
 $("lHear").onclick=()=>speak(L.ws[L.i]);
-// bokstäverna lyser en i taget (som när man ljudar), sedan hela ordet
-$("lShow").onclick=()=>{const sp=[...document.querySelectorAll("#lWord span")];timers.forEach(clearTimeout);timers=[];
-  sp.forEach((s,i)=>{later(()=>{sp.forEach(x=>x.classList.remove("lit"));s.classList.add("lit");},i*450);});
-  later(()=>{sp.forEach(x=>x.classList.remove("lit"));$("lWord").classList.remove("ok");void $("lWord").offsetWidth;$("lWord").classList.add("ok");speak(L.ws[L.i]);},sp.length*450+200);};
+/* Ljuda ordet (lärarens önskan, idén från en läsapp): barnet drar en knapp längs en skena under ordet; ljudet ovanför
+   knappen lyser, bågar visar ljud med flera bokstäver. Långsamt = ljuda, fort = läsa ihop. Barnet säger ljuden själv
+   (datorns röst kan inte säga enstaka ljud), 🔊 läser hela ordet. */
+let LJ=null;
+function setupLjuda(){const tr=$("lTrack");if(!tr)return;const tb=tr.getBoundingClientRect(),sp=[...document.querySelectorAll("#lWord .u")];
+  const box=sp.map(e=>{const r=e.getBoundingClientRect();return{l:r.left-tb.left,r:r.right-tb.left,c:(r.left+r.right)/2-tb.left};});
+  tr.querySelectorAll(".dot").forEach((d,k)=>d.style.left=box[k].c+"px");
+  LJ={tr,sp,box,w:tb.width,x:0,t0:0,done:false};setKnob(23);}
+function setKnob(x){const J=LJ;J.x=x;$("lKnob").style.left=x+"px";$("lFill").style.width=x+"px";
+  let cur=-1;J.box.forEach((b,k)=>{if(x>=b.l-4&&x<=b.r+4)cur=k;});
+  J.sp.forEach((e,k)=>{e.classList.toggle("lit",k===cur);e.classList.toggle("past",x>J.box[k].r+4);});
+  if(cur===0&&!J.t0)J.t0=performance.now();
+  if(x<J.box[0].l)J.t0=0;
+  const slut=x>=J.box[J.box.length-1].r+4;
+  if(slut&&!J.done){J.done=true;const t=J.t0?(performance.now()-J.t0)/1000:9;$("lWord").classList.remove("ok");void $("lWord").offsetWidth;$("lWord").classList.add("ok");
+    window.Ljud&&Ljud.ok&&Ljud.ok();
+    $("lMsg").textContent=t<1.2?"Snyggt! Nu läste du ihop ljuden till ett ord. 🎉":"Bra! Dra lite fortare nästa gång, så smälter ljuden ihop till ordet.";}
+  if(!slut&&x<J.box[0].c)J.done=false;}
+document.addEventListener("pointerdown",e=>{if(!LJ||!e.target.closest("#lTrack"))return;e.preventDefault();LJ.drag=e.pointerId;try{LJ.tr.setPointerCapture(e.pointerId);}catch(_){}
+  const tb=LJ.tr.getBoundingClientRect();setKnob(Math.max(23,Math.min(LJ.w-23,e.clientX-tb.left)));});
+document.addEventListener("pointermove",e=>{if(!LJ||LJ.drag!==e.pointerId)return;const tb=LJ.tr.getBoundingClientRect();setKnob(Math.max(23,Math.min(LJ.w-23,e.clientX-tb.left)));});
+document.addEventListener("pointerup",e=>{if(LJ&&LJ.drag===e.pointerId)LJ.drag=null;});
+addEventListener("resize",()=>{if(L&&!$("learn").hidden&&LJ)setupLjuda();});
 $("lNext").onclick=()=>{if(L.i<L.ws.length-1){L.i++;drawLearn();}else{updStars();finish(`Du har sett alla ${L.ws.length} orden!`,"Prova Blixtläsning nu, och läs orden högt.");}};
 
 /* ---------- Blixtläsning ---------- */
