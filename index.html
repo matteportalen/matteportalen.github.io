@@ -548,7 +548,7 @@ const STICKERS=[
   ["gata","🎁","Gåtlösaren","Få stjärnor i Gömda tal.",()=>sum(S.gomda)>0],
   ["paket","🔍","Paketöppnaren","Få tre stjärnor i Gömda tal.",()=>Object.values(S.gomda).some(v=>v===3)],
   ["butik","🛍️","Butiksägaren","Köp alla varor och tio saker till inredningen i Affären.",()=>{const o=S.aff.own||[];return o.filter(x=>!x.includes(":")).length>=6&&o.filter(x=>x.includes(":")).length>=10;}],
-  ["konstnar","🎨","Konstnären","Få datorn att gissa fem teckningar i Draw it!",()=>Object.values(S.rita).some(v=>v>=3)],
+  ["konstnar","🎨","Konstnären","Få datorn att gissa sex av åtta teckningar i Draw it!",()=>Object.values(S.rita).some(v=>v>=3)],
   ["kulbana","🔺","Pyramidräddaren","Rensa hela Kulbanan innan kulorna når pyramiden.",()=>sum(S.kul)>0],
   ["kortdiv","➗","Delningsmästaren","Få stjärnor i Kort division.",()=>sum(S.kort)>0],
   ["rutjagare","🟩","Rutjägaren","Fyll fem kors i Rutjakten.",()=>Object.entries(S.rut).some(([k,v])=>!k.startsWith("t-")&&v>0)],
