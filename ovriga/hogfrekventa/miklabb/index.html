@@ -284,7 +284,7 @@ function stopp(){clearTimeout(blixtT);webStopp();micStopp();lamp("lKb",false,"�
 $("stopp").onclick=stopp;
 
 /* ---------- Kopiera resultatet ---------- */
-function enhet(){const u=navigator.userAgent;const b=/Edg\//.test(u)?"Edge":/Chrome\//.test(u)?"Chrome":/Safari\//.test(u)?"Safari":/Firefox\//.test(u)?"Firefox":"okänd";
+function enhet(){const u=navigator.userAgent;const b=/SamsungBrowser/.test(u)?"Samsung Internet":/Edg\//.test(u)?"Edge":/Chrome\//.test(u)?"Chrome":/Safari\//.test(u)?"Safari":/Firefox\//.test(u)?"Firefox":"okänd";
   const d=/iPad|Macintosh/.test(u)&&navigator.maxTouchPoints>1?"iPad":/Windows/.test(u)?"Windows":/CrOS/.test(u)?"Chromebook":/Mac/.test(u)?"Mac":/Android/.test(u)?"Android":/iPhone/.test(u)?"iPhone":"okänd";
   return `${b} på ${d}${"gpu" in navigator?", WebGPU finns":""}`;}
 $("enhet").textContent=enhet();
