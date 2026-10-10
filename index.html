@@ -554,7 +554,7 @@ const STICKERS=[
   ["ordgatsmastare","🧠","Ordgåtsmästaren","Få tre stjärnor på nivå 3 i Ordgåtan.",()=>((S.oga.stars||{})[3]||0)>=3],
   ["tiofingrar","⌨️","Tiofingersmästaren","Klara alla tio lektioner i Tangentbordet.",()=>Array.from({length:10},(_,i)=>(S.tb.stars||{})["l"+(i+1)]||0).every(v=>v>0)],
   ["alfabetsraket","🚀","Alfabetsraketen","Skriv hela alfabetet på under 15 sekunder i Tangentbordet.",()=>((S.tb.stars||{}).alfa||0)>=3],
-  ["konstnar","🎨","Konstnären","Få datorn att gissa sex av åtta teckningar i Draw it!",()=>Object.values(S.rita).some(v=>v>=3)],
+  ["konstnar","🎨","Konstnären","Få datorn att gissa fem av sex teckningar i Draw it!",()=>Object.values(S.rita).some(v=>v>=3)],
   ["kulbana","🔺","Pyramidräddaren","Rensa hela Kulbanan innan kulorna når pyramiden.",()=>sum(S.kul)>0],
   ["kortdiv","➗","Delningsmästaren","Få stjärnor i Kort division.",()=>sum(S.kort)>0],
   ["rutjagare","🟩","Rutjägaren","Fyll fem kors i Rutjakten.",()=>Object.entries(S.rut).some(([k,v])=>!k.startsWith("t-")&&v>0)],
