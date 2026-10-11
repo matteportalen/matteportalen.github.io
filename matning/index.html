@@ -156,11 +156,59 @@ function scaleSVG(v,max,unit,emoji){const cx=100,cy=118,r=62,a0=-135,a1=135,ang=
     <line x1="${cx}" y1="${cy}" x2="${cx+Math.sin(a)*(r-16)}" y2="${cy-Math.cos(a)*(r-16)}" stroke="#E5484D" stroke-width="3.5" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="6" fill="#E5484D"/>`;
   return`<svg ${NS} viewBox="0 0 200 190" width="220" role="img" aria-label="En köksvåg">${s}</svg>`;}
 // mätglas 0–10 dl, nivå i dl (halva går också), etikett 1 l vid 10
-function glassSVG(v,label){const x=60,y=18,w=80,h=200,lv=y+h-h*v/10;let s=`<path d="M${x} ${y} V${y+h} q0 10 10 10 h${w-20} q10 0 10 -10 V${y}" fill="#F4F8FF" stroke="#9FB3E8" stroke-width="3"/>`;
+function glassSVG(v,label,step){const x=60,y=18,w=80,h=200,lv=y+h-h*v/10;let s=`<path d="M${x} ${y} V${y+h} q0 10 10 10 h${w-20} q10 0 10 -10 V${y}" fill="#F4F8FF" stroke="#9FB3E8" stroke-width="3"/>`;
   if(v>0)s+=`<path d="M${x+2} ${lv} H${x+w-2} V${y+h} q0 8 -8 8 h${-(w-20)} q-8 0 -8 -8 Z" fill="#FF8F6B" opacity=".85"/><rect x="${x+2}" y="${lv}" width="${w-4}" height="5" fill="#fff" opacity=".35"/>`;
-  for(let i=1;i<=10;i++){const yy=y+h-h*i/10;s+=`<line x1="${x+w-2}" y1="${yy}" x2="${x+w-18}" y2="${yy}" stroke="#1D2B53" stroke-width="1.8"/><text x="${x+w+8}" y="${yy+5}" font-size="13" ${FONT} fill="#1D2B53">${i===10&&label?"1 l":i}</text>`;}
+  for(let i=1;i<=10;i++){const yy=y+h-h*i/10;s+=`<line x1="${x+w-2}" y1="${yy}" x2="${x+w-18}" y2="${yy}" stroke="#1D2B53" stroke-width="1.8"/><text x="${x+w+8}" y="${yy+5}" font-size="13" ${FONT} fill="#1D2B53">${step&&i%step?"":i===10&&label?"1 l":i}</text>`;}
   s+=`<text x="${x+w+8}" y="${y+h+6}" font-size="12" ${FONT} fill="#56668F">dl</text>`;
   return`<svg ${NS} viewBox="0 0 200 236" width="190" role="img" aria-label="Ett mätglas">${s}</svg>`;}
+
+// bevarande: samma saft i ett högt smalt glas och en bred låg skål
+function twoGlassSVG(){const c="#FF8F6B";
+  return`<svg ${NS} viewBox="0 0 300 170" width="300" role="img" aria-label="Ett smalt glas och en bred skål">
+  <path d="M40 20 V140 q0 8 8 8 h24 q8 0 8 -8 V20" fill="#F4F8FF" stroke="#9FB3E8" stroke-width="3"/><path d="M42 60 H78 V140 q0 6 -6 6 h-24 q-6 0 -6 -6Z" fill="${c}" opacity=".85"/>
+  <path d="M110 70 q40 -30 80 0" fill="none" stroke="#56668F" stroke-width="3" stroke-dasharray="6 5"/><path d="M186 62 l6 9 l-11 2" fill="none" stroke="#56668F" stroke-width="3"/>
+  <path d="M175 100 V140 q0 8 8 8 h100 q8 0 8 -8 V100" fill="#F4F8FF" stroke="#9FB3E8" stroke-width="3"/><path d="M177 126 H289 V140 q0 6 -6 6 h-100 q-6 0 -6 -6Z" fill="${c}" opacity=".85"/></svg>`;}
+
+/* ---------- Uppgifter som kräver att man tänker (lärarens önskan: inte bara läsa av en siffra) ---------- */
+// rimligt eller orimligt: [påstående, rimligt (1/0), förklaring]
+const RIM={
+ len:[["En dörr är 2 m hög.",1,"En dörr är lite högre än en vuxen, ungefär 2 m."],["En penna är 15 m lång.",0,"15 m är längre än en buss. En penna är ungefär 15 cm."],
+  ["En buss är 12 m lång.",1,"En buss är ungefär 12 m."],["Ett lillfinger är 5 m långt.",0,"5 m är längre än ett rum. Ett lillfinger är ungefär 5 cm."],
+  ["Ett klassrum är 30 m högt.",0,"30 m är som ett tiovåningshus. Ett klassrum är ungefär 3 m högt."],["En säng är 2 m lång.",1,"En säng är lite längre än en vuxen, ungefär 2 m."],
+  ["En myra är 1 m lång.",0,"En myra är mindre än 1 cm."],["En linjal är 30 cm lång.",1,"En vanlig linjal är 30 cm."],["En fotbollsplan är 100 cm lång.",0,"100 cm är bara 1 m. En fotbollsplan är ungefär 100 m."]],
+ vikt:[["Ett äpple väger 200 g.",1,"Ett äpple väger ungefär 2 hg, och 2 hg = 200 g."],["Ett äpple väger 200 hg.",0,"200 hg är 20 kg, mer än en hund! Ett äpple väger ungefär 200 g."],
+  ["En katt väger 4 hg.",0,"4 hg är lika mycket som fyra äpplen. En katt väger ungefär 4 kg."],["En katt väger 4 kg.",1,"En katt väger ungefär 4 kg."],
+  ["En cykel väger 15 g.",0,"15 g är som några gem. En cykel väger ungefär 15 kg."],["Ett paket mjölk väger 1 kg.",1,"En liter mjölk väger ungefär 1 kg."],
+  ["Ett gem väger 1 kg.",0,"1 kg är som ett paket mjölk. Ett gem väger ungefär 1 g."],["En vuxen väger 70 kg.",1,"Det är rimligt för en vuxen."],
+  ["En skolbok väger 5 kg.",0,"5 kg är som fem paket mjölk. En skolbok väger ungefär 5 hg."],["En banan väger 1 hg.",1,"En banan väger ungefär 1 hg."]],
+ vol:[["Ett badkar rymmer 20 dl.",0,"20 dl är bara 2 l, en hink rymmer mer. Ett badkar rymmer ungefär 200 l."],["Ett glas rymmer 2 dl.",1,"Ett glas rymmer ungefär 2 dl."],
+  ["En kopp rymmer 2 l.",0,"2 l är som två paket mjölk. En kopp rymmer ungefär 2 dl."],["En hink rymmer 10 l.",1,"En hink rymmer ungefär 10 l."],
+  ["Ett mjölkpaket rymmer 1 l.",1,"Ett vanligt mjölkpaket rymmer 1 l."],["En sked rymmer 1 l.",0,"En sked rymmer mycket mindre än 1 dl."],
+  ["En vattenflaska rymmer 5 dl.",1,"En vattenflaska rymmer ungefär 5 dl."],["En diskho rymmer 2 dl.",0,"2 dl är ett glas. En diskho rymmer ungefär 20 l."]]};
+// vilken enhet saknas i meningen: [mening, rätt, val]
+const LUCKA={
+ len:[["Pennan är 15 ___ lång.","cm",["cm","m","km"]],["Bussen är 12 ___ lång.","m",["m","cm","km"]],["Det är 30 ___ till mormors stad.","km",["km","m","cm"]],["Boken är 2 ___ tjock.","cm",["cm","m","km"]]],
+ vikt:[["Äpplet väger 2 ___.","hg",["g","hg","kg"]],["Hunden väger 20 ___.","kg",["g","hg","kg"]],["Gemet väger 1 ___.","g",["g","hg","kg"]],["Godispåsen väger 200 ___.","g",["g","hg","kg"]],["Katten väger 4 ___.","kg",["g","hg","kg"]]],
+ vol:[["Glaset rymmer 2 ___.","dl",["dl","l"]],["Hinken rymmer 10 ___.","l",["dl","l"]],["Vattenflaskan rymmer 5 ___.","dl",["dl","l"]],["Badkaret rymmer 200 ___.","l",["dl","l"]]]};
+// sortera: [emoji, namn, värde] (värdena skiljer minst dubbelt så att det går att tänka ut)
+const SORT={
+ len:[["🐜","myran",.5],["✏️","pennan",15],["📏","linjalen",30],["🚪","dörren",200],["🦒","giraffen",500],["🚌","bussen",1200],["🍌","bananen",20],["🐘","elefanten",300]],
+ vikt:[["🪶","fjädern",.1],["📎","gemet",1],["🍎","äpplet",200],["📚","boken",500],["🐈","katten",4000],["🚲","cykeln",15000],["🧑","en vuxen",70000],["🍬","godisbiten",5]]};
+function sortTask(k){for(;;){const it=shuffle(SORT[k].slice()).slice(0,4),v=it.map(x=>x[2]).sort((a,b)=>a-b);
+  if(v.every((x,i)=>!i||x>=v[i-1]*2))return{k:"sort",kind:k,items:it.map(([e,n,val])=>({e,n,v:val})),order:[]};}}
+const LOGIK=[["🍎","äpple","äpplen","🍉","vattenmelon","vattenmeloner"],["🍋","citron","citroner","🍍","ananas","ananasar"],["🥚","ägg","ägg","🧀","ost","ostar"]];
+function logicTask(){const [se,s1,sp,be,b1,bp]=pick(LOGIK),a=rnd(2,4),m=rnd(2,3),n=m*a+pick([-1,1,0]),big=`${m} ${bp}`,small=`${n} ${sp}`;
+  const right=m*a>n?big:m*a<n?small:"Lika mycket";
+  return{k:"mc",q:`${a} ${sp} väger lika mycket som 1 ${b1}. Vad väger mest?`,a:right,opts:[big,small,"Lika mycket"],fixed:true,logic:{se,be,a},
+    why:`1 ${b1} = ${a} ${sp}, så ${m} ${bp} = ${m*a} ${sp}. ${m*a===n?`Det är lika mycket som ${n} ${sp}.`:`${Math.max(m*a,n)} är mer än ${Math.min(m*a,n)}.`}`};}
+function tareTask(){const s=pick(SAKER);if(Math.random()<.5){const b=rnd(1,3),m=rnd(2,6);return{k:"tare",v:b+m,a:m,e:"🥣",sub:`Skålen väger ${b} hg. Hur mycket väger mjölet i skålen?`,h:`Vågen visar ${b+m} hg. Ta bort skålens ${b} hg.`,unit:"hg"};}
+  const v=rnd(2,8);return{k:"tare",v,a:10-v,e:s[0],sub:`Hur många hg till behövs för att det ska bli 1 kg?`,h:`1 kg = 10 hg. Vågen visar ${v} hg. Hur mycket fattas till 10?`,unit:"hg"};}
+function rackerTask(){const L=pick([1,1,2]),d=pick([1,2,3]),k=rnd(2,6),tot=k*d,ok=tot<=L*10;
+  return{k:"mc",q:`Du har ${L} l saft. ${k} kompisar ska få ${d} dl var. Räcker saften?`,a:ok?"Ja, det räcker":"Nej, det räcker inte",opts:["Ja, det räcker","Nej, det räcker inte"],fixed:true,
+    why:`${k} · ${d} dl = ${tot} dl, och ${L} l = ${L*10} dl. ${ok?`${tot} dl ryms i ${L*10} dl.`:`${tot} dl är mer än ${L*10} dl.`}`};}
+const rimTask=k=>{const r=pick(RIM[k]);return{k:"mc",q:`${r[0]} Är det rimligt?`,a:r[1]?"Rimligt":"Orimligt",opts:["Rimligt","Orimligt"],fixed:true,why:r[2]};};
+const luckaTask=k=>{const r=pick(LUCKA[k]);return mc(`Vilken enhet saknas? ${r[0]}`,r[1],r[2],"");};
+const PLAN={2:["rim","rim","sort","lucka","skatt","jmf","conv","conv"],3:["rim","rim","lucka","sort","logic","logic","tare","tare"],4:["rim","rim","racker","fill","fill","bev","glass2","lucka"]};
 
 /* ---------- Uppgifterna ---------- */
 // uppskatta: [fråga, rätt, fel, fel, förklaring]
@@ -216,22 +264,25 @@ const SAKER=[["🍎","äpplet"],["🍐","päronet"],["🍌","bananen"],["🥕","
 const BALANS=[["🍉","vattenmelonen","🍓","jordgubben"],["🎒","ryggsäcken","✏️","pennan"],["🧱","tegelstenen","🪶","fjädern"],["📚","böckerna","📄","pappret"],["🎃","pumpan","🍒","körsbären"]];
 
 function mc(q,right,opts,why,extra){return Object.assign({k:"mc",q,a:right,opts:shuffle(opts.slice()),why},extra||{});}
+const KIND={2:"len",3:"vikt",4:"vol"};
 const fromSkatt=k=>{const s=pick(SKATT[k]);return mc(s[0],s[1],[s[1],s[2],s[3]],s[4]);};
 function genTask(lv,i){
   if(lv===1){if(i===2||i===6)return{k:"broken",len:rnd(4,10),from:rnd(2,4),obj:pick(Object.keys(OBJ)),c:pick(OCOL)};
     return{k:"ruler",len:rnd(3,13),obj:pick(Object.keys(OBJ)),c:pick(OCOL)};}
-  if(lv===2){if(i<3){const c=pick(CONV.len)();return Object.assign({k:"num"},c);}
-    if(i<6)return fromSkatt("len");const j=pick(JMF);return mc(j[0],j[2],j[1],j[3]);}
-  if(lv===3){if(i<3){const v=rnd(1,9),s=pick(SAKER);return{k:"scale",v,max:10,unit:"hg",e:s[0],n:s[1]};}
-    if(i<5){const b=pick(BALANS),sw=Math.random()<.5;return{k:"balans",heavy:b[0],hn:b[1],light:b[2],ln:b[3],sw};}
-    if(i<7)return fromSkatt("vikt");const c=pick(CONV.vikt)();return Object.assign({k:"num"},c);}
-  if(lv===4){if(i<3)return{k:"glass",v:rnd(1,9)};if(i===3)return{k:"pour"};if(i<6)return fromSkatt("vol");const c=pick(CONV.vol)();return Object.assign({k:"num"},c);}
+  if(lv>=2&&lv<=4){const what=G.plan[i],K=KIND[lv];
+    if(what==="rim")return rimTask(K);if(what==="lucka")return luckaTask(K);if(what==="sort")return sortTask(K);if(what==="skatt")return fromSkatt(K);
+    if(what==="jmf"){const j=pick(JMF);return mc(j[0],j[2],j[1],j[3]);}
+    if(what==="conv"){const c=pick(CONV[K])();return Object.assign({k:"num"},c);}
+    if(what==="logic")return logicTask();if(what==="tare")return tareTask();if(what==="racker")return rackerTask();
+    if(what==="fill")return{k:"fill",target:rnd(3,9),n:0};
+    if(what==="bev")return{k:"mc",q:"Saften hälls från det smala glaset till den breda skålen. Är det mer, mindre eller lika mycket saft nu?",a:"Lika mycket",opts:["Mer","Mindre","Lika mycket"],fixed:true,bev:true,why:"Ingen saft försvann och ingen kom till. Den ser lägre ut för att skålen är bredare."};
+    if(what==="glass2")return{k:"glass2",v:pick([1,3,5,7,9])};}
   const u=UNITS[i%UNITS.length];return mc(`Vilken enhet passar? ${u[0]}.`,u[1],u[2],u[3]);}
 const LEVELS=[
  {id:1,name:"Mät med linjalen",desc:"Längd i centimeter",ic:"📏",c:"#FFE9A8"},
- {id:2,name:"Längd: m, dm och cm",desc:"Byt enhet, uppskatta och jämför",ic:"🚪",c:"#D7E6FF"},
- {id:3,name:"Vikt: kg, hg och g",desc:"Köksvågen, balansvågen och uppskatta",ic:"⚖️",c:"#FFE0E6"},
- {id:4,name:"Volym: l och dl",desc:"Mätglaset, häll och uppskatta",ic:"🥛",c:"#DDF5E7"},
+ {id:2,name:"Längd: m, dm och cm",desc:"Rimligt? Sortera, jämför och byt enhet",ic:"🚪",c:"#D7E6FF"},
+ {id:3,name:"Vikt: kg, hg och g",desc:"Rimligt? Sortera, tänk med vågen",ic:"⚖️",c:"#FFE0E6"},
+ {id:4,name:"Volym: l och dl",desc:"Rimligt? Räcker det? Häll exakt",ic:"🥛",c:"#DDF5E7"},
  {id:5,name:"Vilken enhet passar?",desc:"cm, m, km, hg, kg, dl eller l",ic:"🤔",c:"#ECE6FF"}];
 
 /* ---------- Skärmar ---------- */
@@ -246,9 +297,9 @@ $("quit").onclick=openHome;$("rHome").onclick=openHome;$("rAgain").onclick=()=>s
 
 /* ---------- Spelet ---------- */
 let G=null,T=null,lastSay="";
-function start(lv){G={lv,L:LEVELS.find(l=>l.id===lv),i:0,err:0,seen:new Set()};show("game");next();}
+function start(lv){G={lv,L:LEVELS.find(l=>l.id===lv),i:0,err:0,seen:new Set(),plan:shuffle((PLAN[lv]||[]).slice())};show("game");next();}
 function next(){if(G.i>=ROUND)return finish();
-  let t;for(let k=0;k<30;k++){t=genTask(G.lv,G.i);const key=JSON.stringify([t.k,t.q,t.len,t.v,t.heavy]);if(!G.seen.has(key)){G.seen.add(key);break;}}
+  let t;for(let k=0;k<30;k++){t=genTask(G.lv,G.i);const key=JSON.stringify([t.k,t.q,t.len,t.v,t.heavy,t.target,t.items&&t.items.map(x=>x.n)]);if(!G.seen.has(key)){G.seen.add(key);break;}}
   T=Object.assign(t,{inp:"",tries:0,done:false,rx:null});
   $("dots").innerHTML=Array.from({length:ROUND},(_,i)=>`<i class="${i<G.i?"done":i===G.i?"on":""}"></i>`).join("");
   $("task").className="task";fb("");$("nextBtn").hidden=true;render();}
@@ -257,7 +308,7 @@ function say(t){lastSay=t.replace(/<[^>]+>/g,"");$("instr").innerHTML=t;}
 const box=()=>`<span class="box${T.bad?" bad":T.done?" ok":""}">${T.done&&T.shown!=null?T.shown:(T.inp||"&nbsp;")}</span>`;
 function render(){
   const k=T.k,W=Math.min($("task").clientWidth-24,600);
-  $("choices").hidden=k!=="mc"&&k!=="balans";$("pad").hidden=!(k==="ruler"||k==="broken"||k==="num"||k==="scale"||k==="glass"||k==="pour")||T.done||(k==="pour"&&!T.full);
+  $("choices").hidden=!["mc","balans","sort"].includes(k);$("pad").hidden=!NUMK.includes(k)||T.done||(k==="pour"&&!T.full);
   if(k==="ruler"||k==="broken"){
     // linjalen tar ca 3/4 av bredden, så att det finns plats att flytta den och den aldrig hamnar utanför
     const cm=k==="broken"?Math.max(T.len+2,12):15,u=Math.max(13,Math.min(34,(W*.78-20)/cm)),L=T.len*u,o=OBJ[T.obj],sw0=cm*u+20,free=Math.max(0,W-sw0);
@@ -283,8 +334,16 @@ function render(){
     const th=(T.sw?-1:1)*8,L=[{t:"s",e:T.sw?T.light:T.heavy,c:"#3D8BFD"}],R=[{t:"s",e:T.sw?T.heavy:T.light,c:"#FF9F43"}];
     $("stage").innerHTML=`<div style="width:100%;max-width:420px">${MPVag.svg(L,R,{th:T.sw?8:-8})}</div>`;$("ans").innerHTML="";
     $("choices").innerHTML=[[T.heavy,T.hn],[T.light,T.ln]].sort(()=>Math.random()-.5).map(([e,n])=>`<button data-c="${n}" aria-label="${n}"><span class="em">${e}</span></button>`).join("");}
-  else if(k==="mc"){say(T.q);$("stage").innerHTML="";$("ans").innerHTML="";
-    $("choices").innerHTML=T.opts.map(o=>`<button data-c="${o}">${o}</button>`).join("");}
+  else if(k==="mc"){say(T.q);$("ans").innerHTML="";
+    $("stage").innerHTML=T.bev?twoGlassSVG():T.logic?`<div style="width:100%;max-width:420px">${MPVag.svg(Array.from({length:T.logic.a},()=>({t:"s",e:T.logic.se,c:"#3D8BFD"})),[{t:"s",e:T.logic.be,c:"#FF9F43"}],{th:0})}</div>`:"";
+    if(!T.drawn){T.drawn=1;if(T.fixed)T.opts=T.opts.slice();}
+    $("choices").innerHTML=T.opts.map(o=>`<button data-c="${o}"${o.length>11?' style="font-size:1rem;line-height:1.15"':""}>${o}</button>`).join("");}
+  else if(k==="sort"){const by=T.kind==="len"?"kortast till längst":"lättast till tyngst";say(`Sortera från ${by}. Tryck på dem i ordning.`);$("stage").innerHTML="";$("ans").innerHTML="";
+    $("choices").innerHTML=T.items.map((it,i)=>{const n=T.order.indexOf(i);return`<button data-s="${i}" class="${T.done&&T.right?"ok":""}"><span class="em">${it.e}</span><br><span style="font-size:.95rem">${it.n}</span>${n>=0?`<br><b style="color:var(--accent)">${n+1}</b>`:""}</button>`;}).join("");}
+  else if(k==="tare"){say(T.sub);$("stage").innerHTML=scaleSVG(T.v,10,"hg",T.e);$("ans").innerHTML=`${box()}<span>hg</span>`;}
+  else if(k==="glass2"){say("Hur mycket saft är det? Skalan visar bara varannan siffra.");$("stage").innerHTML=glassSVG(T.v,true,2);$("ans").innerHTML=`<span>Det är</span>${box()}<span>dl</span>`;}
+  else if(k==="fill"){say(`Häll upp exakt ${T.target} dl. Du har ett 2-dl-mått och ett 1-dl-mått.`);$("stage").innerHTML=glassSVG(Math.min(T.n,10),true);
+    $("ans").innerHTML=T.done?`<span>${T.target} dl</span>`:`<button class="pour" data-p="2">🥛 Häll 2 dl</button><button class="pour" data-p="1" style="background:#17AFC4;box-shadow:0 4px 0 #0F8696">🥛 Häll 1 dl</button><button class="pour" data-p="0" style="background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line)">↺ Töm</button>`;}
 }
 // dra linjalen i sidled (mus, finger och penna)
 function dragRuler(u){const g=$("rul");if(!g)return;let sx=null,r0=0;
@@ -298,26 +357,44 @@ function dragRuler(u){const g=$("rul");if(!g)return;let sx=null,r0=0;
 $("stage").addEventListener("touchmove",e=>{if(e.target.closest&&e.target.closest("#rul"))e.preventDefault();},{passive:false});
 
 /* ---------- Svaren ---------- */
-const answerOf=()=>T.k==="ruler"||T.k==="broken"?T.len:T.k==="scale"||T.k==="glass"?T.v:T.k==="pour"?10:T.a;
+const NUMK=["ruler","broken","num","scale","glass","pour","tare","glass2"];
+const answerOf=()=>T.k==="ruler"||T.k==="broken"?T.len:T.k==="scale"||T.k==="glass"||T.k==="glass2"?T.v:T.k==="pour"?10:T.a;
 function hintOf(v){const k=T.k;
   if(k==="ruler")return"Lägg linjalens 0 vid ena änden och läs av vid den andra änden.";
   if(k==="broken")return`Linjalen börjar på ${T.from}. Räkna centimetrarna från ${T.from} till siffran vid andra änden.`;
   if(k==="scale")return"Titta var den röda visaren pekar och läs av siffran.";
   if(k==="glass")return"Titta var saften slutar och läs av strecket bredvid.";
+  if(k==="glass2")return"Strecken utan siffra ligger mitt emellan. Mitt emellan 4 och 6 är 5.";
+  if(k==="tare")return T.h;
   if(k==="pour")return"Räkna hur många gånger du hällde. 10 dl blir 1 l.";
   return T.h;}
-function key(k){if(!T||T.done||!["ruler","broken","num","scale","glass","pour"].includes(T.k))return;if(T.k==="pour"&&!T.full)return;
+function key(k){if(!T||T.done||!NUMK.includes(T.k))return;if(T.k==="pour"&&!T.full)return;
   if(k==="del"){T.inp=T.inp.slice(0,-1);T.bad=false;render();return;}
   if(k==="ok"){if(T.inp)check(+T.inp);return;}
   if(T.inp.length<4){T.inp=(T.bad?"":T.inp)+k;T.bad=false;render();}}
 function check(v){const a=answerOf();
   if(v===a){right();return;}
   T.tries++;T.bad=true;G.miss=true;window.Ljud&&Ljud.bad&&Ljud.bad();
-  if(T.tries>=2){T.shown=a;T.done=true;T.bad=false;fb(`Det är ${a}${T.k==="ruler"||T.k==="broken"?" cm":T.k==="scale"?" "+T.unit:T.k==="glass"||T.k==="pour"?" dl":""}. ${hintOf(v)}`,true);endTask(false);return;}
+  if(T.tries>=2){T.shown=a;T.done=true;T.bad=false;fb(`Det är ${a}${T.k==="ruler"||T.k==="broken"?" cm":T.k==="scale"||T.k==="tare"?" hg":T.k==="glass"||T.k==="glass2"||T.k==="pour"?" dl":""}. ${hintOf(v)}`,true);endTask(false);return;}
   fb(hintOf(v),true);render();}
 function right(){const first=T.tries===0;T.done=true;T.bad=false;$("task").className="task ok";window.Ljud&&Ljud.ok&&Ljud.ok();
   fb(pick(["Rätt!","Precis!","Snyggt!"])+(T.why?" "+T.why:""));endTask(first);}
 function endTask(first){if(!first)G.err++;render();$("pad").hidden=true;$("nextBtn").hidden=false;G.i++;}
+$("ans").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b||!T||T.k!=="fill"||T.done)return;const x=+b.dataset.p;
+  if(x===0){T.n=0;fb("");render();return;}
+  T.n+=x;window.Ljud&&Ljud.pop&&Ljud.pop(T.n);
+  if(T.n===T.target){T.shown=null;render();right();return;}
+  if(T.n>T.target){fb(`Det blev ${T.n} dl, för mycket. Töm och prova igen.`,true);render();return;}
+  fb("");render();});
+$("choices").addEventListener("click",e=>{const b=e.target.closest("[data-s]");if(!b||!T||T.k!=="sort"||T.done)return;const i=+b.dataset.s;
+  if(T.order.includes(i))return;T.order.push(i);window.Ljud&&Ljud.pop&&Ljud.pop(T.order.length);
+  if(T.order.length<T.items.length){render();return;}
+  const ok=T.order.every((x,j)=>!j||T.items[x].v>=T.items[T.order[j-1]].v);
+  if(ok){T.right=1;render();right();return;}
+  T.tries++;window.Ljud&&Ljud.bad&&Ljud.bad();
+  const corr=T.items.map((x,i)=>i).sort((a,b)=>T.items[a].v-T.items[b].v);
+  if(T.tries>=2){T.order=corr;T.done=true;fb(`Så här blir det: ${corr.map(x=>T.items[x].n).join(", ")}.`,true);render();endTask(false);return;}
+  T.order=[];fb(T.kind==="len"?"Inte riktigt. Börja med det som är kortast.":"Inte riktigt. Börja med det som är lättast.",true);render();});
 $("choices").onclick=e=>{const b=e.target.closest("[data-c]");if(!b||!T||T.done)return;const v=b.dataset.c;
   const ok=T.k==="balans"?v===T.hn:v===T.a;
   if(ok){b.classList.add("ok");right();return;}
