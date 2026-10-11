@@ -182,7 +182,7 @@ function slotHtml(i){const sel=G.sel===i&&!G.done,cls=solved(i)?((isQ(i)?G.qShow
   const txt=solved(i)?(isQ(i)?G.t.qAns:G.t.saker[i].v):sel&&G.inp!==""?G.inp:" ";
   return `<span class="slot ${cls}">${txt}</span>`;}
 function itemHtml(it){if(it.n!=null)return `<span>${it.n}</span>`;if(it.q)return slotHtml(G.t.saker.length);
-  const s=G.t.saker[it.s];return `<span class="sy">${s.e}${G.known[it.s]?`<i class="${G.shown[it.s]?"shown":""}">${s.v}</i>`:""}</span>`;}
+  const s=G.t.saker[it.s];return `<span class="sy">${s.e}</span>`;} // talet skrivs inte ut i raderna: eleven håller det i huvudet (lärarens val)
 const sideHtml=side=>side.map((it,i)=>(i?"<span>+</span>":"")+itemHtml(it)).join("");
 const rowDone=r=>[...r.L,...r.R].every(it=>it.s==null||G.known[it.s])&&(!r.q||G.qDone);
 function draw(){const t=G.t;
