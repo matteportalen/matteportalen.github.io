@@ -22,34 +22,51 @@ button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation;borde
 button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
 [hidden]{display:none !important}
 .back{display:inline-block;color:var(--muted);font-weight:700;text-decoration:none;padding:6px 0;font-size:1rem}
-h1{font-size:2.5rem;line-height:1;margin:14px 0 8px;font-weight:800}
+h1{font-size:2.1rem;line-height:1;margin:10px 0 4px;font-weight:800}
 h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
-.lead{margin:0 0 14px;color:var(--muted);font-size:1.1rem}
+.lead{margin:0 0 12px;color:var(--muted);font-size:1.02rem}
 .stars{color:var(--gold);letter-spacing:1px}.stars .off{color:#D5DDEC}
 .opts{background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line);margin-bottom:12px}
 .opts p{margin:0 0 6px;font-weight:800;font-size:1rem}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
-.chips button{flex:1;min-height:46px;border-radius:12px;background:var(--bg);font-weight:800;font-size:1.05rem;padding:0 10px}
-.chips button[aria-pressed="true"]{background:var(--ink);color:#fff}
-.levels{display:grid;gap:10px;margin-top:14px}
-.lv{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:10px 12px;box-shadow:0 4px 0 var(--line);text-align:left;width:100%}
+.chips{gap:4px;background:var(--bg);border-radius:14px;padding:4px}
+.chips button{flex:1;min-height:44px;border-radius:11px;background:transparent;font-weight:800;font-size:1.05rem;padding:0 10px;color:var(--muted)}
+.chips button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(29,43,83,.15)}
+.levels{display:grid;gap:8px;margin-top:12px}
+.lv{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:8px 12px 8px 8px;box-shadow:0 4px 0 var(--line);text-align:left;width:100%}
 .lv:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.lv .t{min-width:62px;height:54px;border-radius:14px;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:800;font-size:1rem;flex:none;line-height:1.05;text-align:center;padding:0 6px}
+.lv .t{min-width:64px;height:44px;border-radius:12px;background:#EEF3FC;color:var(--ink);display:grid;place-items:center;font-weight:800;font-size:1rem;flex:none;line-height:1.05;text-align:center;padding:0 6px}
 .lv b{font-size:1.12rem;display:block;line-height:1.15}
 .lv small{color:var(--muted);font-size:.88rem;display:block;line-height:1.25}
 .lv .st{margin-left:auto;flex:none}
-.note{color:var(--muted);font-size:.95rem;margin-top:16px}
-/* spelet */
+@media (max-height:720px){.lv{padding:5px 12px 5px 6px}.lv .t{height:38px}.opts>p:first-child{display:none}.wrap h1{margin-top:4px}.lead{margin-bottom:8px}}
+.note{color:var(--muted);font-size:.88rem;margin:6px 2px 0;line-height:1.3;font-weight:600}
+/* spelet: fyller skärmen exakt, inget att scrolla (höjden sätts i fit()) */
+#game{display:flex;flex-direction:column;gap:10px}
+#game[hidden]{display:none !important}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:10px;height:10px;border-radius:50%;background:#D3DEF2}
+.dots i.on{background:var(--accent);transform:scale(1.25)}.dots i.done{background:var(--good)}
+.gbody{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.kdwrap{flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.side{display:flex;flex-direction:column;justify-content:flex-end}
+@media (min-width:860px) and (min-aspect-ratio:4/3){
+  #game .gbody{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(300px,1fr);gap:18px;align-items:stretch}
+  .wrap.wide{max-width:1100px}
+  .side{justify-content:center}
+  .pad button{height:64px}
+  .instr{font-size:1.45rem}.feedback,.check{font-size:1.2rem}
+}
 .gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
 .info{font-weight:800;font-size:1.2rem}
 .progress{height:10px;border-radius:5px;background:var(--card);overflow:hidden;margin-top:6px;box-shadow:inset 0 0 0 2px var(--line)}
 .progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
-.task{background:var(--card);border-radius:22px;padding:12px;box-shadow:0 5px 0 var(--line);margin:12px 0;transition:background .15s}
+.task{background:var(--card);border-radius:22px;padding:12px 14px;box-shadow:0 5px 0 var(--line);margin:0;transition:background .15s;flex:1;min-height:0;display:flex;flex-direction:column}
 .task.ok{background:#DDF5E7}
-.instr{display:flex;gap:10px;align-items:center;font-weight:800;font-size:1.15rem;line-height:1.3;min-height:48px}
+.instr{font-weight:800;font-size:1.1rem;line-height:1.3;min-height:2.6em;text-align:center}
 .spk{flex:none;width:44px;height:44px;border-radius:50%;background:var(--bg);font-size:1.3rem;box-shadow:0 3px 0 var(--line)}
 /* uppställningen: täljaren över divisorn med bråkstreck, svaret efter likhetstecknet */
-.kd{--cell:min(12vw,58px);display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 10px;margin:14px 0 6px;font-weight:800}
+.kd{--cell:52px;display:flex;align-items:center;justify-content:center;gap:6px calc(var(--cell)*.18);margin:0;font-weight:800}
 .frac{display:inline-flex;flex-direction:column;align-items:stretch}
 .top{display:flex;padding-top:calc(var(--cell)*.42);position:relative;z-index:0}
 .dg{position:relative;width:var(--cell);height:var(--cell);display:grid;place-items:center;font-size:calc(var(--cell)*.78);line-height:1}
@@ -57,7 +74,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .dg.new{color:var(--accent)}
 .dg.cur::before{content:"";position:absolute;inset:4px 0 0;border-radius:10px;background:#FFF4CC;z-index:-1}
 /* den lilla resten snett ovanför siffran */
-.cb{position:absolute;left:-14%;top:-46%;width:calc(var(--cell)*.5);height:calc(var(--cell)*.5);border-radius:8px;display:grid;place-items:center;font-size:calc(var(--cell)*.36);color:#B8323A;border:2px dashed #E5BFC3;background:#fff}
+.cb{position:absolute;left:-14%;top:-46%;width:calc(var(--cell)*.5);height:calc(var(--cell)*.5);min-width:24px;min-height:24px;border-radius:8px;display:grid;place-items:center;font-size:max(15px,calc(var(--cell)*.36));font-weight:800;color:#A32630;border:2px dashed #D59AA1;background:#fff}
 .cb.empty{border-color:transparent;background:transparent}
 .cb.act{border:3px solid var(--accent);background:#EEF1FF;color:var(--accent)}
 .cb.ok{border:2px solid #F3B4B6;background:#FFF1F1}
@@ -74,23 +91,22 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .kd .box.idle{border:2px dashed #AFC4EA;background:#fff;color:var(--ink)}
 .rest{display:inline-flex;align-items:center;gap:6px;font-size:.62em;color:var(--muted)}
 .rest .box{font-size:1.5em}
-.check{text-align:center;font-weight:800;color:var(--good-dark);font-size:1.15rem;margin-top:6px;min-height:1.4em}
-.feedback{min-height:1.4em;font-weight:800;font-size:1.05rem;margin-top:6px;text-align:center;color:var(--good-dark);line-height:1.3}
+.check{text-align:center;font-weight:800;color:var(--good-dark);font-size:1.05rem;min-height:1.3em}
+.feedback{min-height:2.7em;font-weight:800;font-size:1rem;margin-top:4px;text-align:center;color:var(--good-dark);line-height:1.3;display:flex;align-items:center;justify-content:center}
 .feedback.bad{color:#9B2C3A;background:#FFE9EC;border-radius:12px;padding:6px 10px}
 .pad{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}
 .pad button{height:54px;border-radius:16px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.7rem;font-weight:800}
 .pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.pad .next{font-size:1rem;background:#F6F8FF}
+.pad .next{font-size:.95rem;line-height:1.05;background:#F6F8FF}
 .pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.3rem}
 .pad .comma{background:#FFF4CC;box-shadow:0 4px 0 #EAD58A}
 .go{display:block;width:100%;padding:14px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.3rem;margin-top:12px}
+#game .go{margin-top:0}
 .go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
 .result{text-align:center;padding-top:20px}
 .rbig{font-size:clamp(3.2rem,16vw,4.6rem);font-weight:800;line-height:1;margin:6px 0}
 .rsub{color:var(--muted);font-size:1.15rem;margin:0 0 14px}
 .big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
-.pet{width:64px;margin:0 auto}.pet svg{width:100%;height:auto;display:block}
-.pet.hop{animation:hop .5s ease-out}@keyframes hop{40%{transform:translateY(-12px)}}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:800;z-index:9;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:8}
 @media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
@@ -99,29 +115,30 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <body>
 <div class="wrap">
 <section id="home" class="screen">
-  <h1 style="display:flex;align-items:center;gap:10px"><span style="display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#17AFC4;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="50" height="50" aria-hidden="true"><rect x="2" y="2" width="56" height="56" rx="12" fill="#fff"/><text x="12" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">7</text><text x="25" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">2</text><text x="19.5" y="16" font-size="8.5" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#E5484D">1</text><rect x="4" y="32" width="28" height="2.6" rx="1.3" fill="#1D2B53"/><text x="18" y="49" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">3</text><text x="39" y="38" font-size="12" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">=</text><text x="51" y="38" font-size="14" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#157548">24</text></svg></span>Kort division</h1>
+  <h1 style="display:flex;align-items:center;gap:10px"><span style="display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#17AFC4;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="42" height="42" aria-hidden="true"><rect x="2" y="2" width="56" height="56" rx="12" fill="#fff"/><text x="12" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">7</text><text x="25" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">2</text><text x="19.5" y="16" font-size="8.5" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#E5484D">1</text><rect x="4" y="32" width="28" height="2.6" rx="1.3" fill="#1D2B53"/><text x="18" y="49" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">3</text><text x="39" y="38" font-size="12" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">=</text><text x="51" y="38" font-size="14" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#157548">24</text></svg></span>Kort division</h1>
   <p class="lead">Dela siffra för siffra. Resten skrivs snett ovanför nästa siffra.</p>
-  <div class="opts"><p>Hur vill du räkna?</p><div class="chips" id="modeChips"><button data-m="steg">Visa stegen</button><button data-m="sjalv">Själv</button></div></div>
+  <div class="opts"><p>Hur vill du räkna?</p><div class="chips" id="modeChips"><button data-m="steg">Visa stegen</button><button data-m="sjalv">Själv</button></div><p class="note" id="modeNote"></p></div>
   <div class="levels" id="levels"></div>
-  <p class="note" id="modeNote"></p>
 </section>
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
-  <div class="progress"><i id="prog"></i></div>
-  <div class="task" id="task">
-    <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
-    <div class="kd" id="kd"></div>
-    <div class="check" id="check"></div>
-    <div class="feedback" id="feedback" aria-live="polite"></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="dots" id="dots" aria-hidden="true"></span><button class="spk" id="spk" aria-label="Läs upp">🔊</button></div>
+  <div class="gbody">
+    <div class="task" id="task">
+      <div class="instr" id="instr" aria-live="polite"></div>
+      <div class="kdwrap" id="kdwrap"><div class="kd" id="kd"></div></div>
+      <div class="check" id="check"></div>
+      <div class="feedback" id="feedback" aria-live="polite"></div>
+    </div>
+    <div class="side">
+      <div class="pad" id="pad">
+        <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button>
+        <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="0">0</button>
+        <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="none" class="next" id="noneKey">Ingen rest</button>
+        <button data-k="," class="comma" id="commaKey" aria-label="Decimaltecken">,</button><button data-k="ok" class="okbtn" id="okKey" style="grid-column:span 3">Rätta</button>
+      </div>
+      <button class="go" id="nextBtn" hidden>Nästa tal →</button>
+    </div>
   </div>
-  <div class="pad" id="pad">
-    <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button>
-    <button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="0">0</button>
-    <button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="none" class="next" id="noneKey">Ingen</button>
-    <button data-k="," class="comma" id="commaKey" aria-label="Decimaltecken">,</button><button data-k="ok" class="okbtn" id="okKey" style="grid-column:span 3">Rätta</button>
-  </div>
-  <button class="go" id="nextBtn" hidden>Nästa tal →</button>
-  <div class="pet" id="pet" aria-hidden="true"></div>
 </section>
 <section id="result" class="screen result" hidden>
   <h2 id="rTitle"></h2>
@@ -171,12 +188,13 @@ const LEVELS=[
 ];
 
 /* ---------- Skärmar ---------- */
-function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
+function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);
+  if(id!=="game"){const w=document.querySelector(".wrap");w.classList.remove("wide");w.style.paddingBottom="";}else requestAnimationFrame(fit);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function openHome(){G=null;
   $("modeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===data.mode));
-  $("modeNote").textContent=data.mode==="steg"?"Visa stegen: du får en fråga för varje steg, och en ledtråd om något blir fel.":"Själv: skriv resterna snett ovanför siffrorna och svaret efter likhetstecknet, tryck sedan på Rätta. Inga tips förrän du rättar.";
-  $("levels").innerHTML=LEVELS.map((l,ix)=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${l.ex}</span><span><b>${ix+1}. ${l.name}</b><small>${l.desc}</small></span><span class="st">${starHtml((data.stars[data.mode]||{})[l.id]||0)}</span></button>`).join("");
+  $("modeNote").textContent=data.mode==="steg"?"En fråga för varje steg, med ledtråd om något blir fel.":"Skriv allt själv och tryck Rätta. Inga tips förrän du rättar.";
+  $("levels").innerHTML=LEVELS.map((l,ix)=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${l.ex}</span><span><b>${l.name}</b></span><span class="st">${starHtml((data.stars[data.mode]||{})[l.id]||0)}</span></button>`).join("");
   show("home");}
 $("modeChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.mode=b.dataset.m;save();openHome();};
 $("levels").onclick=e=>{const b=e.target.closest("[data-l]");if(b)start(+b.dataset.l);};
@@ -184,7 +202,7 @@ $("quit").onclick=openHome;$("rHome").onclick=openHome;$("rAgain").onclick=()=>s
 
 /* ---------- Spelet ---------- */
 let G=null;
-function start(lv){G={lv,L:LEVELS.find(l=>l.id===lv),k:0,err:0,mode:data.mode,seen:new Set()};$("pet").innerHTML=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";show("game");next();}
+function start(lv){G={lv,L:LEVELS.find(l=>l.id===lv),k:0,err:0,mode:data.mode,seen:new Set()};show("game");next();}
 function next(){
   if(G.k>=ROUND)return finish();
   let t;do{t=G.L.gen();}while(G.seen.has(t.n+"/"+t.d));G.seen.add(t.n+"/"+t.d);
@@ -193,12 +211,22 @@ function next(){
   G.s={i:G.sol.steps[0].skip?1:0,phase:"q",ans:"",carries:{},shownDec:0,restVal:"",restOn:false,marks:{}};
   // Själv: allt eleven skriver
   G.f={carries:{},ans:"",rest:"",cur:{type:"ans"},marks:{}};
-  $("info").textContent=`${G.k+1} / ${ROUND}`;$("prog").style.width=(G.k/ROUND*100)+"%";
+  dots();
   $("task").className="task";$("feedback").textContent="";$("feedback").className="feedback";$("check").textContent="";
   $("nextBtn").hidden=true;$("pad").hidden=false;
   if(G.mode==="steg")stepPrompt();else{say(`Räkna ${t.n} delat med ${t.d}. Skriv resterna snett ovanför siffrorna och svaret efter likhetstecknet.`);}
   render();}
 const hasRestBox=()=>G.L.id>=3&&G.L.id<=5;
+function dots(){$("dots").innerHTML=Array.from({length:ROUND},(_,i)=>`<i class="${i<G.k?"done":i===G.k&&!G.done?"on":""}"></i>`).join("");}
+/* storleken: spelet fyller fönstret och siffrorna blir så stora som det får plats */
+function fit(){const g=$("game");if(g.hidden)return;document.querySelector(".wrap").classList.toggle("wide",!g.hidden);
+  const top=g.getBoundingClientRect().top+scrollY,h=Math.max(420,innerHeight-top-12);g.style.height=h+"px";document.querySelector(".wrap").style.paddingBottom="12px";
+  const w=$("kdwrap"),kd=$("kd");if(!w||!G)return;
+  // mät uppställningen med en känd storlek och skala sedan så att den fyller rutan (med plats för svaret som ska skrivas)
+  const sol=G.sol,extra=Math.max(0,sol.qStr.length-1)*.62+(sol.rest||hasRestBox()?1:0);
+  kd.style.setProperty("--cell","100px");const r=kd.getBoundingClientRect(),need=r.width+extra*100*.3;
+  const c=Math.max(30,Math.min(104,100*(w.clientWidth-16)/need,100*(w.clientHeight-8)/r.height));kd.style.setProperty("--cell",c.toFixed(1)+"px");}
+addEventListener("resize",fit);
 function render(){
   const sol=G.sol,t=G.t,steg=G.mode==="steg",s=G.s,f=G.f;
   // täljarens siffror; i Visa stegen syns decimalnollorna först när de har lagts till
@@ -229,8 +257,11 @@ function render(){
     if(hasRestBox()){const mr=f.marks.rest,ar=f.cur.type==="rest";ans+=`<span class="rest">rest <button class="box${ar?"":" idle"}${mr?" "+mr:""}" data-r="1" aria-label="Resten">${f.rest||(ar?"?":"&nbsp;")}</button></span>`;}
   }
   $("kd").innerHTML=`<div class="frac"><div class="top">${top}</div><div class="bar"></div><div class="bot">${t.d}</div></div><span class="eqgrp">=${ans}</span>`;
-  $("commaKey").hidden=G.L.id!==6;$("noneKey").hidden=false;
-  $("okKey").textContent=steg?"OK":"Rätta";
+  $("commaKey").hidden=G.L.id!==6;
+  // "Ingen rest" behövs bara när det frågas efter en rest (i Visa stegen skrivs noll gånger med 0)
+  $("noneKey").hidden=steg&&!(s.phase==="c"||s.phase==="rest");
+  requestAnimationFrame(fit);
+  $("okKey").textContent="Rätta";$("okKey").hidden=steg;
   if(!steg){$("kd").querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{if(G.done)return;G.f.cur={type:"c",i:+b.dataset.c};render();});
     $("kd").querySelectorAll("[data-a]").forEach(b=>b.onclick=()=>{if(G.done)return;G.f.cur={type:"ans"};render();});
     $("kd").querySelectorAll("[data-r]").forEach(b=>b.onclick=()=>{if(G.done)return;G.f.cur={type:"rest"};render();});}
@@ -307,12 +338,12 @@ function selfCheck(){
 /* ---------- Klart ---------- */
 function finishTask(){
   G.done=true;const sol=G.sol,q=sol.qStr;if(!G.miss){}else G.err++;
-  $("task").className="task ok";window.Ljud&&Ljud.ok&&Ljud.ok();const p=$("pet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");
+  $("task").className="task ok";window.Ljud&&Ljud.ok&&Ljud.ok();
   say(pick(["Utmärkt!","Snyggt räknat!","Helt rätt!"]));
   fb(`${sol.n}/${sol.d} = ${q}${sol.rest?` rest ${sol.rest}`:""}`); // grönt i båda lägena, så att en gammal röd text aldrig blir kvar
   // kontroll med multiplikation
   $("check").textContent=`Kontroll: ${sol.d} · ${q}${sol.rest?` + ${sol.rest}`:""} = ${sol.n} ✓`;
-  render();$("pad").hidden=true;$("nextBtn").hidden=false;G.k++;$("prog").style.width=(G.k/ROUND*100)+"%";}
+  render();$("pad").hidden=true;$("nextBtn").hidden=false;G.k++;dots();}
 $("nextBtn").onclick=()=>{if(G)next();};
 function finish(){const st=G.err===0?3:G.err<=2?2:1,m=G.mode,stars=data.stars[m]=data.stars[m]||{},old=stars[G.lv]||0;
   stars[G.lv]=Math.max(old,st);save();
