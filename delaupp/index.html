@@ -210,7 +210,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
   <div class="board" id="board"></div>
-  <div class="btns" id="splitBtns"><button class="big" id="resetBtn">↺ Börja om</button><button class="big" id="addBtn" hidden>＋ Ny del</button><button class="go" id="doneBtn">Klar ✓</button></div>
+  <div class="btns" id="splitBtns"><button class="big" id="resetBtn">↺ Börja om</button><button class="go" id="doneBtn">Klar ✓</button></div>
   <button class="go" id="fixBtn" style="margin-top:10px" hidden>↩ Ändra uppdelningen</button>
   <div class="pad" id="pad" hidden>
     <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button>
@@ -254,12 +254,12 @@ const desc=o=>[o.t?ord(o.t,"tiostav","tiostavar"):"",o.e?ord(o.e,"ental","ental"
 /* ---------- Nivåer ---------- */
 // alltid tal där tiotalen inte går jämnt att dela, så att man behöver tänka ut en uppdelning
 const LEVELS=[
- {id:1,name:"Dela upp med klossar",desc:"Tvåsiffriga tal, nämnaren 2–5",ex:fr(42,3),c:"#FF9F43",maxP:2,gen:()=>{
+ {id:1,name:"Dela upp med klossar",desc:"Tvåsiffriga tal, nämnaren 2–5",ex:fr(42,3),c:"#FF9F43",gen:()=>{
    // första talet i rundan delas med 2 och visar hur det går till (50/2 = 40/2 + 10/2); sedan nämnaren 3–5,
    // för att dela i två högar är bara att halvera (lärarens fynd)
    if(G.k===0){const n=pick([30,34,36,38,50,52,54,56,58,70,72,74,76]);return{n,d:2};}
    for(;;){const d=rnd(3,5),n=d*rnd(11,Math.floor((d<=3?60:80)/d));if(Math.floor(n/10)%d!==0)return{n,d};}}},
- {id:2,name:"Större tal",desc:"Tal upp till 99, nämnaren 3–9. Två eller tre delar",ex:fr(91,7),c:"#7B61FF",maxP:3,gen:()=>{
+ {id:2,name:"Större tal",desc:"Tal upp till 99, nämnaren 3–9",ex:fr(91,7),c:"#7B61FF",gen:()=>{
    for(;;){const d=pick([3,4,5,6,6,7,7,8,8,9,9]),n=d*rnd(Math.max(6,Math.ceil(30/d)),Math.floor(99/d));if(Math.floor(n/10)%d!==0)return{n,d};}}}
 ];
 
@@ -291,7 +291,7 @@ const box=(v,c)=>`<span class="box ${c||""}">${v||(c==="idle"?"?":"&nbsp;")}</sp
 function render(){
   const {n,d,phase}=T,P=T.parts;
   // instruktionen
-  if(phase==="split")say(`Dela upp ${n} i ${G.L.maxP>2?"två eller tre":"två"} delar. Varje del ska gå att dela lika i ${d} högar.`);
+  if(phase==="split")say(`Dela upp ${n} i två delar. Varje del ska gå att dela lika i ${d} högar.`);
   else if(phase==="deal")say(`Dela ut del ${T.cur+1} (${T.vals[T.cur]}) i ${d} lika högar. Tryck på klossarna.`);
   else if(phase==="q")say(`Hur mycket fick varje hög från del ${T.cur+1}?`,`Hur mycket fick varje hög från del ${T.cur+1}? ${T.vals[T.cur]} delat med ${d}.`);
   else if(phase==="sum")say("Lägg ihop. Hur mycket finns det i varje hög?");
@@ -305,7 +305,7 @@ function render(){
     h+=EQ+(phase==="sum"?box(T.inp,T.bad?"bad":""):phase==="done"?`<span class="done">${n/d}</span>`:box("","idle"));
     $("sub").textContent="";}
   $("eq").innerHTML=h;
-  $("splitBtns").hidden=phase!=="split";$("addBtn").hidden=!(phase==="split"&&G.L.maxP>P.length);$("fixBtn").hidden=!T.fail;
+  $("splitBtns").hidden=phase!=="split";$("fixBtn").hidden=!T.fail;
   $("pad").hidden=!(phase==="q"||phase==="sum");$("nextBtn").hidden=phase!=="done";
   // brickorna
   const F=T.fresh;T.fresh=null;
@@ -355,7 +355,6 @@ $("doneBtn").onclick=()=>{if(!T||T.phase!=="split")return;
   if(full.length<2){fb(T.parts.length>2?"Lägg klossar i minst två delar.":"Lägg några klossar i båda delarna.","tip");return;}
   T.parts=full;  startDeal();};
 $("resetBtn").onclick=()=>{if(!T)return;T.src={t:Math.floor(T.n/10),e:T.n%10};T.parts=[{t:0,e:0},{t:0,e:0}];T.sel=0;fb("");render();};
-$("addBtn").onclick=()=>{if(!T||T.phase!=="split"||T.parts.length>=G.L.maxP)return;T.parts.push({t:0,e:0});T.sel=T.parts.length-1;fb("");render();};
 $("fixBtn").onclick=()=>{if(!T)return;T.parts=cp(T.snap);T.src={t:0,e:0};T.phase="split";T.hog=null;T.fail=false;T.qs=[];T.sel=T.cur;fb("");render();};
 
 /* tryck och dra (mus, finger och penna) */
