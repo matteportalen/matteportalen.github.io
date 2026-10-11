@@ -58,6 +58,9 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .eq{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 8px;font-weight:800;font-size:clamp(1.5rem,6.5vw,2rem);margin:8px 0 2px;min-height:76px}
 .eq .op{color:var(--muted)}
 .eq .box{display:inline-grid;place-items:center;min-width:1.6em;height:1.45em;border-radius:10px;border:3px solid var(--accent);background:#EEF1FF;color:var(--accent);padding:0 4px;line-height:1}
+.eq .box.wait{border:2px solid #AFC4EA;background:#fff;color:var(--ink)}
+.eq button.box{font:inherit;font-weight:800;cursor:pointer}
+.eq .fr .box{min-width:1.9em}
 .eq .box.idle{border:2px dashed #AFC4EA;background:#fff;color:#AFC4EA}
 .eq .box.bad{border-color:var(--bad);background:#FDE4E4;color:var(--bad)}
 .eq .done{color:var(--good-dark)}
@@ -112,7 +115,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .ghost{position:fixed;pointer-events:none;z-index:20;transform:translate(-50%,-50%) scale(1.15);filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
 .over{outline:3px dashed var(--accent);outline-offset:2px}
 .btns{display:flex;gap:10px;margin-top:10px}
-.btns button{flex:1}
+.btns button{flex:1;padding-left:8px;padding-right:8px}
 .go{display:block;width:100%;padding:14px 16px;border-radius:18px;background:var(--good);color:#fff;box-shadow:0 5px 0 var(--good-dark);font-weight:800;font-size:1.25rem}
 .go:active{transform:translateY(3px);box-shadow:0 2px 0 var(--good-dark)}
 .big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.15rem}
@@ -154,7 +157,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <div class="feedback" id="feedback" aria-live="polite"></div>
   </div>
   <div class="board" id="board"></div>
-  <div class="btns" id="splitBtns"><button class="big" id="resetBtn">↺ Börja om</button><button class="go" id="doneBtn">Klar ✓</button></div>
+  <div class="btns" id="splitBtns"><button class="big" id="resetBtn">↺ Börja om</button><button class="big" id="addBtn" hidden>＋ Ny del</button><button class="go" id="doneBtn">Klar ✓</button></div>
   <button class="go" id="fixBtn" style="margin-top:10px" hidden>↩ Ändra uppdelningen</button>
   <div class="pad" id="pad" hidden>
     <button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button>
@@ -197,10 +200,15 @@ const desc=o=>[o.t?ord(o.t,"tiostav","tiostavar"):"",o.e?ord(o.e,"ental","ental"
 /* ---------- Nivåer ---------- */
 // alltid tal där tiotalen inte går jämnt att dela, så att man behöver tänka ut en uppdelning
 const LEVELS=[
- {id:1,name:"Dela upp med klossar",desc:"Tvåsiffriga tal, nämnaren 2–5",ex:fr(42,3),c:"#FF9F43",gen:()=>{
-   for(;;){const d=rnd(2,5),n=d*rnd(11,Math.floor((d<=3?60:80)/d));if(Math.floor(n/10)%d!==0)return{n,d};}}},
- {id:2,name:"Större tal",desc:"Kommer snart",ex:fr(91,7),c:"#7B61FF",soon:true},
- {id:3,name:"Utan klossar",desc:"Kommer snart",ex:fr(156,6),c:"#17AFC4",soon:true}
+ {id:1,name:"Dela upp med klossar",desc:"Tvåsiffriga tal, nämnaren 2–5",ex:fr(42,3),c:"#FF9F43",maxP:2,gen:()=>{
+   // första talet i rundan delas med 2 och visar hur det går till (50/2 = 40/2 + 10/2); sedan nämnaren 3–5,
+   // för att dela i två högar är bara att halvera (lärarens fynd)
+   if(G.k===0){const n=pick([30,34,36,38,50,52,54,56,58,70,72,74,76]);return{n,d:2};}
+   for(;;){const d=rnd(3,5),n=d*rnd(11,Math.floor((d<=3?60:80)/d));if(Math.floor(n/10)%d!==0)return{n,d};}}},
+ {id:2,name:"Större tal",desc:"Tal upp till 99, nämnaren 3–9. Två eller tre delar",ex:fr(91,7),c:"#7B61FF",maxP:3,gen:()=>{
+   for(;;){const d=pick([3,4,5,6,6,7,7,8,8,9,9]),n=d*rnd(Math.max(6,Math.ceil(30/d)),Math.floor(99/d));if(Math.floor(n/10)%d!==0)return{n,d};}}},
+ {id:3,name:"Utan klossar",desc:"Skriv uppdelningen själv. Tal upp till 400",ex:fr(156,6),c:"#17AFC4",noMat:true,gen:()=>{
+   for(;;){const d=rnd(3,9),n=d*rnd(11,Math.floor(400/d));if(n>=60&&Math.floor(n/10)%d!==0)return{n,d};}}}
 ];
 
 /* ---------- Skärmar ---------- */
@@ -218,7 +226,7 @@ let G=null,T=null,lastSay="";
 function start(lv){G={lv,L:LEVELS.find(l=>l.id===lv),k:0,err:0,seen:new Set()};$("pet").innerHTML=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";show("game");next();}
 function next(){if(G.k>=ROUND)return finish();
   let t;for(let i=0;i<60;i++){t=G.L.gen();if(!G.seen.has(t.n+"/"+t.d))break;}G.seen.add(t.n+"/"+t.d);
-  T={n:t.n,d:t.d,src:{t:Math.floor(t.n/10),e:t.n%10},parts:[{t:0,e:0},{t:0,e:0}],sel:0,phase:"split",cur:0,hog:null,snap:null,qs:[],inp:"",tries:0,miss:false,fresh:null,fail:false};
+  T={n:t.n,d:t.d,src:{t:Math.floor(t.n/10),e:t.n%10},parts:[{t:0,e:0},{t:0,e:0}],ps:["",""],act:0,badP:[],sel:0,phase:G.L.noMat?"write":"split",cur:0,hog:null,snap:null,vals:null,qs:[],inp:"",tries:0,splitTries:0,miss:false,fresh:null,fail:false};
   $("info").textContent=`Tal ${G.k+1} av ${ROUND}`;$("task").className="task";fb("");$("check").textContent="";
   render();}
 
@@ -226,25 +234,33 @@ function fb(m,cls){const f=$("feedback");f.textContent=m;f.className="feedback"+
 function say(html,txt){$("instr").innerHTML=html;lastSay=txt||html.replace(/<[^>]+>/g,"");}
 const tray=k=>k==="src"?T.src:T.parts[+k];
 
+const PLUS='<span class="op">+</span>',EQ='<span class="op">=</span>';
+const box=(v,c)=>`<span class="box ${c||""}">${v||(c==="idle"?"?":"&nbsp;")}</span>`;
 function render(){
-  const {n,d,phase}=T,P=T.parts;
+  const {n,d,phase}=T,P=T.parts,M=!G.L.noMat;
   // instruktionen
-  if(phase==="split")say(`Dela upp ${n} i två delar. Varje del ska gå att dela lika i ${d} högar.`);
-  else if(phase==="deal")say(`Dela ut del ${T.cur+1} (${val(T.snap[T.cur])}) i ${d} lika högar. Tryck på klossarna.`);
-  else if(phase==="q")say(`Hur mycket fick varje hög från del ${T.cur+1}?`,`Hur mycket fick varje hög från del ${T.cur+1}? ${val(T.snap[T.cur])} delat med ${d}.`);
-  else if(phase==="sum")say("Lägg ihop. Hur mycket finns det i varje hög?");
-  else say(`Varje hög fick ${n/d}.`);
+  if(phase==="split")say(`Dela upp ${n} i ${G.L.maxP>2?"två eller tre":"två"} delar. Varje del ska gå att dela lika i ${d} högar.`);
+  else if(phase==="write")say(`Dela upp ${n} i delar som går att dela med ${d}. Skriv delarna ovanför bråkstrecken.`,`Dela upp ${n} i delar som går att dela med ${d}. Skriv delarna.`);
+  else if(phase==="deal")say(`Dela ut del ${T.cur+1} (${T.vals[T.cur]}) i ${d} lika högar. Tryck på klossarna.`);
+  else if(phase==="q")M?say(`Hur mycket fick varje hög från del ${T.cur+1}?`,`Hur mycket fick varje hög från del ${T.cur+1}? ${T.vals[T.cur]} delat med ${d}.`):say(`Räkna ut ${T.vals[T.cur]} delat med ${d}.`);
+  else if(phase==="sum")say(M?"Lägg ihop. Hur mycket finns det i varje hög?":"Lägg ihop kvoterna.");
+  else say(M?`Varje hög fick ${n/d}.`:`${n} delat med ${d} är ${n/d}.`);
   // likheten
-  const box=(v,c)=>`<span class="box ${c||""}">${v||(c==="idle"?"?":"&nbsp;")}</span>`;
-  let h=`${fr(n,d)}<span class="op">=</span>`;
-  if(phase==="split"){h+=box("","idle");
-    $("sub").textContent=`${n} = ${P.map(p=>val(p)||"…").join(" + ")}`;}
-  else{const S=T.snap;
-    h+=S.map(p=>fr(val(p),d)).join('<span class="op">+</span>')+'<span class="op">=</span>';
-    h+=S.map((p,i)=>T.qs[i]!=null?`<span class="done">${T.qs[i]}</span>`:phase==="q"&&i===T.cur?box(T.inp,T.bad?"bad":""):box("","idle")).join('<span class="op">+</span>');
-    h+='<span class="op">=</span>'+(phase==="sum"?box(T.inp,T.bad?"bad":""):phase==="done"?`<span class="done">${n/d}</span>`:box("","idle"));
+  let h=fr(n,d)+EQ;
+  if(phase==="split"){h+=box("","idle");$("sub").textContent=`${n} = ${P.map(p=>val(p)||"…").join(" + ")}`;}
+  else if(phase==="write"){
+    h+=T.ps.map((v,i)=>`<span class="fr"><b><button class="box ${T.badP.includes(i)?"bad":i===T.act?"":"wait"}" data-p="${i}" aria-label="Del ${i+1}">${v||"&nbsp;"}</button></b><i></i><b>${d}</b></span>`).join(PLUS);
+    const s=T.ps.map(Number).reduce((a,b)=>a+b,0);
+    $("sub").textContent=T.ps.some(v=>v)?`${T.ps.map(v=>v||"…").join(" + ")}${T.ps.every(v=>v)?` = ${s}`:""}`:"";}
+  else{const S=T.vals;
+    h+=S.map(a=>fr(a,d)).join(PLUS)+EQ;
+    h+=S.map((a,i)=>T.qs[i]!=null?`<span class="done">${T.qs[i]}</span>`:phase==="q"&&i===T.cur?box(T.inp,T.bad?"bad":""):box("","idle")).join(PLUS);
+    h+=EQ+(phase==="sum"?box(T.inp,T.bad?"bad":""):phase==="done"?`<span class="done">${n/d}</span>`:box("","idle"));
     $("sub").textContent="";}
   $("eq").innerHTML=h;
+  $("splitBtns").hidden=phase!=="split";$("addBtn").hidden=!(phase==="split"&&G.L.maxP>P.length);$("fixBtn").hidden=!T.fail;
+  $("pad").hidden=!(phase==="q"||phase==="sum"||phase==="write");$("nextBtn").hidden=phase!=="done";
+  if(!M){$("board").className="board";$("board").innerHTML=phase==="write"?`<div class="btns">${T.ps.length<3?'<button class="big" data-add3="1">＋ En del till</button>':'<button class="big" data-rem3="1">− Ta bort en del</button>'}</div>`:"";return;}
   // brickorna
   const F=T.fresh;T.fresh=null;
   const mat=(o,key)=>{
@@ -254,17 +270,15 @@ function render(){
       (o.e?`<button class="ones" data-kind="e" aria-label="${ord(o.e,"ental","ental")}">${Array.from({length:o.e},(_,i)=>`<span class="k ke${pop("e",i,o.e)}">${ART.e}</span>`).join("")}</button>`:"");};
   let b="";
   if(phase==="split")b+=`<div class="tray" data-tray="src"><h3><span>Talet ${n}</span></h3><div class="mat${val(T.src)?"":" none"}">${mat(T.src,"src")}</div>${T.src.t?'<button class="xch" data-x="src">🔄 Växla en tiostav</button>':""}</div>`;
-  b+=`<div class="parts">${P.map((p,i)=>{
+  b+=`<div class="parts" style="grid-template-columns:repeat(${P.length},1fr)">${P.map((p,i)=>{
     const cls=phase==="split"?(i===T.sel?" sel":""):T.fail&&i===T.cur?" fail":phase==="deal"&&i===T.cur?" act":i<T.cur||phase==="sum"||phase==="done"||(phase==="q"&&i<T.cur)?" fin":"";
-    const v=phase==="split"?val(p):val(T.snap[i]);
+    const v=phase==="split"?val(p):T.vals[i];
     const tag=phase==="split"?(i===T.sel?"vald":""):T.qs[i]!=null?"✓ Utdelad":i===T.cur&&phase==="deal"?"Dela ut nu":"";
     const x=phase==="deal"&&i===T.cur&&!T.fail&&p.t?`<button class="xch" data-x="${i}">🔄 Växla</button>`:"";
     return`<div class="tray part${cls}" data-tray="${i}"><h3><span>Del ${i+1} <span class="tag">${tag}</span></span><span class="v${v?"":" no"}">${v||"0"}</span></h3><div class="mat${p.t||p.e||phase==="split"?"":" none"}">${mat(p,String(i))}</div>${x}</div>`;}).join("")}</div>`;
-  if(T.hog){b+=`<div class="hogtitle">${d} högar</div><div class="hogar" style="--d:${d}">${T.hog.map(hg=>`<div class="hog">${hg.map((r,ri)=>r.t||r.e?`<div class="row">${r.t?`<span class="tt">${Array.from({length:r.t},(_,i)=>`<span class="k kt${F&&F.hog&&F.part===ri&&F.kind==="t"&&i===r.t-1?" pop":""}">${ART.t}</span>`).join("")}</span>`:""}${r.e?`<span class="oo">${Array.from({length:r.e},(_,i)=>`<span class="k ke${F&&F.hog&&F.part===ri&&F.kind==="e"&&i===r.e-1?" pop":""}">${ART.e}</span>`).join("")}</span>`:""}</div>`:"").join("")}${phase==="done"?`<span class="lab">${n/d}</span>`:""}</div>`).join("")}</div>`;}
+  if(T.hog){b+=`<div class="hogtitle">${d} högar</div><div class="hogar" style="--d:${d};gap:${d>5?4:8}px">${T.hog.map(hg=>`<div class="hog">${hg.map((r,ri)=>r.t||r.e?`<div class="row">${r.t?`<span class="tt">${Array.from({length:r.t},(_,i)=>`<span class="k kt${F&&F.hog&&F.part===ri&&F.kind==="t"&&i===r.t-1?" pop":""}">${ART.t}</span>`).join("")}</span>`:""}${r.e?`<span class="oo">${Array.from({length:r.e},(_,i)=>`<span class="k ke${F&&F.hog&&F.part===ri&&F.kind==="e"&&i===r.e-1?" pop":""}">${ART.e}</span>`).join("")}</span>`:""}</div>`:"").join("")}${phase==="done"?`<span class="lab">${n/d}</span>`:""}</div>`).join("")}</div>`;}
   $("board").innerHTML=b;$("board").className="board"+(phase==="split"?" split":"");
-  if(F&&F.hog)$("board").querySelectorAll(".hog").forEach((el,i)=>el.querySelectorAll(".pop").forEach(k=>k.style.animationDelay=i*90+"ms"));
-  $("splitBtns").hidden=phase!=="split";$("fixBtn").hidden=!T.fail;
-  $("pad").hidden=!(phase==="q"||phase==="sum");$("nextBtn").hidden=phase!=="done";}
+  if(F&&F.hog)$("board").querySelectorAll(".hog").forEach((el,i)=>el.querySelectorAll(".pop").forEach(k=>k.style.animationDelay=i*90+"ms"));}
 
 /* ---------- Flytta, växla och dela ut ---------- */
 function move(kind,from,to){if(from===to)return;const a=tray(from),b=tray(to);if(!a[kind])return;
@@ -284,17 +298,18 @@ function deal(kind){const p=T.parts[T.cur],d=T.d;
 function afterDeal(){const v=val(T.parts[T.cur]);
   if(v===0){T.phase="q";T.inp="";T.tries=0;T.bad=false;setTimeout(()=>{fb("");render();},250);return;}
   if(v<T.d&&!T.parts[T.cur].t)setTimeout(failPart,450);}
-function failPart(){if(T.fail)return;const o=val(T.snap[T.cur]),r=o%T.d;T.fail=true;
+function failPart(){if(T.fail)return;const o=T.vals[T.cur],r=o%T.d;T.fail=true;
   fb(`${o} går inte att dela lika i ${T.d} högar. Det blir ${ord(r,"kloss","klossar")} över. Ändra uppdelningen och prova igen.`,"bad");
   window.Ljud&&Ljud.bad&&Ljud.bad();render();}
-function startDeal(){T.phase="deal";T.cur=0;T.snap=cp(T.parts);T.hog=Array.from({length:T.d},()=>T.parts.map(()=>({t:0,e:0})));T.qs=[];
+function startDeal(){T.phase="deal";T.cur=0;T.snap=cp(T.parts);T.vals=T.parts.map(val);T.hog=Array.from({length:T.d},()=>T.parts.map(()=>({t:0,e:0})));T.qs=[];
   fb("");render();if(val(T.parts[0])<T.d)setTimeout(failPart,400);}
 $("doneBtn").onclick=()=>{if(!T||T.phase!=="split")return;
   if(val(T.src)){fb(`Flytta alla klossar till delarna. Det finns ${desc(T.src)} kvar.`,"tip");return;}
-  const tom=T.parts.findIndex(p=>!val(p));
-  if(tom>=0){fb(`Del ${tom+1} är tom. Lägg några klossar i båda delarna.`,"tip");return;}
-  startDeal();};
+  const full=T.parts.filter(p=>val(p));
+  if(full.length<2){fb(T.parts.length>2?"Lägg klossar i minst två delar.":"Lägg några klossar i båda delarna.","tip");return;}
+  T.parts=full;  startDeal();};
 $("resetBtn").onclick=()=>{if(!T)return;T.src={t:Math.floor(T.n/10),e:T.n%10};T.parts=[{t:0,e:0},{t:0,e:0}];T.sel=0;fb("");render();};
+$("addBtn").onclick=()=>{if(!T||T.phase!=="split"||T.parts.length>=G.L.maxP)return;T.parts.push({t:0,e:0});T.sel=T.parts.length-1;fb("");render();};
 $("fixBtn").onclick=()=>{if(!T)return;T.parts=cp(T.snap);T.src={t:0,e:0};T.phase="split";T.hog=null;T.fail=false;T.qs=[];T.sel=T.cur;fb("");render();};
 
 /* tryck och dra (mus, finger och penna) */
@@ -316,31 +331,54 @@ $("board").addEventListener("click",e=>{if(!T||noClick)return;
   const a=e.target.closest("[data-kind]");if(a){tap(a.dataset.kind,a.closest("[data-tray]").dataset.tray);return;}
   const p=e.target.closest(".part");if(p&&T.phase==="split"){T.sel=+p.dataset.tray;render();}});
 
+$("eq").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b||!T||T.phase!=="write")return;T.act=+b.dataset.p;render();});
+$("board").addEventListener("click",e=>{if(!T||T.phase!=="write")return;
+  if(e.target.closest("[data-add3]")){T.ps.push("");T.act=T.ps.length-1;T.badP=[];fb("");render();}
+  else if(e.target.closest("[data-rem3]")){T.ps.pop();T.act=Math.min(T.act,T.ps.length-1);T.badP=[];fb("");render();}});
 /* ---------- Svaren ---------- */
-function key(k){if(!T||!(T.phase==="q"||T.phase==="sum"))return;
+function key(k){if(!T||!["q","sum","write"].includes(T.phase))return;
+  if(T.phase==="write"){const i=T.act;
+    if(k==="del"){T.ps[i]=T.ps[i].slice(0,-1);T.badP=T.badP.filter(x=>x!==i);render();return;}
+    if(k==="ok"){if(!T.ps[i])return;const nx=T.ps.findIndex((v,j)=>!v||T.badP.includes(j));if(nx>=0){T.act=nx;render();}else skrivDelar();return;}
+    if(T.badP.includes(i)){T.ps[i]="";T.badP=T.badP.filter(x=>x!==i);}
+    if(T.ps[i].length<3)T.ps[i]+=k;render();return;}
   if(k==="del"){T.inp=T.inp.slice(0,-1);T.bad=false;render();return;}
   if(k==="ok"){if(T.inp)check();return;}
   if(T.inp.length<3){T.inp=(T.bad?"":T.inp)+k;T.bad=false;render();}}
+// nivå 3: eleven har skrivit delarna; kontrollera summan och att varje del går jämnt att dela (räknas inte som fel)
+function skrivDelar(){const a=T.ps.map(Number),d=T.d,n=T.n,s=a.reduce((x,y)=>x+y,0);let msg="";T.badP=[];
+  if(a.some(x=>!x)){T.badP=a.map((x,i)=>x?-1:i).filter(i=>i>=0);msg="Varje del måste vara större än 0.";}
+  else if(s!==n){T.badP=a.map((_,i)=>i);msg=`${a.join(" + ")} = ${s}, men delarna ska tillsammans bli ${n}.`;}
+  else{const bad=a.map((x,i)=>x%d?i:-1).filter(i=>i>=0);
+    if(bad.length){T.badP=bad;const x=a[bad[0]],q=Math.floor(x/d);msg=`${x} går inte att dela jämnt med ${d}: ${d} · ${q} = ${d*q}, och det blir ${x-d*q} över.`;}}
+  if(msg){T.splitTries++;if(T.splitTries>=2)msg+=` Tips: tiotal är lätta att dela, ${d} · 10 = ${d*10} och ${d} · 20 = ${d*20}.`;
+    T.act=T.badP[0];fb(msg,"bad");window.Ljud&&Ljud.bad&&Ljud.bad();render();return;}
+  T.vals=a;T.phase="q";T.cur=0;T.inp="";T.tries=0;T.bad=false;fb("Delarna stämmer!");window.Ljud&&Ljud.ok&&Ljud.ok();render();}
+function nextPart(){T.inp="";T.bad=false;T.tries=0;
+  if(T.cur+1<T.vals.length){T.cur++;
+    if(G.L.noMat){T.phase="q";render();}else{T.phase="deal";render();if(val(T.parts[T.cur])<T.d)setTimeout(failPart,400);}}
+  else{T.phase="sum";render();}}
 function check(){const v=+T.inp,d=T.d;
-  if(T.phase==="q"){const i=T.cur,o=T.snap[i],q=val(o)/d;
-    if(v===q){window.Ljud&&Ljud.ok&&Ljud.ok();T.qs[i]=q;fb(`Rätt! ${val(o)} delat med ${d} är ${q}.`);
-      if(i+1<T.snap.length){T.cur++;T.phase="deal";render();if(val(T.parts[T.cur])<d)setTimeout(failPart,400);}
-      else{T.phase="sum";T.inp="";T.tries=0;T.bad=false;render();}return;}
+  if(T.phase==="q"){const i=T.cur,a=T.vals[i],q=a/d;
+    if(v===q){window.Ljud&&Ljud.ok&&Ljud.ok();T.qs[i]=q;fb(`Rätt! ${a} delat med ${d} är ${q}.`);nextPart();return;}
     T.miss=true;T.tries++;T.bad=true;window.Ljud&&Ljud.bad&&Ljud.bad();
+    if(G.L.noMat){
+      if(T.tries<2){fb(`Tänk: ${d} · ? = ${a}. Vilket tal ska stå där?`,"bad");render();}
+      else{fb(`${a} delat med ${d} är ${q}, för ${d} · ${q} = ${a}.`,"bad");T.qs[i]=q;nextPart();}
+      return;}
     const got={t:T.hog[0][i].t,e:T.hog[0][i].e};
     if(T.tries<2){fb(`Titta i en hög. Från del ${i+1} fick den ${desc(got)}. Hur mycket är det?`,"bad");render();}
-    else{fb(`${val(o)} delat med ${d} är ${q}. Varje hög fick ${desc(got)}, det är ${q}.`,"bad");T.qs[i]=q;
-      if(i+1<T.snap.length){T.cur++;T.phase="deal";}else{T.phase="sum";T.tries=0;}T.inp="";T.bad=false;render();}
+    else{fb(`${a} delat med ${d} är ${q}. Varje hög fick ${desc(got)}, det är ${q}.`,"bad");T.qs[i]=q;nextPart();}
     return;}
   const q=T.n/d;
   if(v===q)return done();
   T.miss=true;T.tries++;T.bad=true;window.Ljud&&Ljud.bad&&Ljud.bad();
-  if(T.tries<2)fb(`Lägg ihop det varje hög fick från delarna: ${T.qs.join(" + ")}.`,"bad");
+  if(T.tries<2)fb(G.L.noMat?`Lägg ihop kvoterna: ${T.qs.join(" + ")}.`:`Lägg ihop det varje hög fick från delarna: ${T.qs.join(" + ")}.`,"bad");
   else{fb(`${T.qs.join(" + ")} = ${q}.`,"bad");return setTimeout(done,1400);}
   render();}
 function done(){T.phase="done";T.bad=false;if(T.miss)G.err++;
   $("task").className="task ok";window.Ljud&&Ljud.ok&&Ljud.ok();
-  fb(`Rätt! ${T.n} delat med ${T.d} är ${T.n/T.d}. Varje hög fick ${T.n/T.d}.`);
+  fb(`Rätt! ${T.n} delat med ${T.d} är ${T.n/T.d}.`+(G.L.noMat?"":` Varje hög fick ${T.n/T.d}.`));
   $("check").textContent=`Kontroll: ${T.d} · ${T.n/T.d} = ${T.n} ✓`;
   const p=$("pet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");
   G.k++;$("prog").style.width=(G.k/ROUND*100)+"%";render();}
@@ -348,7 +386,7 @@ $("nextBtn").onclick=()=>{if(G)next();};
 $("pad").onclick=e=>{const b=e.target.closest("[data-k]");if(b)key(b.dataset.k);};
 document.addEventListener("keydown",e=>{if(!G||$("game").hidden||!T)return;
   if(T.phase==="done"){if(e.key==="Enter"){e.preventDefault();$("nextBtn").click();}return;}
-  const k=/^\d$/.test(e.key)?e.key:e.key==="Backspace"?"del":e.key==="Enter"?"ok":null;if(!k||!(T.phase==="q"||T.phase==="sum"))return;e.preventDefault();key(k);});
+  const k=/^\d$/.test(e.key)?e.key:e.key==="Backspace"?"del":e.key==="Enter"?"ok":null;if(!k||!["q","sum","write"].includes(T.phase))return;e.preventDefault();key(k);});
 function finish(){const st=G.err===0?3:G.err<=2?2:1,old=data.stars[G.lv]||0;
   data.stars[G.lv]=Math.max(old,st);save();
   $("rTitle").textContent=st===3?"Alla rätt direkt!":"Bra delat!";$("rBig").innerHTML=starHtml(st);
