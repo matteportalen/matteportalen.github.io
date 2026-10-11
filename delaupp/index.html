@@ -58,9 +58,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .eq{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:6px 8px;font-weight:800;font-size:clamp(1.5rem,6.5vw,2rem);margin:8px 0 2px;min-height:76px}
 .eq .op{color:var(--muted)}
 .eq .box{display:inline-grid;place-items:center;min-width:1.6em;height:1.45em;border-radius:10px;border:3px solid var(--accent);background:#EEF1FF;color:var(--accent);padding:0 4px;line-height:1}
-.eq .box.wait{border:2px solid #AFC4EA;background:#fff;color:var(--ink)}
-.eq button.box{font:inherit;font-weight:800;cursor:pointer}
-.eq .fr .box{min-width:1.9em}
 .eq .box.idle{border:2px dashed #AFC4EA;background:#fff;color:#AFC4EA}
 .eq .box.bad{border-color:var(--bad);background:#FDE4E4;color:var(--bad)}
 .eq .done{color:var(--good-dark)}
@@ -168,6 +165,11 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .pad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
 .pad .okbtn{background:var(--good);color:#fff;box-shadow:0 4px 0 var(--good-dark);font-size:1.3rem}
 .result{text-align:center;padding-top:20px}
+.kort{display:flex;gap:12px;align-items:flex-start;margin-top:16px;background:#F3F0FF;border-radius:18px;padding:12px 14px;text-decoration:none;color:var(--ink);box-shadow:0 4px 0 #DCD3FF}
+.kort:active{transform:translateY(3px);box-shadow:0 1px 0 #DCD3FF}
+.kort .ki{flex:none;width:44px;height:44px;border-radius:12px;background:#17AFC4;display:grid;place-items:center;font-size:1.4rem}
+.kort b{display:block;font-size:1.1rem}.kort small{display:block;color:var(--muted);font-size:.95rem;line-height:1.35;margin-top:2px}
+.kort .go2{display:inline-block;margin-top:6px;font-weight:800;color:#5B3FD6}
 .result .go,.result .big{margin-top:12px}
 .rbig{font-size:clamp(3.2rem,16vw,4.6rem);font-weight:800;line-height:1;margin:6px 0}
 .rsub{color:var(--muted);font-size:1.15rem;margin:0 0 14px}
@@ -189,6 +191,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <button class="filmbtn" id="filmBtn">🎬 Se hur man gör</button>
   </div>
   <div class="levels" id="levels"></div>
+  <a class="kort" href="../kortdivision/"><span class="ki">➗</span><span><b>Vill du räkna snabbare?</b><small>Dela upp och dela visar <i>varför</i> division fungerar: man kan dela talet i bitar och dela en bit i taget. Kort division gör precis samma sak, fast siffra för siffra och utan klossar. Det är det smidiga sättet när man väl förstått.</small><span class="go2">Till Kort division ›</span></span></a>
 </section>
 <section id="film" class="screen" hidden>
   <div class="ftop"><button class="back" id="fClose">← Tillbaka</button><span class="info">🎬 Se hur man gör</span></div>
@@ -224,6 +227,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <p class="rsub" id="rSub"></p>
   <button class="go" id="rAgain">Räkna igen</button>
   <button class="big" id="rHome">Välj en annan nivå</button>
+  <a class="big" id="rKort" href="../kortdivision/" style="text-decoration:none;color:inherit;margin-top:12px" hidden>➗ Prova Kort division, det snabba sättet ›</a>
 </section>
 </div>
 <div class="toast" id="toast" hidden></div>
@@ -257,9 +261,7 @@ const LEVELS=[
    if(G.k===0){const n=pick([30,34,36,38,50,52,54,56,58,70,72,74,76]);return{n,d:2};}
    for(;;){const d=rnd(3,5),n=d*rnd(11,Math.floor((d<=3?60:80)/d));if(Math.floor(n/10)%d!==0)return{n,d};}}},
  {id:2,name:"Större tal",desc:"Tal upp till 99, nämnaren 3–9. Två eller tre delar",ex:fr(91,7),c:"#7B61FF",maxP:3,gen:()=>{
-   for(;;){const d=pick([3,4,5,6,6,7,7,8,8,9,9]),n=d*rnd(Math.max(6,Math.ceil(30/d)),Math.floor(99/d));if(Math.floor(n/10)%d!==0)return{n,d};}}},
- {id:3,name:"Utan klossar",desc:"Skriv uppdelningen själv. Tal upp till 400",ex:fr(156,6),c:"#17AFC4",noMat:true,gen:()=>{
-   for(;;){const d=rnd(3,9),n=d*rnd(11,Math.floor(400/d));if(n>=60&&Math.floor(n/10)%d!==0)return{n,d};}}}
+   for(;;){const d=pick([3,4,5,6,6,7,7,8,8,9,9]),n=d*rnd(Math.max(6,Math.ceil(30/d)),Math.floor(99/d));if(Math.floor(n/10)%d!==0)return{n,d};}}}
 ];
 
 /* ---------- Skärmar ---------- */
@@ -277,7 +279,7 @@ let G=null,T=null,lastSay="";
 function start(lv){G={lv,L:LEVELS.find(l=>l.id===lv),k:0,err:0,seen:new Set()};$("pet").innerHTML=window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"";show("game");next();}
 function next(){if(G.k>=ROUND)return finish();
   let t;for(let i=0;i<60;i++){t=G.L.gen();if(!G.seen.has(t.n+"/"+t.d))break;}G.seen.add(t.n+"/"+t.d);
-  T={n:t.n,d:t.d,src:{t:Math.floor(t.n/10),e:t.n%10},parts:[{t:0,e:0},{t:0,e:0}],ps:["",""],act:0,badP:[],sel:0,phase:G.L.noMat?"write":"split",cur:0,hog:null,snap:null,vals:null,qs:[],inp:"",tries:0,splitTries:0,miss:false,fresh:null,fail:false};
+  T={n:t.n,d:t.d,src:{t:Math.floor(t.n/10),e:t.n%10},parts:[{t:0,e:0},{t:0,e:0}],sel:0,phase:"split",cur:0,hog:null,snap:null,vals:null,qs:[],inp:"",tries:0,splitTries:0,miss:false,fresh:null,fail:false};
   $("info").textContent=`Tal ${G.k+1} av ${ROUND}`;$("task").className="task";fb("");$("check").textContent="";
   render();}
 
@@ -288,21 +290,16 @@ const tray=k=>k==="src"?T.src:T.parts[+k];
 const PLUS='<span class="op">+</span>',EQ='<span class="op">=</span>';
 const box=(v,c)=>`<span class="box ${c||""}">${v||(c==="idle"?"?":"&nbsp;")}</span>`;
 function render(){
-  const {n,d,phase}=T,P=T.parts,M=!G.L.noMat;
+  const {n,d,phase}=T,P=T.parts;
   // instruktionen
   if(phase==="split")say(`Dela upp ${n} i ${G.L.maxP>2?"två eller tre":"två"} delar. Varje del ska gå att dela lika i ${d} högar.`);
-  else if(phase==="write")say(`Dela upp ${n} i delar som går att dela med ${d}. Skriv delarna ovanför bråkstrecken.`,`Dela upp ${n} i delar som går att dela med ${d}. Skriv delarna.`);
   else if(phase==="deal")say(`Dela ut del ${T.cur+1} (${T.vals[T.cur]}) i ${d} lika högar. Tryck på klossarna.`);
-  else if(phase==="q")M?say(`Hur mycket fick varje hög från del ${T.cur+1}?`,`Hur mycket fick varje hög från del ${T.cur+1}? ${T.vals[T.cur]} delat med ${d}.`):say(`Räkna ut ${T.vals[T.cur]} delat med ${d}.`);
-  else if(phase==="sum")say(M?"Lägg ihop. Hur mycket finns det i varje hög?":"Lägg ihop kvoterna.");
-  else say(M?`Varje hög fick ${n/d}.`:`${n} delat med ${d} är ${n/d}.`);
+  else if(phase==="q")say(`Hur mycket fick varje hög från del ${T.cur+1}?`,`Hur mycket fick varje hög från del ${T.cur+1}? ${T.vals[T.cur]} delat med ${d}.`);
+  else if(phase==="sum")say("Lägg ihop. Hur mycket finns det i varje hög?");
+  else say(`Varje hög fick ${n/d}.`);
   // likheten
   let h=fr(n,d)+EQ;
   if(phase==="split"){h+=box("","idle");$("sub").textContent=`${n} = ${P.map(p=>val(p)||"…").join(" + ")}`;}
-  else if(phase==="write"){
-    h+=T.ps.map((v,i)=>`<span class="fr"><b><button class="box ${T.badP.includes(i)?"bad":i===T.act?"":"wait"}" data-p="${i}" aria-label="Del ${i+1}">${v||"&nbsp;"}</button></b><i></i><b>${d}</b></span>`).join(PLUS);
-    const s=T.ps.map(Number).reduce((a,b)=>a+b,0);
-    $("sub").textContent=T.ps.some(v=>v)?`${T.ps.map(v=>v||"…").join(" + ")}${T.ps.every(v=>v)?` = ${s}`:""}`:"";}
   else{const S=T.vals;
     h+=S.map(a=>fr(a,d)).join(PLUS)+EQ;
     h+=S.map((a,i)=>T.qs[i]!=null?`<span class="done">${T.qs[i]}</span>`:phase==="q"&&i===T.cur?box(T.inp,T.bad?"bad":""):box("","idle")).join(PLUS);
@@ -310,8 +307,7 @@ function render(){
     $("sub").textContent="";}
   $("eq").innerHTML=h;
   $("splitBtns").hidden=phase!=="split";$("addBtn").hidden=!(phase==="split"&&G.L.maxP>P.length);$("fixBtn").hidden=!T.fail;
-  $("pad").hidden=!(phase==="q"||phase==="sum"||phase==="write");$("nextBtn").hidden=phase!=="done";
-  if(!M){$("board").className="board";$("board").innerHTML=phase==="write"?`<div class="btns">${T.ps.length<3?'<button class="big" data-add3="1">＋ En del till</button>':'<button class="big" data-rem3="1">− Ta bort en del</button>'}</div>`:"";return;}
+  $("pad").hidden=!(phase==="q"||phase==="sum");$("nextBtn").hidden=phase!=="done";
   // brickorna
   const F=T.fresh;T.fresh=null;
   const mat=(o,key)=>{
@@ -382,41 +378,19 @@ $("board").addEventListener("click",e=>{if(!T||noClick)return;
   const a=e.target.closest("[data-kind]");if(a){tap(a.dataset.kind,a.closest("[data-tray]").dataset.tray);return;}
   const p=e.target.closest(".part");if(p&&T.phase==="split"){T.sel=+p.dataset.tray;render();}});
 
-$("eq").addEventListener("click",e=>{const b=e.target.closest("[data-p]");if(!b||!T||T.phase!=="write")return;T.act=+b.dataset.p;render();});
-$("board").addEventListener("click",e=>{if(!T||T.phase!=="write")return;
-  if(e.target.closest("[data-add3]")){T.ps.push("");T.act=T.ps.length-1;T.badP=[];fb("");render();}
-  else if(e.target.closest("[data-rem3]")){T.ps.pop();T.act=Math.min(T.act,T.ps.length-1);T.badP=[];fb("");render();}});
 /* ---------- Svaren ---------- */
-function key(k){if(!T||!["q","sum","write"].includes(T.phase))return;
-  if(T.phase==="write"){const i=T.act;
-    if(k==="del"){T.ps[i]=T.ps[i].slice(0,-1);T.badP=T.badP.filter(x=>x!==i);render();return;}
-    if(k==="ok"){if(!T.ps[i])return;const nx=T.ps.findIndex((v,j)=>!v||T.badP.includes(j));if(nx>=0){T.act=nx;render();}else skrivDelar();return;}
-    if(T.badP.includes(i)){T.ps[i]="";T.badP=T.badP.filter(x=>x!==i);}
-    if(T.ps[i].length<3)T.ps[i]+=k;render();return;}
+function key(k){if(!T||!["q","sum"].includes(T.phase))return;
   if(k==="del"){T.inp=T.inp.slice(0,-1);T.bad=false;render();return;}
   if(k==="ok"){if(T.inp)check();return;}
   if(T.inp.length<3){T.inp=(T.bad?"":T.inp)+k;T.bad=false;render();}}
-// nivå 3: eleven har skrivit delarna; kontrollera summan och att varje del går jämnt att dela (räknas inte som fel)
-function skrivDelar(){const a=T.ps.map(Number),d=T.d,n=T.n,s=a.reduce((x,y)=>x+y,0);let msg="";T.badP=[];
-  if(a.some(x=>!x)){T.badP=a.map((x,i)=>x?-1:i).filter(i=>i>=0);msg="Varje del måste vara större än 0.";}
-  else if(s!==n){T.badP=a.map((_,i)=>i);msg=`${a.join(" + ")} = ${s}, men delarna ska tillsammans bli ${n}.`;}
-  else{const bad=a.map((x,i)=>x%d?i:-1).filter(i=>i>=0);
-    if(bad.length){T.badP=bad;const x=a[bad[0]],q=Math.floor(x/d);msg=`${x} går inte att dela jämnt med ${d}: ${d} · ${q} = ${d*q}, och det blir ${x-d*q} över.`;}}
-  if(msg){T.splitTries++;if(T.splitTries>=2)msg+=` Tips: tiotal är lätta att dela, ${d} · 10 = ${d*10} och ${d} · 20 = ${d*20}.`;
-    T.act=T.badP[0];fb(msg,"bad");window.Ljud&&Ljud.bad&&Ljud.bad();render();return;}
-  T.vals=a;T.phase="q";T.cur=0;T.inp="";T.tries=0;T.bad=false;fb("Delarna stämmer!");window.Ljud&&Ljud.ok&&Ljud.ok();render();}
 function nextPart(){T.inp="";T.bad=false;T.tries=0;
   if(T.cur+1<T.vals.length){T.cur++;
-    if(G.L.noMat){T.phase="q";render();}else{T.phase="deal";render();if(val(T.parts[T.cur])<T.d)setTimeout(failPart,400);}}
+    T.phase="deal";render();if(val(T.parts[T.cur])<T.d)setTimeout(failPart,400);}
   else{T.phase="sum";render();}}
 function check(){const v=+T.inp,d=T.d;
   if(T.phase==="q"){const i=T.cur,a=T.vals[i],q=a/d;
     if(v===q){window.Ljud&&Ljud.ok&&Ljud.ok();T.qs[i]=q;fb(`Rätt! ${a} delat med ${d} är ${q}.`);nextPart();return;}
     T.miss=true;T.tries++;T.bad=true;window.Ljud&&Ljud.bad&&Ljud.bad();
-    if(G.L.noMat){
-      if(T.tries<2){fb(`Tänk: ${d} · ? = ${a}. Vilket tal ska stå där?`,"bad");render();}
-      else{fb(`${a} delat med ${d} är ${q}, för ${d} · ${q} = ${a}.`,"bad");T.qs[i]=q;nextPart();}
-      return;}
     const got={t:T.hog[0][i].t,e:T.hog[0][i].e};
     if(T.tries<2){fb(`Titta i en hög. Från del ${i+1} fick den ${desc(got)}. Hur mycket är det?`,"bad");render();}
     else{fb(`${a} delat med ${d} är ${q}. Varje hög fick ${desc(got)}, det är ${q}.`,"bad");T.qs[i]=q;nextPart();}
@@ -424,12 +398,12 @@ function check(){const v=+T.inp,d=T.d;
   const q=T.n/d;
   if(v===q)return done();
   T.miss=true;T.tries++;T.bad=true;window.Ljud&&Ljud.bad&&Ljud.bad();
-  if(T.tries<2)fb(G.L.noMat?`Lägg ihop kvoterna: ${T.qs.join(" + ")}.`:`Lägg ihop det varje hög fick från delarna: ${T.qs.join(" + ")}.`,"bad");
+  if(T.tries<2)fb(`Lägg ihop det varje hög fick från delarna: ${T.qs.join(" + ")}.`,"bad");
   else{fb(`${T.qs.join(" + ")} = ${q}.`,"bad");return setTimeout(done,1400);}
   render();}
 function done(){T.phase="done";T.bad=false;if(T.miss)G.err++;
   $("task").className="task ok";window.Ljud&&Ljud.ok&&Ljud.ok();
-  fb(`Rätt! ${T.n} delat med ${T.d} är ${T.n/T.d}.`+(G.L.noMat?"":` Varje hög fick ${T.n/T.d}.`));
+  fb(`Rätt! ${T.n} delat med ${T.d} är ${T.n/T.d}.`+` Varje hög fick ${T.n/T.d}.`);
   $("check").textContent=`Kontroll: ${T.d} · ${T.n/T.d} = ${T.n} ✓`;
   const p=$("pet");p.classList.remove("hop");void p.offsetWidth;p.classList.add("hop");
   G.k++;$("prog").style.width=(G.k/ROUND*100)+"%";render();}
@@ -437,12 +411,12 @@ $("nextBtn").onclick=()=>{if(G)next();};
 $("pad").onclick=e=>{const b=e.target.closest("[data-k]");if(b)key(b.dataset.k);};
 document.addEventListener("keydown",e=>{if(!G||$("game").hidden||!T)return;
   if(T.phase==="done"){if(e.key==="Enter"){e.preventDefault();$("nextBtn").click();}return;}
-  const k=/^\d$/.test(e.key)?e.key:e.key==="Backspace"?"del":e.key==="Enter"?"ok":null;if(!k||!["q","sum","write"].includes(T.phase))return;e.preventDefault();key(k);});
+  const k=/^\d$/.test(e.key)?e.key:e.key==="Backspace"?"del":e.key==="Enter"?"ok":null;if(!k||!["q","sum"].includes(T.phase))return;e.preventDefault();key(k);});
 function finish(){const st=G.err===0?3:G.err<=2?2:1,old=data.stars[G.lv]||0;
   data.stars[G.lv]=Math.max(old,st);save();
   $("rTitle").textContent=st===3?"Alla rätt direkt!":"Bra delat!";$("rBig").innerHTML=starHtml(st);
   $("rSub").textContent=`${ROUND} tal på nivån ${G.L.name}. `+(G.err?`${G.err} tal behövde mer än ett försök.`:"Inga fel!")+(st>old&&old?" Ny stjärna!":"");
-  show("result");if(st===3||st>old){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
+  $("rKort").hidden=G.lv!==2;show("result");if(st===3||st>old){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
 
 /* ---------- Filmen: Se hur man gör (42/3), utan röst ----------
    Scenen är 360 × 560 och skalas efter skärmen. Varje scen är en funktion; för att hoppa till en scen
