@@ -91,7 +91,7 @@ Startsidan måste uppdateras på **fyra** ställen, annars följer framstegen in
 
 ## Pedagogiska beslut (viktiga, följ dem)
 
-- **Addition och subtraktion**, inte "plus" och "minus", i Tiotalsövergång. Strategin heter **"Tänk addition"**, inte "tänk plus".
+- **Addition och subtraktion**, inte "plus" och "minus", i Tiotalsövergång. Strategin **"Tänk addition"** för subtraktion (13 − 5: 5 + ? = 13) **togs bort okt 2026** (lärarens val: kan förvirra); subtraktion är alltid "Subtrahera först ner till tio" (väljaren och genomgångens flik borta, gamla val ignoreras, stjärnorna ligger kvar).
 - **Addition och subtraktion i texten på hela sajten** (lärarens beslut okt 2026): räknesätten i menyer och knappar heter Addition/Subtraktion (Spelhörnan, Rutjakten, Lilla plus knappar, Talföljders tips, skärmläsartexter). Uppläsning av tecknen får vara kvar ("tre plus fyra"). Namnet "Lilla plus & minus" och Skattjaktens tips är inte ändrade än.
 - **Tiokompisar**, inte "tiokamrater".
 - Tiotalsövergång följer boken: *"Addera först tiokompisen. Addera sedan resten."* och *"Subtrahera först ner till tio. Subtrahera sedan resten."* Korta instruktioner, siffrorna visas i bilden.

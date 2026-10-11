@@ -271,8 +271,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <div class="seg" id="segRange"><button data-v="20">Upp till 20</button><button data-v="100">Upp till 100</button></div></div>
   <div class="pick"><div class="lbl">Räknesätt</div>
     <div class="seg" id="segOp"><button data-v="plus">Addition</button><button data-v="minus">Subtraktion</button></div></div>
-  <div class="pick" id="pickStrat"><div class="lbl">Strategi för subtraktion</div>
-    <div class="seg" id="segStrat"><button data-v="take">Ta bort till 10</button><button data-v="think">Tänk addition</button></div></div>
   <div class="levels" id="levels"></div>
   <p class="note">Tre stjärnor får du om alla uppgifter blir rätt direkt.</p>
   <div class="bowl" id="route"></div>
@@ -352,7 +350,8 @@ const unlockAll=new URLSearchParams(location.search).has('alla'); // lärarlänk
 const pkey=()=>set.range+set.op;
 const starsOf=lv=>(data.stars[pkey()]||{})[lv]||0;
 const unlocked=lv=>true; // alla nivåer är öppna
-const think=()=>set.op==='minus'&&set.range===20&&set.strat==='think';
+// strategin Tänk addition togs bort (lärarens val okt 2026: kan förvirra); subtraktion är alltid "Subtrahera först ner till tio"
+const think=()=>false;
 
 /* ---------- Bussen: elevens djur kör bussen, busslinjen växer med stjärnorna ---------- */
 const pet=Object.assign(lasDjur(),{hat:'keps'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
@@ -385,8 +384,6 @@ function openHome(){hrOpen(false);
   G=null;if(window.tioHowtoHome)tioHowtoHome();
   $$('#segRange button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.v===set.range));
   $$('#segOp button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===set.op));
-  $$('#segStrat button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===set.strat));
-  $('#pickStrat').hidden=!(set.op==='minus'&&set.range===20);
   const L=$('#levels');L.innerHTML='';
   [1,2,3,4].forEach(lv=>{
     const [t,d]=levelInfo(lv),open=unlocked(lv),b=document.createElement('button');
@@ -400,7 +397,6 @@ function openHome(){hrOpen(false);
 }
 $$('#segRange button').forEach(b=>b.onclick=()=>{set.range=+b.dataset.v;save();openHome();});
 $$('#segOp button').forEach(b=>b.onclick=()=>{set.op=b.dataset.v;save();openHome();});
-$$('#segStrat button').forEach(b=>b.onclick=()=>{set.strat=b.dataset.v;save();openHome();});
 
 /* ---------- Uppgifter ---------- */
 function genTask(lv){
@@ -761,17 +757,6 @@ const EX={
       let p="";if(play&&st===1)p=ring(72,76,144,106,1)+ring(162,122,228,144,2)+note(195,186,"13 − 3 = 10");
       if(play&&st===2)p=ring(180,76,212,106,3)+ring(106,144,150,166,4)+note(95,186,"10 − 2 = 8");
       return{g,p};}},
-  think:{tab:"Tänk addition",title:"Subtraktion med tiotalsövergång: <b>13 − 5</b>",bubble:"Addera upp till tio först!",
-    steps:["Tänk addition: 5 + ? = 13.","Addera först upp till tio.","Addera sedan resten. Det du har lagt till är svaret."],
-    draw:(st,play)=>{const up=!play||st>=2,rest=!play||st>=3;
-      let g=T(150,36,"13 − 5 = ?")+T(150,60,"Tänk: 5 + ? = 13",15,"#56668F",700);
-      g+=T(40,98,"5")+T(62,98,"+")+box(76,76,32,up?"5":"?",play&&st===2)+T(124,98,"+")+box(138,76,32,rest?"3":"?",play&&st===3)+T(202,98,"= 13");
-      g+=frame(40,122,[...col(5,BLUE),...(up?col(5,ORANGE):[])])+frame(162,122,rest?col(3,ORANGE):[]);
-      if(rest)g+=T(262,98,"→ 8",20,"#157548");
-      let p="";if(play&&st===1)p=ring(92,44,208,66,1);
-      if(play&&st===2)p=ring(76,76,108,106,2)+ring(40,144,150,166,3)+note(95,186,"5 + 5 = 10");
-      if(play&&st===3)p=ring(138,76,170,106,4)+ring(162,122,228,144,5)+note(222,186,"10 + 3 = 13")+note(40,186,"5 + 3 = 8","start");
-      return{g,p};}}
 };
 function html(key,st,play){
   const e=EX[key],d=e.draw(st,play);
@@ -794,7 +779,7 @@ function mount(el,key){
     if(q("[data-stop]"))q("[data-stop]").onclick=()=>{cur.play=false;cur.st=n;draw();};};
   draw();
 }
-const keyNow=()=>typeof set!=="undefined"&&set.op==="minus"?(set.strat==="think"&&set.range===20?"think":"take"):"plus";
+const keyNow=()=>typeof set!=="undefined"&&set.op==="minus"?"take":"plus";
 let homeDone=false;
 // genomgången ligger bakom knappen "📖 Så här räknar du" på startskärmen (lärarens val), samma ruta som ? i spelet
 window.tioHowtoHome=()=>{};
