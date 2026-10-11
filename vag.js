@@ -1,4 +1,4 @@
-/* Balansvågen (MPVag): ritas i SVG och används av Vågen (vagen/) och Gömda tal (gomda/).
+/* Balansvågen (MPVag): ritas i SVG och används av Vågen (vagen/).
    En vågskål är en lista med klossgrupper:
      {t:"n", n, c, rods, ghost, tag}  n klossar i färgen c: små tal i staplar om fem, tiotal som stavar (rods),
                                        ghost = så många av de sista som är streckade (subtraktion), tag = emoji ovanför
@@ -37,7 +37,7 @@
       x+=(c.w+.7)*u;});
     return h;}
   // klossarnas storlek: samma för alla vågskålar som skickas in, så att storleken inte hoppar när ett svar visas
-  const fitU=pans=>Math.min(13,...pans.map(c=>Math.min(170/Math.max(panW(c),1),122/panH(c))));
+  const fitU=pans=>Math.min(16,...pans.map(c=>Math.min(170/Math.max(panW(c),1),140/panH(c))));
   // toppen av bilden beskärs efter de högsta klossarna, så att det inte blir tomt ovanför små tal
   const fitTop=(pans,u)=>Math.max(-18,Math.min(PY-80,PY-19-22-Math.max(...pans.map(panH))*u-18));
   function fit(pans){const u=fitU(pans);return{u,top:fitTop(pans,u)};}
@@ -50,6 +50,8 @@
     <g transform="rotate(${th.toFixed(2)} ${PX} ${PY})"><rect x="${PX-ARM-6}" y="${PY-4.5}" width="${2*ARM+12}" height="9" rx="4.5" fill="#56668F"/><rect x="${PX-ARM-6}" y="${PY-4.5}" width="${2*ARM+12}" height="3" rx="1.5" fill="#8E9BBE"/></g>
     <circle cx="${PX}" cy="${PY}" r="7" fill="#F2B707" stroke="#1D2B53" stroke-width="2"/>
     ${pan(PX-dx,PY-dy,L)}${pan(PX+dx,PY+dy,R)}
+    ${o.sums?[[PX-dx,PY-dy,o.sums[0]],[PX+dx,PY+dy,o.sums[1]]].map(([x,y,v])=>{const w=String(v).length*11+22,c=o.sums[0]===o.sums[1]?"#1E9E5E":"#1D2B53";
+      return `<g transform="translate(${x.toFixed(1)} ${(y+24).toFixed(1)})"><rect x="${-w/2}" y="-12" width="${w}" height="24" rx="12" fill="${c}"/><text x="0" y="6" text-anchor="middle" font-size="17" font-weight="800" fill="#fff" ${FONT}>${v}</text></g>`;}).join(""):""}
     ${o.lock?`<text x="${PX}" y="${PY-16}" text-anchor="middle" font-size="22">🔒</text>`:""}</svg>`;}
   // lutning i grader: den tyngre sidan går ner
   const tilt=(l,r)=>l===r?0:Math.sign(r-l)*Math.min(11,4+Math.abs(r-l)*.7);

@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#EAF3FF; --ink:#1D2B53; --muted:#56668F; --card:#FFFFFF; --line:#C6D6F2;
+  --bg:#F7F3EC; --ink:#1D2B53; --muted:#5E6A85; --card:#FFFFFF; --line:#E7DDCC;
   --good:#1E9E5E; --good-dark:#157548; --bad:#E5484D; --accent:#3D5AFE; --gold:#F2B707;
   --font:"Baloo 2","Trebuchet MS",system-ui,sans-serif;
 }
@@ -28,27 +28,28 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .stars{color:var(--gold);letter-spacing:1px}
 .stars .off{color:#CFDAEE}
 /* startskärmen */
-.intro{background:var(--card);border-radius:18px;padding:10px 14px 12px;box-shadow:0 4px 0 var(--line);margin:0 0 18px;display:flex;gap:12px;align-items:center}
-.intro svg{flex:none;width:150px;height:auto}
-.intro p{margin:0;font-weight:700;line-height:1.3}
-.intro p b{font-size:1.25rem}
-.levels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.lcard{background:var(--card);border-radius:18px;padding:12px 12px 10px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px}
-.lcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.lcard .ex{font-weight:800;font-size:1.05rem;color:#fff;background:var(--c);border-radius:12px;padding:2px 10px;margin-bottom:4px;white-space:nowrap}
-.lcard b{font-size:1.2rem;line-height:1.15}
-.lcard small{color:var(--muted);font-size:.85rem;line-height:1.2}
-.note{color:var(--muted);font-size:.95rem;margin-top:18px}
+.hero{background:linear-gradient(180deg,#FFFFFF 0%,#FBF7F0 100%);border-radius:26px;box-shadow:0 5px 0 var(--line);padding:18px 16px 6px;text-align:center;margin-top:8px}
+.hero h1{justify-content:center;margin:0}
+.hero p{margin:4px 0 0;color:var(--muted);font-weight:700;font-size:1.08rem}
+.hero .demo svg{display:block;width:100%;max-width:420px;height:auto;margin:6px auto 0}
+.levels{display:grid;gap:10px;margin-top:16px}
+.lv{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:18px;padding:10px 14px 10px 10px;box-shadow:0 4px 0 var(--line);text-align:left;width:100%}
+.lv:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.lv .ex{flex:none;min-width:118px;text-align:center;font-weight:800;font-size:1rem;color:var(--ink);background:#F4EEE3;border-radius:12px;padding:6px 8px;white-space:nowrap}
+.lv b{flex:1;font-size:1.12rem;line-height:1.15}
+.lv .stars{flex:none}
+.note{color:var(--muted);font-size:.95rem;margin-top:16px;text-align:center}
 /* spelet */
 .gtop{display:flex;justify-content:space-between;align-items:center;gap:10px}
-.info{font-weight:800;font-size:1.2rem}
-.progress{height:10px;border-radius:5px;background:var(--card);overflow:hidden;margin-top:6px;box-shadow:inset 0 0 0 2px var(--line)}
-.progress i{display:block;height:100%;background:var(--good);width:0;transition:width .3s}
-.instr{display:flex;gap:10px;align-items:center;font-weight:700;font-size:1.12rem;line-height:1.3;margin:10px 0 6px}
-.spk{flex:none;width:46px;height:46px;border-radius:50%;background:var(--card);font-size:1.4rem;box-shadow:0 3px 0 var(--line)}
-.stage{background:linear-gradient(#FFFFFF,#F3F7FF);border-radius:22px;box-shadow:0 4px 0 var(--line);padding:6px 6px 0;overflow:hidden}
-.stage svg{display:block;width:100%;height:auto;max-height:44vh}
-.eq{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px;font-weight:800;font-size:clamp(1.7rem,7.4vw,2.3rem);line-height:1.1;margin:12px 0 4px;text-align:center}
+.dots{display:flex;gap:6px;align-items:center}
+.dots i{width:10px;height:10px;border-radius:50%;background:#E3D8C5}
+.dots i.on{background:var(--accent);transform:scale(1.25)}.dots i.done{background:var(--good)}
+.instr{text-align:center;color:var(--muted);font-weight:700;font-size:1.02rem;line-height:1.3;margin:6px 0 4px;min-height:0}
+.spk{flex:none;width:42px;height:42px;border-radius:50%;background:var(--card);font-size:1.4rem;box-shadow:0 3px 0 var(--line)}
+.stage{background:linear-gradient(#FFFFFF,#FCF9F4);border-radius:24px;box-shadow:0 5px 0 var(--line);padding:6px 6px 12px;overflow:hidden;margin-top:6px;transition:box-shadow .3s}
+.stage.ok{box-shadow:0 5px 0 #BFE5CD,0 0 0 3px #7FD3A1}
+.stage svg{display:block;width:100%;height:auto;max-height:50vh}
+.eq{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 10px;font-weight:800;font-size:clamp(1.7rem,7.4vw,2.3rem);line-height:1.1;margin:4px 0 0;text-align:center}
 .eq.long{font-size:clamp(1.35rem,5.6vw,2rem);gap:4px 7px}
 .eq .is{color:var(--accent);padding:0 4px}
 .slot{display:inline-grid;place-items:center;min-width:1.9em;height:1.45em;padding:0 .2em;border:3px dashed var(--accent);border-radius:12px;background:#fff;color:var(--accent)}
@@ -75,26 +76,26 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .big{display:block;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);box-shadow:0 4px 0 var(--line);font-weight:800;font-size:1.2rem;margin-top:12px}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:14px;font-weight:700;z-index:6;max-width:90vw;text-align:center}
 #fx{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:7}
-@media(min-width:700px){.pad button{height:48px}.stage svg{max-height:40vh}}
-@media(max-width:420px){.pad{gap:8px}.pad button{height:50px}.intro svg{width:118px}}
+@media(min-width:700px){.pad button{height:48px}.stage svg{max-height:46vh}}
+@media(max-width:420px){.pad{gap:8px}.pad button{height:50px}.lv .ex{min-width:104px;font-size:.92rem}}
 @media (prefers-reduced-motion:reduce){*{transition:none !important}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <section id="home" class="screen">
-  <h1><span id="logo"></span>Vågen</h1>
-  <p class="lead">Likhetstecknet betyder att det är lika mycket på båda sidor.</p>
-  <div class="intro"><span id="demo"></span><p><b>8 + 4 = 7 + 5</b><br>Båda sidorna väger 12. Då väger vågen jämnt.</p></div>
+  <div class="hero">
+    <h1>Vågen</h1>
+    <p>Gör vågen jämn! Likhetstecknet betyder lika mycket på båda sidor.</p>
+    <div class="demo" id="demo"></div>
+  </div>
   <div class="levels" id="levels"></div>
-  <p class="note">Tre stjärnor får du om alla åtta uppgifter blir rätt direkt.</p>
+  <p class="note">Åtta uppgifter. Tre stjärnor om allt blir rätt direkt.</p>
 </section>
 <section id="game" class="screen" hidden>
-  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
-  <div class="progress"><i id="prog"></i></div>
-  <div class="instr"><button class="spk" id="spk" aria-label="Läs upp">🔊</button><span id="instr"></span></div>
-  <div class="stage"><div id="scale"></div></div>
-  <div class="eq" id="eq" aria-live="polite"></div>
+  <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="dots" id="dots"></span><button class="spk" id="spk" aria-label="Läs upp">🔊</button></div>
+  <p class="instr" id="instr"></p>
+  <div class="stage" id="stage"><div id="scale"></div><div class="eq" id="eq" aria-live="polite"></div></div>
   <div class="feedback" id="feedback" aria-live="polite"></div>
   <div class="yn" id="yn" hidden><button class="ja" data-a="1">Ja<small>det stämmer</small></button><button class="nej" data-a="0">Nej<small>det stämmer inte</small></button></div>
   <div class="pad" id="pad">
@@ -210,11 +211,12 @@ function drawScale(){if(!G)return;const t=G.t,x=G.reveal,col=G.state==="done"?"#
   const L=clusters(t.L,x,col,rods),R=clusters(t.R,x,col,rods);
   // samma klossar som med rätt svar, så att storleken inte hoppar när svaret visas
   const all=[L,R];if(!t.yn)all.push(clusters(t.L,t.ans,col,rods),clusters(t.R,t.ans,col,rods));
-  $("scale").innerHTML=MPVag.svg(L,R,Object.assign({th:SC.th,lock:t.yn&&!G.unlocked},MPVag.fit(all)));}
+  const sums=(t.yn&&G.unlocked)||(!t.yn&&x!=null)?[weight(t.L,x),weight(t.R,x)]:null;
+  $("scale").innerHTML=MPVag.svg(L,R,Object.assign({th:SC.th,lock:t.yn&&!G.unlocked,sums},MPVag.fit(all)));}
 
 /* ---------- Skärmar ---------- */
 const LEVELS=[
-  {n:1,name:"Stämmer det?",desc:"Är det lika mycket på båda sidor?",ex:"7 = 3 + 4",c:"#2BB673"},
+  {n:1,name:"Stämmer det?",desc:"Är det lika mycket på båda sidor?",ex:"7 = 3 + 4 ?",c:"#2BB673"},
   {n:2,name:"Talet som fattas",desc:"Rutan kan stå var som helst",ex:"9 = __ + 4",c:"#3D8BFD"},
   {n:3,name:"Båda sidorna",desc:"Räkna på båda sidorna",ex:"8 + 4 = __ + 5",c:"#FF9F43"},
   {n:4,name:"Tänk smart",desc:"Jämför talen i stället för att räkna allt",ex:"27 + 15 = 26 + __",c:"#17AFC4"},
@@ -223,8 +225,8 @@ const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class=
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 let G=null;
 function openHome(){G=null;if("speechSynthesis" in window)speechSynthesis.cancel();
-  $("levels").innerHTML=LEVELS.map((l,i)=>`<button class="lcard" data-l="${l.n}" style="--c:${l.c}"><span class="ex">${l.ex}</span><b>${i+1}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.n]||0)}</button>`).join("");
-  document.querySelectorAll(".lcard").forEach(b=>b.onclick=()=>start(+b.dataset.l));show("home");}
+  $("levels").innerHTML=LEVELS.map((l,i)=>`<button class="lv" data-l="${l.n}" aria-label="${l.name}. ${l.desc}"><span class="ex">${l.ex}</span><b>${l.name}</b>${starHtml(data.stars[l.n]||0)}</button>`).join("");
+  document.querySelectorAll(".lv").forEach(b=>b.onclick=()=>start(+b.dataset.l));show("home");}
 function start(level){const tasks=[],seen=new Set();
   while(tasks.length<ROUND){const t=gen(level),k=sideTxt(t.L)+"="+sideTxt(t.R);if(seen.has(k))continue;seen.add(k);tasks.push(t);}
   if(level===1&&!tasks.some(t=>!t.truth)){tasks[rnd(1,6)]=(()=>{let t;do{t=genYN();}while(t.truth);return t;})();}
@@ -232,12 +234,15 @@ function start(level){const tasks=[],seen=new Set();
 
 function next(){if(G.i>=G.tasks.length)return finish();
   const t=G.tasks[G.i];G.t=t;G.inp="";G.tries=0;G.missed=false;G.reveal=null;G.state="ask";G.unlocked=false;G.slotCls="";G.shownAns=null;
-  $("info").textContent=`${G.done+1} / ${ROUND}`;$("prog").style.width=(G.done/ROUND*100)+"%";
+  dots();
   $("next").hidden=true;fb("");$("yn").hidden=!t.yn;$("pad").hidden=!!t.yn;
-  $("instr").textContent=t.yn?"Stämmer det? Är det lika mycket på båda sidor?":G.level===4?"Tänk smart! Vilket tal ska stå i rutan för att vågen ska väga jämnt?":"Vilket tal ska stå i rutan för att vågen ska väga jämnt?";
+  G.say=t.yn?"Stämmer det? Är det lika mycket på båda sidor?":G.level===4?"Tänk smart! Vilket tal ska stå i rutan för att vågen ska väga jämnt?":"Vilket tal ska stå i rutan för att vågen ska väga jämnt?";
+  // hela instruktionen bara i första uppgiften; sedan räcker 🔊
+  $("instr").textContent=G.i===0?G.say:"";$("stage").classList.remove("ok");
   SC.reset();drawEq();drawScale();}
 function drawEq(){const t=G.t;$("eq").classList.toggle("long",t.L.length+t.R.length>5);$("eq").innerHTML=`${sideHtml(t.L)}<span class="is">=</span>${sideHtml(t.R)}`;
 }
+function dots(){$("dots").innerHTML=Array.from({length:ROUND},(_,i)=>`<i class="${i<G.done?"done":i===G.done?"on":""}"></i>`).join("");}
 function fb(msg,hint){const f=$("feedback");f.textContent=msg;f.className="feedback"+(hint?" hint":"");}
 
 /* ---------- Svara ---------- */
@@ -246,7 +251,7 @@ function answerYN(yes){if(!G||G.state!=="ask")return;const t=G.t,l=weight(t.L),r
   const desc=(s,w,side)=>s.length===1?`${side} sida är ${w}`:`${sideTxt(s)} är ${w}`;
   const d1=desc(t.L,l,"vänster");
   const why=l===r?`Båda sidorna är ${l}. Det stämmer!`:`${d1[0].toUpperCase()+d1.slice(1)}, men ${desc(t.R,r,"höger")}. Det stämmer inte.`;
-  if(right){window.Ljud&&Ljud.ok&&Ljud.ok();fb("Rätt! "+why);}
+  drawScale();if(right){window.Ljud&&Ljud.ok&&Ljud.ok();$("stage").classList.add("ok");fb("Rätt! "+why);}
   else{G.err++;G.missed=true;window.Ljud&&Ljud.bad&&Ljud.bad();fb("Titta på vågen. "+why,true);}
   finishTask();}
 function key(k){if(!G||G.t.yn||G.state==="done")return;
@@ -258,7 +263,7 @@ function resetTry(){G.state="ask";G.reveal=null;G.slotCls="";fb("");scaleTo(0);d
 function check(){const t=G.t,v=+G.inp;G.reveal=v;const l=weight(t.L,v),r=weight(t.R,v);
   if(v===t.ans){G.state="done";G.slotCls="ok";drawEq();drawScale();scaleTo(0);
     window.Ljud&&Ljud.chime?Ljud.chime():window.Ljud&&Ljud.ok&&Ljud.ok();
-    fb((G.missed?"Nu väger vågen jämnt! ":pickOne(["Rätt! ","Precis! ","Snyggt! "]))+proof(v));finishTask();return;}
+    $("stage").classList.add("ok");fb((G.missed?"Nu väger vågen jämnt! ":pickOne(["Rätt! ","Precis! ","Snyggt! "]))+`Båda sidorna är ${l}.`);finishTask();return;}
   G.err++;G.missed=true;G.tries++;window.Ljud&&Ljud.bad&&Ljud.bad();
   if(G.tries>=2){G.state="done";G.inp="";G.shownAns=t.ans;G.reveal=t.ans;G.slotCls="shown";drawEq();drawScale();
     scaleTo(0);
@@ -267,19 +272,18 @@ function check(){const t=G.t,v=+G.inp;G.reveal=v;const l=weight(t.L,v),r=weight(
 function proof(x){const t=G.t,w=weight(t.L,x);
   return `${sideTxt(t.L,x)} = ${sideTxt(t.R,x)}. Båda sidorna är ${w}.`;}
 function wrongMsg(t,v,l,r){
-  const heavy=l>r?"Vänster":"Höger";
-  let msg=`Med ${v} blir vänster sida ${l} och höger sida ${r}.`;
-  msg+=` ${heavy} sida väger mer.`;
+  // summorna står på vågskålarna, så texten kan vara kort
+  let msg=`${l>r?"Vänster":"Höger"} sida väger mer.`;
   if(t.hint)return msg+" "+t.hint;
   const qs=t.L.some(it=>it.k==="q")?t.L:t.R,os=qs===t.L?t.R:t.L,known=qs.filter(it=>it.k==="n");
   if(known.length&&v===weight(os)){const ks=known.map(it=>it.v).join(" och ");
     return `Du skrev vad ${os===t.L?"vänster":"höger"} sida blir. Men på andra sidan finns redan ${ks}. Båda sidorna ska vara lika mycket.`;}
   if(known.length&&v===weight(os)+known.reduce((s,it)=>s+it.v,0))return "Du lade ihop alla talen. Likhetstecknet betyder att båda sidorna ska vara lika mycket.";
-  return msg+` Båda sidorna ska vara lika mycket.`;}
+  return msg+" Prova igen!";}
 function finishTask(){
   if(G.missed&&G.requeued<3){G.requeued++;const t=G.t;G.tasks.push(Object.assign({},t,{again:true}));}
   else G.done++;
-  $("prog").style.width=(Math.min(G.done,ROUND)/ROUND*100)+"%";$("pad").hidden=true;
+  $("pad").hidden=true;
   setTimeout(()=>{if(G&&G.state==="done"){$("next").hidden=false;$("next").focus({preventScroll:true});}},450);}
 $("next").onclick=()=>{if(!G)return;G.i++;if(G.tasks[G.i]&&G.tasks[G.i].again)toast("Den här kommer tillbaka. Prova igen!");next();};
 document.querySelectorAll("#pad button").forEach(b=>b.onclick=()=>key(b.dataset.k));
@@ -304,7 +308,7 @@ let toastT;function toast(m){const t=$("toast");t.textContent=m;t.hidden=false;c
 function speak(text){if(!("speechSynthesis" in window))return toast("Uppläsning fungerar inte i den här webbläsaren.");loadVoices();
   if(!svVoice&&speechSynthesis.getVoices().length)return toast("Den här datorn har ingen svensk röst för uppläsning.");
   speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="sv-SE";if(svVoice)u.voice=svVoice;u.rate=.9;speechSynthesis.speak(u);}
-$("spk").onclick=()=>{if(!G)return;const t=G.t;speak(`${$("instr").textContent} ${sideSay(t.L)} är lika med ${sideSay(t.R)}.`);};
+$("spk").onclick=()=>{if(!G)return;const t=G.t;speak(`${G.say} ${sideSay(t.L)} är lika med ${sideSay(t.R)}.`);};
 
 function confetti(){
   if(reduced())return;
@@ -316,8 +320,7 @@ function confetti(){
 }
 
 /* startskärmens våg: 8 + 4 = 7 + 5 */
-$("demo").innerHTML=MPVag.svg(clusters([N(8),N(4,"+")]),clusters([N(7),N(5,"+")]));
-$("logo").innerHTML=`<span style="display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#3D8BFD;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="50" height="50" aria-hidden="true"><path d="M30 31 L22 50 L38 50 Z" fill="#fff"/><rect x="6" y="28" width="48" height="5" rx="2.5" fill="#fff"/><rect x="2" y="21" width="20" height="4" rx="2" fill="#FFD43B"/><rect x="38" y="21" width="20" height="4" rx="2" fill="#FFD43B"/><rect x="5" y="9" width="6" height="6" rx="1.4" fill="#fff"/><rect x="5" y="15" width="6" height="6" rx="1.4" fill="#fff"/><rect x="12" y="15" width="6" height="6" rx="1.4" fill="#FFB86B"/><rect x="42" y="15" width="6" height="6" rx="1.4" fill="#fff"/><rect x="49" y="15" width="6" height="6" rx="1.4" fill="#FFB86B"/><rect x="49" y="9" width="6" height="6" rx="1.4" fill="#FFB86B"/><text x="30" y="20" font-size="14" text-anchor="middle" font-weight="800" fill="#fff" font-family="Baloo 2, Trebuchet MS, sans-serif">=</text></svg></span>`;
+$("demo").innerHTML=MPVag.svg(clusters([N(8),N(4,"+")]),clusters([N(7),N(5,"+")]),{sums:[12,12]});
 openHome();
 </script>
 </body>
