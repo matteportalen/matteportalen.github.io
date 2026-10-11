@@ -29,16 +29,17 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .stars .off{color:#D5DDEC}
 
 /* Nivåer */
-.levels{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.lcard{background:var(--card);border-radius:18px;padding:10px 10px 8px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;transition:transform .08s,box-shadow .08s}
+.levels{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.lcard{position:relative;background:var(--card);border-radius:16px;padding:8px 10px 8px 8px;box-shadow:0 4px 0 var(--line);display:flex;flex-direction:row;align-items:center;text-align:left;gap:8px;transition:transform .08s,box-shadow .08s;min-height:64px}
 .lcard:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.lcard .ico{width:74px;height:74px;display:grid;place-items:center}
-.lcard .ico svg{width:74px;height:74px}
-.lcard .dig{font-weight:800;font-size:1.55rem;background:#141D3D;color:#FFD23F;border-radius:12px;padding:4px 10px;letter-spacing:1px;font-variant-numeric:tabular-nums}
-.lcard b{font-size:1.1rem;line-height:1.15}
-.lcard small{color:var(--muted);font-size:.85rem;line-height:1.2}
+.lcard .ico{flex:none;width:48px;height:48px;display:grid;place-items:center}
+.lcard .ico svg{width:48px;height:48px}
+.lcard .dig{font-weight:800;font-size:.72rem;padding:3px 4px !important;background:#141D3D;color:#FFD23F;border-radius:12px;padding:4px 10px;letter-spacing:1px;font-variant-numeric:tabular-nums}
+.lcard b{font-size:1rem;line-height:1.15}
+.lcard small{display:none}
+.lcard .stars{font-size:.85rem}
 .lcard .rec{font-size:.8rem;color:var(--muted);font-weight:700}
-.lcard.mix{grid-column:1/-1;flex-direction:row;justify-content:center;gap:12px;text-align:left}
+.lcard.mix{grid-column:1/-1;justify-content:center}
 .big{display:flex;align-items:center;gap:14px;width:100%;padding:12px 16px;border-radius:18px;background:var(--card);
   box-shadow:0 4px 0 var(--line);text-align:left;transition:transform .08s,box-shadow .08s}
 .big:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
@@ -135,7 +136,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gright{display:flex;align-items:center;gap:8px}
 .hpet{width:46px}
 .lcard{position:relative}
-.lcard .lok{position:absolute;right:6px;top:4px;font-size:1.5rem;line-height:1}
+.lcard .lok{position:absolute;right:6px;top:4px;font-size:1.1rem;line-height:1}
 .stall{margin-top:14px;background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:10px 12px;text-align:center}
 .stall b{display:block;font-size:1.05rem}
 .stall small{display:block;color:var(--muted);font-size:.85rem;line-height:1.25;margin-top:2px}
@@ -262,12 +263,12 @@ function partOfDay(h){return h<5?'på natten':h<10?'på morgonen':h<12?'på för
 
 /* ---------- Nivåer ---------- */
 const LEVELS=[
-  {id:'hel',name:'Hel timme',desc:'Klockan tre, klockan sju …',mins:[0],ex:[3,0]},
-  {id:'halv',name:'Halv',desc:'Halv fyra, halv åtta …',mins:[30],ex:[3,30]},
+  {id:'hel',name:'Hel timme',desc:'Klockan tre, klockan sju.',mins:[0],ex:[3,0]},
+  {id:'halv',name:'Halv',desc:'Halv fyra, halv åtta.',mins:[30],ex:[3,30]},
   {id:'kvart',name:'Kvart',desc:'Kvart över och kvart i.',mins:[15,45],ex:[3,15]},
-  {id:'fem',name:'Fem och tio',desc:'Fem över, tio i …',mins:[5,10,50,55],ex:[3,10]},
-  {id:'runthalv',name:'Tjugo över till tjugo i',desc:'Tjugo över, fem i halv, fem över halv, tjugo i …',mins:[20,25,35,40],ex:[2,25]},
-  {id:'minut',name:'Minuter',desc:'Tre minuter över fyra, två minuter i halv fem, sju minuter i nio …',mins:Array.from({length:60},(_,i)=>i).filter(i=>i%5),ex:[8,53],step:1},
+  {id:'fem',name:'Fem och tio',desc:'Fem över, tio i.',mins:[5,10,50,55],ex:[3,10]},
+  {id:'runthalv',name:'Tjugo över till tjugo i',desc:'Tjugo över, fem i halv, fem över halv, tjugo i.',mins:[20,25,35,40],ex:[2,25]},
+  {id:'minut',name:'Minuter',desc:'Alla minuter: tre minuter över fyra, sju minuter i nio.',mins:Array.from({length:60},(_,i)=>i).filter(i=>i%5),ex:[8,53],step:1},
   {id:'dig',name:'Digital tid',desc:'24-timmarsklockan, t.ex. 15.45.',digital:true},
   {id:'mata',name:'Mäta tid',desc:'Hur lång tid tar det?',measure:true},
   {id:'mix',name:'Blanda allt',desc:'Alla sorters klockslag.',mins:[0,5,10,15,20,25,30,35,40,45,50,55],ex:[8,40],mix:true}
@@ -438,8 +439,8 @@ function openHome(){
   const L=$('#levels');L.innerHTML='';
   LEVELS.forEach(lv=>{
     const b=document.createElement('button');b.className='lcard'+(lv.mix?' mix':'');
-    const ico=lv.digital?'<span class="dig">15.45</span>':lv.measure?'<span style="font-size:3rem">⏱️</span>':clockSVG(lv.ex[0],lv.ex[1],{small:true});
-    b.innerHTML=(hasLok(lv.id)?`<span class="lok" title="${LOKS[lv.id][1]}">${LOKS[lv.id][0]}</span>`:'')+`<span class="ico">${ico}</span><span><b>${lv.name}</b><br><small>${lv.desc}</small><br>${starHtml(data.stars[lv.id]||0)}</span>`;
+    const ico=lv.digital?'<span class="dig">15.45</span>':lv.measure?'<span style="font-size:2rem">⏱️</span>':clockSVG(lv.ex[0],lv.ex[1],{small:true});
+    b.innerHTML=(hasLok(lv.id)?`<span class="lok" title="${LOKS[lv.id][1]}">${LOKS[lv.id][0]}</span>`:'')+`<span class="ico">${ico}</span><span><b>${lv.name}</b><br>${starHtml(data.stars[lv.id]||0)}</span>`;
     b.onclick=()=>{cur=lv;openModes();};L.appendChild(b);
   });
   const got=LEVELS.filter(l=>hasLok(l.id)).length;

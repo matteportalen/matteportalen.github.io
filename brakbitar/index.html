@@ -28,11 +28,13 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .fr{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:middle}
 .fr>span:first-child{border-bottom:2px solid currentColor;padding:0 2px}
 /* startskärmen */
-.explore{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:linear-gradient(135deg,#FF5FA2,#FF9F43 45%,#F2B707);color:#fff;border-radius:20px;padding:14px;box-shadow:0 5px 0 #C2447C;margin-bottom:16px}
-.explore:active{transform:translateY(3px);box-shadow:0 2px 0 #C2447C}
-.explore .ico{flex:none;width:76px;display:flex;flex-direction:column;gap:3px}
-.explore .ico i{display:flex;gap:2px;height:14px}.explore .ico i b{flex:1;border-radius:3px;background:rgba(255,255,255,.9)}
-.explore b{display:block;font-size:1.4rem;line-height:1.1}.explore small{font-size:.95rem;font-weight:700;opacity:.95}
+.explore{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);color:var(--ink);border-radius:18px;padding:12px 14px;box-shadow:0 4px 0 var(--line);margin-top:12px}
+.explore:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.explore .ico{flex:none;width:64px;display:flex;flex-direction:column;gap:3px}
+.explore .ico i{display:flex;gap:2px;height:11px}.explore .ico i b{flex:1;border-radius:3px}
+.explore .ico i:nth-child(1) b{background:#E5484D}.explore .ico i:nth-child(2) b{background:#FF5FA2}.explore .ico i:nth-child(3) b{background:#F2B707}
+.explore b{display:block;font-size:1.12rem;line-height:1.15}.explore small{color:var(--muted);font-size:.86rem;line-height:1.2}
+.explore .chev{margin-left:auto;color:var(--muted);font-size:1.4rem;font-weight:800}
 .levels{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px}
 .lv{background:var(--card);border-radius:18px;padding:12px;box-shadow:0 4px 0 var(--line);text-align:left;display:flex;flex-direction:column;gap:3px}
 .lv:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
@@ -42,7 +44,6 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 .seg{display:inline-flex;background:var(--card);border-radius:14px;padding:3px;box-shadow:0 3px 0 var(--line);flex-wrap:wrap}
 .seg button{border-radius:11px;padding:5px 10px;font-weight:800;font-size:.9rem}
 .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
-.labrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 0;font-weight:800}
 /* spelet */
 .gbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px}
 .gbar .ln{font-weight:800;font-size:1.1rem}
@@ -120,9 +121,8 @@ h1{font-size:2.5rem;line-height:1;margin:12px 0 4px;font-weight:800}
 <section id="home" class="screen">
   <h1 style="display:flex;align-items:center;gap:10px"><span style="display:grid;place-items:center;width:58px;height:58px;border-radius:16px;background:#FFF1DA;box-shadow:0 3px 0 #F3E3C3"><svg viewBox="0 0 60 60" width="46" height="46" aria-hidden="true"><rect x="5" y="7" width="50" height="13" rx="3" fill="#E5484D"/><text x="30" y="17" font-size="9" text-anchor="middle" font-weight="800" font-family="Baloo 2, Trebuchet MS, sans-serif" fill="#fff">1</text><rect x="5" y="23" width="24.5" height="13" rx="3" fill="#FF5FA2"/><rect x="30.5" y="23" width="24.5" height="13" rx="3" fill="#FF5FA2"/><rect x="5" y="39" width="50" height="14" rx="3" fill="#fff" stroke="#3D5AFE" stroke-width="1.6"/><rect x="6" y="40" width="11.6" height="12" rx="2" fill="#F2B707"/><rect x="18.4" y="40" width="11.6" height="12" rx="2" fill="#F2B707"/><rect x="30.8" y="40" width="11.6" height="12" rx="2" fill="#F2B707"/><rect x="43.4" y="40.6" width="10.8" height="10.8" rx="2" fill="none" stroke="#F2B707" stroke-width="1.2" stroke-dasharray="2 1.6"/></svg></span>Bråkbitarna</h1>
   <p class="lead">Bygg med bråkbitar under en hel stav. Hur många ryms? Vilka är lika stora?</p>
-  <button class="explore" id="btnFree"><span class="ico"><i><b></b></i><i><b></b><b></b></i><i><b></b><b></b><b></b><b></b></i></span><span><b>Utforska fritt</b><small>Bygg fritt med bitarna i Bråkväggen. Hur många halvor blir en hel?</small></span></button>
   <div class="levels" id="levels"></div>
-  <div class="labrow"><span>Text på bitarna:</span><div class="seg" id="segLab"></div></div>
+  <button class="explore" id="btnFree"><span class="ico"><i><b></b></i><i><b></b><b></b></i><i><b></b><b></b><b></b><b></b></i></span><span><b>Utforska fritt</b><small>Bygg fritt i Bråkväggen</small></span><span class="chev">›</span></button>
 </section>
 <section id="game" class="screen" hidden>
   <div class="gbar"><button class="back" id="quit">← Nivåer</button><span class="ln" id="ln"></span><div class="dots" id="dots"></div></div>
@@ -204,8 +204,8 @@ function frq(den){return den===1?"{A}":`<span class="fr"><span>{A}</span><span>$
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);}
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 const LABS=[["frac","Bråk"],["dec","Decimal"],["pct","Procent"],["none","Ingen"]];
-function segLab(){["segLab","segLab2"].forEach(id=>{$(id).innerHTML=LABS.map(([k,n])=>`<button data-l="${k}" aria-pressed="${data.label===k}">${n}</button>`).join("");});}
-["segLab","segLab2"].forEach(id=>$(id).onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.label=b.dataset.l;save();segLab();if(G)render();});
+function segLab(){["segLab2"].forEach(id=>{$(id).innerHTML=LABS.map(([k,n])=>`<button data-l="${k}" aria-pressed="${data.label===k}">${n}</button>`).join("");});}
+["segLab2"].forEach(id=>$(id).onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.label=b.dataset.l;save();segLab();if(G)render();});
 function openHome(){G=null;
   $("levels").innerHTML=LEVELS.map((l,ix)=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="ex">${l.ex()}</span><b>${ix+1}. ${l.name}</b><small>${l.desc}</small>${starHtml(data.stars[l.id]||0)}</button>`).join("");
   segLab();show("home");}
