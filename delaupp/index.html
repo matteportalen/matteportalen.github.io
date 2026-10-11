@@ -108,49 +108,19 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .hog .ke{width:var(--hu);height:var(--hu)}.hog .ke svg{width:var(--hu);height:var(--hu)}
 .hog .lab{margin-top:auto;font-weight:800;color:var(--good-dark);font-size:1.25rem;line-height:1}
 .hogtitle{font-weight:800;font-size:1rem;margin:2px 0 -4px;color:var(--muted)}
-/* filmen "Se hur man gör": en scen 360 × 560 som skalas efter skärmen */
-.filmbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,#3D5AFE,#7B61FF);color:#fff;font-weight:800;font-size:1.1rem;box-shadow:0 4px 0 #2A3DB8}
-.filmbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #2A3DB8}
-#film{padding-top:4px}
-.ftop{display:flex;justify-content:space-between;align-items:center}
-.fbox{margin:6px auto 0;position:relative;border-radius:26px;overflow:hidden;box-shadow:0 6px 0 var(--line),0 18px 40px rgba(29,43,83,.12)}
-.stage{position:absolute;left:0;top:0;width:360px;height:560px;transform-origin:0 0;overflow:hidden;background:linear-gradient(170deg,#F4F8FF 0%,#EAF3FF 55%,#FFF6E6 100%);font-family:var(--font);color:var(--ink)}
-.fbg i{position:absolute;border-radius:50%;filter:blur(18px);opacity:.55;animation:fdrift 14s ease-in-out infinite alternate}
-.fbg i:nth-child(1){width:180px;height:180px;left:-50px;top:60px;background:#CFE0FF}
-.fbg i:nth-child(2){width:150px;height:150px;right:-40px;top:200px;background:#FFE3B8;animation-duration:17s}
-.fbg i:nth-child(3){width:200px;height:200px;left:90px;bottom:-90px;background:#DCD2FF;animation-duration:20s}
-@keyframes fdrift{to{transform:translate(30px,-25px) scale(1.15)}}
-.fcap{position:absolute;left:14px;right:14px;top:12px;min-height:62px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:21px;line-height:1.2;padding:0 30px}
-.fcap span{display:inline-block}
-.fspk{position:absolute;right:8px;top:18px;width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:0 3px 0 var(--line);font-size:1.05rem;z-index:3}
-.feq{position:absolute;left:0;right:0;top:82px;height:70px;display:flex;align-items:center;justify-content:center;gap:5px;font-weight:800;font-size:25px}
+/* filmen (motorn och mallen i film.js): det som bara hör till den här filmen */
 .feq .fr i{height:3px}
-.feq .q{color:#AFC4EA}.feq .n{color:var(--good-dark)}.feq .c1{color:#E07A00}.feq .c2{color:#7B61FF}
+.feq .c1{color:#E07A00}.feq .c2{color:#7B61FF}
 .feq.den .fr b:last-child{animation:fden 1s ease-in-out 3;color:#C98A00}
 @keyframes fden{50%{transform:scale(1.35)}}
-.feq .hl{border-radius:10px;background:#FFF1C9;box-shadow:0 0 0 4px #FFF1C9}
-.fe{position:absolute;left:0;top:0;will-change:transform,opacity}
 .fk.ft{width:14px;height:140px}.fk.fe1{width:14px;height:14px}
-.fk svg{width:100%;height:100%;display:block}
-.fk.warn{filter:drop-shadow(0 0 6px #FF5A6E) drop-shadow(0 0 2px #FF5A6E)}
 .fhog{width:104px;height:190px;border-radius:18px;background:rgba(255,255,255,.85);box-shadow:0 4px 0 #D6E2F6;border:2px dashed #C6D6F2}
 .fhog.glow{border:2px solid #2BB673;box-shadow:0 0 0 4px rgba(43,182,115,.25),0 4px 0 #BFE8D2}
 .fhog .fl{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-weight:800;font-size:20px;color:var(--good-dark)}
 .flab{width:70px;text-align:center;font-weight:800;font-size:26px}
 .fzone{border-radius:18px}
 .fnum{width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:0 3px 0 #C98A00}
-.ftag{font-weight:800;font-size:15px;color:#C0283C;background:#FFE3E7;border-radius:10px;padding:2px 8px;white-space:nowrap}
-.fsp{width:8px;height:8px;border-radius:50%}
-.fflash{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#FFF7C2 0%,rgba(255,210,80,.6) 45%,rgba(255,210,80,0) 70%)}
 .fpet{width:110px}.fpet svg{width:100%;height:auto;display:block}
-.fctl{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px}
-.fctl button{width:52px;height:52px;border-radius:50%;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.3rem}
-.fctl #fPlay{width:62px;height:62px;background:var(--accent);color:#fff;box-shadow:0 4px 0 #2A3DB8;font-size:1.5rem}
-.fctl button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.fdots{display:flex;justify-content:center;gap:7px;margin-top:10px}
-.fdots button{width:12px;height:12px;border-radius:50%;background:#C6D6F2;padding:0}
-.fdots button.on{background:var(--accent);transform:scale(1.25)}.fdots button.past{background:#8FA6E8}
-.fend{display:grid;gap:10px;margin-top:12px}
 .ghost{position:fixed;pointer-events:none;z-index:20;transform:translate(-50%,-50%) scale(1.15);filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
 .over{outline:3px dashed var(--accent);outline-offset:2px}
 .btns{display:flex;gap:10px;margin-top:10px}
@@ -182,7 +152,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <body>
 <div class="wrap">
 <section id="home" class="screen">
-  <h1><span class="ic" aria-hidden="true"><svg viewBox="0 0 60 60" width="50" height="50" aria-hidden="true"><rect x="2" y="2" width="56" height="56" rx="12" fill="#fff"/><text x="30" y="14" font-size="11" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">42 / 3</text><rect x="6" y="17" width="20" height="40" rx="5" fill="#FFE9CC"/><rect x="31" y="17" width="23" height="40" rx="5" fill="#ECE6FF"/><rect x="8" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="8" y1="22.6" x2="12.2" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="26.2" x2="12.2" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="29.8" x2="12.2" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="33.4" x2="12.2" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="37.0" x2="12.2" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="40.6" x2="12.2" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="44.2" x2="12.2" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="47.8" x2="12.2" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="51.4" x2="12.2" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="13.9" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="13.9" y1="22.6" x2="18.1" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="26.2" x2="18.1" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="29.8" x2="18.1" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="33.4" x2="18.1" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="37.0" x2="18.1" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="40.6" x2="18.1" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="44.2" x2="18.1" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="47.8" x2="18.1" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="51.4" x2="18.1" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="19.8" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="19.8" y1="22.6" x2="24.0" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="26.2" x2="24.0" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="29.8" x2="24.0" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="33.4" x2="24.0" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="37.0" x2="24.0" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="40.6" x2="24.0" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="44.2" x2="24.0" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="47.8" x2="24.0" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="51.4" x2="24.0" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="33" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="33" y1="22.6" x2="37.2" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="26.2" x2="37.2" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="29.8" x2="37.2" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="33.4" x2="37.2" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="37.0" x2="37.2" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="40.6" x2="37.2" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="44.2" x2="37.2" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="47.8" x2="37.2" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="51.4" x2="37.2" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="39.5" y="50.8" width="4.2" height="4.2" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><rect x="45.5" y="50.8" width="4.2" height="4.2" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/></svg></span>Dela upp och dela</h1>
+  <h1><span class="ic" aria-hidden="true"><svg viewBox="0 0 60 60" width="50" height="50" aria-hidden="true"><rect x="2" y="2" width="56" height="56" rx="12" fill="#fff"/><text x="30" y="8.2" font-size="7.5" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">42</text><rect x="25.5" y="9.4" width="9" height="1.2" rx=".6" fill="#1D2B53"/><text x="30" y="16" font-size="7.5" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">3</text><rect x="6" y="17" width="20" height="40" rx="5" fill="#FFE9CC"/><rect x="31" y="17" width="23" height="40" rx="5" fill="#ECE6FF"/><rect x="8" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="8" y1="22.6" x2="12.2" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="26.2" x2="12.2" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="29.8" x2="12.2" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="33.4" x2="12.2" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="37.0" x2="12.2" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="40.6" x2="12.2" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="44.2" x2="12.2" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="47.8" x2="12.2" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="8" y1="51.4" x2="12.2" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="13.9" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="13.9" y1="22.6" x2="18.1" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="26.2" x2="18.1" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="29.8" x2="18.1" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="33.4" x2="18.1" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="37.0" x2="18.1" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="40.6" x2="18.1" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="44.2" x2="18.1" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="47.8" x2="18.1" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="13.9" y1="51.4" x2="18.1" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="19.8" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="19.8" y1="22.6" x2="24.0" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="26.2" x2="24.0" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="29.8" x2="24.0" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="33.4" x2="24.0" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="37.0" x2="24.0" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="40.6" x2="24.0" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="44.2" x2="24.0" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="47.8" x2="24.0" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="19.8" y1="51.4" x2="24.0" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="33" y="19" width="4.2" height="36" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><line x1="33" y1="22.6" x2="37.2" y2="22.6" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="26.2" x2="37.2" y2="26.2" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="29.8" x2="37.2" y2="29.8" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="33.4" x2="37.2" y2="33.4" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="37.0" x2="37.2" y2="37.0" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="40.6" x2="37.2" y2="40.6" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="44.2" x2="37.2" y2="44.2" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="47.8" x2="37.2" y2="47.8" stroke="#B98A4E" stroke-width=".5"/><line x1="33" y1="51.4" x2="37.2" y2="51.4" stroke="#B98A4E" stroke-width=".5"/><rect x="39.5" y="50.8" width="4.2" height="4.2" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/><rect x="45.5" y="50.8" width="4.2" height="4.2" rx=".8" fill="#EBCB94" stroke="#B98A4E" stroke-width=".8"/></svg></span>Dela upp och dela</h1>
   <p class="lead">Dela upp täljaren i delar som är lätta att dela. Dela varje del för sig och lägg ihop.</p>
   <div class="how">
     <p>Så här kan man tänka:</p>
@@ -192,13 +162,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="levels" id="levels"></div>
   <a class="kort" href="../kortdivision/"><span class="ki">➗</span><span><b>Vill du räkna snabbare?</b><small>Dela upp och dela visar <i>varför</i> division fungerar: man kan dela talet i bitar och dela en bit i taget. Kort division gör precis samma sak, fast siffra för siffra och utan klossar. Det är det smidiga sättet när man väl förstått.</small><span class="go2">Till Kort division ›</span></span></a>
 </section>
-<section id="film" class="screen" hidden>
-  <div class="ftop"><button class="back" id="fClose">← Tillbaka</button><span class="info">🎬 Se hur man gör</span></div>
-  <div class="fbox" id="fbox"><div class="stage" id="stage"></div></div>
-  <div class="fctl"><button id="fPrev" aria-label="Förra steget">⏮</button><button id="fPlay" aria-label="Pausa">⏸</button><button id="fNext" aria-label="Nästa steg">⏭</button></div>
-  <div class="fdots" id="fdots"></div>
-  <div class="fend" id="fEnd" hidden><button class="go" id="fGo">Nu provar jag! →</button><button class="big" id="fAgain">↺ Se filmen igen</button></div>
-</section>
+<section id="film" class="screen" hidden></section>
 <section id="game" class="screen" hidden>
   <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
   <div class="progress"><i id="prog"></i></div>
@@ -234,6 +198,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
 <script src="../klossar.js"></script>
+<script src="../film.js"></script>
 <script src="../huvud.js" data-titel="Dela upp och dela" data-ikon="🧱"></script>
 <script>
 /* Dela upp och dela: uppdelningsstrategin för division med tiobasmaterial.
@@ -419,40 +384,20 @@ function finish(){const st=G.err===0?3:G.err<=2?2:1,old=data.stars[G.lv]||0;
 /* ---------- Filmen: Se hur man gör (42/3), utan röst ----------
    Scenen är 360 × 560 och skalas efter skärmen. Varje scen är en funktion; för att hoppa till en scen
    byggs scenen om och de tidigare scenerna körs direkt utan tid (F.instant), sedan spelas resten. */
-const ST=$("stage"),BOUNCE="cubic-bezier(.34,1.56,.64,1)",SOFT="cubic-bezier(.3,.7,.2,1)";
-const F={run:0,paused:false,instant:false,anims:new Set(),scene:0,cap:"",k:matchMedia("(prefers-reduced-motion: reduce)").matches?.35:1};
-const tf=s=>`translate(${s.x}px,${s.y}px) rotate(${s.r||0}deg) scale(${s.sc==null?1:s.sc})`;
-function A(e,kf,o){const a=e.animate(kf,Object.assign({fill:"forwards",easing:SOFT},o,{duration:F.instant?0:(o.duration||0),delay:F.instant?0:(o.delay||0)}));
-  F.anims.add(a);if(F.paused)a.pause();a.finished.then(()=>F.anims.delete(a),()=>F.anims.delete(a));return a;}
-function to(e,ns,dur,o={}){const f=Object.assign({},e.s),t=Object.assign({},e.s,ns);e.s=t;
-  const kf=[{transform:tf(f),opacity:f.o}];
-  if(o.arc)kf.push({transform:tf(Object.assign({},t,{x:(f.x+t.x)/2,y:Math.min(f.y,t.y)-o.arc,r:(t.r||0)+(o.spin||0)})),offset:.5});
-  kf.push({transform:tf(t),opacity:t.o});
-  return A(e,kf,{duration:(dur||600)*F.k,delay:(o.delay||0)*F.k,easing:o.ease||SOFT});}
-function el(cls,html,st){const e=document.createElement("div");e.className="fe "+cls;e.innerHTML=html||"";e.s=Object.assign({x:0,y:0,r:0,sc:1,o:1},st);
-  e.style.transform=tf(e.s);e.style.opacity=e.s.o;ST.appendChild(e);return e;}
-function wait(ms){if(F.instant)return Promise.resolve();const tok=F.run;
-  return new Promise((res,rej)=>{let left=ms*F.k,last=performance.now();
-    (function f(now){if(tok!==F.run)return rej("stopp");if(!F.paused)left-=now-last;last=now;if(left<=0)res();else requestAnimationFrame(f);})(last);});}
-function sfx(name,ms,arg){if(F.instant)return;const tok=F.run;setTimeout(()=>{if(tok===F.run&&!F.paused&&window.Ljud&&Ljud[name])Ljud[name](arg);},(ms||0)*F.k);}
-function cap(t){F.cap=t;const c=$("fcap");c.innerHTML="<div>"+t.split(" ").map(w=>`<span>${w}</span>`).join(" ")+"</div>";
-  c.querySelectorAll("span").forEach((w,i)=>A(w,[{opacity:0,transform:"translateY(14px)"},{opacity:1,transform:"none"}],{duration:380,delay:i*70,easing:BOUNCE}));}
-function eq(html,cls){const q=$("feq");q.className="feq"+(cls?" "+cls:"");q.innerHTML=html;A(q,[{opacity:0,transform:"translateY(10px) scale(.96)"},{opacity:1,transform:"none"}],{duration:420});}
-function sparks(x,y,col,n){for(let i=0;i<(n||10);i++){const a=Math.PI*2*i/(n||10),r=34+Math.random()*24,d=el("fsp","",{x,y,sc:1});d.style.background=col||"#F2B707";
-  to(d,{x:x+Math.cos(a)*r,y:y+Math.sin(a)*r,sc:.2,o:0},700,{ease:"cubic-bezier(.1,.7,.3,1)"});}}
+const FM=MPFilm.make({section:$("film"),goText:"Nu provar jag! →",onGo:()=>start(1),onClose:()=>openHome(),speak:t=>speak(t)});
+const F=FM,{A,to,el,wait,sfx,cap,eq,sparks,tf,BOUNCE}=FM;
 const HX=i=>12+i*116,PET=()=>window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"🦉";
 const FEQ=(tail)=>`${fr(42,3)}<span>=</span>${fr(30,3)}<span>+</span>${fr(12,3)}${tail||""}`;
-function build(){ST.innerHTML='<div class="fbg"><i></i><i></i><i></i></div><div class="fcap" id="fcap"></div><button class="fspk" id="fspk" aria-label="Läs upp">🔊</button><div class="feq" id="feq"></div>';
-  $("fspk").onclick=()=>speak(F.cap);
+FM.build=()=>{
   F.z1=el("fzone","",{x:38,y:176,o:0});F.z1.style.cssText+="width:82px;height:168px;background:#FFE9CC";
   F.z2=el("fzone","",{x:214,y:176,o:0});F.z2.style.cssText+="width:110px;height:168px;background:#ECE6FF";
   F.H=[0,1,2].map(i=>el("fhog",'<span class="fl"></span>',{x:HX(i),y:360,o:0,sc:.85}));
   F.T=[0,1,2,3].map(i=>el("fk ft",ART.t,{x:119+i*20,y:-180,o:0}));
   F.E=[0,1].map(i=>el("fk fe1",ART.e,{x:209+i*18,y:-60,o:0}));
   F.L30=el("flab","30",{x:44,y:146,o:0,sc:.3});F.L30.style.color="#E07A00";
-  F.L12=el("flab","12",{x:234,y:146,o:0,sc:.3});F.L12.style.color="#7B61FF";}
+  F.L12=el("flab","12",{x:234,y:146,o:0,sc:.3});F.L12.style.color="#7B61FF";};
 function hlab(t){F.H.forEach((h,i)=>{const l=h.querySelector(".fl");l.textContent=t;A(l,[{opacity:0,transform:"scale(.4)"},{opacity:1,transform:"none"}],{duration:450,delay:i*120,easing:BOUNCE});});}
-const SCENES=[
+FM.scenes=[
  async()=>{cap("42 ska delas lika i 3 högar.");eq(`${fr(42,3)}<span>=</span><span class="q">?</span>`);await wait(500);
    F.T.forEach((e,i)=>{to(e,{y:190,o:1},750,{delay:i*130,ease:BOUNCE});sfx("pop",i*130+300,i);});
    F.E.forEach((e,i)=>{to(e,{y:316,o:1},700,{delay:600+i*130,ease:BOUNCE});sfx("pop",900+i*130,4+i);});
@@ -496,26 +441,8 @@ const SCENES=[
    await wait(700);for(let i=0;i<2;i++){A(p,[{transform:tf(p.s)},{transform:tf(Object.assign({},p.s,{y:p.s.y-26}))},{transform:tf(p.s)}],{duration:520,delay:i*600,easing:"ease-out"});sfx("hop",i*600);}
    await wait(1300);}
 ];
-function dots(){$("fdots").innerHTML=SCENES.map((_,i)=>`<button class="${i===F.scene?"on":i<F.scene?"past":""}" data-s="${i}" aria-label="Steg ${i+1}"></button>`).join("");}
-function stopFilm(){F.run++;F.anims.forEach(a=>{try{a.cancel()}catch(e){}});F.anims.clear();}
-async function playFrom(k){stopFilm();const tok=F.run;F.paused=false;F.ended=false;$("fPlay").textContent="⏸";$("fEnd").hidden=true;
-  build();F.instant=true;for(let i=0;i<k;i++)await SCENES[i]();F.instant=false;
-  for(let i=k;i<SCENES.length;i++){if(tok!==F.run)return;F.scene=i;dots();
-    try{await SCENES[i]();if(i<SCENES.length-1)await wait(500);}catch(e){return;}}
-  if(tok===F.run){$("fEnd").hidden=false;$("fPlay").textContent="▶";F.ended=true;}}
-function fitFilm(){const box=$("fbox"),w=Math.min($("film").clientWidth||360,560),h=innerHeight-box.getBoundingClientRect().top-150,sc=Math.max(.6,Math.min(w/360,h/560));
-  box.style.width=360*sc+"px";box.style.height=560*sc+"px";ST.style.transform=`scale(${sc})`;}
-function openFilm(){data.film=1;save();show("film");F.ended=false;fitFilm();playFrom(0);}
+function openFilm(){data.film=1;save();show("film");FM.open();}
 $("filmBtn").onclick=openFilm;
-$("fClose").onclick=()=>{stopFilm();openHome();};
-$("fPlay").onclick=()=>{if(F.ended)return playFrom(0);F.paused=!F.paused;F.anims.forEach(a=>F.paused?a.pause():a.play());$("fPlay").textContent=F.paused?"▶":"⏸";};
-$("fPrev").onclick=()=>playFrom(Math.max(0,F.scene-1));
-$("fNext").onclick=()=>{if(F.scene<SCENES.length-1)playFrom(F.scene+1);};
-$("fdots").onclick=e=>{const b=e.target.closest("[data-s]");if(b)playFrom(+b.dataset.s);};
-$("fAgain").onclick=()=>playFrom(0);
-$("fGo").onclick=()=>{stopFilm();start(1);};
-addEventListener("resize",()=>{if(!$("film").hidden)fitFilm();});
-document.addEventListener("visibilitychange",()=>{if(document.hidden&&!$("film").hidden&&!F.paused&&!F.ended)$("fPlay").click();});
 
 /* ---------- Uppläsning och konfetti ---------- */
 $("spk").onclick=()=>speak(lastSay);
@@ -533,8 +460,7 @@ function confetti(){
   const t0=performance.now();(function f(now){x.clearRect(0,0,W2,H2);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
     if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W2,H2);c.hidden=true;}})(t0);
 }
-openHome();
-if(!data.film)openFilm();
+openHome(); // filmen spelas bara när man trycker på 🎬 Se hur man gör (lärarens val)
 </script>
 </body>
 </html>

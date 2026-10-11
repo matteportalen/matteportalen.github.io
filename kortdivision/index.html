@@ -31,15 +31,31 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chips{gap:4px;background:var(--bg);border-radius:14px;padding:4px}
 .chips button{flex:1;min-height:44px;border-radius:11px;background:transparent;font-weight:800;font-size:1.05rem;padding:0 10px;color:var(--muted)}
-.chips button[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 2px 6px rgba(29,43,83,.15)}
+.chips button[aria-pressed="true"]{background:var(--accent);color:#fff;box-shadow:0 3px 0 #2A3DB8}
 .levels{display:grid;gap:8px;margin-top:12px}
 .lv{display:flex;align-items:center;gap:12px;background:var(--card);border-radius:16px;padding:8px 12px 8px 8px;box-shadow:0 4px 0 var(--line);text-align:left;width:100%}
 .lv:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
-.lv .t{min-width:64px;height:44px;border-radius:12px;background:#EEF3FC;color:var(--ink);display:grid;place-items:center;font-weight:800;font-size:1rem;flex:none;line-height:1.05;text-align:center;padding:0 6px}
+.lv .t{min-width:58px;height:48px;border-radius:12px;background:var(--c);color:#fff;box-shadow:0 3px 0 rgba(29,43,83,.15);display:grid;place-items:center;font-weight:800;font-size:1rem;flex:none;line-height:1.05;text-align:center;padding:0 6px}
 .lv b{font-size:1.12rem;display:block;line-height:1.15}
 .lv small{color:var(--muted);font-size:.88rem;display:block;line-height:1.25}
 .lv .st{margin-left:auto;flex:none}
-@media (max-height:720px){.lv{padding:5px 12px 5px 6px}.lv .t{height:38px}.opts>p:first-child{display:none}.wrap h1{margin-top:4px}.lead{margin-bottom:8px}}
+.sfr{display:inline-flex;flex-direction:column;align-items:center;line-height:1;font-size:.95rem}.sfr i{display:block;align-self:stretch;height:2px;background:currentColor;border-radius:1px;margin:2px 0}
+.filmpill{margin-left:auto;flex:none;font-size:.95rem;font-weight:800;color:#fff;background:linear-gradient(135deg,#3D5AFE,#7B61FF);border-radius:999px;padding:7px 12px;box-shadow:0 3px 0 #2A3DB8}
+.filmpill:active{transform:translateY(2px);box-shadow:0 1px 0 #2A3DB8}
+@media (max-height:720px){.lv{padding:5px 12px 5px 6px}.lv .t{height:42px}.opts>p:first-child{display:none}.wrap h1{margin-top:4px}.lead{margin-bottom:8px}}
+/* filmen (mallen i film.js) */
+.fk.kt2{width:12px;height:120px}.fk.ke2{width:12px;height:12px}
+.kdd{width:36px;text-align:center;font-weight:800;font-size:46px;line-height:1}
+.kdbar{width:92px;height:4px;border-radius:2px;background:var(--ink)}
+.kdbox{width:86px;height:58px;border-radius:12px;border:3px dashed #9FB3E8;background:#fff}
+.kdbox.ok{border:3px solid var(--good);background:#E3F7EC}
+.kda{width:36px;text-align:center;font-weight:800;font-size:44px;line-height:1;color:var(--good-dark)}
+.kdr{width:24px;text-align:center;font-weight:800;font-size:24px;line-height:1;color:#C0283C}
+.kdhl{border-radius:12px;background:#FFE9A8}
+.fhog2{width:104px;height:180px;border-radius:18px;background:rgba(255,255,255,.85);box-shadow:0 4px 0 #D6E2F6;border:2px dashed #C6D6F2}
+.fhog2.glow{border:2px solid #2BB673;box-shadow:0 0 0 4px rgba(43,182,115,.25),0 4px 0 #BFE8D2}
+.fhog2 .fl{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-weight:800;font-size:22px;color:var(--good-dark)}
+.kdchk{width:360px;text-align:center;font-weight:800;font-size:20px;color:var(--good-dark)}
 .note{color:var(--muted);font-size:.88rem;margin:6px 2px 0;line-height:1.3;font-weight:600}
 /* spelet: fyller skärmen exakt, inget att scrolla (höjden sätts i fit()) */
 #game{display:flex;flex-direction:column;gap:10px}
@@ -115,11 +131,12 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <body>
 <div class="wrap">
 <section id="home" class="screen">
-  <h1 style="display:flex;align-items:center;gap:10px"><span style="display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#17AFC4;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="42" height="42" aria-hidden="true"><rect x="2" y="2" width="56" height="56" rx="12" fill="#fff"/><text x="12" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">7</text><text x="25" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">2</text><text x="19.5" y="16" font-size="8.5" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#E5484D">1</text><rect x="4" y="32" width="28" height="2.6" rx="1.3" fill="#1D2B53"/><text x="18" y="49" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">3</text><text x="39" y="38" font-size="12" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">=</text><text x="51" y="38" font-size="14" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#157548">24</text></svg></span>Kort division</h1>
+  <h1 style="display:flex;align-items:center;gap:10px"><span style="display:grid;place-items:center;width:48px;height:48px;border-radius:14px;background:#17AFC4;box-shadow:0 3px 0 rgba(29,43,83,.15)"><svg viewBox="0 0 60 60" width="42" height="42" aria-hidden="true"><rect x="2" y="2" width="56" height="56" rx="12" fill="#fff"/><text x="12" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">7</text><text x="25" y="29" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">2</text><text x="19.5" y="16" font-size="8.5" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#E5484D">1</text><rect x="4" y="32" width="28" height="2.6" rx="1.3" fill="#1D2B53"/><text x="18" y="49" font-size="16" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">3</text><text x="39" y="38" font-size="12" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#1D2B53">=</text><text x="51" y="38" font-size="14" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#157548">24</text></svg></span>Kort division<button class="filmpill" id="filmBtn">🎬 Se hur man gör</button></h1>
   <p class="lead">Dela siffra för siffra. Resten skrivs snett ovanför nästa siffra.</p>
   <div class="opts"><p>Hur vill du räkna?</p><div class="chips" id="modeChips"><button data-m="steg">Visa stegen</button><button data-m="sjalv">Själv</button></div><p class="note" id="modeNote"></p></div>
   <div class="levels" id="levels"></div>
 </section>
+<section id="film" class="screen" hidden></section>
 <section id="game" class="screen" hidden>
   <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="dots" id="dots" aria-hidden="true"></span><button class="spk" id="spk" aria-label="Läs upp">🔊</button></div>
   <div class="gbody">
@@ -152,6 +169,8 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
 <script src="../djur.js"></script>
+<script src="../klossar.js"></script>
+<script src="../film.js"></script>
 <script src="../huvud.js" data-titel="Kort division" data-ikon="➗"></script>
 <script>
 /* Kort division som i läroboken: täljaren över divisorn med bråkstreck, svaret efter likhetstecknet, resten i svaret skrivs "rest".
@@ -190,11 +209,12 @@ const LEVELS=[
 /* ---------- Skärmar ---------- */
 function show(id){document.querySelectorAll(".screen").forEach(s=>s.hidden=s.id!==id);window.scrollTo(0,0);if(window.MPS)MPS.visa(id);
   if(id!=="game"){const w=document.querySelector(".wrap");w.classList.remove("wide");w.style.paddingBottom="";}else requestAnimationFrame(fit);}
+const sfr=ex=>{const [a,b]=ex.split("/");return `<span class="sfr">${a}<i></i>${b}</span>`;};
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function openHome(){G=null;
   $("modeChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===data.mode));
   $("modeNote").textContent=data.mode==="steg"?"En fråga för varje steg, med ledtråd om något blir fel.":"Skriv allt själv och tryck Rätta. Inga tips förrän du rättar.";
-  $("levels").innerHTML=LEVELS.map((l,ix)=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${l.ex}</span><span><b>${l.name}</b></span><span class="st">${starHtml((data.stars[data.mode]||{})[l.id]||0)}</span></button>`).join("");
+  $("levels").innerHTML=LEVELS.map((l,ix)=>`<button class="lv" data-l="${l.id}" style="--c:${l.c}"><span class="t">${sfr(l.ex)}</span><span><b>${l.name}</b></span><span class="st">${starHtml((data.stars[data.mode]||{})[l.id]||0)}</span></button>`).join("");
   show("home");}
 $("modeChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.mode=b.dataset.m;save();openHome();};
 $("levels").onclick=e=>{const b=e.target.closest("[data-l]");if(b)start(+b.dataset.l);};
@@ -370,7 +390,62 @@ function confetti(){
   const t0=performance.now();(function f(now){x.clearRect(0,0,W2,H2);P.forEach(p=>{p.vy+=.45;p.vx*=.99;p.x+=p.vx;p.y+=p.vy;p.a+=p.va;x.save();x.translate(p.x,p.y);x.rotate(p.a);x.fillStyle=p.c;x.fillRect(-p.r/2,-p.r/4,p.r,p.r/2);x.restore();});
     if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W2,H2);c.hidden=true;}})(t0);
 }
-openHome();
+/* ---------- Filmen: Se hur man gör (72/3), mallen i film.js ----------
+   Klossarna delas ut samtidigt som uppställningen skrivs, så att man ser att resten snett ovanför
+   är tiostavar som växlas till ental och följer med till nästa siffra. Ingen figur (äldre elever). */
+const FM=MPFilm.make({section:$("film"),goText:"Börja räkna →",onGo:()=>start(1),onClose:()=>openHome(),speak:t=>speak(t)});
+const {A,to,el,wait,sfx,cap,sparks,tf,BOUNCE}=FM;
+const HX=i=>12+i*116,F=FM,ART=MPKlossar;
+FM.build=()=>{
+  F.hl1=el("kdhl","",{x:56,y:96,o:0});F.hl1.style.cssText+="width:40px;height:58px";
+  F.hl2=el("kdhl","",{x:80,y:76,o:0});F.hl2.style.cssText+="width:58px;height:80px";
+  F.d=[["7",58],["2",98]].map(([t,x])=>el("kdd",t,{x,y:102,o:0,sc:.4}));
+  F.bar=el("kdbar","",{x:50,y:158,o:0});F.den=el("kdd","3",{x:78,y:168,o:0,sc:.4});
+  F.is=el("kdd","=",{x:150,y:128,o:0});F.box=el("kdbox","",{x:188,y:116,o:0});
+  F.a=[["2",196],["4",232]].map(([t,x])=>el("kda",t,{x,y:124,o:0,sc:.3}));
+  F.rest=el("kdr","1",{x:174,y:250,o:0});
+  F.H=[0,1,2].map(i=>el("fhog2",'<span class="fl"></span>',{x:HX(i),y:372,o:0,sc:.85}));
+  F.T=Array.from({length:7},(_,i)=>el("fk kt2",ART.t,{x:40+i*18,y:-160,o:0}));
+  F.E=[0,1].map(i=>el("fk ke2",ART.e,{x:172+i*16,y:-40,o:0}));};
+function hlab(t){F.H.forEach((h,i)=>{const l=h.querySelector(".fl");l.textContent=t;A(l,[{opacity:0,transform:"scale(.4)"},{opacity:1,transform:"none"}],{duration:450,delay:i*120,easing:BOUNCE});});}
+FM.scenes=[
+ async()=>{cap("72 delat med 3.");await wait(300);
+   F.d.forEach((e,i)=>to(e,{o:1,sc:1},500,{delay:i*120,ease:BOUNCE}));to(F.bar,{o:1},400,{delay:250});to(F.den,{o:1,sc:1},500,{delay:350,ease:BOUNCE});
+   to(F.is,{o:1},400,{delay:550});to(F.box,{o:1},400,{delay:650});await wait(1200);
+   F.T.forEach((e,i)=>{to(e,{y:236,o:1},700,{delay:i*90,ease:BOUNCE});sfx("pop",i*90+300,i%6);});
+   F.E.forEach((e,i)=>{to(e,{y:344,o:1},650,{delay:700+i*120,ease:BOUNCE});sfx("pop",950+i*120,5);});
+   await wait(1500);F.H.forEach((h,i)=>to(h,{o:1,sc:1},550,{delay:i*140,ease:BOUNCE}));await wait(1600);},
+ async()=>{cap("Börja med tiotalen. Hur många gånger går 3 i 7?");to(F.hl1,{o:1},400);await wait(1200);
+   for(let r=0;r<2;r++){for(let i=0;i<3;i++){to(F.T[r*3+i],{x:HX(i)+14+r*16,y:386},700,{arc:60,delay:i*220});sfx("pop",i*220+500,i+r*3);}await wait(1100);}
+   to(F.a[0],{o:1,sc:1},500,{ease:BOUNCE});sfx("ok");await wait(1800);},
+ async()=>{cap("3 · 2 = 6. Det blir 1 tiostav över.");await wait(600);
+   to(F.T[6],{x:174,y:236},500,{arc:20});await wait(550);F.T[6].classList.add("warn");sfx("clonk");
+   const s=F.T[6].s;A(F.T[6],[0,-12,10,-7,5,0].map(r=>({transform:tf(Object.assign({},s,{r}))})),{duration:900});
+   F.tag=el("ftag","1 över",{x:196,y:250,o:0,sc:.5});to(F.tag,{o:1,sc:1},400,{ease:BOUNCE});await wait(1500);
+   cap("Resten skrivs snett ovanför nästa siffra.");to(F.hl1,{o:0},300);
+   to(F.rest,{x:174,y:226,o:1},300);await wait(350);to(F.rest,{x:88,y:78},900,{arc:60,ease:BOUNCE});sfx("whoosh",100);await wait(2000);},
+ async()=>{cap("Resten växlas: 1 tiostav blir 10 ental.");to(F.tag,{o:0},300);F.T[6].classList.remove("warn");await wait(700);
+   const t=F.T[6],fl=el("fflash","",{x:135,y:250,o:0,sc:.3});to(fl,{o:1,sc:1.4},300);to(t,{sc:1.15,o:0},350,{delay:150});sfx("magic",100);sparks(180,296,"#F2B707",12);
+   const nya=Array.from({length:10},(_,j)=>el("fk ke2",ART.e,{x:174,y:240+j*12,o:0}));nya.forEach(e=>to(e,{o:1},200,{delay:200}));
+   await wait(500);to(fl,{o:0,sc:1.8},400);
+   F.ones=[...nya,...F.E];F.ones.forEach((e,j)=>to(e,{x:146+(j%4)*18,y:262+Math.floor(j/4)*18},700,{arc:20,delay:j*40,ease:BOUNCE}));
+   await wait(1000);to(F.hl2,{o:1},400);F.lab=el("ftag","12 ental",{x:150,y:232,o:0,sc:.5});F.lab.style.color="#7A5A00";F.lab.style.background="#FFE9A8";to(F.lab,{o:1,sc:1},400,{ease:BOUNCE});
+   cap("Nu är det 12 ental, den lilla 1:an och 2:an.");await wait(2600);},
+ async()=>{cap("Hur många gånger går 3 i 12? 4.");to(F.lab,{o:0},300);await wait(900);
+   for(let r=0;r<4;r++){for(let i=0;i<3;i++){const e=F.ones.pop();to(e,{x:HX(i)+50+(r%2)*16,y:386+Math.floor(r/2)*16},600,{arc:50,delay:i*110});sfx("pop",i*110+400,3+r);}await wait(850);}
+   to(F.hl2,{o:0},300);to(F.a[1],{o:1,sc:1},500,{ease:BOUNCE});sfx("ok");await wait(1800);},
+ async()=>{cap("72 delat med 3 är 24. Varje hög fick 24.");F.box.classList.add("ok");await wait(400);
+   F.H.forEach((h,i)=>{h.classList.add("glow");A(h,[{transform:tf(h.s)},{transform:tf(Object.assign({},h.s,{sc:1.06}))},{transform:tf(h.s)}],{duration:600,delay:i*150});sparks(HX(i)+52,365,["#2BB673","#F2B707","#3D8BFD"][i],9);});
+   hlab("24");F.chk=el("kdchk","Kontroll: 3 · 24 = 72 ✓",{x:0,y:262,o:0});to(F.chk,{o:1},500,{delay:600});sfx("fanfare",200);await wait(3200);},
+ async()=>{cap("Den lilla siffran är det som blev över. Den följer med till nästa siffra.");to(F.chk,{o:0},300);await wait(500);
+   to(F.hl2,{o:1},400);for(let i=0;i<3;i++){A(F.rest,[{transform:tf(F.rest.s)},{transform:tf(Object.assign({},F.rest.s,{sc:1.5}))},{transform:tf(F.rest.s)}],{duration:700,delay:i*800});}
+   await wait(3200);},
+ async()=>{cap("Nu är det din tur!");to(F.hl2,{o:0},300);await wait(1200);}
+];
+function openFilm(){data.film=1;save();show("film");FM.open();}
+$("filmBtn").onclick=openFilm;
+
+openHome(); // filmen spelas bara när man trycker på 🎬 Se hur man gör (lärarens val)
 </script>
 </body>
 </html>
