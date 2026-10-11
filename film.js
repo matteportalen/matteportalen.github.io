@@ -45,9 +45,12 @@ window.MPFilm=(()=>{
 .mpfilm .fdots button.on{background:var(--accent);transform:scale(1.25)}.mpfilm .fdots button.past{background:#8FA6E8}
 .mpfilm .fend{display:grid;gap:10px;margin-top:12px}
 .mpfilm .fend .go,.mpfilm .fend .big{margin-top:0}`;
+  // stilen läggs in direkt, så att sidor utan film kan använda samma lilla knapp (.filmrow, .filmpill)
   let injected=false;
+  const inject=()=>{if(injected)return;const st=document.createElement("style");st.textContent=CSS;document.head.appendChild(st);injected=true;};
+  inject();
   function make(o){
-    if(!injected){const st=document.createElement("style");st.textContent=CSS;document.head.appendChild(st);injected=true;}
+    inject();
     const sec=o.section;sec.classList.add("mpfilm");
     sec.innerHTML=`<div class="ftop"><button class="back" data-f="close">← Tillbaka</button><span class="info">🎬 Se hur man gör</span></div>
       <div class="fbox"><div class="stage"></div></div>

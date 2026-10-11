@@ -128,8 +128,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .hbub::after{content:"";position:absolute;right:26px;top:100%;border:7px solid transparent;border-top-color:#4B5BD6}
 .howl{margin-top:58px}
 @media(max-width:619px){.hvis{justify-content:space-between}}
-.howbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:8px 0 12px;padding:11px 14px;border-radius:16px;background:#4B5BD6;color:#fff;font-weight:800;font-size:1.12rem;box-shadow:0 4px 0 #3341A8}
-.howbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #3341A8}
 .qbtn{width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:1.25rem;color:#4B5BD6}
 .hmodal{position:fixed;inset:0;background:rgba(29,43,83,.55);display:grid;place-items:center;z-index:9;padding:12px}
 .hmodal[hidden]{display:none}
@@ -154,8 +152,8 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <body>
 <div class="wrap">
 <section id="home" class="screen">
+  <div class="filmrow"><button class="filmpill" id="howBtn">🎬 Se hur man gör</button></div>
   <h1>Uppställning</h1>
-  <button class="howbtn" id="howBtn">📖 Så här räknar du</button>
   <div class="opts"><p>Hur stora tal?</p><div class="chips" id="rangeChips"><button data-r="100">Upp till 100</button><button data-r="1000">Upp till 1000</button></div></div>
   <div class="opts"><p>Hur vill du räkna?</p><div class="chips" id="modeChips"><button data-m="steg">Steg för steg</button><button data-m="sjalv">Själv</button></div></div>
   <div class="levels" id="levels"></div>
@@ -194,6 +192,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <div class="toast" id="toast" hidden></div>
 <canvas id="fx" hidden></canvas>
 <script src="../ljud.js"></script>
+<script src="../film.js"></script>
 <script src="../djur.js"></script>
 <script src="../huvud.js" data-titel="Uppställning" data-ikon="🧮"></script>
 <script>

@@ -225,8 +225,6 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .hrhops button:active{transform:translateY(2px)}
 .hrhops .up{grid-area:up}.hrhops .dn{grid-area:dn}.hrhops .lf{grid-area:lf}.hrhops .rt{grid-area:rt}.hrhops .un{grid-area:un}
 .hrsum{text-align:center;font-weight:800;color:var(--muted);font-size:.95rem;min-height:1.3em}
-.howbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:12px 0 4px;padding:11px 14px;border-radius:16px;background:#4B5BD6;color:#fff;font-weight:800;font-size:1.12rem;box-shadow:0 4px 0 #3341A8}
-.howbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #3341A8}
 .qbtn{width:40px;height:40px;border-radius:50%;background:var(--card);box-shadow:0 3px 0 var(--line);font-weight:800;font-size:1.25rem;color:#4B5BD6}
 .hmodal{position:fixed;inset:0;background:rgba(29,43,83,.55);display:grid;place-items:center;z-index:9;padding:12px}
 .hmodal[hidden]{display:none}
@@ -264,9 +262,9 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 
 <!-- Start -->
 <section id="home" class="screen">
+  <div class="filmrow"><button class="filmpill" id="howBtn">🎬 Se hur man gör</button></div>
   <div class="party"><div class="ppet pet" id="homePet" aria-hidden="true"></div>
     <div><h1>Tiotalsövergång <span class="world">🚌 Bussen</span></h1><p class="lead" id="homeLead"></p></div></div>
-  <button class="howbtn" id="howBtn">📖 Så här räknar du</button>
   <div class="pick"><div class="lbl">Talområde</div>
     <div class="seg" id="segRange"><button data-v="20">Upp till 20</button><button data-v="100">Upp till 100</button></div></div>
   <div class="pick"><div class="lbl">Räknesätt</div>
@@ -330,6 +328,7 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 <canvas id="fx" hidden></canvas>
 
 <script src="../ljud.js"></script>
+<script src="../film.js"></script>
 <script src="../djur.js"></script>
 <script src="../huvud.js" data-titel="Tiotalsövergång" data-ikon="🔟"></script>
 <script>
