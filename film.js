@@ -12,7 +12,7 @@
    F.wait(ms), F.sfx(namn,ms,arg), F.cap(text), F.eq(html,cls), F.sparks(x,y,färg,n), F.tf, F.BOUNCE */
 window.MPFilm=(()=>{
   const CSS=`
-.filmbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,#3D5AFE,#7B61FF);color:#fff;font-weight:800;font-size:1.1rem;box-shadow:0 4px 0 #2A3DB8}
+.filmbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin:2px 0 12px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,#3D5AFE,#7B61FF);color:#fff;font-weight:800;font-size:1.1rem;box-shadow:0 4px 0 #2A3DB8}
 .filmbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #2A3DB8}
 .mpfilm{padding-top:4px}
 .mpfilm .ftop{display:flex;justify-content:space-between;align-items:center}

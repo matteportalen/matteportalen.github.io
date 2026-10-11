@@ -342,16 +342,14 @@ const carSvg=c=>`<svg viewBox="0 0 48 28" width="46" height="27" aria-hidden="tr
 /* ---------- Lagring (bara i den här webbläsaren) ---------- */
 const KEY='mattespel-tiotal-v1';
 let data=load();
-function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.stars)return Object.assign({race:{},set:{range:20,op:'plus',strat:'take'}},d);}catch(e){}
-  return{stars:{},race:{},set:{range:20,op:'plus',strat:'take'}};}
+function load(){try{const d=JSON.parse(localStorage.getItem(KEY)||'null');if(d&&d.stars)return Object.assign({race:{},set:{range:20,op:'plus'}},d);}catch(e){}
+  return{stars:{},race:{},set:{range:20,op:'plus'}};}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}}
 const set=data.set;
 const unlockAll=new URLSearchParams(location.search).has('alla'); // lärarlänk: ?alla låser upp alla nivåer
 const pkey=()=>set.range+set.op;
 const starsOf=lv=>(data.stars[pkey()]||{})[lv]||0;
 const unlocked=lv=>true; // alla nivåer är öppna
-// strategin Tänk addition togs bort (lärarens val okt 2026: kan förvirra); subtraktion är alltid "Subtrahera först ner till tio"
-const think=()=>false;
 
 /* ---------- Bussen: elevens djur kör bussen, busslinjen växer med stjärnorna ---------- */
 const pet=Object.assign(lasDjur(),{hat:'keps'}),petName=PETNAME[pet.animal]||'Ugglan',lc=petName.toLowerCase();
@@ -376,7 +374,7 @@ function levelInfo(lv){
   const r=set.range===20,p=set.op==='plus';
   if(lv===1)return p?[r?'Tiokompisar':'Till nästa tiotal',r?'Vilken är talets tiokompis?':'Hur mycket fattas till nästa tiotal?']
                     :['Ner till tiotalet',r?'Hur mycket ska bort för att komma till 10?':'Hur mycket ska bort för att komma till tiotalet?'];
-  if(lv===2)return think()?['Hoppa via 10','Hur långt är det till 10, och sedan vidare?']:['Dela upp',p?'Dela upp talet i tiokompisen och resten.':`Dela upp talet så att du först landar på ${r?'10':'tiotalet'}.`];
+  if(lv===2)return['Dela upp',p?'Dela upp talet i tiokompisen och resten.':`Dela upp talet så att du först landar på ${r?'10':'tiotalet'}.`];
   if(lv===3)return['Hela strategin',p?'Addera först tiokompisarna, sedan resten.':'Subtrahera först ner till tiotalet, sedan resten.'];
   return['Racet',`${RACE_LEN} uppgifter utan stöd. Kör mot ditt spöke.`];
 }
@@ -434,11 +432,6 @@ function plan(t,lv){
   const D=Math.floor(a/10)*10,p1=a-D;
   if(lv===1)return{D,rows:[[a,'−',box('p1'),'=',D]],steps:[{k:'p1',v:p1}]};
   if(lv===4)return{D,rows:[[a,'−',b,'=',box('res')]],steps:[{k:'res',v:a-b}],main:true};
-  if(think()){
-    const q1=10-b,q2=a-10,rows=[[b,'+',box('p1'),'=',10],[10,'+',box('p2'),'=',a]],steps=[{k:'p1',v:q1},{k:'p2',v:q2}];
-    if(lv===3){rows.push([a,'−',b,'=',box('res')]);steps.push({k:'res',v:a-b});}
-    return{D:10,p1:q1,p2:q2,rows,steps};
-  }
   const p2=b-p1,rows=[[a,'−',box('p1'),'=',D],[b,'=',box('p1'),'+',box('p2')]],steps=[{k:'p1',v:p1},{k:'p2',v:p2}];
   if(lv===3){rows.push([a,'−',b,'=',box('res')]);steps.push({k:'res',v:a-b});}
   return{D,p1,p2,rows,steps,tree:true};
@@ -452,11 +445,6 @@ function promptFor(t,P,k){
     if(k==='p2')return`2. Addera sedan resten. Hur mycket är kvar av ${b}?`;
     return`Vad blir ${P.D} + ${P.p2}?`;
   }
-  if(think()){
-    if(k==='p1')return`Hur långt är det från ${b} till 10?`;
-    if(k==='p2')return`Hur långt är det från 10 till ${a}?`;
-    return`Lägg ihop hoppen. Vad blir ${a} − ${b}?`;
-  }
   if(!P.tree)return`Hur mycket ska bort för att ${a} ska bli ${P.D}?`;
   if(k==='p1')return`1. Subtrahera först ner till tiotalet. ${a} − ? = ${P.D}`;
   if(k==='p2')return`2. Subtrahera sedan resten. Hur mycket är kvar av ${b}?`;
@@ -468,11 +456,6 @@ function hintFor(t,P,k){
     if(k==='p2')return`${t.b} delas upp i ${P.p1} och ?. ${P.p1} + ? = ${t.b}`;
     return`Du är på ${P.D}. ${P.D} + ${P.p2} = ?`;
   }
-  if(think()){
-    if(k==='p1')return'Räkna de tomma platserna i bussen.';
-    if(k==='p2')return`10 + ? = ${t.a}`;
-    return`Lägg ihop hoppen: ${P.p1} + ${P.p2} = ?`;
-  }
   if(k==='p1')return'Hur många sitter i den högra bussen?';
   if(k==='p2')return`${t.b} delas upp i ${P.p1} och ?. ${P.p1} + ? = ${t.b}`;
   return`Du är på ${P.D}. ${P.D} − ${P.p2} = ?`;
@@ -481,10 +464,7 @@ function hintFor(t,P,k){
 /* ---------- Bild: tiostavar, tiorutor och tallinje ---------- */
 function cells(t,lv,stage){
   const f1=Array(10).fill(''),f2=Array(10).fill('');let rods=0;const {a,b}=t;
-  if(t.op==='minus'&&think()&&lv>1){
-    for(let i=0;i<10;i++)f1[i]=i<b?'b':(stage>=1?'o':'');
-    if(stage>=2)for(let i=0;i<a-10;i++)f2[i]='o';
-  }else if(t.op==='plus'){
+  if(t.op==='plus'){
     const D=Math.ceil(a/10)*10,u=a-(D-10);rods=D/10-1;
     for(let i=0;i<10;i++)f1[i]=i<u?'b':(stage>=1?'o':'');
     if(stage>=2&&b!=null)for(let i=0;i<b-(D-a);i++)f2[i]='o';
@@ -509,8 +489,7 @@ function renderVisual(){
 function renderLine(){
   const t=G.t,P=G.P,svg=$('#nline');
   let lo,hi,start,jumps;
-  if(t.op==='minus'&&think()&&G.lv>1){lo=0;hi=20;start=t.b;jumps=[[t.b,10,'+'+P.p1],[10,t.a,'+'+P.p2]];}
-  else if(t.op==='plus'){lo=P.D-10;hi=P.D+10;start=t.a;jumps=[[t.a,P.D,'+'+(P.D-t.a)]];if(G.lv>1)jumps.push([P.D,t.a+t.b,'+'+P.p2]);}
+  if(t.op==='plus'){lo=P.D-10;hi=P.D+10;start=t.a;jumps=[[t.a,P.D,'+'+(P.D-t.a)]];if(G.lv>1)jumps.push([P.D,t.a+t.b,'+'+P.p2]);}
   else{lo=P.D-10;hi=P.D+10;start=t.a;jumps=[[t.a,P.D,'−'+(t.a-P.D)]];if(G.lv>1)jumps.push([P.D,t.a-t.b,'−'+P.p2]);}
   const x=n=>16+(n-lo)*(308/(hi-lo)),Y=56;
   let s=`<defs><marker id="ah" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="#FF9F43"/></marker></defs>`;
@@ -643,7 +622,7 @@ function submit(){
   if(ok){
     G.si++;G.input='';$('#qbox').classList.add('ok');window.Ljud&&Ljud.ok();renderRows(); // töm svaret först, annars syns det en stund i nästa ruta
     if(!G.race)renderVisual();
-    const tenMsg=G.steps[G.si-1].k==='p1'&&!G.race&&!(G.t.op==='minus'&&think()&&G.lv>1)?(G.t.op==='plus'?'Ett helt tiotal! Bussen är full.':'Nu är du på tiotalet!'):null;
+    const tenMsg=G.steps[G.si-1].k==='p1'&&!G.race?(G.t.op==='plus'?'Ett helt tiotal! Bussen är full.':'Nu är du på tiotalet!'):null;
     if(G.si<G.steps.length){$('#feedback').textContent=tenMsg||PRAISE[Math.floor(Math.random()*PRAISE.length)];setTimeout(startStep,750);return;}
     if(tenMsg&&G.lv===1){$('#feedback').textContent=tenMsg;}
     // uppgiften klar
