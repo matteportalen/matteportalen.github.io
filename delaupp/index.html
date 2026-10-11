@@ -112,6 +112,49 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .hog .ke{width:var(--hu);height:var(--hu)}.hog .ke svg{width:var(--hu);height:var(--hu)}
 .hog .lab{margin-top:auto;font-weight:800;color:var(--good-dark);font-size:1.25rem;line-height:1}
 .hogtitle{font-weight:800;font-size:1rem;margin:2px 0 -4px;color:var(--muted)}
+/* filmen "Se hur man gör": en scen 360 × 560 som skalas efter skärmen */
+.filmbtn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;padding:10px 14px;border-radius:14px;background:linear-gradient(135deg,#3D5AFE,#7B61FF);color:#fff;font-weight:800;font-size:1.1rem;box-shadow:0 4px 0 #2A3DB8}
+.filmbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #2A3DB8}
+#film{padding-top:4px}
+.ftop{display:flex;justify-content:space-between;align-items:center}
+.fbox{margin:6px auto 0;position:relative;border-radius:26px;overflow:hidden;box-shadow:0 6px 0 var(--line),0 18px 40px rgba(29,43,83,.12)}
+.stage{position:absolute;left:0;top:0;width:360px;height:560px;transform-origin:0 0;overflow:hidden;background:linear-gradient(170deg,#F4F8FF 0%,#EAF3FF 55%,#FFF6E6 100%);font-family:var(--font);color:var(--ink)}
+.fbg i{position:absolute;border-radius:50%;filter:blur(18px);opacity:.55;animation:fdrift 14s ease-in-out infinite alternate}
+.fbg i:nth-child(1){width:180px;height:180px;left:-50px;top:60px;background:#CFE0FF}
+.fbg i:nth-child(2){width:150px;height:150px;right:-40px;top:200px;background:#FFE3B8;animation-duration:17s}
+.fbg i:nth-child(3){width:200px;height:200px;left:90px;bottom:-90px;background:#DCD2FF;animation-duration:20s}
+@keyframes fdrift{to{transform:translate(30px,-25px) scale(1.15)}}
+.fcap{position:absolute;left:14px;right:14px;top:12px;min-height:62px;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:800;font-size:21px;line-height:1.2;padding:0 30px}
+.fcap span{display:inline-block}
+.fspk{position:absolute;right:8px;top:18px;width:38px;height:38px;border-radius:50%;background:#fff;box-shadow:0 3px 0 var(--line);font-size:1.05rem;z-index:3}
+.feq{position:absolute;left:0;right:0;top:82px;height:70px;display:flex;align-items:center;justify-content:center;gap:5px;font-weight:800;font-size:25px}
+.feq .fr i{height:3px}
+.feq .q{color:#AFC4EA}.feq .n{color:var(--good-dark)}.feq .c1{color:#E07A00}.feq .c2{color:#7B61FF}
+.feq.den .fr b:last-child{animation:fden 1s ease-in-out 3;color:#C98A00}
+@keyframes fden{50%{transform:scale(1.35)}}
+.feq .hl{border-radius:10px;background:#FFF1C9;box-shadow:0 0 0 4px #FFF1C9}
+.fe{position:absolute;left:0;top:0;will-change:transform,opacity}
+.fk.ft{width:14px;height:140px}.fk.fe1{width:14px;height:14px}
+.fk svg{width:100%;height:100%;display:block}
+.fk.warn{filter:drop-shadow(0 0 6px #FF5A6E) drop-shadow(0 0 2px #FF5A6E)}
+.fhog{width:104px;height:190px;border-radius:18px;background:rgba(255,255,255,.85);box-shadow:0 4px 0 #D6E2F6;border:2px dashed #C6D6F2}
+.fhog.glow{border:2px solid #2BB673;box-shadow:0 0 0 4px rgba(43,182,115,.25),0 4px 0 #BFE8D2}
+.fhog .fl{position:absolute;left:0;right:0;bottom:8px;text-align:center;font-weight:800;font-size:20px;color:var(--good-dark)}
+.flab{width:70px;text-align:center;font-weight:800;font-size:26px}
+.fzone{border-radius:18px}
+.fnum{width:34px;height:34px;border-radius:50%;background:var(--gold);color:#fff;display:grid;place-items:center;font-weight:800;font-size:20px;box-shadow:0 3px 0 #C98A00}
+.ftag{font-weight:800;font-size:15px;color:#C0283C;background:#FFE3E7;border-radius:10px;padding:2px 8px;white-space:nowrap}
+.fsp{width:8px;height:8px;border-radius:50%}
+.fflash{width:90px;height:90px;border-radius:50%;background:radial-gradient(circle,#FFF7C2 0%,rgba(255,210,80,.6) 45%,rgba(255,210,80,0) 70%)}
+.fpet{width:110px}.fpet svg{width:100%;height:auto;display:block}
+.fctl{display:flex;align-items:center;justify-content:center;gap:10px;margin-top:12px}
+.fctl button{width:52px;height:52px;border-radius:50%;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.3rem}
+.fctl #fPlay{width:62px;height:62px;background:var(--accent);color:#fff;box-shadow:0 4px 0 #2A3DB8;font-size:1.5rem}
+.fctl button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
+.fdots{display:flex;justify-content:center;gap:7px;margin-top:10px}
+.fdots button{width:12px;height:12px;border-radius:50%;background:#C6D6F2;padding:0}
+.fdots button.on{background:var(--accent);transform:scale(1.25)}.fdots button.past{background:#8FA6E8}
+.fend{display:grid;gap:10px;margin-top:12px}
 .ghost{position:fixed;pointer-events:none;z-index:20;transform:translate(-50%,-50%) scale(1.15);filter:drop-shadow(0 6px 6px rgba(0,0,0,.25))}
 .over{outline:3px dashed var(--accent);outline-offset:2px}
 .btns{display:flex;gap:10px;margin-top:10px}
@@ -143,8 +186,16 @@ h2{font-size:2rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="how">
     <p>Så här kan man tänka:</p>
     <div class="ex" id="howEx"></div>
+    <button class="filmbtn" id="filmBtn">🎬 Se hur man gör</button>
   </div>
   <div class="levels" id="levels"></div>
+</section>
+<section id="film" class="screen" hidden>
+  <div class="ftop"><button class="back" id="fClose">← Tillbaka</button><span class="info">🎬 Se hur man gör</span></div>
+  <div class="fbox" id="fbox"><div class="stage" id="stage"></div></div>
+  <div class="fctl"><button id="fPrev" aria-label="Förra steget">⏮</button><button id="fPlay" aria-label="Pausa">⏸</button><button id="fNext" aria-label="Nästa steg">⏭</button></div>
+  <div class="fdots" id="fdots"></div>
+  <div class="fend" id="fEnd" hidden><button class="go" id="fGo">Nu provar jag! →</button><button class="big" id="fAgain">↺ Se filmen igen</button></div>
 </section>
 <section id="game" class="screen" hidden>
   <div class="gtop"><button class="back" id="quit">← Avsluta</button><span class="info" id="info"></span></div>
@@ -393,6 +444,107 @@ function finish(){const st=G.err===0?3:G.err<=2?2:1,old=data.stars[G.lv]||0;
   $("rSub").textContent=`${ROUND} tal på nivån ${G.L.name}. `+(G.err?`${G.err} tal behövde mer än ett försök.`:"Inga fel!")+(st>old&&old?" Ny stjärna!":"");
   show("result");if(st===3||st>old){window.Ljud&&Ljud.fanfare&&Ljud.fanfare();confetti();}}
 
+/* ---------- Filmen: Se hur man gör (42/3), utan röst ----------
+   Scenen är 360 × 560 och skalas efter skärmen. Varje scen är en funktion; för att hoppa till en scen
+   byggs scenen om och de tidigare scenerna körs direkt utan tid (F.instant), sedan spelas resten. */
+const ST=$("stage"),BOUNCE="cubic-bezier(.34,1.56,.64,1)",SOFT="cubic-bezier(.3,.7,.2,1)";
+const F={run:0,paused:false,instant:false,anims:new Set(),scene:0,cap:"",k:matchMedia("(prefers-reduced-motion: reduce)").matches?.35:1};
+const tf=s=>`translate(${s.x}px,${s.y}px) rotate(${s.r||0}deg) scale(${s.sc==null?1:s.sc})`;
+function A(e,kf,o){const a=e.animate(kf,Object.assign({fill:"forwards",easing:SOFT},o,{duration:F.instant?0:(o.duration||0),delay:F.instant?0:(o.delay||0)}));
+  F.anims.add(a);if(F.paused)a.pause();a.finished.then(()=>F.anims.delete(a),()=>F.anims.delete(a));return a;}
+function to(e,ns,dur,o={}){const f=Object.assign({},e.s),t=Object.assign({},e.s,ns);e.s=t;
+  const kf=[{transform:tf(f),opacity:f.o}];
+  if(o.arc)kf.push({transform:tf(Object.assign({},t,{x:(f.x+t.x)/2,y:Math.min(f.y,t.y)-o.arc,r:(t.r||0)+(o.spin||0)})),offset:.5});
+  kf.push({transform:tf(t),opacity:t.o});
+  return A(e,kf,{duration:(dur||600)*F.k,delay:(o.delay||0)*F.k,easing:o.ease||SOFT});}
+function el(cls,html,st){const e=document.createElement("div");e.className="fe "+cls;e.innerHTML=html||"";e.s=Object.assign({x:0,y:0,r:0,sc:1,o:1},st);
+  e.style.transform=tf(e.s);e.style.opacity=e.s.o;ST.appendChild(e);return e;}
+function wait(ms){if(F.instant)return Promise.resolve();const tok=F.run;
+  return new Promise((res,rej)=>{let left=ms*F.k,last=performance.now();
+    (function f(now){if(tok!==F.run)return rej("stopp");if(!F.paused)left-=now-last;last=now;if(left<=0)res();else requestAnimationFrame(f);})(last);});}
+function sfx(name,ms,arg){if(F.instant)return;const tok=F.run;setTimeout(()=>{if(tok===F.run&&!F.paused&&window.Ljud&&Ljud[name])Ljud[name](arg);},(ms||0)*F.k);}
+function cap(t){F.cap=t;const c=$("fcap");c.innerHTML="<div>"+t.split(" ").map(w=>`<span>${w}</span>`).join(" ")+"</div>";
+  c.querySelectorAll("span").forEach((w,i)=>A(w,[{opacity:0,transform:"translateY(14px)"},{opacity:1,transform:"none"}],{duration:380,delay:i*70,easing:BOUNCE}));}
+function eq(html,cls){const q=$("feq");q.className="feq"+(cls?" "+cls:"");q.innerHTML=html;A(q,[{opacity:0,transform:"translateY(10px) scale(.96)"},{opacity:1,transform:"none"}],{duration:420});}
+function sparks(x,y,col,n){for(let i=0;i<(n||10);i++){const a=Math.PI*2*i/(n||10),r=34+Math.random()*24,d=el("fsp","",{x,y,sc:1});d.style.background=col||"#F2B707";
+  to(d,{x:x+Math.cos(a)*r,y:y+Math.sin(a)*r,sc:.2,o:0},700,{ease:"cubic-bezier(.1,.7,.3,1)"});}}
+const HX=i=>12+i*116,PET=()=>window.owlSVG&&window.lasDjur?owlSVG(lasDjur()):"🦉";
+const FEQ=(tail)=>`${fr(42,3)}<span>=</span>${fr(30,3)}<span>+</span>${fr(12,3)}${tail||""}`;
+function build(){ST.innerHTML='<div class="fbg"><i></i><i></i><i></i></div><div class="fcap" id="fcap"></div><button class="fspk" id="fspk" aria-label="Läs upp">🔊</button><div class="feq" id="feq"></div>';
+  $("fspk").onclick=()=>speak(F.cap);
+  F.z1=el("fzone","",{x:38,y:176,o:0});F.z1.style.cssText+="width:82px;height:168px;background:#FFE9CC";
+  F.z2=el("fzone","",{x:214,y:176,o:0});F.z2.style.cssText+="width:110px;height:168px;background:#ECE6FF";
+  F.H=[0,1,2].map(i=>el("fhog",'<span class="fl"></span>',{x:HX(i),y:360,o:0,sc:.85}));
+  F.T=[0,1,2,3].map(i=>el("fk ft",ART.t,{x:119+i*20,y:-180,o:0}));
+  F.E=[0,1].map(i=>el("fk fe1",ART.e,{x:209+i*18,y:-60,o:0}));
+  F.L30=el("flab","30",{x:44,y:146,o:0,sc:.3});F.L30.style.color="#E07A00";
+  F.L12=el("flab","12",{x:234,y:146,o:0,sc:.3});F.L12.style.color="#7B61FF";}
+function hlab(t){F.H.forEach((h,i)=>{const l=h.querySelector(".fl");l.textContent=t;A(l,[{opacity:0,transform:"scale(.4)"},{opacity:1,transform:"none"}],{duration:450,delay:i*120,easing:BOUNCE});});}
+const SCENES=[
+ async()=>{cap("42 ska delas lika i 3 högar.");eq(`${fr(42,3)}<span>=</span><span class="q">?</span>`);await wait(500);
+   F.T.forEach((e,i)=>{to(e,{y:190,o:1},750,{delay:i*130,ease:BOUNCE});sfx("pop",i*130+300,i);});
+   F.E.forEach((e,i)=>{to(e,{y:316,o:1},700,{delay:600+i*130,ease:BOUNCE});sfx("pop",900+i*130,4+i);});
+   await wait(1500);F.H.forEach((h,i)=>to(h,{o:1,sc:1},550,{delay:i*140,ease:BOUNCE}));await wait(1600);},
+ async()=>{cap("Men 4 tiostavar går inte jämnt i 3 högar.");await wait(700);
+   for(let i=0;i<3;i++){to(F.T[i],{x:HX(i)+16,y:375},700,{arc:70,delay:i*260});sfx("pop",i*260+500,i);}
+   await wait(1400);to(F.T[3],{x:173,y:225},550,{arc:30});await wait(600);
+   F.T[3].classList.add("warn");const s=F.T[3].s;sfx("clonk");
+   A(F.T[3],[0,-14,12,-9,6,0].map(r=>({transform:tf(Object.assign({},s,{r}))})),{duration:900});
+   F.tag=el("ftag","1 tiostav blir över",{x:118,y:200,o:0,sc:.5});to(F.tag,{o:1,sc:1},400,{ease:BOUNCE});await wait(2200);
+   to(F.tag,{o:0},300);F.T[3].classList.remove("warn");
+   F.T.forEach((e,i)=>to(e,{x:119+i*20,y:190},650,{arc:40,delay:i*80}));sfx("whoosh",100);await wait(1100);},
+ async()=>{cap("Dela upp 42 i delar som är lätta att dela.");await wait(600);
+   to(F.z1,{o:1},500);to(F.z2,{o:1},500,{delay:150});
+   [0,1,2].forEach(i=>to(F.T[i],{x:50+i*20,y:190},700,{arc:25,delay:i*90}));
+   to(F.T[3],{x:232,y:190},700,{arc:25});F.E.forEach((e,i)=>to(e,{x:262+i*18,y:316},700,{arc:25,delay:100+i*80}));sfx("whoosh",100);
+   await wait(900);to(F.L30,{o:1,sc:1},500,{ease:BOUNCE});to(F.L12,{o:1,sc:1},500,{delay:250,ease:BOUNCE});sfx("pop",0,2);sfx("pop",250,5);
+   eq(`<span>42</span><span>=</span><span class="c1">30</span><span>+</span><span class="c2">12</span>`);await wait(2400);
+   eq(FEQ());sfx("chime");await wait(2000);},
+ async()=>{cap("30 delat med 3 är 10. En tiostav i varje hög.");eq(FEQ(),"");await wait(700);
+   for(let i=0;i<3;i++){to(F.T[i],{x:HX(i)+16,y:375},750,{arc:80,delay:i*300});sfx("pop",i*300+550,i);}
+   to(F.z1,{o:0},500,{delay:900});to(F.L30,{o:0,sc:.5},400,{delay:900});
+   await wait(1500);hlab("10");eq(FEQ(`<span>=</span><span class="n">10</span><span>+</span><span class="q">?</span>`));sfx("ok");await wait(2000);},
+ async()=>{cap("12 delat med 3 är 4. Växla först tiostaven till 10 ental.");await wait(900);
+   const t=F.T[3],fl=el("fflash","",{x:194,y:215,o:0,sc:.3});to(fl,{o:1,sc:1.4},300);to(t,{sc:1.15,o:0},350,{delay:150});sfx("magic",100);sparks(239,260,"#F2B707",12);
+   const nya=Array.from({length:10},(_,j)=>el("fk fe1",ART.e,{x:232,y:190+j*14,o:0}));nya.forEach(e=>to(e,{o:1},200,{delay:200}));
+   await wait(500);to(fl,{o:0,sc:1.8},400);
+   F.ones=[...nya,...F.E];F.ones.forEach((e,j)=>to(e,{x:222+(j%4)*22,y:206+Math.floor(j/4)*24},700,{arc:20,delay:j*40,ease:BOUNCE}));
+   await wait(1700);
+   for(let r=0;r<4;r++){for(let i=0;i<3;i++){const e=F.ones.pop();to(e,{x:HX(i)+44+(r%2)*20,y:375+Math.floor(r/2)*20},600,{arc:50,delay:i*110});sfx("pop",i*110+400,3+r);}
+     await wait(900);}
+   to(F.z2,{o:0},400);to(F.L12,{o:0,sc:.5},400);hlab("10 + 4");eq(FEQ(`<span>=</span><span class="n">10</span><span>+</span><span class="n">4</span>`));sfx("ok");await wait(2000);},
+ async()=>{cap("Varje hög fick 10 + 4 = 14.");await wait(500);
+   F.H.forEach((h,i)=>{h.classList.add("glow");A(h,[{transform:tf(h.s)},{transform:tf(Object.assign({},h.s,{sc:1.06}))},{transform:tf(h.s)}],{duration:600,delay:i*150});sparks(HX(i)+52,350,["#2BB673","#F2B707","#3D8BFD"][i],9);});
+   hlab("14");eq(FEQ(`<span>=</span><span>10 + 4</span><span>=</span><span class="n">14</span>`));sfx("fanfare",200);await wait(3200);},
+ async()=>{cap("Talet delar vi upp. Men antalet högar är alltid 3.");eq(FEQ(`<span>=</span><span class="n">14</span>`),"den");await wait(900);
+   F.nums=F.H.map((h,i)=>{const n=el("fnum",String(i+1),{x:HX(i)+35,y:340,o:0,sc:.3});to(n,{o:1,sc:1},450,{delay:i*450,ease:BOUNCE});sfx("pop",i*450,i*2);return n;});
+   await wait(3400);},
+ async()=>{cap("Nu är det din tur!");F.nums&&F.nums.forEach(n=>to(n,{o:0},300));
+   const p=el("fpet",PET(),{x:125,y:200,o:0,sc:.3});to(p,{o:1,sc:1},600,{ease:BOUNCE});sfx("hop",300);
+   await wait(700);for(let i=0;i<2;i++){A(p,[{transform:tf(p.s)},{transform:tf(Object.assign({},p.s,{y:p.s.y-26}))},{transform:tf(p.s)}],{duration:520,delay:i*600,easing:"ease-out"});sfx("hop",i*600);}
+   await wait(1300);}
+];
+function dots(){$("fdots").innerHTML=SCENES.map((_,i)=>`<button class="${i===F.scene?"on":i<F.scene?"past":""}" data-s="${i}" aria-label="Steg ${i+1}"></button>`).join("");}
+function stopFilm(){F.run++;F.anims.forEach(a=>{try{a.cancel()}catch(e){}});F.anims.clear();}
+async function playFrom(k){stopFilm();const tok=F.run;F.paused=false;F.ended=false;$("fPlay").textContent="⏸";$("fEnd").hidden=true;
+  build();F.instant=true;for(let i=0;i<k;i++)await SCENES[i]();F.instant=false;
+  for(let i=k;i<SCENES.length;i++){if(tok!==F.run)return;F.scene=i;dots();
+    try{await SCENES[i]();if(i<SCENES.length-1)await wait(500);}catch(e){return;}}
+  if(tok===F.run){$("fEnd").hidden=false;$("fPlay").textContent="▶";F.ended=true;}}
+function fitFilm(){const box=$("fbox"),w=Math.min($("film").clientWidth||360,560),h=innerHeight-box.getBoundingClientRect().top-150,sc=Math.max(.6,Math.min(w/360,h/560));
+  box.style.width=360*sc+"px";box.style.height=560*sc+"px";ST.style.transform=`scale(${sc})`;}
+function openFilm(){data.film=1;save();show("film");F.ended=false;fitFilm();playFrom(0);}
+$("filmBtn").onclick=openFilm;
+$("fClose").onclick=()=>{stopFilm();openHome();};
+$("fPlay").onclick=()=>{if(F.ended)return playFrom(0);F.paused=!F.paused;F.anims.forEach(a=>F.paused?a.pause():a.play());$("fPlay").textContent=F.paused?"▶":"⏸";};
+$("fPrev").onclick=()=>playFrom(Math.max(0,F.scene-1));
+$("fNext").onclick=()=>{if(F.scene<SCENES.length-1)playFrom(F.scene+1);};
+$("fdots").onclick=e=>{const b=e.target.closest("[data-s]");if(b)playFrom(+b.dataset.s);};
+$("fAgain").onclick=()=>playFrom(0);
+$("fGo").onclick=()=>{stopFilm();start(1);};
+addEventListener("resize",()=>{if(!$("film").hidden)fitFilm();});
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&!$("film").hidden&&!F.paused&&!F.ended)$("fPlay").click();});
+
 /* ---------- Uppläsning och konfetti ---------- */
 $("spk").onclick=()=>speak(lastSay);
 let svVoice=null;function loadVoices(){try{svVoice=speechSynthesis.getVoices().find(v=>/^sv/i.test(v.lang))||null}catch(e){}}
@@ -410,6 +562,7 @@ function confetti(){
     if(now-t0<2800)requestAnimationFrame(f);else{x.clearRect(0,0,W2,H2);c.hidden=true;}})(t0);
 }
 openHome();
+if(!data.film)openFilm();
 </script>
 </body>
 </html>
