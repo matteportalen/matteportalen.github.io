@@ -29,6 +29,10 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .title{flex:1;min-width:0}
 .title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(1.7rem,7vw,2.3rem);letter-spacing:-1px;text-shadow:0 4px 0 rgba(0,0,0,.14)}
 .title h1 .p2{color:var(--sun);display:block}
+/* betalappen: sidan är under uppbyggnad (lärarens önskan) */
+.title h1{position:relative;display:inline-block;padding-right:6px}
+.betalapp{position:absolute;right:-30px;top:-8px;transform:rotate(12deg);background:#FFE14D;color:#6A4A00;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;font-weight:800;line-height:1;padding:5px 10px 4px;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.22);text-shadow:none}
+.betalapp::before{content:"";position:absolute;left:50%;top:-5px;width:26px;height:9px;margin-left:-13px;background:rgba(255,255,255,.55);transform:rotate(-4deg);border-radius:2px}
 @media(min-width:370px){.title h1 .p2{display:inline}}
 .title p{margin:2px 0 0;font-size:clamp(.88rem,3.3vw,1rem);font-weight:700;opacity:.95}
 .owlwrap{flex:none;display:flex;flex-direction:row;align-items:center;gap:12px}
@@ -204,7 +208,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   </div>
   <div class="hero-in">
     <div class="title">
-      <h1>Matte<span class="p2">Portalen</span></h1>
+      <h1>Matte<span class="p2">Portalen</span><span class="betalapp" title="Sidan är under uppbyggnad">Beta</span></h1>
       <p>Välj en övning och börja träna!</p>
     </div>
     <div class="owlwrap">
