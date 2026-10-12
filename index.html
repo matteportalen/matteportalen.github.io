@@ -119,6 +119,9 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .item small{display:block;font-weight:800;font-size:.8rem;line-height:1.2}
 .item.sel{outline:3px solid var(--accent,#3D5AFE);background:#EEF1FF}
 .item.locked{cursor:default}
+.item{position:relative}.item .sasm{position:absolute;top:4px;right:6px;font-size:1rem}
+.tabsw button.sas{background:#FFF1D6;color:#8A4B00}.tabsw button.sas[aria-pressed="true"]{background:#E06A00;color:#fff}
+.sasinfo{grid-column:1/-1;margin:0;font-weight:700;color:var(--muted);text-align:center;font-size:.92rem}
 .item.locked svg{opacity:.7}
 .item.locked small b{color:#9A7A00}
 .item.fraga{box-shadow:0 0 0 3px var(--gold),0 3px 0 var(--line);background:#FFF6D6}
@@ -472,6 +475,9 @@ const saveOwl=()=>put("matteportalen-uggla",owlCfg);
 const M=()=>MPMynt.get();
 {const m=M();if(m.kopt===null){m.kopt=Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>it.need>0&&S.stars>=it.need).map(it=>k+":"+it.id));MPMynt.spara(m);}}
 const owned=(k,it)=>!it.pris||(M().kopt||[]).includes(k+":"+it.id);
+// säsongssaker (djur.js): köps bara under säsongen, syns annars bara om man redan har dem
+const SN=sasongNu(),kanKopa=it=>!it.s||(SN&&SN.id===it.s),synlig=(k,it)=>owned(k,it)||kanKopa(it);
+const sasongItems=()=>SN?Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>it.s===SN.id).map(it=>[k,it])):[];
 const unlockedItem=it=>{const k=Object.keys(WARD).find(k=>WARD[k].items.includes(it));return owned(k,it);};
 Object.keys(WARD).forEach(k=>{if(!owned(k,itemOf(k,owlCfg[k])))owlCfg[k]=WARD[k].items[0].id});
 // titlar efter stjärnorna, som aldrig tar slut
@@ -485,37 +491,42 @@ function visaMynt(){const m=M(),t=titel(S.stars);$("sMynt").textContent=m.m;$("s
 const allItems=()=>Object.entries(WARD).flatMap(([k,v])=>v.items.map(it=>k+":"+it.id));
 function drawOwl(){$("owlSlot").innerHTML=owlSVG(owlCfg);}
 function wardBadge(){
-  const m=M().m,ej=Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>!owned(k,it)).map(it=>[k,it]));
+  const m=M().m,ej=Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>!owned(k,it)&&kanKopa(it)).map(it=>[k,it]));
   // Nytt! när man har råd med något man inte har sett att man har råd med
   const nya=ej.filter(([k,it])=>it.pris<=m&&!owlCfg.seen.includes("rad:"+k+":"+it.id));
   $("newWard").hidden=!nya.length;
   const billig=ej.map(([,it])=>it.pris).sort((a,b)=>a-b)[0];
-  $("wardInfo").textContent=billig==null?"Allt är köpt!":billig<=m?"Något nytt att köpa!":`Nästa sak: ${billig} 🪙`;
+  const nySasong=sasongItems().some(([k,it])=>!owned(k,it));
+  $("wardInfo").textContent=nySasong?`${SASONGER[SN.id].ikon} ${SASONGER[SN.id].namn}-saker!`:billig==null?"Allt är köpt!":billig<=m?"Något nytt att köpa!":`Nästa sak: ${billig} 🪙`;
   visaMynt();
 }
 let wardTab="animal",kopFraga=null;
 function renderWard(){
   $("wardPreview").innerHTML=owlSVG(owlCfg);
   $("wardStars").textContent=`Du har ${M().m} 🪙. Mynt får du när du tränar och tar stjärnor.`;
-  $("wardTabs").innerHTML=Object.entries(WARD).map(([k,v])=>`<button data-tab="${k}" aria-pressed="${k===wardTab}">${v.name}</button>`).join("");
-  $("wardItems").innerHTML=WARD[wardTab].items.map(it=>{
-    const open=owned(wardTab,it),cfg=Object.assign({},owlCfg,{[wardTab]:it.id},wardTab==="animal"?{color:"natur"}:{}),fraga=kopFraga===wardTab+":"+it.id;
-    return`<button class="item${owlCfg[wardTab]===it.id?" sel":""}${open?"":" locked"}${fraga?" fraga":""}" data-item="${it.id}">${owlSVG(cfg)}<small>${open?it.name:fraga?`Köp för ${it.pris} 🪙?`:`${it.name}<br>🪙 ${it.pris}`}</small></button>`;
+  const tabs=Object.entries(WARD).map(([k,v])=>[k,v.name]);
+  if(SN)tabs.unshift(["sasong",SASONGER[SN.id].ikon+" "+SASONGER[SN.id].namn]);
+  $("wardTabs").innerHTML=tabs.map(([k,n])=>`<button data-tab="${k}" aria-pressed="${k===wardTab}"${k==="sasong"?' class="sas"':""}>${n}</button>`).join("");
+  const lista=wardTab==="sasong"?sasongItems():WARD[wardTab].items.filter(it=>synlig(wardTab,it)).map(it=>[wardTab,it]);
+  $("wardItems").innerHTML=(wardTab==="sasong"?`<p class="sasinfo">Säsongssaker går bara att köpa ${sasongSlut(SN)}. Det du köper har du kvar för alltid.</p>`:"")+lista.map(([k,it])=>{
+    const open=owned(k,it),cfg=Object.assign({},owlCfg,{[k]:it.id},k==="animal"?{color:"natur"}:{}),fraga=kopFraga===k+":"+it.id;
+    return`<button class="item${owlCfg[k]===it.id?" sel":""}${open?"":" locked"}${fraga?" fraga":""}" data-slot="${k}" data-item="${it.id}">${owlSVG(cfg)}<small>${open?it.name:fraga?`Köp för ${it.pris} 🪙?`:`${it.name}<br>🪙 ${it.pris}`}</small>${it.s?`<span class="sasm" aria-hidden="true">${SASONGER[it.s].ikon}</span>`:""}</button>`;
   }).join("");
 }
-$("wardTabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(b){wardTab=b.dataset.tab;renderWard();}};
+$("wardTabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(b){wardTab=b.dataset.tab;kopFraga=null;$("wardMsg").textContent="";renderWard();}};
 $("wardItems").onclick=e=>{const b=e.target.closest("[data-item]");if(!b)return;
-  const it=itemOf(wardTab,b.dataset.item);
-  const key=wardTab+":"+it.id;
-  if(!owned(wardTab,it)){const m=M().m;
+  const k=b.dataset.slot,it=itemOf(k,b.dataset.item);
+  const key=k+":"+it.id;
+  if(!owned(k,it)){const m=M().m;if(!kanKopa(it))return;
     if(m<it.pris){kopFraga=null;$("wardMsg").textContent=`${it.name} kostar ${it.pris} 🪙. Du behöver ${it.pris-m} mynt till.`;b.animate([{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"translateX(0)"}],{duration:250});renderWard();return;}
     // första trycket frågar, andra köper
     if(kopFraga!==key){kopFraga=key;$("wardMsg").textContent=`Tryck en gång till för att köpa ${it.name.toLowerCase()}.`;renderWard();return;}
     if(!MPMynt.kop(key,it.pris))return;kopFraga=null;$("wardMsg").textContent=`Köpt! ${it.name} är din. 🎉`;window.Ljud&&Ljud.kaching&&Ljud.kaching();}
   else{kopFraga=null;$("wardMsg").textContent="";}
-  owlCfg[wardTab]=it.id;if(wardTab==="animal")owlCfg.color="natur";saveOwl();renderWard();drawOwl();wardBadge();window.Ljud&&Ljud.ok();};
+  owlCfg[k]=it.id;if(k==="animal")owlCfg.color="natur";saveOwl();renderWard();drawOwl();wardBadge();window.Ljud&&Ljud.ok();};
 function openWard(){
   const m=M().m;owlCfg.seen=[...new Set([...(owlCfg.seen||[]),...Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>it.pris<=m).map(it=>"rad:"+k+":"+it.id))])];
+  if(sasongItems().some(([k,it])=>!owned(k,it)))wardTab="sasong";else if(wardTab==="sasong"&&!SN)wardTab="animal";
   kopFraga=null;$("wardMsg").textContent="";saveOwl();wardBadge();renderWard();$("mWard").hidden=false;
   $("bubble").textContent=pickLine();
 }

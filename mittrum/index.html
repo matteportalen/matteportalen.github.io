@@ -35,6 +35,9 @@ h1{font-size:1.9rem;margin:8px 0 2px;display:flex;align-items:center;gap:10px}
 .it .em{font-size:1.6rem}
 .it small{font-weight:700;color:var(--muted)}
 .it.sel{background:#E3E9FF;box-shadow:0 0 0 3px var(--accent)}
+.it{position:relative}.it .sasm{position:absolute;top:4px;right:6px;font-size:.95rem}
+.tabs button.sas{background:#FFF1D6;color:#8A4B00}.tabs button.sas[aria-pressed="true"]{background:#E06A00;color:#fff}
+.sasinfo{grid-column:1/-1;margin:0;font-weight:700;color:var(--muted);text-align:center;font-size:.92rem}
 .it.prov{background:#FFF6D6;box-shadow:0 0 0 3px var(--gold)}
 .msg{min-height:1.4em;font-weight:800;text-align:center;margin:8px 0 2px}
 .kop{display:block;margin:6px auto 0;padding:10px 18px;border-radius:16px;background:var(--good);color:#fff;font-weight:800;box-shadow:0 4px 0 var(--good-dark)}
@@ -81,18 +84,19 @@ const KEY="matteportalen-rum";
 const RUM={
  tapet:{n:"Tapet",items:[["slat","Slät","🟦",0],["prickar","Prickig","🔵",40],["rander","Randig","〰️",40],["rutor","Rutig","🔲",60],["stjarnor","Stjärnor","⭐",120],["regnbage","Regnbåge","🌈",200]]},
  golv:{n:"Golv",items:[["tra","Trägolv","🪵",0],["rutigt","Rutigt golv","🏁",40],["blatt","Blått golv","🟦",50],["gras","Gräsmatta","🌱",120]]},
- fonster:{n:"Fönster",items:[["dag","Dagsljus","☀️",0],["kvall","Solnedgång","🌇",60],["natt","Stjärnnatt","🌙",100],["hav","Havsutsikt","🌊",120],["rymd","Rymden","🪐",250]]},
+ fonster:{n:"Fönster",items:[["dag","Dagsljus","☀️",0],["kvall","Solnedgång","🌇",60],["natt","Stjärnnatt","🌙",100],["hav","Havsutsikt","🌊",120],["rymd","Rymden","🪐",250],["sno","Snöig kväll","❄️",100,"jul"]]},
  sang:{n:"Säng",items:[["enkel","Säng","🛏️",0],["hangmatta","Hängmatta","🏝️",120],["himmel","Himmelssäng","👑",150],["raket","Raketsäng","🚀",300]]},
- tak:{n:"I taket",items:[["inget","Inget","➖",0],["lampa","Taklampa","💡",40],["slinga","Ljusslinga","✨",80],["disco","Discokula","🪩",200]]},
- matta:{n:"Matta",items:[["ingen","Ingen","➖",0],["rund","Rund matta","🟠",30],["fluffig","Fluffig matta","☁️",50],["regnbage","Regnbågsmatta","🌈",80]]},
- hylla:{n:"Hylla",items:[["ingen","Ingen","➖",0],["bok","Bokhylla","📚",60],["leksak","Leksakshylla","🧸",90],["akvarium","Akvarium","🐠",180]]},
- tavla:{n:"Tavla",items:[["ingen","Ingen","➖",0],["sol","Soltavla","🌞",30],["karta","Världskarta","🗺️",50],["portratt","Porträtt","🖼️",80]]},
- vaxt:{n:"Växt",items:[["ingen","Ingen","➖",0],["kaktus","Kaktus","🌵",30],["kruk","Krukväxt","🪴",40],["palm","Palm","🌴",90]]},
- husdjur:{n:"Husdjur",items:[["ingen","Inget","➖",0],["hamster","Hamster","🐹",100],["fagel","Fågel i bur","🐦",120],["robot","Liten robot","🤖",150]]}};
+ tak:{n:"I taket",items:[["inget","Inget","➖",0],["lampa","Taklampa","💡",40],["slinga","Ljusslinga","✨",80],["disco","Discokula","🪩",200],["hjartslinga","Hjärtslinga","💕",80,"hjarta"]]},
+ matta:{n:"Matta",items:[["ingen","Ingen","➖",0],["rund","Rund matta","🟠",30],["fluffig","Fluffig matta","☁️",50],["regnbage","Regnbågsmatta","🌈",80],["handduk","Badlakan","🏖️",50,"sommar"]]},
+ hylla:{n:"Hylla",items:[["ingen","Ingen","➖",0],["bok","Bokhylla","📚",60],["leksak","Leksakshylla","🧸",90],["akvarium","Akvarium","🐠",180],["pumpor","Pumpalyktor","🎃",90,"halloween"]]},
+ tavla:{n:"Tavla",items:[["ingen","Ingen","➖",0],["sol","Soltavla","🌞",30],["karta","Världskarta","🗺️",50],["portratt","Porträtt","🖼️",80],["hjarta","Hjärttavla","💖",40,"hjarta"]]},
+ vaxt:{n:"Växt",items:[["ingen","Ingen","➖",0],["kaktus","Kaktus","🌵",30],["kruk","Krukväxt","🪴",40],["palm","Palm","🌴",90],["julgran","Julgran","🎄",120,"jul"],["paskris","Påskris","🪶",80,"pask"],["solros","Solros","🌻",60,"sommar"]]},
+ husdjur:{n:"Husdjur",items:[["ingen","Inget","➖",0],["hamster","Hamster","🐹",100],["fagel","Fågel i bur","🐦",120],["robot","Liten robot","🤖",150],["spoke","Litet spöke","👻",120,"halloween"],["kyckling","Kyckling","🐥",100,"pask"]]}};
 const START={tapet:"slat",golv:"tra",fonster:"dag",sang:"enkel",tak:"inget",matta:"ingen",hylla:"ingen",tavla:"ingen",vaxt:"ingen",husdjur:"ingen"};
 const data=(()=>{try{const d=JSON.parse(localStorage.getItem(KEY)||"{}");return{val:Object.assign({},START,d.val||{}),fx:Object.assign({lampa:true,gardin:false},d.fx||{})};}catch(e){return{val:Object.assign({},START),fx:{lampa:true,gardin:false}};}})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
 const item=(slot,id)=>RUM[slot].items.find(x=>x[0]===id);
+const SN=window.sasongNu?sasongNu():null,kanKopa=it=>!it[4]||(SN&&SN.id===it[4]);
 const owned=(slot,id)=>{const it=item(slot,id);return !it||!it[3]||(MPMynt.get().kopt||[]).includes("rum:"+slot+":"+id);};
 // det som visas: valen, eller en sak man provar
 let prov=null;const vis=()=>prov?Object.assign({},data.val,{[prov.slot]:prov.id}):data.val;
@@ -117,6 +121,8 @@ function fonster(id,stangd){const x=26,y=22,w=120,h=86;let utsikt;
   if(id==="natt"){utsikt=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#1B2550"/><path d="M${x+92} ${y+12} a14 14 0 1 0 6 24 a11 11 0 1 1 -6 -24z" fill="#FFE9A8"/>`;for(let i=0;i<10;i++)utsikt+=`<circle cx="${x+8+(i*37)%104}" cy="${y+8+(i*23)%60}" r="1.6" fill="#fff" class="blink" style="animation-delay:${i*.3}s"/>`;}
   if(id==="hav")utsikt=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#BDE8FF"/><rect x="${x}" y="${y+50}" width="${w}" height="${h-50}" fill="#3D8BFD"/><path d="M${x} ${y+60} q10 -5 20 0 t20 0 t20 0 t20 0 t20 0 t20 0" stroke="#fff" stroke-width="2" fill="none"/><path d="M${x+70} ${y+50} l8 -18 l0 18z" fill="#fff"/><path d="M${x+66} ${y+50} h18 l-3 5 h-12z" fill="#E5484D"/>`;
   if(id==="rymd"){utsikt=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#0E1735"/><circle cx="${x+40}" cy="${y+50}" r="18" fill="#FF9F43"/><ellipse cx="${x+40}" cy="${y+50}" rx="30" ry="6" fill="none" stroke="#FFE07A" stroke-width="3"/><circle cx="${x+96}" cy="${y+22}" r="7" fill="#7FA8E8"/>`;for(let i=0;i<12;i++)utsikt+=`<circle cx="${x+5+(i*41)%110}" cy="${y+6+(i*29)%84}" r="1.2" fill="#fff"/>`;}
+  if(id==="sno"){utsikt=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="#3B4F8A"/><path d="M${x} ${y+h} V${y+62} Q${x+30} ${y+52} ${x+60} ${y+62} T${x+w} ${y+60} V${y+h}Z" fill="#F3F7FF"/><path d="M${x+84} ${y+62} l10 -22 l10 22z" fill="#2B7A4B"/><rect x="${x+92}" y="${y+62}" width="4" height="6" fill="#8B5A2B"/>`;
+    for(let i=0;i<14;i++)utsikt+=`<circle cx="${x+6+(i*43)%108}" cy="${y+6+(i*31)%54}" r="1.8" fill="#fff" class="blink" style="animation-delay:${i*.2}s"/>`;}
   const gw=stangd?w/2+4:22;
   return`<g data-fx="gardin">${utsikt}<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="none" stroke="#fff" stroke-width="8"/><path d="M${x+w/2} ${y} V${y+h} M${x} ${y+h/2} H${x+w}" stroke="#fff" stroke-width="5"/>
     <rect x="${x-10}" y="${y-10}" width="${w+20}" height="7" rx="3" fill="#8B5A2B"/>
@@ -134,10 +140,14 @@ function tak(id,pa){
   if(id==="disco"){let s=`<g data-fx="lampa"><line x1="200" y1="0" x2="200" y2="16" stroke="${INK}" stroke-width="2"/><g class="${pa?"snurr":""}"><circle cx="200" cy="34" r="18" fill="#C6D6F2"/>`;
     for(let i=-2;i<=2;i++)for(let j=-2;j<=2;j++)if(i*i+j*j<=5)s+=`<rect x="${196+i*7}" y="${30+j*7}" width="6" height="6" fill="${(i+j)%2?"#fff":"#AEB9CC"}"/>`;
     s+=`</g>`;if(pa)["#FF5FA2","#3D8BFD","#FFC93C","#2BB673"].forEach((c,i)=>{s+=`<circle cx="${60+i*95}" cy="${100+(i%2)*60}" r="10" fill="${c}" opacity=".35" class="blink" style="animation-delay:${i*.3}s"/>`;});return s+"</g>";}
+  if(id==="hjartslinga"){let g=`<g data-fx="lampa"><path d="M0 8 Q50 26 100 8 T200 8 T300 8 T400 8" stroke="#FF7EB6" stroke-width="2" fill="none"/>`;
+    for(let i=0;i<14;i++){const x=14+i*28,y=12+Math.abs(Math.sin((x/100)*Math.PI))*14,c=i%2?"#E5484D":"#FF7EB6";g+=`<path d="M${x} ${y+12} C${x-9} ${y+5} ${x-6} ${y-3} ${x} ${y+2} C${x+6} ${y-3} ${x+9} ${y+5} ${x} ${y+12}Z" fill="${pa?c:"#F3C6D6"}"${pa?` class="blink" style="animation-delay:${i*.2}s"`:""}/>`;}
+    return g+"</g>";}
   return"";}
 function matta(id){if(id==="rund")return`<ellipse cx="200" cy="262" rx="92" ry="22" fill="#FF9F43"/><ellipse cx="200" cy="262" rx="70" ry="15" fill="none" stroke="#FFD3A0" stroke-width="4"/>`;
   if(id==="fluffig")return`<ellipse cx="200" cy="262" rx="96" ry="24" fill="#F3F5FA" stroke="#D5DDEC" stroke-width="6" stroke-dasharray="3 5"/>`;
   if(id==="regnbage"){const c=["#FF6B6B","#FF9F43","#FFC93C","#2BB673","#3D8BFD","#7B61FF"];return c.map((f,i)=>`<ellipse cx="200" cy="262" rx="${96-i*12}" ry="${24-i*3}" fill="${f}"/>`).join("");}
+  if(id==="handduk")return`<g transform="rotate(-4 200 262)"><rect x="120" y="244" width="160" height="38" rx="5" fill="#fff"/>${[0,1,2,3,4].map(i=>`<rect x="${120+i*32+16}" y="244" width="16" height="38" fill="${["#3D8BFD","#FF7EB6","#FFC93C","#2BB673","#3D8BFD"][i]}"/>`).join("")}</g>`;
   return"";}
 function hylla(id){
   if(id==="bok"){let s=`<rect x="20" y="134" width="96" height="80" rx="4" fill="#A86B35"/><rect x="26" y="140" width="84" height="32" fill="#7A4A22"/><rect x="26" y="176" width="84" height="32" fill="#7A4A22"/>`;
@@ -148,16 +158,27 @@ function hylla(id){
   if(id==="akvarium")return`<g data-fx="fisk"><rect x="20" y="172" width="96" height="42" rx="4" fill="#8B5A2B"/><rect x="22" y="124" width="92" height="50" rx="6" fill="#9ED8FF" stroke="#E8F4FF" stroke-width="3"/><path d="M26 168 Q40 160 50 168 T80 168 T110 168 V172 H26Z" fill="#E8C78A"/><path d="M40 168 Q36 150 42 138 M96 168 Q100 152 94 142" stroke="#2BB673" stroke-width="3" fill="none"/>
     <g class="fisk" id="fisk1"><path d="M36 146 Q44 138 52 146 Q44 154 36 146Z M36 146 L30 141 V151Z" fill="#FF9F43"/><circle cx="48" cy="145" r="1.4" fill="${INK}"/></g>
     <g class="fisk" style="animation-delay:-3s"><path d="M54 160 Q60 154 66 160 Q60 166 54 160Z M54 160 L49 156 V164Z" fill="#FF5FA2"/></g><circle cx="80" cy="140" r="2" fill="#fff" opacity=".7"/><circle cx="84" cy="132" r="1.5" fill="#fff" opacity=".7"/></g>`;
+  if(id==="pumpor"){const p=(x,r,pa)=>`<path d="M${x} ${214-2*r} v-6" stroke="#2BB673" stroke-width="3"/><ellipse cx="${x}" cy="${214-r}" rx="${r*1.2}" ry="${r}" fill="#FF8A1F"/><path d="M${x-r*.4} ${214-2*r+3} Q${x-r*.7} ${214-r} ${x-r*.4} ${211} M${x+r*.4} ${214-2*r+3} Q${x+r*.7} ${214-r} ${x+r*.4} ${211}" stroke="#E06A00" stroke-width="1.5" fill="none"/>
+      <path d="M${x-r*.6} ${214-r*1.2} l${r*.25} -${r*.3} l${r*.25} ${r*.3}z M${x+r*.1} ${214-r*1.2} l${r*.25} -${r*.3} l${r*.25} ${r*.3}z M${x-r*.6} ${214-r*.6} Q${x} ${214-r*.1} ${x+r*.6} ${214-r*.6} Q${x} ${214-r*.35} ${x-r*.6} ${214-r*.6}z" fill="${pa?"#FFE07A":"#7A3A00"}"/>`;
+    return`<g data-fx="pumpor">${data.fx.pumpa!==false?`<ellipse cx="62" cy="200" rx="44" ry="16" fill="#FFD27A" opacity=".18"/>`:""}${p(44,20,data.fx.pumpa!==false)}${p(92,14,data.fx.pumpa!==false)}</g>`;}
   return"";}
 function tavla(id,cfg){const ram=(inner)=>`<g data-fx="sway"><rect x="286" y="30" width="66" height="52" rx="3" fill="#C99A0A"/><rect x="291" y="35" width="56" height="42" fill="#fff"/>${inner}</g>`;
   if(id==="sol")return ram(`<rect x="291" y="35" width="56" height="42" fill="#BDE3FF"/><circle cx="319" cy="56" r="10" fill="#FFD84D"/><path d="M319 40v-3M319 75v-3M303 56h-3M338 56h-3M308 45l-2-2M332 69l-2-2M308 67l-2 2M332 43l-2 2" stroke="#FFB800" stroke-width="2"/>`);
   if(id==="karta")return ram(`<rect x="291" y="35" width="56" height="42" fill="#BDE3FF"/><path d="M296 46 q6 -6 12 0 q2 8 -6 10 q-6 -2 -6 -10z M312 42 q10 -2 14 4 q0 10 -8 12 q-6 -6 -6 -16z M330 52 q8 0 10 8 q-4 8 -10 6z M306 64 q6 0 6 8 q-6 2 -8 -4z" fill="#7DCB6E"/>`);
   if(id==="portratt")return ram(`<rect x="291" y="35" width="56" height="42" fill="#FFF1E0"/><g transform="translate(303 33) scale(.27)">${(window.owlSVG?owlSVG(cfg):"").replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,"")}</g>`);
+  if(id==="hjarta")return ram(`<rect x="291" y="35" width="56" height="42" fill="#FFE3EE"/><path d="M319 72 C296 58 302 38 319 50 C336 38 342 58 319 72Z" fill="#E5484D"/>`);
   return"";}
 function vaxt(id){
   if(id==="kaktus")return`<g data-fx="sway"><path d="M140 214 H168 L164 190 H144Z" fill="#E07A4E"/><rect x="148" y="146" width="12" height="46" rx="6" fill="#2BB673"/><path d="M148 168 H140 V156" stroke="#2BB673" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M160 176 H168 V164" stroke="#2BB673" stroke-width="8" fill="none" stroke-linecap="round"/><circle cx="154" cy="146" r="4" fill="#FF7EB6"/></g>`;
   if(id==="kruk")return`<g data-fx="sway"><path d="M138 214 H170 L166 188 H142Z" fill="#E07A4E"/><path d="M154 188 Q138 160 130 150 Q148 156 154 180 Q156 150 150 132 Q166 148 158 182 Q172 156 182 152 Q172 172 156 188Z" fill="#2BB673"/></g>`;
   if(id==="palm")return`<g data-fx="sway"><path d="M136 214 H172 L166 194 H142Z" fill="#8B5A2B"/><path d="M154 194 Q150 160 156 120" stroke="#A86B35" stroke-width="7" fill="none"/><path d="M156 120 Q130 112 118 132 Q140 120 156 124 Q150 100 128 96 Q150 98 158 120 Q170 98 192 102 Q170 108 160 122 Q184 116 196 136 Q176 124 158 124Z" fill="#2BB673"/></g>`;
+  if(id==="julgran"){let g=`<rect x="149" y="194" width="10" height="20" fill="#8B5A2B"/><path d="M154 112 L184 198 H124Z" fill="#2B7A4B"/><path d="M154 112 L176 168 H132Z" fill="#33925A"/><path d="M154 112 L168 140 H140Z" fill="#3FAA68"/>`;
+    [[142,182,"#E5484D"],[166,178,"#FFC93C"],[150,160,"#3D8BFD"],[162,150,"#E5484D"],[146,140,"#FFC93C"],[170,192,"#3D8BFD"],[136,194,"#FF7EB6"]].forEach(([x,y,c],i)=>{g+=`<circle cx="${x}" cy="${y}" r="3.5" fill="${c}" class="blink" style="animation-delay:${i*.25}s"/>`;});
+    return`<g data-fx="sway">${g}<path d="M154 104 l3 6 6.5 .5-5 4.3 1.6 6.4-6.1-3.6-6.1 3.6 1.6-6.4-5-4.3 6.5-.5z" fill="#F2C230"/></g>`;}
+  if(id==="paskris"){let g=`<path d="M140 214 H168 L172 186 H136Z" fill="#BDE3FF" stroke="#8FC3EA" stroke-width="2"/><path d="M154 188 Q150 150 132 124 M154 188 Q156 146 160 112 M154 188 Q164 154 182 130 M156 160 Q144 150 140 140 M157 140 Q168 132 172 120" stroke="#8B5A2B" stroke-width="2.5" fill="none"/>`;
+    [[132,124,"#FF7EB6"],[160,112,"#FFC93C"],[182,130,"#2BB673"],[140,140,"#3D8BFD"],[172,120,"#FF9F43"],[146,150,"#7B61FF"]].forEach(([x,y,c])=>{g+=`<ellipse cx="${x}" cy="${y}" rx="4" ry="9" fill="${c}" transform="rotate(20 ${x} ${y})"/>`;});
+    return`<g data-fx="sway">${g}</g>`;}
+  if(id==="solros")return`<g data-fx="sway"><path d="M138 214 H170 L166 190 H142Z" fill="#E07A4E"/><path d="M154 190 V130" stroke="#2BB673" stroke-width="5"/><path d="M154 170 Q138 160 136 150 Q150 154 154 164 M154 158 Q170 148 174 138 Q160 144 154 154" fill="#2BB673"/>${[...Array(12)].map((_,i)=>`<ellipse cx="154" cy="112" rx="5" ry="12" fill="#FFC93C" transform="rotate(${i*30} 154 124)"/>`).join("")}<circle cx="154" cy="124" r="9" fill="#8B5A2B"/></g>`;
   return"";}
 function husdjur(id,pa){
   if(id==="hamster")return`<g data-fx="husdjur"><circle cx="350" cy="250" r="26" fill="none" stroke="#AEB9CC" stroke-width="4"/><g class="${pa?"snurr":""}"><path d="M350 224 V276 M324 250 H376 M332 232 L368 268 M368 232 L332 268" stroke="#D5DDEC" stroke-width="2"/></g><path d="M340 280 H360 L350 252Z" fill="#AEB9CC"/>
@@ -165,6 +186,8 @@ function husdjur(id,pa){
   if(id==="fagel")return`<g data-fx="husdjur"><path d="M330 214 V188 Q350 168 370 188 V214" fill="none" stroke="#C99A0A" stroke-width="3"/><path d="M336 190 V214 M343 182 V214 M350 180 V214 M357 182 V214 M364 190 V214" stroke="#C99A0A" stroke-width="1.5"/><rect x="326" y="212" width="48" height="6" rx="2" fill="#C99A0A"/>
     <g class="gung"><ellipse cx="350" cy="202" rx="9" ry="7" fill="#3D8BFD"/><circle cx="356" cy="197" r="5" fill="#3D8BFD"/><path d="M361 197 L366 199 L361 200Z" fill="#FFC93C"/><circle cx="357" cy="196" r="1.2" fill="${INK}"/></g></g>`;
   if(id==="robot")return`<g data-fx="husdjur"><g class="${pa?"gung":""}"><rect x="334" y="236" width="32" height="28" rx="8" fill="#AEB9CC"/><rect x="340" y="242" width="20" height="10" rx="3" fill="${INK}"/><circle cx="346" cy="247" r="2.4" fill="#7CF0B1"/><circle cx="354" cy="247" r="2.4" fill="#7CF0B1"/><line x1="350" y1="236" x2="350" y2="226" stroke="#56668F" stroke-width="2"/><circle cx="350" cy="224" r="3.5" fill="#FF6B6B"/><rect x="338" y="264" width="8" height="10" rx="2" fill="#56668F"/><rect x="354" y="264" width="8" height="10" rx="2" fill="#56668F"/></g></g>`;
+  if(id==="spoke")return`<g data-fx="husdjur"><g class="gung"><path d="M334 262 V236 Q334 214 350 214 Q366 214 366 236 V262 l-5 -5 l-5 5 l-6 -5 l-6 5 l-5 -5z" fill="#fff" stroke="#D5DDEC" stroke-width="2"/><ellipse cx="344" cy="234" rx="3" ry="4" fill="${INK}"/><ellipse cx="356" cy="234" rx="3" ry="4" fill="${INK}"/><ellipse cx="350" cy="245" rx="4" ry="${pa?5:3}" fill="${INK}"/></g></g>`;
+  if(id==="kyckling")return`<g data-fx="husdjur"><g class="${pa?"gung":""}"><ellipse cx="350" cy="262" rx="15" ry="13" fill="#FFD84D"/><circle cx="350" cy="240" r="11" fill="#FFD84D"/><circle cx="346" cy="238" r="1.8" fill="${INK}"/><circle cx="354" cy="238" r="1.8" fill="${INK}"/><path d="M347 243 h6 l-3 4z" fill="#FF9F43"/><path d="M336 260 q-6 -2 -4 6" stroke="#E8B820" stroke-width="2" fill="none"/><path d="M344 275 v4 M356 275 v4" stroke="#FF9F43" stroke-width="2"/></g></g>`;
   return"";}
 function draw(){const v=vis(),cfg=window.lasDjur?lasDjur():{},fx=data.fx;
   const djur=window.owlSVG?owlSVG(cfg).replace(/^<svg[^>]*>/,"").replace(/<\/svg>$/,""):"";
@@ -177,28 +200,31 @@ $("room").addEventListener("click",e=>{const g=e.target.closest("[data-fx]");if(
   if(f==="gardin"){data.fx.gardin=!data.fx.gardin;save();draw();L&&L.whoosh&&L.whoosh();return;}
   if(f==="lampa"){data.fx.lampa=!data.fx.lampa;save();draw();L&&L.pop&&L.pop();return;}
   if(f==="husdjur"){data.fx.hus=!data.fx.hus;save();draw();L&&L.chirp&&L.chirp();return;}
+  if(f==="pumpor"){data.fx.pumpa=data.fx.pumpa===false;save();draw();L&&L.pop&&L.pop();return;}
   if(f==="fisk"){g.querySelectorAll(".fisk").forEach(x=>{x.classList.add("fort");setTimeout(()=>x.classList.remove("fort"),2500);});L&&L.pop&&L.pop();return;}
   if(f==="djur"){const d=$("djurG");d.classList.remove("hopp");void d.getBBox();d.classList.add("hopp");L&&L.hop&&L.hop();return;}
   g.classList.remove("sway");void g.getBBox();g.classList.add("sway");L&&L.pop&&L.pop();});
 
 /* ---------- Inred: prova och köp ---------- */
 let flik="tapet";
-function panel(){$("tabs").innerHTML=Object.entries(RUM).map(([k,v])=>`<button data-tab="${k}" aria-pressed="${k===flik}">${v.n}</button>`).join("");
-  const v=vis();
-  $("items").innerHTML=RUM[flik].items.map(([id,n,em,pris])=>{const har=owned(flik,id),cls=data.val[flik]===id?" sel":v[flik]===id?" prov":"";
-    return`<button class="it${cls}" data-id="${id}"><span class="em">${em}</span>${n}<small>${har?(data.val[flik]===id?"Vald":"Din"):`🪙 ${pris}`}</small></button>`;}).join("");
+const sasongLista=()=>SN?Object.entries(RUM).flatMap(([k,v])=>v.items.filter(it=>it[4]===SN.id).map(it=>[k,it])):[];
+function panel(){const tabs=Object.entries(RUM).map(([k,v])=>[k,v.n]);if(SN&&sasongLista().length)tabs.unshift(["sasong",SASONGER[SN.id].ikon+" "+SASONGER[SN.id].namn]);
+  $("tabs").innerHTML=tabs.map(([k,n])=>`<button data-tab="${k}" aria-pressed="${k===flik}"${k==="sasong"?' class="sas"':""}>${n}</button>`).join("");
+  const v=vis(),lista=flik==="sasong"?sasongLista():RUM[flik].items.filter(it=>owned(flik,it[0])||kanKopa(it)).map(it=>[flik,it]);
+  $("items").innerHTML=(flik==="sasong"?`<p class="sasinfo">Säsongssaker går bara att köpa ${sasongSlut(SN)}. Det du köper har du kvar för alltid.</p>`:"")+lista.map(([k,[id,n,em,pris,sa]])=>{const har=owned(k,id),cls=data.val[k]===id?" sel":v[k]===id?" prov":"";
+    return`<button class="it${cls}" data-slot="${k}" data-id="${id}">${sa?`<span class="sasm" aria-hidden="true">${SASONGER[sa].ikon}</span>`:""}<span class="em">${em}</span>${n}<small>${har?(data.val[k]===id?"Vald":"Din"):`🪙 ${pris}`}</small></button>`;}).join("");
   const p=prov&&item(prov.slot,prov.id),m=MPMynt.get().m;
   if(p&&!owned(prov.slot,prov.id)){$("kop").hidden=false;$("kop").disabled=m<p[3];$("kop").textContent=m<p[3]?`${p[1]} kostar ${p[3]} 🪙, du har ${m}`:`Köp ${p[1].toLowerCase()} för ${p[3]} 🪙`;$("msg").textContent=`Du provar: ${p[1]}`;}
   else $("kop").hidden=true;}
 $("tabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(!b)return;flik=b.dataset.tab;prov=null;$("msg").textContent="";draw();panel();};
-$("items").onclick=e=>{const b=e.target.closest("[data-id]");if(!b)return;const id=b.dataset.id;
-  if(owned(flik,id)){data.val[flik]=id;prov=null;save();$("msg").textContent=`${item(flik,id)[1]} är vald.`;window.Ljud&&Ljud.ok&&Ljud.ok();}
-  else prov={slot:flik,id};
+$("items").onclick=e=>{const b=e.target.closest("[data-id]");if(!b)return;const id=b.dataset.id,k=b.dataset.slot;
+  if(owned(k,id)){data.val[k]=id;prov=null;save();$("msg").textContent=`${item(k,id)[1]} är vald.`;window.Ljud&&Ljud.ok&&Ljud.ok();}
+  else if(kanKopa(item(k,id)))prov={slot:k,id};
   draw();panel();};
 $("kop").onclick=()=>{if(!prov)return;const p=item(prov.slot,prov.id);
   if(MPMynt.kop("rum:"+prov.slot+":"+prov.id,p[3])){data.val[prov.slot]=prov.id;save();$("msg").textContent=`Köpt! ${p[1]} är din. 🎉`;prov=null;window.Ljud&&Ljud.kaching&&Ljud.kaching();draw();panel();}};
 $("inred").onclick=()=>{const on=$("panel").hidden;$("panel").hidden=!on;$("inred").setAttribute("aria-pressed",String(on));$("inred").textContent=on?"✓ Klar":"🛒 Inred";
-  if(!on){prov=null;draw();}else panel();};
+  if(!on){prov=null;draw();}else{if(SN&&sasongLista().some(([k,it])=>!owned(k,it[0])))flik="sasong";panel();}};
 draw();
 </script>
 </body>

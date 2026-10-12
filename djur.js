@@ -21,17 +21,41 @@ const WARD={
     {id:"ingen",name:"Ingen",need:0,pris:0},{id:"keps",name:"Keps",need:3,pris:12},{id:"mossa",name:"Mössa",need:10,pris:40},
     {id:"party",name:"Partyhatt",need:16,pris:64},{id:"troll",name:"Trollkarl",need:28,pris:112},{id:"krona",name:"Krona",need:50,pris:200},
     {id:"horlurar",name:"Hörlurar",pris:60},{id:"hjalm",name:"Cykelhjälm",pris:50},{id:"blomkrans",name:"Blomkrans",pris:70},{id:"pirat",name:"Pirathatt",pris:90},
-    {id:"cowboy",name:"Cowboyhatt",pris:90},{id:"astronaut",name:"Rymdhjälm",pris:300}]},
+    {id:"cowboy",name:"Cowboyhatt",pris:90},{id:"astronaut",name:"Rymdhjälm",pris:300},
+    {id:"tomteluva",name:"Tomteluva",pris:80,s:"jul"},{id:"haxhatt",name:"Häxhatt",pris:90,s:"halloween"},{id:"harora",name:"Haröron",pris:70,s:"pask"},
+    {id:"solhatt",name:"Solhatt",pris:60,s:"sommar"},{id:"hjartband",name:"Hjärtdiadem",pris:60,s:"hjarta"}]},
   neck:{name:"Halsband",items:[
     {id:"ingen",name:"Inget",need:0,pris:0},{id:"rosett",name:"Rosett",need:4,pris:16},{id:"halsduk",name:"Halsduk",need:14,pris:56},{id:"medalj",name:"Medalj",need:24,pris:96}]},
   hand:{name:"I handen",items:[
     {id:"ingen",name:"Inget",pris:0},{id:"flagga",name:"Flagga",pris:30},{id:"ballong",name:"Ballong",pris:40},{id:"glass",name:"Glass",pris:40},
     {id:"pensel",name:"Pensel",pris:50},{id:"mikrofon",name:"Mikrofon",pris:80},{id:"fiskespo",name:"Fiskespö",pris:100},{id:"svard",name:"Träsvärd",pris:120},
-    {id:"trollstav",name:"Trollstav",pris:150}]},
+    {id:"trollstav",name:"Trollstav",pris:150},
+    {id:"polkagris",name:"Polkagris",pris:50,s:"jul"},{id:"pumpa",name:"Pumpalykta",pris:60,s:"halloween"},{id:"pagg",name:"Påskägg",pris:50,s:"pask"},
+    {id:"badboll",name:"Badboll",pris:50,s:"sommar"},{id:"hjartballong",name:"Hjärtballong",pris:50,s:"hjarta"}]},
   back:{name:"På ryggen",items:[
     {id:"ingen",name:"Inget",pris:0},{id:"ryggsack",name:"Ryggsäck",pris:60},{id:"mantel",name:"Mantel",pris:140},{id:"vingar",name:"Fjärilsvingar",pris:250},
-    {id:"jetpack",name:"Jetpack",pris:600}]}
+    {id:"jetpack",name:"Jetpack",pris:600},
+    {id:"fladder",name:"Fladdermusvingar",pris:150,s:"halloween"}]}
 };
+/* Säsonger (fas 3): saker med s:"jul" osv. går bara att köpa under säsongen, köpta saker behålls för alltid.
+   Påsken räknas fram: två veckor före påskdagen till annandag påsk. Testa en säsong med ?sasong=jul (?sasong=av tar bort). */
+const SASONGER={hjarta:{namn:"Alla hjärtans dag",ikon:"💖",fran:[2,1],till:[2,14]},pask:{namn:"Påsk",ikon:"🐣"},
+  sommar:{namn:"Sommarlov",ikon:"☀️",fran:[6,1],till:[8,15]},halloween:{namn:"Halloween",ikon:"🎃",fran:[10,1],till:[11,7]},
+  jul:{namn:"Jul",ikon:"🎄",fran:[12,1],till:[1,6]}};
+function paskdag(y){const a=y%19,b=Math.floor(y/100),c=y%100,d=Math.floor(b/4),e=b%4,f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3),
+  h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4,l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451),n=h+l-7*m+114;
+  return new Date(y,Math.floor(n/31)-1,n%31+1);}
+// {id, slut: Date} för säsongen som pågår, annars null
+function sasongNu(nu){
+  try{const q=(location.search.match(/[?&]sasong=(\w+)/)||[])[1];if(q){if(q==="av")sessionStorage.removeItem("mp-sasong");else sessionStorage.setItem("mp-sasong",q);}
+    const t=sessionStorage.getItem("mp-sasong");if(t&&SASONGER[t])return{id:t,slut:new Date(2099,0,1),test:true};}catch(e){}
+  const d=nu||new Date(),y=d.getFullYear(),dag=new Date(y,d.getMonth(),d.getDate());
+  for(const [id,v] of Object.entries(SASONGER)){let a,b;
+    if(id==="pask"){const p=paskdag(y);a=new Date(y,p.getMonth(),p.getDate()-14);b=new Date(y,p.getMonth(),p.getDate()+1);}
+    else{a=new Date(y,v.fran[0]-1,v.fran[1]);b=new Date(y,v.till[0]-1,v.till[1]);if(b<a){if(dag<=b)a=new Date(y-1,v.fran[0]-1,v.fran[1]);else b=new Date(y+1,v.till[0]-1,v.till[1]);}}
+    if(dag>=a&&dag<=b)return{id,slut:b};}
+  return null;}
+const sasongSlut=sn=>sn.test?"(test)":"till "+sn.slut.getDate()+" "+["januari","februari","mars","april","maj","juni","juli","augusti","september","oktober","november","december"][sn.slut.getMonth()];
 /* Djurens egna färger när man väljer "Naturlig" */
 const NATUR={uggla:["#8A6BC6","#6B4E9B"],katt:["#F4A259","#C9772E"],kanin:["#D9D2E9","#A99CC9"],rav:["#FF7A3D","#C4531F"],panda:["#FFFFFF","#2B2B3A"],
   pingvin:["#2B3A67","#141D3D"],robot:["#AEB9CC","#6B7894"],drake:["#3FBF7F","#258A58"],enhorning:["#FFFFFF","#E0D8F5"],
@@ -47,6 +71,7 @@ function owlSVG(cfg,cls,standalone){
   if(bk==="mantel")s+=`<path d="M32 40 Q12 80 10 112 L110 112 Q108 80 88 40 Z" fill="#7B61FF"/><path d="M10 112 L110 112" stroke="#5B43D6" stroke-width="3"/>`;
   if(bk==="vingar"){const w=`<path d="M34 62 C4 18 -6 64 24 78 C0 90 8 116 36 94 Z" fill="#FF9FD0" stroke="#D94F8E" stroke-width="2"/><circle cx="18" cy="56" r="5" fill="#FFC93C"/><circle cx="20" cy="94" r="4" fill="#7B61FF"/>`;s+=w+`<g transform="translate(120 0) scale(-1 1)">${w}</g>`;}
   if(bk==="ryggsack")s+=`<rect x="12" y="56" width="96" height="46" rx="16" fill="#E5484D"/><rect x="12" y="56" width="96" height="10" rx="5" fill="#B8323A"/>`;
+  if(bk==="fladder"){const w=`<path d="M36 60 L6 34 L10 52 L0 60 L12 66 L4 80 L18 80 L14 94 L36 86 Z" fill="#3B2B5C" stroke="#241A3A" stroke-width="2" stroke-linejoin="round"/>`;s+=w+`<g transform="translate(120 0) scale(-1 1)">${w}</g>`;}
   if(bk==="jetpack"){const t=x=>`<path d="M${x+2} 98 L${x+8} 120 L${x+14} 98 Z" fill="#FF9F43"/><path d="M${x+5} 98 L${x+8} 112 L${x+11} 98 Z" fill="#FFE07A"/><rect x="${x}" y="48" width="16" height="50" rx="7" fill="#AEB9CC" stroke="#6B7894" stroke-width="2"/><rect x="${x}" y="48" width="16" height="10" rx="5" fill="#E5484D"/>`;s+=t(6)+t(98);}
   // bakom kroppen: svansar och vingar
   if(an==="katt")s+=`<path d="M92 92 Q116 88 108 58 Q104 50 100 58 Q106 80 88 84Z" fill="${c1}"/><path d="M106 60 L102 68 M104 70 L98 74" stroke="${c2}" stroke-width="3"/>`;
@@ -140,6 +165,13 @@ function owlSVG(cfg,cls,standalone){
   if(cfg.hat==="pirat")s+=`<path d="M26 34 Q60 -6 94 34 Q60 22 26 34 Z" fill="#1D2B53"/><path d="M22 35 Q60 26 98 35 Q60 42 22 35 Z" fill="#2B2B3A"/><circle cx="60" cy="18" r="5.5" fill="#fff"/><circle cx="58" cy="17.5" r="1.4" fill="#1D2B53"/><circle cx="62" cy="17.5" r="1.4" fill="#1D2B53"/><path d="M54 25 L66 29 M66 25 L54 29" stroke="#fff" stroke-width="2"/>`;
   if(cfg.hat==="cowboy")s+=`<ellipse cx="60" cy="32" rx="46" ry="7" fill="#8B5A2B"/><path d="M38 32 Q38 4 50 8 Q60 13 70 8 Q82 4 82 32 Z" fill="#A86B35"/><rect x="38" y="25" width="44" height="5" fill="#5C3A1B"/>`;
   if(cfg.hat==="astronaut")s+=`<circle cx="60" cy="50" r="42" fill="rgba(190,225,255,.28)" stroke="#E8EDF7" stroke-width="5"/><path d="M28 34 Q34 18 50 12" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/><ellipse cx="60" cy="92" rx="30" ry="6" fill="none" stroke="#AEB9CC" stroke-width="5"/>`;
+  if(cfg.hat==="tomteluva")s+=`<path d="M34 30 Q40 -2 70 -6 Q94 -6 100 16 L93 19 Q86 6 72 8 Q64 18 86 30 Z" fill="#E5484D"/><rect x="30" y="25" width="60" height="11" rx="5.5" fill="#fff"/><circle cx="98" cy="20" r="7" fill="#fff"/>`;
+  if(cfg.hat==="haxhatt")s+=`<ellipse cx="60" cy="32" rx="44" ry="7" fill="#3B2B5C"/><path d="M40 31 L60 -8 Q66 -20 74 -14 Q66 -10 68 2 L80 31 Z" fill="#4A3670"/><rect x="42" y="23" width="37" height="6" fill="#FF9F43"/><rect x="56" y="22" width="9" height="8" rx="1.5" fill="none" stroke="#FFE07A" stroke-width="2"/>`;
+  if(cfg.hat==="harora"){const ora=(x,r)=>`<g transform="rotate(${r} ${x} 26)"><ellipse cx="${x}" cy="0" rx="9" ry="25" fill="#fff" stroke="#E6DDF0" stroke-width="2"/><ellipse cx="${x}" cy="2" rx="4" ry="17" fill="#FFB3D1"/></g>`;
+    s+=ora(46,-12)+ora(74,12)+`<path d="M30 32 Q60 14 90 32" stroke="#FF7EB6" stroke-width="5" fill="none" stroke-linecap="round"/>`;}
+  if(cfg.hat==="solhatt")s+=`<ellipse cx="60" cy="30" rx="48" ry="8" fill="#F3D58A" stroke="#D9B35F" stroke-width="1.5"/><path d="M40 30 Q40 6 60 6 Q80 6 80 30 Z" fill="#F7E1A6"/><rect x="40" y="21" width="40" height="6" fill="#FF7EB6"/><circle cx="78" cy="22" r="5" fill="#FFC93C"/><circle cx="78" cy="22" r="2" fill="#E07A4E"/>`;
+  if(cfg.hat==="hjartband"){const hj=(x,y)=>`<path d="M${x} ${y+6} C${x-10} ${y} ${x-7} ${y-8} ${x} ${y-3} C${x+7} ${y-8} ${x+10} ${y} ${x} ${y+6}Z" fill="#E5484D"/>`;
+    s+=`<path d="M44 24 Q42 12 44 4 M60 20 V-2 M76 24 Q78 12 76 4" stroke="#1D2B53" stroke-width="1.5" fill="none"/>`+hj(44,2)+hj(60,-4)+hj(76,2)+`<path d="M30 32 Q60 16 90 32" stroke="#FF7EB6" stroke-width="5" fill="none" stroke-linecap="round"/>`;}
   // i handen (till höger om kroppen)
   const hd=cfg.hand;
   if(hd==="flagga")s+=`<path d="M104 104 V36" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/><path d="M104 36 H120 L114 44 L120 52 H104 Z" fill="#2BB673"/>`;
@@ -150,6 +182,11 @@ function owlSVG(cfg,cls,standalone){
   if(hd==="fiskespo")s+=`<path d="M96 106 L114 26" stroke="#8B5A2B" stroke-width="3" stroke-linecap="round"/><path d="M114 26 V62" stroke="#56668F" stroke-width="1"/><path d="M106 68 Q112 60 119 68 Q112 76 106 68 Z" fill="#FF9F43"/><path d="M107 68 L101 63 L101 73 Z" fill="#FF9F43"/><circle cx="115" cy="67" r="1.2" fill="#1D2B53"/>`;
   if(hd==="svard")s+=`<path d="M106 36 L110 36 L110 84 L106 84 Z" fill="#D9B377" stroke="#9A6534" stroke-width="1.5"/><path d="M106 36 L108 30 L110 36 Z" fill="#D9B377"/><rect x="99" y="84" width="18" height="5" rx="2" fill="#9A6534"/><rect x="105.5" y="89" width="5" height="14" rx="2" fill="#5C3A1B"/>`;
   if(hd==="trollstav")s+=`<path d="M98 104 L112 64" stroke="#1D2B53" stroke-width="4" stroke-linecap="round"/><path d="M112 64 L114 70" stroke="#fff" stroke-width="4"/><path d="M113 46 l3 7 7.5.6-5.7 4.9 1.8 7.4-6.6-4-6.6 4 1.8-7.4-5.7-4.9 7.5-.6z" fill="#F2C230" stroke="#C99A0A" stroke-width="1.5"/><circle cx="102" cy="48" r="1.8" fill="#FFC93C"/><circle cx="120" cy="40" r="1.5" fill="#FF7EB6"/><circle cx="118" cy="72" r="1.5" fill="#7B61FF"/>`;
+  if(hd==="polkagris")s+=`<path d="M104 106 V56 Q104 44 112 44 Q120 44 120 54" stroke="#fff" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M104 106 V56 Q104 44 112 44 Q120 44 120 54" stroke="#E5484D" stroke-width="7" fill="none" stroke-dasharray="4 5"/>`;
+  if(hd==="pumpa")s+=`<path d="M106 64 V58" stroke="#2BB673" stroke-width="3"/><ellipse cx="106" cy="78" rx="14" ry="12" fill="#FF8A1F"/><path d="M100 67 Q96 78 100 89 M112 67 Q116 78 112 89" stroke="#E06A00" stroke-width="1.5" fill="none"/><path d="M99 74 l3 -3 l3 3z M108 74 l3 -3 l3 3z M99 82 Q106 88 113 82 Q106 85 99 82z" fill="#FFE07A"/>`;
+  if(hd==="pagg")s+=`<ellipse cx="106" cy="80" rx="11" ry="14" fill="#FFC93C"/><path d="M95 78 l4 -4 l4 4 l4 -4 l4 4 l4 -4 l2 2" stroke="#FF5FA2" stroke-width="2.5" fill="none"/><circle cx="102" cy="88" r="2" fill="#3D8BFD"/><circle cx="110" cy="88" r="2" fill="#2BB673"/><circle cx="106" cy="70" r="2" fill="#3D8BFD"/>`;
+  if(hd==="badboll")s+=`<circle cx="106" cy="80" r="14" fill="#fff"/><path d="M106 80 L106 66 A14 14 0 0 1 120 80Z" fill="#E5484D"/><path d="M106 80 L120 80 A14 14 0 0 1 106 94Z" fill="#3D8BFD"/><path d="M106 80 L106 94 A14 14 0 0 1 92 80Z" fill="#FFC93C"/><circle cx="106" cy="80" r="14" fill="none" stroke="#AEB9CC" stroke-width="1.2"/><circle cx="106" cy="80" r="2.5" fill="#fff"/>`;
+  if(hd==="hjartballong")s+=`<path d="M100 98 Q112 74 105 50" stroke="#56668F" stroke-width="1.5" fill="none"/><path d="M106 50 C88 38 94 14 106 26 C118 14 124 38 106 50Z" fill="#E5484D"/><ellipse cx="100" cy="28" rx="2.5" ry="4" fill="#fff" opacity=".6"/>`;
   if(bk==="ryggsack")s+=`<path d="M32 46 Q28 70 34 96" stroke="#B8323A" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M88 46 Q92 70 86 96" stroke="#B8323A" stroke-width="5" fill="none" stroke-linecap="round"/>`;
   return s+"</svg>";
 }
