@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Läsfelslabbet – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF6F1;--ink:#1D2B53;--muted:#56668F;--card:#fff;--line:#CFE3D6;--good:#1E9E5E;--good-dark:#157548;--bad:#E5484D;--accent:#3D5AFE;--gold:#F2B707;--font:"Baloo 2","Trebuchet MS",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.4}
+.wrap{max-width:860px;margin:0 auto;padding:12px 16px 48px}
+button,select,input{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none}
+h1{font-size:2rem;margin:10px 0 4px}
+.lead{color:var(--muted);margin:0 0 12px}
+.card{background:var(--card);border-radius:18px;box-shadow:0 4px 0 var(--line);padding:12px 14px;margin:0 0 12px}
+.card h2{font-size:1.15rem;margin:0 0 8px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.btn{padding:10px 16px;border-radius:14px;background:var(--accent);color:#fff;font-weight:800;box-shadow:0 4px 0 #2A3DB8}
+.btn:disabled{opacity:.5;cursor:default}
+.btn.g{background:var(--good);box-shadow:0 4px 0 var(--good-dark)}
+.btn.w{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line)}
+.seg{display:inline-flex;background:var(--bg);border-radius:12px;padding:3px;gap:3px;flex-wrap:wrap}
+.seg button{padding:5px 10px;border-radius:9px;font-weight:800;font-size:.92rem}
+.seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+.small{font-size:.88rem;color:var(--muted)}
+.prog{height:10px;border-radius:5px;background:var(--bg);overflow:hidden;margin-top:6px}.prog i{display:block;height:100%;width:0;background:var(--accent)}
+.stage{text-align:center;padding:10px 0}
+.word{font-family:"Andika",var(--font);font-size:4rem;font-weight:700;line-height:1.1}
+.tag{display:inline-block;border-radius:999px;padding:3px 14px;font-weight:800;margin-bottom:6px}
+.tag.r{background:#DDF5E7;color:var(--good-dark)}.tag.f{background:#FFE3E7;color:#B8323A}
+.lamp{display:inline-flex;align-items:center;gap:6px;font-weight:800;color:var(--muted)}
+.lamp i{width:12px;height:12px;border-radius:50%;background:#C6D6F2}.lamp.on i{background:var(--good);box-shadow:0 0 0 4px rgba(30,158,94,.2)}.lamp.rec i{background:var(--bad);box-shadow:0 0 0 4px rgba(229,72,77,.2)}
+.res{font-size:1.15rem;font-weight:800;margin-top:8px;min-height:1.5em}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{text-align:left;padding:5px 6px;border-bottom:1px solid var(--line)}
+td.ok{color:var(--good-dark);font-weight:800}td.no{color:#B8323A;font-weight:800}
+.sum{font-weight:800;font-size:1.1rem}
+input[type=range]{width:220px}
+pre{white-space:pre-wrap;font-size:.8rem;background:var(--bg);border-radius:10px;padding:8px;max-height:200px;overflow:auto}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>🔎 Läsfelslabbet</h1>
+<p class="lead">Testsida för vuxna. Kan datorn höra när ett ord läses <b>fel</b>? Här används KB:s svenska modell wav2vec2 (VoxRex), som skriver bokstav för bokstav vad den hör i stället för att rätta till riktiga ord. Allt körs i webbläsaren, inget ljud skickas någonstans.</p>
+
+<div class="card">
+  <h2>1. Ladda modellen</h2>
+  <div class="row"><span class="small">Storlek:</span><div class="seg" id="segM">
+    <button data-m="fp16" aria-pressed="true">Bäst, 632 MB</button><button data-m="int8">Mellan, 317 MB</button><button data-m="q4">Minst, 241 MB</button></div>
+    <button class="btn" id="load">Ladda</button></div>
+  <div class="prog"><i id="bar"></i></div>
+  <p class="small" id="lstat">Modellen laddas ner en gång och sparas sedan i webbläsaren. Störst är säkrast; jämför gärna med de mindre.</p>
+</div>
+
+<div class="card">
+  <h2>2. Läs orden</h2>
+  <div class="row"><span class="small">Ord:</span><div class="seg" id="segL"><button data-l="0" aria-pressed="true">Paket 1–3</button><button data-l="1">Paket 4–6</button><button data-l="2">Egna</button></div>
+    <input id="egna" placeholder="egna ord, mellanslag mellan" style="flex:1;min-width:160px;border:2px solid var(--line);border-radius:10px;padding:6px 10px" hidden>
+    <span class="small">Andel fel med flit:</span><div class="seg" id="segF"><button data-f=".3" aria-pressed="true">3 av 10</button><button data-f=".5">Hälften</button><button data-f="0">Inga</button></div></div>
+  <p class="small">Varje ord visas med en lapp: <b>Läs rätt</b> eller <b>Läs fel med flit</b> (med ett förslag på hur, men hitta gärna på eget). Tryck <b>Starta</b>, läs ordet när lampan är grön, och vänta. Datorn tar nästa ord själv.</p>
+  <div class="row"><button class="btn g" id="go" disabled>▶ Starta (20 ord)</button><button class="btn w" id="stop" hidden>⏹ Avsluta</button><span class="lamp" id="lamp"><i></i><span id="lampt">Mikrofonen är av</span></span></div>
+  <div class="stage" id="stage" hidden>
+    <div class="tag" id="tag"></div>
+    <div class="word" id="word"></div>
+    <div class="small" id="hint"></div>
+    <div class="res" id="res"></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>3. Resultat</h2>
+  <div class="row"><span class="small">Gräns för "kanske fel":</span><input type="range" id="thr" min="-2" max="0" step=".05" value="-0.25"><b id="thrv"></b>
+    <button class="btn w" id="copy">📋 Kopiera resultatet</button></div>
+  <p class="sum" id="sum">Inga ord än.</p>
+  <table><thead><tr><th>Ord</th><th>Skulle läsas</th><th>Datorn hörde</th><th>Poäng</th><th>Bedömning</th><th></th></tr></thead><tbody id="tb"></tbody></table>
+  <p class="small">Poängen jämför hur väl ljudet passar det rätta ordet med det modellen helst hade skrivit (0 = lika bra, mer minus = sämre). Flytta gränsen och se hur upptäckta fel och falsklarm ändras. Ett falsklarm är ett rätt läst ord som datorn tror är fel, det är det viktigaste att hålla nere.</p>
+  <pre id="log"></pre>
+</div>
+</div>
+<script src="../../../ljud.js"></script>
+<script src="../../../djur.js"></script>
+<script src="../../../huvud.js" data-titel="Läsfelslabbet" data-ikon="🔎"></script>
+<script>
+/* Läsfelslabbet: KB:s wav2vec2 (VoxRex, CTC) i webbläsaren. Modellen skriver bokstav för bokstav vad den hör (ingen språkmodell som rättar),
+   så att felläsningar syns. För varje ord jämförs sannolikheten för målordet (tvingad CTC-anpassning) med modellens bästa väg. */
+const $=id=>document.getElementById(id);
+const TF="https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/dist/transformers.min.js",MODELL="FredrikKarlssonSpeech/wav2vec2-large-voxrex-swedish-onnx";
+const PAKET=["i och det är jag att som på en för","med till har av inte om den de så var","han hon kan ett men man vi du sa nu",
+ "när vad ska mig dig sig mot ut upp in","där här hur vill får går kom bara också efter","alla hade blev sin sitt sina vara bli gå se"];
+// uttalsformer som räknas som rätt (samma som i övningen, plus vardagligt uttal)
+const UTTAL={och:["å","ock"],det:["de"],jag:["ja"],är:["e"],de:["dom"],dem:["dom"],mig:["mej"],dig:["dej"],sig:["sej"],sade:["sa"],också:["oxå","åxå"],med:["me"],vad:["va"],var:["va"],har:["ha"],
+  efter:["etter"],något:["nåt"],någon:["nån"],sitt:["sitt"],sina:["sina"]};
+let T=null,proc=null,model=null,vocab=null,mdl="fp16";
+const S={words:[],i:0,rows:[],on:false};
+
+/* ---------- Modellen ---------- */
+async function load(){$("load").disabled=true;const t0=performance.now();
+  try{T=T||await import(TF);T.env.allowLocalModels=false;
+    let dev="wasm";try{const ad=navigator.gpu&&await navigator.gpu.requestAdapter();if(ad)dev="webgpu";}catch(e){}
+    const files={};const prog=x=>{if(x.status==="progress"&&x.total){files[x.file]=[x.loaded,x.total];let a=0,b=0;for(const k in files){a+=files[k][0];b+=files[k][1];}
+      $("bar").style.width=(a/b*100).toFixed(1)+"%";$("lstat").textContent=`Laddar ner ${Math.round(a/1e6)} av ${Math.round(b/1e6)} MB …`;}};
+    proc=await T.AutoProcessor.from_pretrained(MODELL,{progress_callback:prog});
+    try{model=await T.AutoModelForCTC.from_pretrained(MODELL,{device:dev,dtype:mdl,progress_callback:prog});}
+    catch(e){if(dev==="webgpu"){dev="wasm";log("Grafikkortet gick inte, provar processorn: "+e.message);model=await T.AutoModelForCTC.from_pretrained(MODELL,{device:"wasm",dtype:mdl,progress_callback:prog});}else throw e;}
+    const vj=await (await fetch(`https://huggingface.co/${MODELL}/resolve/main/vocab.json`)).json();vocab=[];for(const k in vj)vocab[vj[k]]=k;
+    // värm upp
+    await run(new Float32Array(8000));
+    $("bar").style.width="100%";$("lstat").textContent=`Klar: ${mdl}, ${dev==="webgpu"?"grafikkortet":"processorn"}, ${((performance.now()-t0)/1000).toFixed(0)} s.`;
+    $("go").disabled=false;window.LF.ready=true;
+  }catch(e){$("lstat").textContent="Det gick inte att ladda modellen: "+e.message;$("load").disabled=false;}}
+async function run(audio){const inp=await proc(audio);const out=await model(inp);const L=out.logits;
+  const [_,TT,V]=L.dims,d=L.data,lp=new Array(TT);
+  for(let t=0;t<TT;t++){let m=-1e9;for(let v=0;v<V;v++)m=Math.max(m,d[t*V+v]);let s=0;for(let v=0;v<V;v++)s+=Math.exp(d[t*V+v]-m);const ls=m+Math.log(s),row=new Float32Array(V);for(let v=0;v<V;v++)row[v]=d[t*V+v]-ls;lp[t]=row;}
+  return lp;}
+// girig avkodning: det modellen helst skriver
+function greedy(lp){let out="",prev=-1;for(const r of lp){let b=0;for(let v=1;v<r.length;v++)if(r[v]>r[b])b=v;if(b!==prev&&b!==0){const c=vocab[b];out+=c==="|"?" ":c.length===1?c:"";}prev=b;}return out.trim().toLowerCase();}
+// bästa vägens poäng (max per bildruta) och tvingad anpassning av ett ord (Viterbi med CTC-blanktecken)
+const bestPath=lp=>lp.reduce((s,r)=>s+Math.max(...r),0);
+function forced(lp,word){const ids=[...word.toUpperCase()].map(c=>vocab.indexOf(c)).filter(x=>x>0);if(!ids.length)return-1e9;
+  const ext=[0];ids.forEach(x=>{ext.push(x,0);});const S2=ext.length,NEG=-1e9;let a=new Float64Array(S2).fill(NEG);
+  // tystnad före och efter ordet får vara blanktecken eller ordgränsen |
+  const sil=r=>Math.max(r[0],r[4]);
+  a[0]=sil(lp[0]);a[1]=lp[0][ext[1]];
+  for(let t=1;t<lp.length;t++){const r=lp[t],b=new Float64Array(S2).fill(NEG);
+    for(let s=0;s<S2;s++){let m=a[s];if(s>0)m=Math.max(m,a[s-1]);if(s>1&&ext[s]!==0&&ext[s]!==ext[s-2])m=Math.max(m,a[s-2]);b[s]=m+(ext[s]===0?sil(r):r[ext[s]]);}a=b;}
+  return Math.max(a[S2-1],a[S2-2]);}
+function score(lp,target){const forms=[target,...(UTTAL[target]||[])],best=bestPath(lp);let top=-1e9,form=target;
+  for(const f of forms){const v=forced(lp,f);if(v>top){top=v;form=f;}}
+  // dela med antalet bildrutor med ljud (inte tystnaden runt ordet), så att poängen inte späds ut
+  let tal=0;for(const r of lp){let b=0;for(let v=1;v<r.length;v++)if(r[v]>r[b])b=v;if(b!==0&&b!==4)tal++;}
+  return{gop:(top-best)/Math.max(3,tal*3),form};}
+window.LF={ready:false,async analys(audio,target){const t0=performance.now(),lp=await run(audio),sc=score(lp,target),heard=greedy(lp);
+  // skrev modellen själv målordet (eller en godkänd uttalsform) är det rätt oavsett poäng
+  const exakt=[target,...(UTTAL[target]||[])].includes(heard.replace(/\s+/g,""));return Object.assign({heard,exakt,ms:performance.now()-t0},sc);}};
+
+/* ---------- Mikrofonen och röstvakten ---------- */
+const mic={ctx:null,strom:null};let cap=null;
+async function micOn(){if(mic.strom)return;const strom=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true,autoGainControl:true}});
+  let ctx;try{ctx=new AudioContext({sampleRate:16000});}catch(e){ctx=new AudioContext();}
+  const kod=`class R extends AudioWorkletProcessor{process(i){const c=i[0]&&i[0][0];if(c)this.port.postMessage(c.slice(0));return true}}registerProcessor("lf-rec",R);`;
+  await ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([kod],{type:"application/javascript"})));
+  const src=ctx.createMediaStreamSource(strom),node=new AudioWorkletNode(ctx,"lf-rec");src.connect(node);
+  const steg=ctx.sampleRate/16000;let buf=[];
+  node.port.onmessage=e=>{const d=e.data;if(steg===1)for(const x of d)buf.push(x);else for(let i=0;i<d.length/steg;i++)buf.push(d[Math.floor(i*steg)]);
+    while(buf.length>=320)ram(Float32Array.from(buf.splice(0,320)));};
+  mic.ctx=ctx;mic.strom=strom;}
+function micOff(){try{mic.strom&&mic.strom.getTracks().forEach(t=>t.stop());}catch(e){}try{mic.ctx&&mic.ctx.close();}catch(e){}mic.ctx=null;mic.strom=null;}
+// ett ord i taget: börjar vid ljud, slutar efter 0,6 s tystnad eller 4 s
+const V={golv:.004,fore:[]};
+function ram(r){let s=0;for(const x of r)s+=x*x;const rms=Math.sqrt(s/r.length);
+  if(!cap){V.golv=V.golv*.97+Math.min(rms,.05)*.03;return;}
+  if(!cap.tal){V.fore.push(r);if(V.fore.length>12)V.fore.shift();if(rms>Math.max(V.golv*3.5,.012)){if(++cap.ramar>=2){cap.tal=true;cap.ljud=[...V.fore];setLamp("rec","Spelar in …");}}else cap.ramar=0;return;}
+  cap.ljud.push(r);if(rms<Math.max(V.golv*2,.008))cap.tyst++;else cap.tyst=0;
+  if(cap.tyst>=30||cap.ljud.length>=200){const c=cap;cap=null;V.fore=[];const a=new Float32Array(c.ljud.length*320);c.ljud.forEach((x,i)=>a.set(x,i*320));c.done(a);}}
+const listen=()=>new Promise(res=>{cap={tal:false,ramar:0,tyst:0,ljud:[],done:res};setLamp("on","Läs ordet nu");});
+function setLamp(c,t){$("lamp").className="lamp"+(c?" "+c:"");$("lampt").textContent=t;}
+
+/* ---------- Testet ---------- */
+const VOK={a:"o",o:"u",u:"y",e:"i",i:"e",y:"u",å:"o",ä:"e",ö:"o"},KONS={d:"t",t:"d",g:"k",k:"g",n:"m",m:"n",r:"l",l:"r",s:"f",v:"f",j:"h",h:"j",p:"b",b:"p",f:"v"};
+function felForslag(w){const ch=[...w];for(let k=0;k<20;k++){const c=ch.slice(),i=Math.floor(Math.random()*c.length),x=c[i];
+  if(VOK[x])c[i]=VOK[x];else if(KONS[x])c[i]=KONS[x];else continue;const n=c.join("");if(n!==w)return n;}return w+"a";}
+function lista(){const l=+document.querySelector("#segL [aria-pressed=true]").dataset.l;
+  if(l===2)return $("egna").value.toLowerCase().split(/[\s,]+/).filter(w=>/^[a-zåäöé]+$/.test(w));
+  return(l===0?PAKET.slice(0,3):PAKET.slice(3,6)).join(" ").split(" ");}
+async function startTest(){const ord=lista().sort(()=>Math.random()-.5).slice(0,20),andel=+document.querySelector("#segF [aria-pressed=true]").dataset.f;
+  if(!ord.length)return alert("Skriv in några ord först.");
+  S.words=ord.map(w=>({w,fel:Math.random()<andel,forslag:felForslag(w)}));S.i=0;S.on=true;
+  try{await micOn();}catch(e){alert("Mikrofonen gick inte att starta: "+e.message);return;}
+  $("go").hidden=true;$("stop").hidden=false;$("stage").hidden=false;
+  while(S.on&&S.i<S.words.length){const x=S.words[S.i];
+    $("tag").className="tag "+(x.fel?"f":"r");$("tag").textContent=x.fel?"Läs fel med flit":"Läs rätt";$("word").textContent=x.w;
+    $("hint").textContent=x.fel?`Säg till exempel: ”${x.forslag}”`:"";$("res").textContent="";
+    const a=await listen();if(!S.on)break;setLamp("","Lyssnar av …");
+    const r=await LF.analys(a,x.w);S.rows.push({w:x.w,fel:x.fel,heard:r.heard,exakt:r.exakt,gop:r.gop,form:r.form,ms:r.ms,sek:a.length/16000});
+    $("res").innerHTML=`Datorn hörde: <span style="font-family:Andika">”${r.heard||"…"}”</span> (poäng ${r.gop.toFixed(2)})`;table();
+    await new Promise(r=>setTimeout(r,1100));S.i++;}
+  stopTest();}
+function stopTest(){S.on=false;cap=null;micOff();setLamp("","Mikrofonen är av");$("go").hidden=false;$("stop").hidden=true;$("stage").hidden=true;table();}
+function table(){const thr=+$("thr").value;$("thrv").textContent=thr.toFixed(2);
+  let fel=0,hitt=0,ratt=0,falsk=0;
+  $("tb").innerHTML=S.rows.map(r=>{const flagg=!r.exakt&&r.gop<thr,ok=flagg===r.fel;if(r.fel){fel++;if(flagg)hitt++;}else{ratt++;if(flagg)falsk++;}
+    return`<tr><td style="font-family:Andika">${r.w}</td><td>${r.fel?"fel":"rätt"}</td><td style="font-family:Andika">${r.heard||"–"}</td><td>${r.gop.toFixed(2)}</td><td>${flagg?"⚠️ kanske fel":"✓ rätt"}</td><td class="${ok?"ok":"no"}">${ok?"stämmer":"miss"}</td></tr>`;}).join("");
+  $("sum").textContent=S.rows.length?`Upptäckta fel: ${hitt} av ${fel}. Falsklarm: ${falsk} av ${ratt} rätt lästa ord.`:"Inga ord än.";}
+
+/* ---------- Knappar ---------- */
+const seg=(id,cb)=>$(id).onclick=e=>{const b=e.target.closest("button");if(!b)return;$(id).querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));cb&&cb(b);};
+seg("segM",b=>{mdl=b.dataset.m;if(model){$("lstat").textContent="Ladda om sidan för att byta storlek.";}});
+seg("segL",b=>{$("egna").hidden=b.dataset.l!=="2";});seg("segF");
+$("load").onclick=load;$("go").onclick=startTest;$("stop").onclick=stopTest;$("thr").oninput=table;
+$("copy").onclick=()=>{const t=`Läsfelslabbet (${mdl}), gräns ${(+$("thr").value).toFixed(2)}\n${$("sum").textContent}\n`+S.rows.map(r=>`${r.w}\t${r.fel?"fel":"rätt"}\t${r.heard}\t${r.gop.toFixed(2)}\t${(r.ms/1000).toFixed(2)} s`).join("\n");
+  navigator.clipboard.writeText(t).then(()=>alert("Kopierat!"),()=>{$("log").textContent=t;});};
+function log(m){$("log").textContent+=m+"\n";}
+table();
+</script>
+</body>
+</html>
