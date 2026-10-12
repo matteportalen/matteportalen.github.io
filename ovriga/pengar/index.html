@@ -91,6 +91,7 @@ input[type=range]{width:100%;accent-color:var(--good);height:36px}
 .hand{background:#F4F8F6;border-radius:16px;padding:10px 12px;margin-top:10px}
 .handel{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
 .handel .knapp{flex:1;min-width:130px;padding:8px 10px;font-size:.98rem}
+.byt{display:grid;gap:6px}.byt .pl{box-shadow:none;background:#F4F8F6}.byt .stepper button{height:38px;background:#fff;box-shadow:0 2px 0 var(--line)}
 .handel .knapp.rod{background:var(--bad);box-shadow:0 4px 0 #B23237}
 /* händelser */
 .hand-ev{position:fixed;inset:0;background:rgba(29,43,83,.5);display:grid;place-items:center;z-index:60;padding:16px}
@@ -396,25 +397,33 @@ function bRita(){const{a,i,per}=bl,[em,typ,txt]=INFO[a],v=A[a].v,f0=fran(a);
   const ant={"1":12,"3":36,"5":60,max:9999}[per],s=Math.max(f0,i-ant),ff=i>s?v[i]/v[s]-1:0;
   let h=`<h2>${em} ${A[a].n}</h2><div class="info" style="margin:0 0 6px">${typ} · ${txt}</div>`;
   if(a==="spar")h+=`<div class="kurs">${K.ranta[i].toFixed(2).replace(".",",")} %</div><div class="info">ränta per år i ${datum(i)}. Grafen visar hur 100 kr på kontot har växt.</div>`;
-  else h+=`<div class="kurs">${kurs(v[i])} kr</div><div class="forandr ${ff>=0?"up":"down"}">${pr(ff)} <span style="color:var(--muted);font-weight:700">${per==="max"?"sedan "+M[s].slice(0,4):"senaste "+(per==="1"?"året":per+" åren")}</span></div>`;
+  else h+=`<div class="kurs">${kurs(v[i])} kr</div><div class="forandr ${ff>=0?"up":"down"}">${pr(ff)} <span style="color:var(--muted);font-weight:700">${per==="max"?"sedan "+M[s].slice(0,4):s===f0&&i-s<ant?"sedan "+datum(s):"senaste "+(per==="1"?"året":per+" åren")}</span></div>`;
   h+=`<div class="perioder">${[["1","1 år"],["3","3 år"],["5","5 år"],["max","Max"]].map(([k,n])=>`<button data-per="${k}" aria-pressed="${k===per}">${n}</button>`).join("")}</div>
     <div class="graf"><canvas id="bGraf"></canvas></div>`;
   if(a!=="spar"){let ho=-Infinity,la=Infinity;for(let j=s;j<=i;j++){ho=Math.max(ho,v[j]);la=Math.min(la,v[j]);}
     h+=`<div class="nyckel"><span>Högsta</span><b>${kurs(ho)} kr</b><span>Lägsta</span><b>${kurs(la)} kr</b><span>Från toppen</span><b class="${v[i]>=ho?"up":"down"}">${pr(v[i]/ho-1)}</b><span>Månad</span><b style="text-transform:capitalize">${datum(i)}</b></div>`;}
-  if(!bl.bara&&a!=="spar"){const ag=(G.u[a]||0)*v[i];
-    h+=`<div class="hand">${ag>0?`Du äger <b>${kr(ag)}</b> <span class="${ag>=G.kost[a]?"up":"down"}" style="font-weight:800">(${pr(ag/G.kost[a]-1,0)})</span>. Du betalade ${kr(G.kost[a])}.`:"Du äger ingen än."} På sparkontot: <b>${kr(G.cash)}</b>
-      <div class="handel"><button class="knapp" id="bKop" ${G.cash<1000?"disabled":""}>Köp för 1 000 kr</button>${ag>0?`<button class="knapp rod" id="bSalj">Sälj allt (${kr(ag)})</button>`:""}</div>
-      ${G.cash<1000?'<div class="info">Du har mindre än 1 000 kr på sparkontot. Sälj något först om du vill köpa.</div>':""}<div class="info" id="bMsg"></div></div>`;}
+  if(!bl.bara&&a!=="spar"){const ag=(G.u[a]||0)*v[i],c=G.cash;
+    const andra=Object.keys(G.u).filter(x=>x!==a&&G.u[x]>1e-9);
+    h+=`<div class="hand">${ag>0?`Du äger <b>${kr(ag)}</b> <span class="${ag>=G.kost[a]?"up":"down"}" style="font-weight:800">(${pr(ag/G.kost[a]-1,0)})</span>. Du betalade ${kr(G.kost[a])}.`:"Du äger ingen än."}<br>På sparkontot: <b>${kr(c)}</b>
+      <div class="handel"><button class="knapp" data-kop="1000" ${c<1000?"disabled":""}>Köp för 1 000 kr</button>${c>=2000?`<button class="knapp" data-kop="alla">Köp för allt (${kr(c)})</button>`:""}</div>
+      ${ag>0?`<div class="handel"><button class="knapp rod" data-salj="1000">Sälj för 1 000 kr</button><button class="knapp rod" data-salj="alla">Sälj allt (${kr(ag)})</button></div>`:""}
+      <div class="info" id="bMsg">${c<1000?"Du har för lite på sparkontot. Sälj något annat nedanför för att få pengar.":""}</div></div>`;
+    if(andra.length)h+=`<div class="sub" style="margin-top:12px">💱 Sälj något annat för att få pengar</div><div class="byt">${andra.map(x=>{const vx=G.u[x]*A[x].v[i];
+      return`<div class="pl"><span class="em">${INFO[x][0]}</span><span class="tx"><b>${A[x].n}</b><small class="${vx>=G.kost[x]?"up":"down"}">${kr(vx)} (${pr(vx/G.kost[x]-1,0)})</small></span><span class="stepper" style="gap:6px"><button data-ann="${x}" data-b="1000" style="width:auto;padding:0 10px;font-size:.9rem">Sälj 1 000</button><button data-ann="${x}" data-b="alla" style="width:auto;padding:0 10px;font-size:.9rem">Allt</button></span></div>`;}).join("")}</div>`;}
   if(bl.bara)h+=`<div class="info">Kursen visas fram till januari 2007. Resten får du se när tidsmaskinen startar!</div>`;
   $("bInne").innerHTML=h;
   const cv=$("bGraf"),o={v:a==="spar"?v.map(x=>x*100/v[s]):v,a:s,b:i,hover:bl.hover,fmt:a==="spar"?x=>x.toFixed(1).replace(".",",")+" kr":null};rita(cv,o);
   pekbar(cv,hh=>{o.hover=hh;rita(cv,o);});
   $("bInne").querySelectorAll("[data-per]").forEach(b=>b.onclick=()=>{bl.per=b.dataset.per;bRita();});
-  if($("bKop"))$("bKop").onclick=()=>{kop(a,1000);bRita();$("bMsg").textContent=`Köpt för 1 000 kr. 🛒`;};
-  if($("bSalj"))$("bSalj").onclick=()=>{salj(a);bRita();$("bMsg").textContent="Sålt. Pengarna finns på sparkontot.";};}
+  const msg=t=>{const m=$("bMsg");if(m)m.textContent=t;};
+  $("bInne").querySelectorAll("[data-kop]").forEach(b=>b.onclick=()=>{const x=b.dataset.kop==="alla"?G.cash:1000;kop(a,x);bRita();msg(`Köpt ${A[a].n} för ${kr(x)}. 🛒`);});
+  $("bInne").querySelectorAll("[data-salj]").forEach(b=>b.onclick=()=>{const x=salj(a,b.dataset.salj==="alla"?Infinity:1000);bRita();msg(`Sålt för ${kr(x)}. Pengarna finns på sparkontot.`);});
+  $("bInne").querySelectorAll("[data-ann]").forEach(b=>b.onclick=()=>{const x=salj(b.dataset.ann,b.dataset.b==="alla"?Infinity:1000);bRita();msg(`Du sålde ${A[b.dataset.ann].n} för ${kr(x)}. Nu har du ${kr(G.cash)} att köpa för.`);});}
 function kop(a,belopp){belopp=Math.min(belopp,G.cash);if(belopp<=0)return;G.u[a]=(G.u[a]||0)+belopp/A[a].v[G.i];G.kost[a]=(G.kost[a]||0)+belopp;G.cash-=belopp;L().kaching&&L().kaching();}
-function salj(a){if(!G.u[a])return;G.cash+=G.u[a]*A[a].v[G.i];delete G.u[a];delete G.kost[a];L().pop&&L().pop();}
-function saljAllt(){Object.keys(G.u).forEach(salj);}
+// sälj för ett belopp (Infinity = allt); det man betalade minskar i samma andel. Ger beloppet.
+function salj(a,belopp=Infinity){if(!G.u[a])return 0;const p=A[a].v[G.i],ag=G.u[a]*p;let x=Math.min(belopp,ag);if(ag-x<100)x=ag;
+  if(x>=ag){delete G.u[a];delete G.kost[a];}else{G.kost[a]*=1-x/ag;G.u[a]-=x/p;}G.cash+=x;L().pop&&L().pop();return x;}
+function saljAllt(){Object.keys(G.u).forEach(a=>salj(a));}
 const iAktier=()=>Object.keys(G.u).reduce((s,a)=>s+G.u[a]*A[a].v[G.i],0);
 
 /* ---------- Händelser som stoppar tiden ---------- */
@@ -436,7 +445,7 @@ function efter(id,ar,rub){const val=G.val[id];if(!val||val==="ingen")return;cons
   else if(val==="vanta")t=`<p>Du väntade lugnt. Börsen har gått upp <b>${pr(A.sverige.v[G.i]/A.sverige.v[s.i]-1,0)}</b> sedan raset.</p><p>Dina pengar är nu värda <b>${kr(nu)}</b>. Att vänta är ofta det svåraste och det bästa när man sparar länge.</p>`;
   else t=`<p>Du köpte mer när det var billigt. Indexfond Sverige har gått upp <b>${pr(A.sverige.v[G.i]/A.sverige.v[s.i]-1,0)}</b> sedan du köpte.</p><p>Att köpa när andra är rädda kan löna sig, men ingen vet i förväg hur långt ner det går.</p>`;
   ruta("🔎",rub,t,[["Fortsätt",null]]);}
-function ny(a,txt){ruta(INFO[a][0],`Nytt: ${A[a].n}!`,`<p>${txt}</p><p>Kurs: <b>${kurs(A[a].v[G.i])} kr</b>.</p>`,[["Titta och kanske köpa",()=>{setTimeout(()=>{paus();blad(a,G.i,false);},50);},"bla"],["Fortsätt resan",null]]);}
+function ny(a,txt){ruta(INFO[a][0],`Nytt: ${A[a].n}!`,`<p>${txt}</p><p>Kurs: <b>${kurs(A[a].v[G.i])} kr</b>. På sparkontot har du ${kr(G.cash)}.${G.cash<1000&&Object.keys(G.u).length?" Vill du köpa kan du sälja något du äger.":""}</p>`,[["Titta, sälj och köp",()=>{setTimeout(()=>{paus();blad(a,G.i,false);},50);},"bla"],["Fortsätt resan",null]]);}
 const EV={
   "2008-03":()=>ny("varlden","En indexfond som köper en liten bit av tusentals företag i hela världen. Så sprider man pengarna väldigt mycket."),
   "2008-10":()=>kris("k08","Finanskrisen!",`Banker i USA har lånat ut pengar till folk som inte kunde betala tillbaka, och nu är hela världen orolig. Indexfond Sverige är värd <b>${pr(sv("2007-10","2008-10"),0)}</b> mindre än för ett år sedan.`),
