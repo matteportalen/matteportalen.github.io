@@ -49,14 +49,14 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 /* ---------- Framsteg ---------- */
 .wrap{max-width:1040px;margin:0 auto;padding:0 16px 40px}
 /* kompakt rad: stjärnor, garderoben och klistermärken */
-.mini{display:grid;grid-template-columns:auto 1fr 1fr;gap:8px;margin:0 0 6px;position:relative;z-index:2}
+.mini{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 6px;position:relative;z-index:2}
 @media(min-width:700px){.mini{display:flex;flex-wrap:wrap;justify-content:flex-start}}
 .mini>*{display:flex;align-items:center;gap:8px;background:var(--card);border:0;border-radius:14px;padding:6px 12px;box-shadow:0 3px 0 var(--line);font:inherit;color:inherit;text-align:left;min-width:0;min-height:48px}
-.mini button{cursor:pointer;position:relative}
-@media(max-width:360px){.mini button small{display:none}.mini button .ic{display:none}.mini button b{font-size:.9rem;word-break:keep-all;overflow-wrap:normal}.mini>*{padding:6px 8px}}
+.mini button,.mini a{cursor:pointer;position:relative;text-decoration:none}
+@media(max-width:360px){.mini button small,.mini a small{display:none}.mini button .ic,.mini a .ic{display:none}.mini button b{font-size:.9rem;word-break:keep-all;overflow-wrap:normal}.mini>*{padding:6px 8px}}
 /* "Nytt!" sitter som en etikett på knappens hörn och tar ingen plats på raden */
 .mini .new{position:absolute;top:-9px;right:-6px;margin:0;transform:rotate(6deg);box-shadow:0 2px 0 rgba(29,43,83,.2);z-index:1}
-.mini button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
+.mini a:active,.mini button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
 .mini .ic{font-size:1.35rem;line-height:1;flex:none}
 .mini b{display:block;font-size:.98rem;line-height:1.1;white-space:nowrap}
 .mini small{display:block;color:var(--muted);font-weight:700;font-size:.78rem;line-height:1.15}
@@ -226,6 +226,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
     <div class="whoami"><button class="chip" id="whoChip"></button></div>
     <div class="stars" title="Stjärnor och mynt"><span><b style="white-space:nowrap"><span id="sStars">0</span>⭐ <span id="sMynt">0</span>🪙</b><small id="sTitel">stjärnor och mynt</small></span></div>
     <button id="btnWard"><span class="ic">👗</span><span><b>Garderoben<span class="new" id="newWard" hidden>Nytt!</span></b><small id="wardInfo">Välj djur och kläder</small></span></button>
+    <a href="mittrum/" id="btnRum"><span class="ic">🏠</span><span><b>Mitt rum</b><small>Inred med mynt</small></span></a>
     <button id="btnAlbum"><span class="ic">📒</span><span><b>Klistermärken<span class="new" id="newAlbum" hidden>Nytt!</span></b><small id="albumInfo">0 av 0</small></span></button>
   </div>
 
@@ -636,7 +637,7 @@ $("bubble").textContent=`${hi} ${msg}`;
 <script>
 /* ============ Elevprofiler (allt sparas bara på den här enheten) ============ */
 (function(){
-const PKEYS=["mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
+const PKEYS=["mattespel-multiplikation-v1","matteportalen-rum","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
   "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-hogfrekventa-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","mattespel-vagen-v1","mattespel-gomda-v1","mattespel-kulbanan-v1","mattespel-affaren-v1","mattespel-rita-v1","mattespel-ordgatan-v1","mattespel-tangentbord-v1","mattespel-delaupp-v1","mattespel-matning-v1","matteportalen-mynt","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const jGet=k=>{try{return JSON.parse(lsGet(k)||"null")}catch(e){return null}},jSet=(k,v)=>lsSet(k,JSON.stringify(v));
