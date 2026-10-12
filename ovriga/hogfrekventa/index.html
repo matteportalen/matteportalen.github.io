@@ -499,8 +499,14 @@ function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:n
   recStart((ord,_f,_d,seg)=>{if(!F||F.i<0)return;const L=F.list,nu=F.i,gron=k=>{if(F.heard.has(k))return;F.heard.add(k);if(k===F.i){const el=$("fHk");if(el)el.textContent="✓ hört";}};
     // 🔎 Hör även fel: biten tal hör till ordet som visades när eleven började säga det (eller det förra)
     if(seg){const t=seg.t0+150;let k=0;for(let i=0;i<F.tid.length;i++)if(F.tid[i]<=t)k=i;
+      // läser eleven fort kan två eller tre ord hamna i samma bit ("jag att"): varje ord i texten prövas mot de senast visade orden
+      // (lärarens test i 1,5 s: bara 14 av 20 ord blev gröna)
+      const hela=[k,k-1,k-2].filter(c=>c>=0),sist=Math.max(nu,k);for(let c=k+1;c<=sist;c++)hela.unshift(c);
+      let traff=false;for(const c of hela)if(!F.heard.has(c)&&hor(L[c],ord,L)){gron(c);traff=true;}
+      if(traff||ord.length>1)return;
+      // ett ord i biten: bedöm det mot ordet som visades (eller det förra) och spara "lät som" om det lät annorlunda
       let best=null;for(const c of [k,k-1])if(c>=0){const r=MPLasfel.bedom(seg.lp,L[c],UTTAL[L[c]]);if(!best||r.exakt||r.gop>best.r.gop)best={c,r};if(r.exakt)break;}
-      if(best&&!F.heard.has(best.c)){if(best.r.ok||hor(L[best.c],ord,L))gron(best.c);else if(!best.r.delvis&&seg.heard&&!F.las[best.c])F.las[best.c]=seg.heard.replace(/\s+/g," ");}
+      if(best&&!F.heard.has(best.c)){if(best.r.ok)gron(best.c);else if(!best.r.delvis&&seg.heard&&!F.las[best.c])F.las[best.c]=seg.heard.replace(/\s+/g," ");}
       return;}
     // ordet som visas nu eller det förra (det kan ha bytts innan datorn hunnit höra), eller båda ihop
     for(const k of data.motor==="kb"?[nu,nu-1,nu-2]:[nu,nu-1])if(k>=0&&!F.heard.has(k)&&hor(L[k],ord,L))gron(k);
