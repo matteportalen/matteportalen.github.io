@@ -90,9 +90,13 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .lmsg{text-align:center;font-weight:800;color:var(--muted);margin:12px 0 0;min-height:1.4em}
 /* efter blixtläsning: markera svåra ord */
 .marks{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
-.mk{font-family:var(--las);font-weight:700;font-size:1.6rem;padding:4px 14px;border-radius:14px;background:#F2F8F3;color:var(--c);box-shadow:0 3px 0 var(--line)}
+/* alla ord i samma neutrala färg, så att bara "svårt" (rött) syns; ✓ = datorn hörde ordet (lärarens fynd: färgerna blev otydliga) */
+.mk{font-family:var(--las);font-weight:700;font-size:1.6rem;padding:4px 14px;border-radius:14px;background:#fff;color:var(--ink);box-shadow:0 3px 0 var(--line);position:relative}
 .mk.hard{background:#FFE3E5;color:#B8323A;box-shadow:0 0 0 3px #F3A9AE}
-.mk.heard{background:#DDF5E7;box-shadow:0 0 0 3px #A9DFC0}
+.mk .ck{font-family:var(--font);font-size:.85rem;color:var(--good-dark);margin-left:4px;vertical-align:.25em}
+.mgrp{margin:10px 0 4px;font-weight:800;color:var(--muted);text-align:center;font-size:1rem}
+.mgrp small{display:block;font-weight:700;font-size:.85rem}
+.big .hk{display:block;font-family:var(--font);font-size:1rem;color:var(--good-dark);height:1.2em}
 /* hitta ordet */
 .choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .choice{font-family:var(--las);font-weight:700;font-size:clamp(2rem,9vw,3.2rem);padding:14px 6px;border-radius:20px;background:var(--card);box-shadow:0 5px 0 var(--line);color:var(--c)}
@@ -169,9 +173,9 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
   <div class="top"><button class="back" data-home>← Avsluta</button><span class="info" id="fInfo"></span></div>
   <div class="stage" id="fStage"></div>
   <div id="fAfter" hidden>
-    <h2 style="text-align:center">Tryck på orden som var svåra</h2>
-    <div class="marks" id="fMarks"></div>
-    <p class="note" id="fNote"></p>
+    <h2 style="text-align:center">Vilka ord var svåra?</h2>
+    <p class="note" id="fNote" style="margin-top:0"></p>
+    <div id="fMarks"></div>
     <div class="row2"><button class="alt" id="fAgain">⚡ En gång till</button><button class="go" id="fDone">Klar ✓</button></div>
   </div>
   <p class="note" id="fHint">Läs ordet högt innan det försvinner!</p>
@@ -478,19 +482,23 @@ function flashWords(){const ws=valdaOrd(),old=PAKET.slice(0,valda()[0]).flat();
 function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:new Set()};show("flash");$("fAfter").hidden=true;$("fHint").hidden=false;$("fStage").hidden=false;
   // nedräkning 3, 2, 1
   let n=3;const cd=()=>{$("fStage").innerHTML=`<div class="big in" style="--c:#56668F">${n}</div>`;if(n-->1)later(cd,700);else later(nextFlash,700);};cd();
-  recStart(ord=>{if(!F||F.i<0)return;const L=F.list,nu=F.i,gron=k=>{if(F.heard.has(k))return;F.heard.add(k);if(k===F.i){const el=$("fWord");if(el)el.classList.add("ok");}window.Ljud&&Ljud.ok&&Ljud.ok();};
+  recStart(ord=>{if(!F||F.i<0)return;const L=F.list,nu=F.i,gron=k=>{if(F.heard.has(k))return;F.heard.add(k);if(k===F.i){const el=$("fHk");if(el)el.textContent="✓ hört";}};
     // ordet som visas nu eller det förra (det kan ha bytts innan datorn hunnit höra), eller båda ihop
     for(const k of data.motor==="kb"?[nu,nu-1,nu-2]:[nu,nu-1])if(k>=0&&!F.heard.has(k)&&hor(L[k],ord,L))gron(k);
     if(nu>0&&ord.some(o=>ihop(L[nu-1],L[nu],o))){gron(nu-1);gron(nu);}});}
 function nextFlash(){F.i++;if(F.i>=F.list.length)return flashAfter();const w=F.list[F.i],ms=data.fart*1000;sett(w);
   $("fInfo").textContent=`${F.i+1} / ${F.list.length}`;
-  $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?`<span class="heard${micLyss?" on":""}">${micLyss?"lyssnar":micTxt}</span>`:""}`;
+  $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}${micOn()?`<span class="hk" id="fHk"></span>`:""}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?`<span class="heard${micLyss?" on":""}">${micLyss?"lyssnar":micTxt}</span>`:""}`;
   const t=$("fT");if(t&&!reduced()){t.animate([{width:"100%"},{width:"0%"}],{duration:ms,easing:"linear",fill:"forwards"});}
   later(nextFlash,ms);}
 function flashAfter(){recStop();$("fStage").hidden=true;$("fHint").hidden=true;$("fAfter").hidden=false;$("fInfo").textContent="Klart!";
   const uniq=[...new Set(F.list)],hw=new Set([...F.heard].map(i=>F.list[i]));F.hw=hw;
-  $("fMarks").innerHTML=uniq.map(w=>`<button class="mk${hw.has(w)?" heard":""}" data-w="${w}" style="--c:${col(w)}">${w}</button>`).join("");
-  $("fNote").textContent=micOn()?`Gröna ord hörde datorn. Tryck på de ord som var svåra.`:"Tryck på de ord som var svåra. Resten räknas som lästa.";
+  const chip=w=>`<button class="mk" data-w="${w}">${w}${micOn()&&hw.has(w)?'<span class="ck">✓</span>':""}</button>`;
+  if(micOn()){const a=uniq.filter(w=>hw.has(w)),b=uniq.filter(w=>!hw.has(w));
+    $("fMarks").innerHTML=(b.length?`<div class="mgrp">Datorn hörde inte de här orden<small>Det behöver inte betyda att de var fel. Datorn hör inte alltid.</small></div><div class="marks">${b.map(chip).join("")}</div>`:"")+
+      (a.length?`<div class="mgrp">✓ Datorn hörde de här orden</div><div class="marks">${a.map(chip).join("")}</div>`:"");}
+  else $("fMarks").innerHTML=`<div class="marks">${uniq.map(chip).join("")}</div>`;
+  $("fNote").textContent="Tryck på de ord som var svåra, så blir de röda. Resten räknas som lästa.";
   $("fMarks").querySelectorAll("[data-w]").forEach(b=>b.onclick=()=>{const w=b.dataset.w;if(F.hard.has(w))F.hard.delete(w);else F.hard.add(w);b.classList.toggle("hard",F.hard.has(w));});}
 $("fAgain").onclick=()=>{saveFlash();startFlash();};
 $("fDone").onclick=()=>{saveFlash();updStars();const ok=[...new Set(F.list)].filter(w=>!F.hard.has(w)).length;
