@@ -151,6 +151,7 @@ input[type=range]{width:100%;accent-color:var(--good);height:36px}
 <section id="tval" hidden>
   <button class="back" data-home>← Tillbaka</button>
   <h2>⏳ Januari 2007</h2>
+  <p class="prat" style="margin:0 0 8px">⚠️ Vi börjar i januari 2007, precis före en av de största börskrascherna någonsin. Det var en av de sämsta tidpunkterna att börja spara i aktier. Vad händer med dina pengar?</p>
   <p class="lead" style="margin-bottom:8px">Du har <b>10 000 kr</b>. Vad vill du köpa? Tryck på + för att lägga 1 000 kr. Det du inte använder hamnar på sparkontot och får ränta. Tryck på en rad för att se kursen.</p>
   <div class="lista" id="valLista"></div>
   <div class="kvar"><b id="kvarTxt"></b><button class="knapp" id="startTid">▶ Starta tidsmaskinen</button></div>
@@ -186,6 +187,8 @@ input[type=range]{width:100%;accent-color:var(--good);height:36px}
   </div>
   <div class="sub">Vad hade hänt om du gjort så här i stället?</div>
   <div class="card"><div class="jmf" id="rJmf"></div><p class="info" id="rJmfInfo"></p></div>
+  <div class="sub">Om du hade börjat ett annat år</div>
+  <div class="card"><p style="margin:0 0 8px;font-weight:700">10 000 kr i Indexfond Sverige i januari, efter tio år:</p><div class="jmf" id="rAr"></div><p class="info" id="rArInfo"></p></div>
   <div class="sub">Det som gick bäst och sämst från 2007</div>
   <div class="card" id="rBast"></div>
   <p class="info">Det här var historien. Ingen vet hur det går i framtiden, och det som gick bäst förra gången kan gå dåligt nästa gång.</p>
@@ -476,6 +479,11 @@ function slut(){paus();if(skarm!=="game")return;const v=varde(),f=v/START-1;
   const top=Math.max(...rader.map(r=>r[1]));
   $("rJmf").innerHTML=rader.map(([n,x,c,du])=>`<div class="jr${du?" du":""}"><span>${n}</span><span class="st" style="width:${Math.max(18,x/top*100)}%;background:${c}">${kr(x)}</span></div>`).join("");
   $("rJmfInfo").textContent=`Indexfonderna har redan låg avgift (0,1–0,5 % per år). Med 1,5 % i avgift varje år hade samma fond gett ${kr(bara("sverige")-avg)} mindre. Spargrisen har kvar 10 000 kr, men priserna har stigit, så pengarna räcker bara till lika mycket som ${kr(START*K.kpi[0]/K.kpi[N-1])} gjorde 2007.`;
+  // startåren 2005–2016, tio år var
+  const AS=K.arSverige,ar=[];for(let y=AS.fran;y+10<=AS.fran+AS.v.length-1;y++)ar.push([y,START*AS.v[y+10-AS.fran]/AS.v[y-AS.fran]]);
+  const arTop=Math.max(...ar.map(x=>x[1])),arS=[...ar].sort((x,y)=>x[1]-y[1]),alla=ar.every(x=>x[1]>START);
+  $("rAr").innerHTML=ar.map(([y,x])=>`<div class="jr${y===2007?" du":""}"><span>${y}–${y+10}${y===2007?" (du)":""}</span><span class="st" style="width:${Math.max(18,x/arTop*100)}%;background:${y===2007?"#3D5AFE":x>START?"#1E9E5E":"#E5484D"}">${kr(x)}</span></div>`).join("");
+  $("rArInfo").textContent=`Sämst var att börja ${arS[0][0]} (${kr(arS[0][1])}) och bäst ${arS[arS.length-1][0]} (${kr(arS[arS.length-1][1])}). ${alla?"Alla startår gav mer pengar efter tio år, men hur mycket berodde på när man började.":"Några startår gav mindre pengar efter tio år."} Ju längre man sparar, desto mindre betyder det vilket år man började. Ingen kan veta i förväg om det är ett bra år att börja.`;
   const fr07=ORDN.filter(a=>fran(a)===0).map(a=>[a,bara(a)]).sort((x,y)=>y[1]-x[1]);
   const b=fr07[0],s=fr07[fr07.length-1];
   $("rBast").innerHTML=`<p style="margin:0 0 6px">${INFO[b[0]][0]} <b>${A[b[0]].n}</b>: 10 000 kr blev <b class="up">${kr(b[1])}</b>.</p><p style="margin:0 0 6px">${INFO[s[0]][0]} <b>${A[s[0]].n}</b>: 10 000 kr blev <b class="${s[1]>=START?"up":"down"}">${kr(s[1])}</b>.</p><p class="info" style="margin:0">Bitcoin räknas inte här eftersom den inte fanns att köpa 2007. 1 000 kr i bitcoin i oktober 2014 hade blivit ${kr(1000*A.bitcoin.v[N-1]/A.bitcoin.v[mi("2014-10")])}, men på vägen rasade den flera gånger med mer än hälften.</p>`;
