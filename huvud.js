@@ -95,7 +95,7 @@ body.mph-mini #quit{display:none}
     const dv=get('mattespel-division-v1');if(dv&&dv.facts)n+=medalsFrom((q,d)=>dv.facts[d+':'+q+':0']||[]).reduce((a,b)=>a+b,0);
     const sp=get('mattespel-spel-v1')||{};
     n+=['fly','mem','car','space','frog','tower','skatt','kiosk','bubbel','tug'].flatMap(k=>Object.values(sp[k]||{})).reduce((a,r)=>a+((r&&r.stars)||0),0);
-    ['klockan','geometri','brak','uppstallning','hundraruta','tiotal','taluppfattning','sverigekartan','ordgomma','europa','varlden','talfoljd','rutjakten','brakbitar','kortdivision','vagen','gomda','kulbanan','affaren','hogfrekventa','rita','ordgatan','tangentbord','delaupp','matning'].forEach(k=>{const d=get('mattespel-'+k+'-v1');n+=sum((d&&d.stars)||{});});
+    ['klockan','geometri','brak','uppstallning','hundraruta','tiotal','taluppfattning','sverigekartan','ordgomma','europa','varlden','talfoljd','rutjakten','brakbitar','kortdivision','vagen','gomda','kulbanan','affaren','hogfrekventa','rita','ordgatan','tangentbord','delaupp','matning','pengar'].forEach(k=>{const d=get('mattespel-'+k+'-v1');n+=sum((d&&d.stars)||{});});
     const sj=get('mattespel-skattjakten-v1');n+=Object.values((sj&&sj.stars)||{}).reduce((a,b)=>a+(+b||0),0);
     return n;
   };
@@ -161,7 +161,7 @@ body.mph-mini #quit{display:none}
 
   /* ---------- Bakåtknappen ---------- */
   const helskarm=(ds.helskarm||'').split(/\s+/).filter(Boolean);
-  const djup=id=>id==='home'||id==='menu'||id==='start'?0:['game','result','mem','bub','win','tug','paint','pbplay','tid'].includes(id)?2:1;
+  const djup=id=>id==='home'||id==='menu'||id==='start'?0:['game','result','mem','bub','win','tug','paint','pbplay','tid','fragor','klar'].includes(id)?2:1;
   const BACK=['#quit','[data-home]','#toolBack','#rModes','#rHome','#rChoose','#backMenu','#memQuit','#bubQuit','#wHome','#tugQuit','#tugBack','.back:not(a)'];
   const navOn=ds.nav!=='av';
   let cur={mp:'home',d:0,i:0},st=[0],ign=0,fix=null,popping=false;
