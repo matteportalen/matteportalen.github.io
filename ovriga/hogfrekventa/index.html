@@ -593,7 +593,12 @@ function minuteHear(_,__,delar){if(MIN.phase!=="run")return;const L=MIN.list;
   const traff=k=>{if(fel&&MIN.pend&&MIN.pend.after===k-2&&ledig(k-1)&&likt(MIN.pend.tok,L[k-1]))MIN.las[k-1]=MIN.pend.tok;MIN.pend=null;gron(k);};
   for(const d of delar){const fore=MIN.sett[d.id]||0;if(d.ord.length<=fore)continue;MIN.sett[d.id]=d.ord.length;
     for(const tok of d.ord.slice(fore)){const omr=[...Array(8)].map((_,n)=>MIN.last+1+n).concat([...Array(4)].map((_,n)=>MIN.last-n));
-      const k=omr.find(k=>ledig(k)&&passar(L[k],tok,L));if(k!==undefined){traff(k);continue;}
+      // exakta träffar först (listan upprepar samma få ord, och en ungefärlig träff längre fram fick datorn att hoppa förbi orden);
+      // ungefärliga träffar bara för de närmaste orden. Med 🔎 skriver modellen det den hör, så där räcker exakt eller ett långt ord med en bokstav fel.
+      const exakt=(w,t)=>t===w||(UTTAL[w]||[]).includes(t)||(/^\d+$/.test(t)&&SIFFROR[+t]===w);
+      const nara=omr.slice(0,3).concat(omr.slice(8,9)),ungefar=(w,t)=>fel?w.length>=5&&lev(w,t)<=1:passar(w,t,L);
+      let k=omr.find(k=>ledig(k)&&exakt(L[k],tok));if(k===undefined)k=nara.find(k=>ledig(k)&&ungefar(L[k],tok));
+      if(k!==undefined){traff(k);continue;}
       const k2=omr.find(k=>ledig(k)&&ledig(k+1)&&ihop(L[k],L[k+1],tok));if(k2!==undefined){traff(k2);gron(k2+1);continue;}
       // inget ord stämde: kom ihåg det (ett i taget) tills nästa rätt hörda ord visar vilket ord det gällde
       if(fel)MIN.pend=MIN.pend?{tok:null,after:-9}:{tok,after:MIN.last};}}}
