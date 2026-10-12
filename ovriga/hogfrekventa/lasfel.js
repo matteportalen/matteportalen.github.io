@@ -9,16 +9,20 @@
    MPLasfel.stop(), .laddad, .lyssnar */
 window.MPLasfel=(()=>{
   const TF="https://cdn.jsdelivr.net/npm/@huggingface/transformers@4.3.1/dist/transformers.min.js";
-  const MODELL="FredrikKarlssonSpeech/wav2vec2-large-voxrex-swedish-onnx",DTYPE="q4",GRANS=-0.25;
-  let proc=null,model=null,vocab=null,laddar=null;
+  // lärarens egen kopia på Hugging Face (samma fil som originalet); går den inte att nå hämtas originalet
+  const KALLOR=["hepsan/kb-wav2vec2-svenska-q4","FredrikKarlssonSpeech/wav2vec2-large-voxrex-swedish-onnx"],DTYPE="q4",GRANS=-0.25;
+  let proc=null,model=null,vocab=null,laddar=null,kalla="";
   function ladda(onProgress){if(model)return Promise.resolve();if(laddar)return laddar;
     laddar=(async()=>{const T=await import(TF);T.env.allowLocalModels=false;
       let dev="wasm";try{const ad=navigator.gpu&&await navigator.gpu.requestAdapter();if(ad)dev="webgpu";}catch(e){}
       const filer={};const prog=x=>{if(x.status==="progress"&&x.total&&onProgress){filer[x.file]=[x.loaded,x.total];let a=0,b=0;for(const k in filer){a+=filer[k][0];b+=filer[k][1];}onProgress(a,b);}};
-      proc=await T.AutoProcessor.from_pretrained(MODELL,{progress_callback:prog});
-      try{model=await T.AutoModelForCTC.from_pretrained(MODELL,{device:dev,dtype:DTYPE,progress_callback:prog});}
-      catch(e){if(dev!=="webgpu")throw e;model=await T.AutoModelForCTC.from_pretrained(MODELL,{device:"wasm",dtype:DTYPE,progress_callback:prog});}
-      const vj=await (await fetch(`https://huggingface.co/${MODELL}/resolve/main/vocab.json`)).json();vocab=[];for(const k in vj)vocab[vj[k]]=k;
+      let fel=null;for(const MODELL of KALLOR){try{
+        proc=await T.AutoProcessor.from_pretrained(MODELL,{progress_callback:prog});
+        try{model=await T.AutoModelForCTC.from_pretrained(MODELL,{device:dev,dtype:DTYPE,progress_callback:prog});}
+        catch(e){if(dev!=="webgpu")throw e;model=await T.AutoModelForCTC.from_pretrained(MODELL,{device:"wasm",dtype:DTYPE,progress_callback:prog});}
+        const vj=await (await fetch(`https://huggingface.co/${MODELL}/resolve/main/vocab.json`)).json();vocab=[];for(const k in vj)vocab[vj[k]]=k;kalla=MODELL;fel=null;break;
+      }catch(e){fel=e;model=null;}}
+      if(fel)throw fel;
       await run(new Float32Array(8000));})().catch(e=>{laddar=null;model=null;throw e;});
     return laddar;}
   async function run(audio){const out=await model(await proc(audio)),L=out.logits,[,TT,V]=L.dims,d=L.data,lp=new Array(TT);
@@ -67,5 +71,5 @@ window.MPLasfel=(()=>{
       while(buf.length>=320)ram(Float32Array.from(buf.splice(0,320)));};
     Object.assign(V,{tal:false,ljud:[],fore:[],tyst:0,ramar:0});mic.ctx=ctx;mic.strom=strom;}
   function stop(){cb=null;ko=[];try{mic.strom&&mic.strom.getTracks().forEach(t=>t.stop());}catch(e){}try{mic.ctx&&mic.ctx.close();}catch(e){}mic.ctx=null;mic.strom=null;}
-  return{ladda,start,stop,bedom,lp:run,get laddad(){return !!model;},get lyssnar(){return !!mic.strom;}};
+  return{ladda,start,stop,bedom,lp:run,get laddad(){return !!model;},get kalla(){return kalla;},get lyssnar(){return !!mic.strom;}};
 })();
