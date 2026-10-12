@@ -53,6 +53,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 @media(min-width:700px){.mini{display:flex;flex-wrap:wrap;justify-content:flex-start}}
 .mini>*{display:flex;align-items:center;gap:8px;background:var(--card);border:0;border-radius:14px;padding:6px 12px;box-shadow:0 3px 0 var(--line);font:inherit;color:inherit;text-align:left;min-width:0;min-height:48px}
 .mini button{cursor:pointer;position:relative}
+@media(max-width:360px){.mini button small{display:none}.mini button .ic{display:none}.mini button b{font-size:.9rem;word-break:keep-all;overflow-wrap:normal}.mini>*{padding:6px 8px}}
 /* "Nytt!" sitter som en etikett på knappens hörn och tar ingen plats på raden */
 .mini .new{position:absolute;top:-9px;right:-6px;margin:0;transform:rotate(6deg);box-shadow:0 2px 0 rgba(29,43,83,.2);z-index:1}
 .mini button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--line)}
@@ -118,7 +119,9 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 .item small{display:block;font-weight:800;font-size:.8rem;line-height:1.2}
 .item.sel{outline:3px solid var(--accent,#3D5AFE);background:#EEF1FF}
 .item.locked{cursor:default}
-.item.locked svg{filter:grayscale(1);opacity:.35}
+.item.locked svg{opacity:.7}
+.item.locked small b{color:#9A7A00}
+.item.fraga{box-shadow:0 0 0 3px var(--gold),0 3px 0 var(--line);background:#FFF6D6}
 .item.locked small{color:var(--muted)}
 .stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(98px,1fr));gap:10px;margin-top:8px}
 .stk{background:var(--bg);border-radius:16px;padding:8px 4px 6px;text-align:center}
@@ -221,7 +224,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 <main class="wrap">
   <div class="mini">
     <div class="whoami"><button class="chip" id="whoChip"></button></div>
-    <div class="stars" title="Stjärnor och medaljer"><span class="ic">⭐</span><span><b id="sStars">0</b><small>stjärnor</small></span></div>
+    <div class="stars" title="Stjärnor och mynt"><span><b style="white-space:nowrap"><span id="sStars">0</span>⭐ <span id="sMynt">0</span>🪙</b><small id="sTitel">stjärnor och mynt</small></span></div>
     <button id="btnWard"><span class="ic">👗</span><span><b>Garderoben<span class="new" id="newWard" hidden>Nytt!</span></b><small id="wardInfo">Välj djur och kläder</small></span></button>
     <button id="btnAlbum"><span class="ic">📒</span><span><b>Klistermärken<span class="new" id="newAlbum" hidden>Nytt!</span></b><small id="albumInfo">0 av 0</small></span></button>
   </div>
@@ -357,6 +360,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
   <div class="top"><h2>Garderoben</h2><button class="close" data-close aria-label="Stäng">✕</button></div>
   <div class="preview" id="wardPreview"></div>
   <p style="text-align:center;margin:0;color:var(--muted);font-weight:700" id="wardStars"></p>
+  <p style="text-align:center;margin:2px 0 0;font-weight:800;min-height:1.3em" id="wardMsg"></p>
   <div class="tabsw" id="wardTabs"></div>
   <div class="items" id="wardItems"></div>
   <button class="gobtn" data-close>Klar!</button>
@@ -460,38 +464,58 @@ const daySet=new Set(st.days);
 let streak=0;{let d=new Date();if(!daySet.has(today))d=new Date(Date.now()-864e5);while(daySet.has(day(d))){streak++;d=new Date(d.getTime()-864e5)}}
 S.bestStreak=0;{let run=0,prev=null;st.days.slice().sort().forEach(x=>{const t=new Date(x+"T12:00");run=prev&&Math.round((t-prev)/864e5)===1?run+1:1;prev=t;S.bestStreak=Math.max(S.bestStreak,run)})}
 
-/* ---------- Ugglan ---------- */
-const owlCfg=Object.assign({animal:"uggla",color:"lila",glasses:"runda",hat:"ingen",neck:"ingen",seen:[]},get("matteportalen-uggla")||{});
+/* ---------- Mitt djur och mynten ---------- */
+const owlCfg=Object.assign({animal:"uggla",color:"lila",glasses:"runda",hat:"ingen",neck:"ingen",hand:"ingen",back:"ingen",seen:[]},get("matteportalen-uggla")||{});
 const saveOwl=()=>put("matteportalen-uggla",owlCfg);
-const unlockedItem=it=>S.stars>=it.need;
-// Om stjärnorna har minskat (t.ex. efter nollställning) byts låsta saker ut
-Object.keys(WARD).forEach(k=>{if(!unlockedItem(itemOf(k,owlCfg[k])))owlCfg[k]=WARD[k].items[0].id});
+// Garderoben är en butik: saker köps för mynt (MPMynt i huvud.js). Första gången blir allt man redan låst upp med stjärnor köpt.
+const M=()=>MPMynt.get();
+{const m=M();if(m.kopt===null){m.kopt=Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>it.need>0&&S.stars>=it.need).map(it=>k+":"+it.id));MPMynt.spara(m);}}
+const owned=(k,it)=>!it.pris||(M().kopt||[]).includes(k+":"+it.id);
+const unlockedItem=it=>{const k=Object.keys(WARD).find(k=>WARD[k].items.includes(it));return owned(k,it);};
+Object.keys(WARD).forEach(k=>{if(!owned(k,itemOf(k,owlCfg[k])))owlCfg[k]=WARD[k].items[0].id});
+// titlar efter stjärnorna, som aldrig tar slut
+const TITLAR=[[0,"Nybörjare"],[10,"Stjärnspanare"],[25,"Stjärnsamlare"],[50,"Stjärnjägare"],[100,"Stjärnkapten"],[200,"Stjärnmästare"],[400,"Stjärnlegend"],[800,"Stjärnhjälte"]];
+function titel(n){let i=0;while(i+1<TITLAR.length&&n>=TITLAR[i+1][0])i++;
+  if(i===TITLAR.length-1){const extra=Math.floor((n-800)/400);return{namn:"Stjärnhjälte"+(extra?" "+(extra+1):""),nasta:800+(extra+1)*400,nastaNamn:"Stjärnhjälte "+(extra+2)};}
+  return{namn:TITLAR[i][1],nasta:TITLAR[i+1][0],nastaNamn:TITLAR[i+1][1]};}
+function visaMynt(){const m=M(),t=titel(S.stars);$("sMynt").textContent=m.m;$("sTitel").textContent=t.namn;
+  $("sTitel").parentNode.parentNode.title=`${t.namn}. ${t.nasta-S.stars} stjärnor till ${t.nastaNamn}.`;}
 
 const allItems=()=>Object.entries(WARD).flatMap(([k,v])=>v.items.map(it=>k+":"+it.id));
 function drawOwl(){$("owlSlot").innerHTML=owlSVG(owlCfg);}
 function wardBadge(){
-  const newOnes=Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>it.need>0&&unlockedItem(it)&&!owlCfg.seen.includes(k+":"+it.id)));
-  $("newWard").hidden=!newOnes.length;
-  const next=Object.values(WARD).flatMap(v=>v.items).filter(it=>!unlockedItem(it)).sort((a,b)=>a.need-b.need)[0];
-  $("wardInfo").textContent=next?`Nästa sak vid ${next.need} ⭐`:"Allt är upplåst!";
+  const m=M().m,ej=Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>!owned(k,it)).map(it=>[k,it]));
+  // Nytt! när man har råd med något man inte har sett att man har råd med
+  const nya=ej.filter(([k,it])=>it.pris<=m&&!owlCfg.seen.includes("rad:"+k+":"+it.id));
+  $("newWard").hidden=!nya.length;
+  const billig=ej.map(([,it])=>it.pris).sort((a,b)=>a-b)[0];
+  $("wardInfo").textContent=billig==null?"Allt är köpt!":billig<=m?"Något nytt att köpa!":`Nästa sak: ${billig} 🪙`;
+  visaMynt();
 }
-let wardTab="animal";
+let wardTab="animal",kopFraga=null;
 function renderWard(){
   $("wardPreview").innerHTML=owlSVG(owlCfg);
-  $("wardStars").textContent=`Du har ${S.stars} ⭐`;
+  $("wardStars").textContent=`Du har ${M().m} 🪙. Mynt får du när du tränar och tar stjärnor.`;
   $("wardTabs").innerHTML=Object.entries(WARD).map(([k,v])=>`<button data-tab="${k}" aria-pressed="${k===wardTab}">${v.name}</button>`).join("");
   $("wardItems").innerHTML=WARD[wardTab].items.map(it=>{
-    const open=unlockedItem(it),cfg=Object.assign({},owlCfg,{[wardTab]:it.id},wardTab==="animal"?{color:"natur"}:{});
-    return`<button class="item${owlCfg[wardTab]===it.id?" sel":""}${open?"":" locked"}" data-item="${it.id}">${owlSVG(cfg)}<small>${open?it.name:"🔒 "+it.need+" ⭐"}</small></button>`;
+    const open=owned(wardTab,it),cfg=Object.assign({},owlCfg,{[wardTab]:it.id},wardTab==="animal"?{color:"natur"}:{}),fraga=kopFraga===wardTab+":"+it.id;
+    return`<button class="item${owlCfg[wardTab]===it.id?" sel":""}${open?"":" locked"}${fraga?" fraga":""}" data-item="${it.id}">${owlSVG(cfg)}<small>${open?it.name:fraga?`Köp för ${it.pris} 🪙?`:`${it.name}<br>🪙 ${it.pris}`}</small></button>`;
   }).join("");
 }
 $("wardTabs").onclick=e=>{const b=e.target.closest("[data-tab]");if(b){wardTab=b.dataset.tab;renderWard();}};
 $("wardItems").onclick=e=>{const b=e.target.closest("[data-item]");if(!b)return;
   const it=itemOf(wardTab,b.dataset.item);
-  if(!unlockedItem(it)){b.animate([{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"translateX(0)"}],{duration:250});return;}
-  owlCfg[wardTab]=it.id;if(wardTab==="animal")owlCfg.color="natur";saveOwl();renderWard();drawOwl();window.Ljud&&Ljud.ok();};
+  const key=wardTab+":"+it.id;
+  if(!owned(wardTab,it)){const m=M().m;
+    if(m<it.pris){kopFraga=null;$("wardMsg").textContent=`${it.name} kostar ${it.pris} 🪙. Du behöver ${it.pris-m} mynt till.`;b.animate([{transform:"translateX(-5px)"},{transform:"translateX(5px)"},{transform:"translateX(0)"}],{duration:250});renderWard();return;}
+    // första trycket frågar, andra köper
+    if(kopFraga!==key){kopFraga=key;$("wardMsg").textContent=`Tryck en gång till för att köpa ${it.name.toLowerCase()}.`;renderWard();return;}
+    if(!MPMynt.kop(key,it.pris))return;kopFraga=null;$("wardMsg").textContent=`Köpt! ${it.name} är din. 🎉`;window.Ljud&&Ljud.kaching&&Ljud.kaching();}
+  else{kopFraga=null;$("wardMsg").textContent="";}
+  owlCfg[wardTab]=it.id;if(wardTab==="animal")owlCfg.color="natur";saveOwl();renderWard();drawOwl();wardBadge();window.Ljud&&Ljud.ok();};
 function openWard(){
-  owlCfg.seen=allItems();saveOwl();wardBadge();renderWard();$("mWard").hidden=false;
+  const m=M().m;owlCfg.seen=[...new Set([...(owlCfg.seen||[]),...Object.entries(WARD).flatMap(([k,v])=>v.items.filter(it=>it.pris<=m).map(it=>"rad:"+k+":"+it.id))])];
+  kopFraga=null;$("wardMsg").textContent="";saveOwl();wardBadge();renderWard();$("mWard").hidden=false;
   $("bubble").textContent=pickLine();
 }
 const pickLine=()=>["Vad fin jag blir!","Snyggt val!","Tack! Nu är jag redo att räkna."][Math.floor(Math.random()*3)];
@@ -613,7 +637,7 @@ $("bubble").textContent=`${hi} ${msg}`;
 /* ============ Elevprofiler (allt sparas bara på den här enheten) ============ */
 (function(){
 const PKEYS=["mattespel-multiplikation-v1","mattespel-division-v1","mattespel-klockan-v1","mattespel-tiotal-v1","mattespel-taluppfattning-v1","mattespel-lillaplus-v1",
-  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-hogfrekventa-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","mattespel-vagen-v1","mattespel-gomda-v1","mattespel-kulbanan-v1","mattespel-affaren-v1","mattespel-rita-v1","mattespel-ordgatan-v1","mattespel-tangentbord-v1","mattespel-delaupp-v1","mattespel-matning-v1","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
+  "mattespel-spel-v1","mattespel-geometri-v1","mattespel-brak-v1","mattespel-hundraruta-v1","mattespel-uppstallning-v1","np3-resultat","mattespel-skattjakten-v1","mattespel-sverigekartan-v1","mattespel-ordgomma-v1","mattespel-hogfrekventa-v1","mattespel-europa-v1","mattespel-varlden-v1","mattespel-talfoljd-v1","mattespel-rutjakten-v1","mattespel-brakbitar-v1","mattespel-kortdivision-v1","mattespel-vagen-v1","mattespel-gomda-v1","mattespel-kulbanan-v1","mattespel-affaren-v1","mattespel-rita-v1","mattespel-ordgatan-v1","mattespel-tangentbord-v1","mattespel-delaupp-v1","mattespel-matning-v1","matteportalen-mynt","matteportalen-uggla","matteportalen-klister","matteportalen-dagar"];
 const lsGet=k=>{try{return localStorage.getItem(k)}catch(e){return null}},lsSet=(k,v)=>{try{localStorage.setItem(k,v)}catch(e){}},lsDel=k=>{try{localStorage.removeItem(k)}catch(e){}};
 const jGet=k=>{try{return JSON.parse(lsGet(k)||"null")}catch(e){return null}},jSet=(k,v)=>lsSet(k,JSON.stringify(v));
 const ssGet=k=>{try{return sessionStorage.getItem(k)}catch(e){return null}},ssSet=(k,v)=>{try{sessionStorage.setItem(k,v)}catch(e){}};
@@ -631,7 +655,7 @@ function switchTo(id){
   ssSet("mp-active",id);history.replaceState(null,"",location.pathname);location.reload();
 }
 const owlOf=id=>{const b=id===owner()?snapLive():(jGet("mp-bundle-"+id)||{});let c={};try{c=JSON.parse(b["matteportalen-uggla"]||"{}")}catch(e){}
-  return owlSVG(Object.assign({animal:"uggla",color:"lila",glasses:"runda",hat:"ingen",neck:"ingen"},c));};
+  return owlSVG(Object.assign({animal:"uggla",color:"lila",glasses:"runda",hat:"ingen",neck:"ingen",hand:"ingen",back:"ingen"},c));};
 const openM=id=>{document.querySelectorAll(".modal").forEach(m=>m.hidden=m.id!==id);};
 const closeAll=()=>document.querySelectorAll(".modal").forEach(m=>m.hidden=true);
 
@@ -783,6 +807,8 @@ function mergeBundles(a,b){const out=Object.assign({},a);
   Object.keys(b).forEach(k=>{if(!(k in a)){out[k]=b[k];return;}
     if(k==="matteportalen-dagar"||k==="matteportalen-klister"){try{const x=JSON.parse(a[k]),y=JSON.parse(b[k]),f=k==="matteportalen-dagar"?"days":"seen";
       x[f]=[...new Set([...(x[f]||[]),...(y[f]||[])])].sort();out[k]=JSON.stringify(x);}catch(e){}return;}
+    if(k==="matteportalen-mynt"){try{const x=JSON.parse(a[k]),y=JSON.parse(b[k]),o=(y.tj||0)>(x.tj||0)?y:x;
+      o.kopt=[...new Set([...(x.kopt||[]),...(y.kopt||[])])];out[k]=JSON.stringify(o);}catch(e){}return;}
     if(progressOf(b[k])>progressOf(a[k]))out[k]=b[k];});
   return out;}
 function loginWithCard(o){

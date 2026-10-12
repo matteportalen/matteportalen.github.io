@@ -49,6 +49,10 @@
 .mph-right{display:flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0}
 .mph-pet{min-width:0;display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.18);border-radius:999px;padding:2px 10px 2px 2px;font-weight:800;min-height:40px}
 .mph-pet svg{width:34px;height:auto;display:block;flex:none}
+.mph-mynt{position:relative;white-space:nowrap}
+.mph-plus{position:absolute;left:50%;top:-4px;transform:translateX(-50%);background:#F2B707;color:#1D2B53;border-radius:999px;padding:0 8px;font-size:.85rem;white-space:nowrap;animation:mph-up 1.6s ease-out forwards;pointer-events:none}
+@keyframes mph-up{0%{opacity:0;transform:translate(-50%,10px)}15%{opacity:1;transform:translate(-50%,24px)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,30px)}}
+@media(max-width:400px){.mph.has-title .mph-mynt{display:none}}
 .mph-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:9em}
 .mph-snd{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18)!important;font-size:1.15rem;flex:none}
 .mph.ovriga{background:linear-gradient(110deg,#157548 0%,#1E9E5E 55%,#17AFC4 100%)}
@@ -95,6 +99,27 @@ body.mph-mini #quit{display:none}
     const sj=get('mattespel-skattjakten-v1');n+=Object.values((sj&&sj.stars)||{}).reduce((a,b)=>a+(+b||0),0);
     return n;
   };
+  /* ---------- Mynt (matteportalen-mynt) ----------
+     Stjärnorna visar vad man kan och samlas för alltid; mynten tjänas på att träna och används i Garderoben.
+     Ny stjärna = 10 mynt (räknas här, på alla sidor), avklarad runda = 2 mynt (när sidan visar skärmen "result"),
+     dagens första runda = 5 extra. Första gången: 5 mynt per stjärna man redan har.
+     {m: mynt nu, tj: tjänat totalt, sedd: stjärnor som redan gett mynt, kopt: köpta saker "plats:id" (null = inte flyttat än), dag, senast} */
+  const MK='matteportalen-mynt',idag=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');};
+  function myntLas(){let m=get(MK);const s=MPStjarnor();
+    if(!m||typeof m.m!=='number'){m={m:5*s,tj:5*s,sedd:s,kopt:null,dag:'',senast:0};myntSpara(m);}
+    else if(s>m.sedd){const n=(s-m.sedd)*10;m.m+=n;m.tj+=n;m.sedd=s;myntSpara(m);myntVisa(n);}
+    else if(s<m.sedd){m.sedd=s;myntSpara(m);}
+    return m;}
+  function myntSpara(m){try{localStorage.setItem(MK,JSON.stringify(m));}catch(e){}}
+  let myntFlyg=null;function myntVisa(n){if(!n)return;myntFlyg=n;setTimeout(()=>{const el=document.querySelector('.mph-m');if(!el)return;
+    el.textContent=myntLas().m;const f=document.createElement('span');f.className='mph-plus';f.textContent='+'+n+' 🪙';el.parentNode.appendChild(f);setTimeout(()=>f.remove(),1600);},80);}
+  window.MPMynt={
+    get(){return myntLas();},
+    // en avklarad runda (anropas av huvud.js när skärmen "result" visas, eller av en sida själv)
+    runda(n){const m=myntLas(),nu=Date.now();if(nu-(m.senast||0)<15000)return 0;let f=n==null?2:n;if(m.dag!==idag()){f+=5;m.dag=idag();}
+      m.m+=f;m.tj+=f;m.senast=nu;myntSpara(m);myntVisa(f);return f;},
+    kop(id,pris){const m=myntLas();if(m.m<pris)return false;m.m-=pris;m.kopt=[...new Set([...(m.kopt||[]),id])];myntSpara(m);const el=document.querySelector('.mph-m');if(el)el.textContent=m.m;return true;},
+    spara:myntSpara};
   function profilnamn(){try{const a=sessionStorage.getItem('mp-active');if(!a||a==='gast')return'';const p=(JSON.parse(localStorage.getItem('mp-profiles')||'[]')||[]).find(x=>x.id===a);return p?p.name:'';}catch(e){return''}}
   const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
@@ -107,7 +132,7 @@ body.mph-mini #quit{display:none}
   h.innerHTML=`${paStart?'':'<button class="mph-bk" aria-label="Tillbaka">←</button>'}<button class="mph-x" aria-label="Avsluta">✕</button>
     <button class="mph-logo" aria-label="${PORTAL.a}${PORTAL.b}, meny" aria-haspopup="true" aria-expanded="false">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="mph-burger" aria-hidden="true"><i style="font-style:normal">☰</i><em>Ämnen</em></span></button>
     <span class="mph-title">${titel?`<span class="mph-sep">›</span> ${ikon?ikon+' ':''}${esc(titel)}`:''}</span>
-    <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
+    <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span><span class="mph-mynt">🪙&nbsp;<span class="mph-m">${myntLas().m}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
   document.body.prepend(h);
   const snd=h.querySelector('.mph-snd'),label=()=>{snd.textContent=window.Ljud&&!Ljud.on?'🔇':'🔊';};label();
   snd.onclick=()=>{if(!window.Ljud)return;Ljud.set(!Ljud.on);label();if(Ljud.on&&Ljud.ok)Ljud.ok();document.dispatchEvent(new Event('mp-ljud'));};
@@ -129,7 +154,7 @@ body.mph-mini #quit{display:none}
   document.addEventListener('click',e=>{if(meny&&!meny.contains(e.target))stang();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')stang();});
   // stjärnorna uppdateras när något sparas (i den här fliken eller en annan)
-  let tmr=0;const upd=()=>{clearTimeout(tmr);tmr=setTimeout(()=>{h.querySelector('.mph-n').textContent=MPStjarnor();},60);};
+  let tmr=0;const upd=()=>{clearTimeout(tmr);tmr=setTimeout(()=>{h.querySelector('.mph-n').textContent=MPStjarnor();h.querySelector('.mph-m').textContent=myntLas().m;},60);};
   try{const orig=Storage.prototype.setItem;Storage.prototype.setItem=function(k,v){orig.call(this,k,v);if(this===window.localStorage&&/^(mattespel-|np3)/.test(k))upd();};}catch(e){}
   window.addEventListener('storage',upd);
   window.addEventListener('pageshow',()=>{upd();label();});
@@ -153,7 +178,7 @@ body.mph-mini #quit{display:none}
        i stället för att landa på sidans egen startskärm. Anropas före show(id). */
     start(id){if(!navOn)return;const d=djup(id);cur={mp:id,d,i:0};st=[d];history.replaceState(cur,'');},
     visa(id){
-      mode(id);if(!navOn)return;
+      mode(id);if(id==='result')MPMynt.runda();if(!navOn)return;
       const d=djup(id);
       if(popping){cur={mp:id,d,i:cur.i};return;}
       if(d>cur.d){cur={mp:id,d,i:cur.i+1};st.length=cur.i;st.push(d);history.pushState(cur,'');}
