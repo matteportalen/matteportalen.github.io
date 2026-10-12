@@ -93,6 +93,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 /* alla ord i samma neutrala färg, så att bara "svårt" (rött) syns; ✓ = datorn hörde ordet (lärarens fynd: färgerna blev otydliga) */
 .mk{font-family:var(--las);font-weight:700;font-size:1.6rem;padding:4px 14px;border-radius:14px;background:#fff;color:var(--ink);box-shadow:0 3px 0 var(--line);position:relative}
 .mk.hard{background:#FFE3E5;color:#B8323A;box-shadow:0 0 0 3px #F3A9AE}
+.mk .ls{display:block;font-family:var(--font);font-size:.8rem;font-weight:700;color:#8A6200;line-height:1.1}
 .mk .ck{font-family:var(--font);font-size:.85rem;color:var(--good-dark);margin-left:4px;vertical-align:.25em}
 .mgrp{margin:10px 0 4px;font-weight:800;color:var(--muted);text-align:center;font-size:1rem}
 .mgrp small{display:block;font-weight:700;font-size:.85rem}
@@ -217,12 +218,13 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 
 <div class="modal" id="micModal" hidden><div>
   <h2 style="margin-top:0">🎤 Lyssna på mig</h2>
-  <p>Datorn försöker höra när du läser och visar det med grönt, i <b>Blixtläsning</b> och <b>Ord på en minut</b>. Den kan bara säga <b>rätt</b>, aldrig fel. Hör den inget gör det inget, du läser bara vidare.</p>
+  <p>Datorn försöker höra när du läser och visar det med grönt, i <b>Blixtläsning</b> och <b>Ord på en minut</b>. Hör den inget gör det inget, du läser bara vidare. Med <b>🔎 Hör även fel</b> kan datorn i Blixtläsning också visa ord som lät annorlunda, men det är alltid den vuxna som avgör.</p>
   <p style="margin-bottom:6px"><b>Hur ska datorn lyssna?</b></p>
   <button class="mval" data-motor="web" id="mvWeb"><b>🌐 Webbläsaren</b><small>Startar direkt och kräver internet. Ljudet skickas för att bli text: i Chrome till Google, i Edge till Microsoft, i Safari och på iPad till Apple. Fungerar bäst i Chrome på dator.</small></button>
   <button class="mval" data-motor="kb" id="mvKb"><b>🧠 I enheten (KB-Whisper)</b><small>Kungliga bibliotekets svenska taligenkänning. Laddas ner en gång (ca 52 MB), sedan fungerar den utan internet. <b>Inget ljud lämnar enheten.</b><span id="kbLangsam" hidden> Den här enheten saknar grafikkort för det, så det kan gå långsamt.</span></small></button>
+  <button class="mval" data-motor="fel" id="mvFel"><b>🔎 Hör även fel (KB wav2vec2)</b><small>Hör vilka ord som läses rätt och visar på slutet av Blixtläsningen ord som lät annorlunda (”lät som går”). Laddas ner en gång (ca 240 MB), fungerar bäst på en dator. <b>Inget ljud lämnar enheten.</b></small></button>
   <div id="kbProg" hidden style="margin-bottom:10px"><div class="kbbar"><i></i></div><p class="small" id="kbProgT" style="margin:4px 0 0">Laddar ner …</p></div>
-  <p><b>Till den vuxna:</b> inget sparas på Matte-Portalen. Väljer du <b>Webbläsaren</b> skickas ljudet till Google, Microsoft eller Apple, så i skolan bör det stämmas av med skolans dataskyddsombud. Väljer du <b>I enheten (KB-Whisper)</b> stannar ljudet i elevens dator, iPad eller mobil.</p>
+  <p><b>Till den vuxna:</b> inget sparas på Matte-Portalen. Väljer du <b>Webbläsaren</b> skickas ljudet till Google, Microsoft eller Apple, så i skolan bör det stämmas av med skolans dataskyddsombud. Väljer du <b>I enheten</b> eller <b>Hör även fel</b> stannar ljudet i elevens dator, iPad eller mobil.</p>
   <p>Korta ord som <span class="w">i</span> och <span class="w">en</span> kan vara svåra för datorn att höra. Fungerar det dåligt, stäng av det igen.</p>
   <div class="row2"><button class="alt" id="micNo">Nej tack</button><button class="go" id="micYes">Slå på</button></div>
 </div></div>
@@ -239,6 +241,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 <script src="../../djur.js"></script>
 <script src="../../huvud.js" data-titel="Högfrekventa ord" data-ikon="📖" data-hem="../../" data-portal="ovriga"></script>
 <script src="kbwhisper.js"></script>
+<script src="lasfel.js"></script>
 <script>
 /* Högfrekventa ord: 200 vanliga ord i 20 paket (ordningen efter hur vanliga orden är i barntext; lärarens lista).
    Lägen: Lär dig orden (bokstäverna och ljuden), Blixtläsning (orden blixtrar förbi i vald fart, eleven läser högt och
@@ -304,8 +307,8 @@ const UTTAL={och:["å","o","och"],det:["de","dä","det"],är:["e","ä","är"],ja
 const SIFFROR=["noll","ett","två","tre","fyra","fem","sex","sju","åtta","nio","tio"];// KB-Whisper skriver ibland siffror
 const norm=s=>s.toLowerCase().replace(/[.,!?;:"']/g," ").split(/\s+/).filter(Boolean);
 let REC=null,recWant=false,onHeard=null,recSess=0;
-function micOn(){return !!(data.mic&&(data.motor==="kb"||SR));}
-function recStart(cb){if(!micOn())return;if(data.motor==="kb")return kbStart(cb);onHeard=cb;recWant=true;if(REC)return;
+function micOn(){return !!(data.mic&&(data.motor==="kb"||data.motor==="fel"||SR));}
+function recStart(cb){if(!micOn())return;if(data.motor==="kb")return kbStart(cb);if(data.motor==="fel")return felStart(cb);onHeard=cb;recWant=true;if(REC)return;
   try{REC=new SR();REC.lang="sv-SE";REC.continuous=true;REC.interimResults=true;REC.maxAlternatives=5;
     const sess=++recSess;
     // delar = hela texten sedan lyssnandet startade (Chrome flyttar gränserna mellan de preliminära resultaten, men hela texten växer bara)
@@ -324,7 +327,11 @@ let micLyss=false,micTxt="startar …";function micLamp(on,txt){micLyss=on;micTx
 function kbStart(cb){onHeard=cb;recWant=true;micLamp(false,MPWhisper.laddad?"startar …":"laddar …");
   MPWhisper.start(r=>{if(!onHeard)return;const t=norm(r.text);onHeard(t,r.final?t:[],[{id:"kb"+r.seg,ord:t}]);})
     .then(()=>{if(recWant)micLamp(true);}).catch(()=>{recWant=false;micLamp(false,"");toast("Mikrofonen gick inte att starta.");});}
-function recStop(){recWant=false;onHeard=null;if(REC){try{REC.stop();}catch(e){}}if(window.MPWhisper)MPWhisper.stop();}
+// 🔎 Hör även fel: KB:s wav2vec2 (lasfel.js). Varje bit tal ger texten och sannolikheterna (seg), så att Blixtläsningen kan bedöma ordet.
+function felStart(cb){onHeard=cb;recWant=true;micLamp(false,MPLasfel.laddad?"startar …":"laddar …");
+  MPLasfel.start(seg=>{if(!onHeard)return;const t=norm(seg.heard);onHeard(t,t,[{id:"fel"+seg.n,ord:t}],seg);})
+    .then(()=>{if(recWant)micLamp(true);}).catch(()=>{recWant=false;micLamp(false,"");toast("Mikrofonen gick inte att starta.");});}
+function recStop(){recWant=false;onHeard=null;if(REC){try{REC.stop();}catch(e){}}if(window.MPWhisper)MPWhisper.stop();if(window.MPLasfel)MPLasfel.stop();}
 // stämmer ett hört ord med ordet? (samma regler som i Mikrofonlabbet, där de prövades)
 function lev(a,b){const d=Array.from({length:a.length+1},(_,i)=>[i]);for(let j=1;j<=b.length;j++)d[0][j]=j;
   for(let i=1;i<=a.length;i++)for(let j=1;j<=b.length;j++)d[i][j]=Math.min(d[i-1][j]+1,d[i][j-1]+1,d[i-1][j-1]+(a[i-1]===b[j-1]?0:1));return d[a.length][b.length];}
@@ -339,7 +346,7 @@ const hor=(w,ord,lista)=>ord.some(o=>passar(w,o,lista));
 const UA=navigator.userAgent,iOS=/iPad|iPhone|iPod/.test(UA)||(/Macintosh/.test(UA)&&navigator.maxTouchPoints>1);
 // bara Chrome på dator: Chrome och Samsung Internet på Android lyssnar annorlunda (lärarens mobiltest: webbläsaren hörde inget, KB-Whisper 22 av 30)
 const CHROME=/Chrome\//.test(UA)&&!/Edg\/|OPR\/|SamsungBrowser/.test(UA)&&!iOS&&!/Android|Mobile/.test(UA);
-function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?(data.motor==="kb"?"på (i enheten)":"på"):"av"}`;}
+function micLabel(){const b=$("micBtn");b.setAttribute("aria-pressed",String(!!data.mic));b.textContent=`🎤 Lyssna på mig: ${data.mic?(data.motor==="kb"?"på (i enheten)":data.motor==="fel"?"på (hör även fel)":"på"):"av"}`;}
 // förslag: webbläsaren i Chrome på dator, annars i enheten (Edge och Safari stänger av lyssnandet efter korta pauser)
 const FORSLAG=CHROME&&SR?"web":"kb";let micVal=FORSLAG,kbLaddar=false;
 function micValj(v){micVal=v;document.querySelectorAll(".mval").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.motor===v)));}
@@ -347,11 +354,17 @@ document.querySelectorAll(".mval").forEach(b=>b.onclick=()=>{if(!kbLaddar)micVal
 $("micBtn").onclick=()=>{if(data.mic){data.mic=false;save();micLabel();return;}
   $("mvWeb").disabled=!SR;if(!SR)$("mvWeb").querySelector("small").textContent="Finns inte i den här webbläsaren.";
   document.querySelectorAll(".mval .fs").forEach(x=>x.remove());$(FORSLAG==="web"?"mvWeb":"mvKb").querySelector("b").insertAdjacentHTML("beforeend",'<span class="fs">Föreslås här</span>');
-  $("kbLangsam").hidden="gpu" in navigator;$("kbProg").hidden=true;micValj(data.motor&&(data.motor==="kb"||SR)?data.motor:FORSLAG);$("micModal").hidden=false;};
+  $("kbLangsam").hidden="gpu" in navigator;$("kbProg").hidden=true;micValj(data.motor&&(data.motor==="kb"||data.motor==="fel"||SR)?data.motor:FORSLAG);$("micModal").hidden=false;};
 $("micNo").onclick=()=>{if(!kbLaddar)$("micModal").hidden=true;};
 function micPa(){data.mic=true;data.motor=micVal;save();micLabel();$("micModal").hidden=true;
-  toast(micVal==="kb"?"Klart! Datorn lyssnar i enheten. Webbläsaren frågar om mikrofonen första gången.":"Lyssna på mig är på. Webbläsaren frågar om mikrofonen första gången.");}
-$("micYes").onclick=()=>{if(kbLaddar)return;if(micVal!=="kb"||MPWhisper.laddad)return micPa();
+  toast(micVal==="fel"?"Klart! Datorn lyssnar i enheten och försöker höra fel i Blixtläsning.":micVal==="kb"?"Klart! Datorn lyssnar i enheten. Webbläsaren frågar om mikrofonen första gången.":"Lyssna på mig är på. Webbläsaren frågar om mikrofonen första gången.");}
+$("micYes").onclick=()=>{if(kbLaddar)return;
+  if(micVal==="fel"){if(MPLasfel.laddad)return micPa();
+    kbLaddar=true;$("micYes").disabled=$("micNo").disabled=true;$("kbProg").hidden=false;$("kbProgT").textContent="Laddar ner …";
+    MPLasfel.ladda((a,b)=>{const mb=a/1e6,tot=Math.max(240,b/1e6);$("kbProg").querySelector("i").style.width=Math.min(100,mb/tot*100).toFixed(0)+"%";$("kbProgT").textContent=`Laddar ner ${mb.toFixed(0)} av ca ${tot.toFixed(0)} MB …`;})
+      .then(()=>{kbLaddar=false;$("micYes").disabled=$("micNo").disabled=false;micPa();})
+      .catch(()=>{kbLaddar=false;$("micYes").disabled=$("micNo").disabled=false;$("kbProgT").textContent="Det gick inte att ladda ner. Kontrollera internet och försök igen.";});return;}
+  if(micVal!=="kb"||MPWhisper.laddad)return micPa();
   // ladda ner KB-Whisper först, med en mätare
   kbLaddar=true;$("micYes").disabled=$("micNo").disabled=true;$("kbProg").hidden=false;$("kbProgT").textContent="Laddar ner …";
   // totalen växer medan filerna hittas, så mätaren räknar mot ungefär 52 MB
@@ -360,6 +373,7 @@ $("micYes").onclick=()=>{if(kbLaddar)return;if(micVal!=="kb"||MPWhisper.laddad)r
     .catch(()=>{kbLaddar=false;$("micYes").disabled=$("micNo").disabled=false;$("kbProgT").textContent="Det gick inte att ladda ner. Kontrollera internet och försök igen.";});};
 // är 🧠 I enheten på laddas modellen i förväg (från webbläsarens cache efter första gången)
 if(data.mic&&data.motor==="kb")setTimeout(()=>MPWhisper.ladda().catch(()=>{}),1500);
+if(data.mic&&data.motor==="fel")setTimeout(()=>MPLasfel.ladda().catch(()=>{}),1500);
 
 function egnaOrd(t){const out=[];for(const r of t.toLowerCase().split(/[\s,;.]+/)){const w=r.trim();if(/^[a-zåäöéü-]{1,20}$/.test(w)&&!out.includes(w))out.push(w);}return out.slice(0,40);}
 function openEgna(){$("egText").value=data.egna.join(" ");$("egInfo").textContent="";$("egModal").hidden=false;setTimeout(()=>$("egText").focus(),50);}
@@ -479,23 +493,30 @@ function flashWords(){const ws=valdaOrd(),old=PAKET.slice(0,valda()[0]).flat();
   // (aldrig samma ord två gånger i rad)
   let list=ws.length<=10?[...ws,...ws,...shuffle(old.slice()).slice(0,old.length?4:0)]:(()=>{const u=urval(14);return[...u,...shuffle(u.slice()).slice(0,6)];})();
   for(let k=0;k<50;k++){shuffle(list);if(list.every((w,i)=>i===0||w!==list[i-1]))break;}return list;}
-function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:new Set()};show("flash");$("fAfter").hidden=true;$("fHint").hidden=false;$("fStage").hidden=false;
+function startFlash(){stopAll();F={list:flashWords(),i:-1,heard:new Set(),hard:new Set(),tid:[],las:{}};show("flash");$("fAfter").hidden=true;$("fHint").hidden=false;$("fStage").hidden=false;
   // nedräkning 3, 2, 1
   let n=3;const cd=()=>{$("fStage").innerHTML=`<div class="big in" style="--c:#56668F">${n}</div>`;if(n-->1)later(cd,700);else later(nextFlash,700);};cd();
-  recStart(ord=>{if(!F||F.i<0)return;const L=F.list,nu=F.i,gron=k=>{if(F.heard.has(k))return;F.heard.add(k);if(k===F.i){const el=$("fHk");if(el)el.textContent="✓ hört";}};
+  recStart((ord,_f,_d,seg)=>{if(!F||F.i<0)return;const L=F.list,nu=F.i,gron=k=>{if(F.heard.has(k))return;F.heard.add(k);if(k===F.i){const el=$("fHk");if(el)el.textContent="✓ hört";}};
+    // 🔎 Hör även fel: biten tal hör till ordet som visades när eleven började säga det (eller det förra)
+    if(seg){const t=seg.t0+150;let k=0;for(let i=0;i<F.tid.length;i++)if(F.tid[i]<=t)k=i;
+      let best=null;for(const c of [k,k-1])if(c>=0){const r=MPLasfel.bedom(seg.lp,L[c],UTTAL[L[c]]);if(!best||r.exakt||r.gop>best.r.gop)best={c,r};if(r.exakt)break;}
+      if(best&&!F.heard.has(best.c)){if(best.r.ok||hor(L[best.c],ord,L))gron(best.c);else if(!best.r.delvis&&seg.heard&&!F.las[best.c])F.las[best.c]=seg.heard.replace(/\s+/g," ");}
+      return;}
     // ordet som visas nu eller det förra (det kan ha bytts innan datorn hunnit höra), eller båda ihop
     for(const k of data.motor==="kb"?[nu,nu-1,nu-2]:[nu,nu-1])if(k>=0&&!F.heard.has(k)&&hor(L[k],ord,L))gron(k);
     if(nu>0&&ord.some(o=>ihop(L[nu-1],L[nu],o))){gron(nu-1);gron(nu);}});}
-function nextFlash(){F.i++;if(F.i>=F.list.length)return flashAfter();const w=F.list[F.i],ms=data.fart*1000;sett(w);
+function nextFlash(){F.i++;if(F.i>=F.list.length)return later(flashAfter,data.motor==="fel"?900:0);const w=F.list[F.i],ms=data.fart*1000;sett(w);F.tid[F.i]=performance.now();
   $("fInfo").textContent=`${F.i+1} / ${F.list.length}`;
   $("fStage").innerHTML=`<div class="big in" id="fWord" style="--c:${col(w)}">${w}${micOn()?`<span class="hk" id="fHk"></span>`:""}</div><div class="timer" id="fT" style="--c:${col(w)};width:100%"></div>${micOn()?`<span class="heard${micLyss?" on":""}">${micLyss?"lyssnar":micTxt}</span>`:""}`;
   const t=$("fT");if(t&&!reduced()){t.animate([{width:"100%"},{width:"0%"}],{duration:ms,easing:"linear",fill:"forwards"});}
   later(nextFlash,ms);}
 function flashAfter(){recStop();$("fStage").hidden=true;$("fHint").hidden=true;$("fAfter").hidden=false;$("fInfo").textContent="Klart!";
   const uniq=[...new Set(F.list)],hw=new Set([...F.heard].map(i=>F.list[i]));F.hw=hw;
-  const chip=w=>`<button class="mk" data-w="${w}">${w}${micOn()&&hw.has(w)?'<span class="ck">✓</span>':""}</button>`;
-  if(micOn()){const a=uniq.filter(w=>hw.has(w)),b=uniq.filter(w=>!hw.has(w));
-    $("fMarks").innerHTML=(b.length?`<div class="mgrp">Datorn hörde inte de här orden<small>Det behöver inte betyda att de var fel. Datorn hör inte alltid.</small></div><div class="marks">${b.map(chip).join("")}</div>`:"")+
+  // ord som lät annorlunda (🔎 Hör även fel): "lät som ..." överst, den vuxna avgör
+  const las={};for(const i in F.las){const w=F.list[i];if(!las[w])las[w]=F.las[i];}
+  const chip=w=>`<button class="mk" data-w="${w}">${w}${las[w]?`<span class="ls">lät som ”${las[w]}”</span>`:micOn()&&hw.has(w)?'<span class="ck">✓</span>':""}</button>`;
+  if(micOn()){const l=uniq.filter(w=>las[w]),a=uniq.filter(w=>hw.has(w)&&!las[w]),b=uniq.filter(w=>!hw.has(w)&&!las[w]);
+    $("fMarks").innerHTML=(l.length?`<div class="mgrp">🟡 Lyssna på de här<small>Datorn tyckte att de lät annorlunda. Var de fel? Tryck på dem.</small></div><div class="marks">${l.map(chip).join("")}</div>`:"")+(b.length?`<div class="mgrp">Datorn hörde inte de här orden<small>Det behöver inte betyda att de var fel. Datorn hör inte alltid.</small></div><div class="marks">${b.map(chip).join("")}</div>`:"")+
       (a.length?`<div class="mgrp">✓ Datorn hörde de här orden</div><div class="marks">${a.map(chip).join("")}</div>`:"");}
   else $("fMarks").innerHTML=`<div class="marks">${uniq.map(chip).join("")}</div>`;
   $("fNote").textContent="Tryck på de ord som var svåra, så blir de röda. Resten räknas som lästa.";

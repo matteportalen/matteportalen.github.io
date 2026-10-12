@@ -137,7 +137,8 @@ function score(lp,target){const forms=[target,...(UTTAL[target]||[])],best=bestP
   return{gop:(top-best)/Math.max(3,tal*3),form};}
 window.LF={ready:false,async analys(audio,target){const t0=performance.now(),lp=await run(audio),sc=score(lp,target),heard=greedy(lp);
   // skrev modellen själv målordet (eller en godkänd uttalsform) är det rätt oavsett poäng
-  const exakt=[target,...(UTTAL[target]||[])].includes(heard.replace(/\s+/g,""));return Object.assign({heard,exakt,ms:performance.now()-t0},sc);}};
+  const exakt=[target,...(UTTAL[target]||[])].includes(heard.replace(/\s+/g,""));
+  const forms=[target,...(UTTAL[target]||[])],h2=heard.replace(/\s+/g,""),delvis=!!h2&&!exakt&&forms.some(f=>f.length>h2.length&&f.includes(h2));return Object.assign({heard,exakt,delvis,ms:performance.now()-t0},sc);}};
 
 /* ---------- Mikrofonen och röstvakten ---------- */
 const mic={ctx:null,strom:null};let cap=null;
@@ -177,7 +178,7 @@ async function startTest(){const ord=lista().sort(()=>Math.random()-.5).slice(0,
     $("tag").className="tag "+(x.fel?"f":"r");$("tag").textContent=x.fel?"Läs fel med flit":"Läs rätt";$("word").textContent=x.w;
     $("hint").textContent=x.fel?`Säg till exempel: ”${x.forslag}”`:"";$("res").textContent="";
     const a=await listen();if(!S.on)break;setLamp("","Lyssnar av …");
-    const r=await LF.analys(a,x.w);S.rows.push({w:x.w,fel:x.fel,heard:r.heard,exakt:r.exakt,gop:r.gop,form:r.form,ms:r.ms,sek:a.length/16000});
+    const r=await LF.analys(a,x.w);S.rows.push({w:x.w,fel:x.fel,heard:r.heard,exakt:r.exakt,delvis:r.delvis,gop:r.gop,form:r.form,ms:r.ms,sek:a.length/16000});
     $("res").innerHTML=`Datorn hörde: <span style="font-family:Andika">”${r.heard||"…"}”</span> (poäng ${r.gop.toFixed(2)})`;table();
     await new Promise(r=>setTimeout(r,1100));S.i++;}
   stopTest();}
@@ -185,7 +186,7 @@ function stopTest(){S.on=false;cap=null;micOff();setLamp("","Mikrofonen är av")
 function table(){const thr=+$("thr").value;$("thrv").textContent=thr.toFixed(2);
   // hörde datorn inga bokstäver alls (brus, tystnad) är det "hördes inte", varken rätt eller fel
   let fel=0,hitt=0,ratt=0,falsk=0,tom=0;
-  $("tb").innerHTML=S.rows.map(r=>{const inget=!r.heard;if(inget){tom++;return`<tr><td style="font-family:Andika">${r.w}</td><td>${r.fel?"fel":"rätt"}</td><td>–</td><td></td><td>🔇 hördes inte</td><td></td></tr>`;}
+  $("tb").innerHTML=S.rows.map(r=>{const inget=!r.heard||r.delvis;if(inget){tom++;return`<tr><td style="font-family:Andika">${r.w}</td><td>${r.fel?"fel":"rätt"}</td><td style="font-family:Andika">${r.heard||"–"}</td><td></td><td>🔇 hördes inte${r.delvis?" (bara en del)":""}</td><td></td></tr>`;}
     const flagg=!r.exakt&&r.gop<thr,ok=flagg===r.fel;if(r.fel){fel++;if(flagg)hitt++;}else{ratt++;if(flagg)falsk++;}
     return`<tr><td style="font-family:Andika">${r.w}</td><td>${r.fel?"fel":"rätt"}</td><td style="font-family:Andika">${r.heard}</td><td>${r.gop.toFixed(2)}</td><td>${flagg?"⚠️ kanske fel":"✓ rätt"}</td><td class="${ok?"ok":"no"}">${ok?"stämmer":"miss"}</td></tr>`;}).join("");
   $("sum").textContent=S.rows.length?`Upptäckta fel: ${hitt} av ${fel}. Falsklarm: ${falsk} av ${ratt} rätt lästa ord.${tom?` Hördes inte: ${tom}.`:""}`:"Inga ord än.";}
