@@ -113,6 +113,11 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
 .sheet button.end{box-shadow:0 0 0 3px var(--accent);background:#E3E9FF}
 .sheet button.after{opacity:.35}
 .sheet button.hrd{background:#DDF5E7;color:var(--good-dark)}
+.sheet button.las{background:#FFF1C2;color:#7A5A00;box-shadow:0 0 0 2px #F2C94C}
+.sheet button.las.err{background:#FFE3E5;color:#B8323A;box-shadow:none}
+.sheet button .ls{display:block;font-family:var(--font);font-size:.72rem;font-weight:700;line-height:1.1;text-decoration:none}
+.steg{background:#FFF6D6;border-radius:14px;padding:10px 12px;margin:0 0 8px;font-weight:700;line-height:1.35}
+.steg .go{margin-top:8px}
 .tips{background:#FFF6D6;border-radius:12px;padding:8px 12px}
 .mval{display:block;width:100%;text-align:left;border:2px solid var(--line);border-radius:14px;padding:9px 12px;margin:0 0 8px;background:var(--card)}
 .mval[aria-pressed="true"]{border-color:var(--good);background:#EAF8EF;box-shadow:inset 0 0 0 1px var(--good)}
@@ -204,6 +209,7 @@ h2{font-size:1.4rem;margin:18px 0 8px;font-weight:800}
     <button class="go" id="mStart">Starta minuten ⏱️</button>
   </div>
   <div class="clock" id="mClock" hidden><span class="t" id="mT">60</span><span class="bar"><i id="mBar"></i></span><span id="mMsg">Läs!</span></div>
+  <div class="steg" id="mGul" hidden></div>
   <div class="sheet wait" id="mSheet" hidden></div>
   <div class="result" id="mRes" hidden></div>
 </div>
@@ -566,7 +572,7 @@ function startMinute(){stopAll();const pool=minPool(),stig=data.mlista!=="ovade"
   let list=[];if(stig)list=STIG[data.mlista].slice();else while(list.length<150){const w=pick(pool);if(w!==list[list.length-1]&&w!==list[list.length-2])list.push(w);}
   Object.assign(MIN,{list,errs:new Set(),end:-1,phase:"intro",stig});
   $("mLista").innerHTML=[["ovade","Övade ord"],["A","📈 Stigande A"],["B","📈 Stigande B"]].map(([v,t])=>`<button data-l="${v}" aria-pressed="${data.mlista===v}">${t}</button>`).join("");
-  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna."+(data.motor!=="kb"&&!CHROME?" 💡 Fungerar bäst i Chrome på dator. Annars kan du välja att datorn lyssnar i enheten (KB-Whisper) under Lyssna på mig.":""):"";
+  $("mMicInfo").textContent=micOn()?"🎤 Lyssna på mig är på: orden datorn hör blir gröna, och när minuten är slut föreslår datorn var eleven slutade. Felläsningar markerar den vuxna."+(data.motor==="fel"?" 🔎 Efter minuten visar datorn i gult ord som lät annorlunda, och du väljer vilka som var fel.":"")+(data.motor!=="kb"&&!CHROME?" 💡 Fungerar bäst i Chrome på dator. Annars kan du välja att datorn lyssnar i enheten (KB-Whisper) under Lyssna på mig.":""):"";
   $("mFrom").textContent=stig?`Stigande lista ${data.mlista}: samma 150 ord varje gång, från korta till långa ord. Bra för att följa läsflytet över tid. Det är en egen lista, inte H4/AVK1, så resultaten är inte normerade.`:`Orden kommer från ${valText()} (${pool.length} olika ord), i blandad ordning.`;
   $("mInfo").textContent="";$("mIntro").hidden=false;$("mClock").hidden=true;$("mRes").hidden=true;$("mSheet").hidden=false;
   const cols=innerWidth<420?3:innerWidth<700?4:5;$("mSheet").style.setProperty("--cols",cols);
@@ -581,24 +587,41 @@ $("mStart").onclick=()=>{$("mIntro").hidden=true;$("mClock").hidden=false;$("mMs
 function minuteHear(_,__,delar){if(MIN.phase!=="run")return;const L=MIN.list;
   const gron=k=>{MIN.hord.add(k);if(k>MIN.last)MIN.last=k;const b=$("mSheet").querySelector(`[data-i="${k}"]`);if(b)b.classList.add("hrd");}; // ingen automatisk scroll medan eleven läser: datorn hör med fördröjning och sidan hoppade tillbaka (lärarens fynd)
   const ledig=k=>k>=0&&k<L.length&&!MIN.hord.has(k);
+  // 🔎 Hör även fel: ett hört ord som inte stämmer men liknar listans ord blir gult (visas efter minuten), men bara när orden
+  // före och efter stämmer, så att det är tydligt vilket ord det gäller ("jag att JAK som" mot listans "jag att jag som")
+  const fel=data.motor==="fel",likt=(t,w)=>t!==w&&lev(t,w)<=Math.max(1,Math.floor(w.length/2));
+  const traff=k=>{if(fel&&MIN.pend&&MIN.pend.after===k-2&&ledig(k-1)&&likt(MIN.pend.tok,L[k-1]))MIN.las[k-1]=MIN.pend.tok;MIN.pend=null;gron(k);};
   for(const d of delar){const fore=MIN.sett[d.id]||0;if(d.ord.length<=fore)continue;MIN.sett[d.id]=d.ord.length;
     for(const tok of d.ord.slice(fore)){const omr=[...Array(8)].map((_,n)=>MIN.last+1+n).concat([...Array(4)].map((_,n)=>MIN.last-n));
-      const k=omr.find(k=>ledig(k)&&passar(L[k],tok,L));if(k!==undefined){gron(k);continue;}
-      const k2=omr.find(k=>ledig(k)&&ledig(k+1)&&ihop(L[k],L[k+1],tok));if(k2!==undefined){gron(k2);gron(k2+1);}}}}
-function runMinute(){MIN.phase="run";MIN.hord=new Set();MIN.sett={};MIN.last=-1;$("mSheet").classList.remove("wait");$("mMsg").textContent=micOn()?"Läs! 🎤 Datorn lyssnar":"Läs!";window.Ljud&&Ljud.chime&&Ljud.chime();
+      const k=omr.find(k=>ledig(k)&&passar(L[k],tok,L));if(k!==undefined){traff(k);continue;}
+      const k2=omr.find(k=>ledig(k)&&ledig(k+1)&&ihop(L[k],L[k+1],tok));if(k2!==undefined){traff(k2);gron(k2+1);continue;}
+      // inget ord stämde: kom ihåg det (ett i taget) tills nästa rätt hörda ord visar vilket ord det gällde
+      if(fel)MIN.pend=MIN.pend?{tok:null,after:-9}:{tok,after:MIN.last};}}}
+function runMinute(){MIN.phase="run";MIN.hord=new Set();MIN.sett={};MIN.last=-1;MIN.las={};MIN.pend=null;$("mGul").hidden=true;$("mSheet").classList.remove("wait");$("mMsg").textContent=micOn()?"Läs! 🎤 Datorn lyssnar":"Läs!";window.Ljud&&Ljud.chime&&Ljud.chime();
   if(micOn())recStart(minuteHear);
   const t0=performance.now(),tick=()=>{const left=Math.max(0,60-(performance.now()-t0)/1000);$("mT").textContent=Math.ceil(left);$("mBar").style.width=(left/60*100)+"%";
     if(left<=0){MIN.phase="end";recStop();window.Ljud&&Ljud.fanfare&&Ljud.fanfare();
       // med 🎤 föreslås det sista ord datorn hörde; den vuxna bekräftar eller trycker på rätt ord
       if(MIN.last>=0){const b=$("mSheet").querySelector(`[data-i="${MIN.last}"]`);if(b){b.classList.add("sug");b.scrollIntoView({block:"center"});}
         $("mMsg").innerHTML=`Tiden är slut! Datorn hörde dig till det blå ordet. <button class="selb" id="mOk" style="margin-left:6px">Stämmer ✓</button> Annars: tryck på rätt ord.`;
-        $("mOk").onclick=()=>{MIN.end=MIN.last;minResult();};}
+        $("mOk").onclick=()=>{MIN.end=MIN.last;granska();};}
       else $("mMsg").textContent="Tiden är slut! Tryck på ordet där eleven slutade.";return;}
     MIN.raf=requestAnimationFrame(tick);};tick();}
 $("mSheet").onclick=e=>{const b=e.target.closest("[data-i]");if(!b)return;const i=+b.dataset.i;
   if(MIN.phase==="run"){if(MIN.errs.has(i))MIN.errs.delete(i);else MIN.errs.add(i);b.classList.toggle("err",MIN.errs.has(i));}
-  else if(MIN.phase==="end"){MIN.end=i;minResult();}};
-function minResult(){MIN.phase="done";recStop();const read=MIN.end+1,err=[...MIN.errs].filter(i=>i<=MIN.end).length,ok=read-err;
+  else if(MIN.phase==="end"){MIN.end=i;granska();}
+  else if(MIN.phase==="gul"&&i<=MIN.end){if(MIN.errs.has(i))MIN.errs.delete(i);else MIN.errs.add(i);b.classList.toggle("err",MIN.errs.has(i));}};
+// 🔎 Hör även fel: efter slutordet visas ord som lät annorlunda i gult; den vuxna (ofta en förälder) trycker på de som var fel
+function granska(){const gula=Object.keys(MIN.las||{}).map(Number).filter(i=>i<=MIN.end);
+  if(!gula.length)return minResult();
+  MIN.phase="gul";$("mClock").hidden=true;
+  $("mSheet").querySelectorAll("[data-i]").forEach(b=>{const i=+b.dataset.i;b.classList.remove("sug");b.classList.toggle("end",i===MIN.end);b.classList.toggle("after",i>MIN.end);
+    if(MIN.las[i]!==undefined&&i<=MIN.end){b.classList.add("las");b.innerHTML=`${MIN.list[i]}<span class="ls">lät som ”${MIN.las[i]}”</span>`;}});
+  $("mGul").hidden=false;$("mGul").innerHTML=`🟡 <b>${gula.length===1?"Ett ord":`${gula.length} ord`} lät annorlunda för datorn.</b><br>Läste eleven fel där? Tryck på ordet, så blir det rött. Var det rätt, låt det vara.
+    <button class="go" id="mGulOk">Klar, visa resultatet ✓</button>`;
+  scrollTo({top:$("mGul").getBoundingClientRect().top+scrollY-90,behavior:"smooth"});
+  $("mGulOk").onclick=()=>{$("mGul").hidden=true;minResult();};}
+function minResult(){MIN.phase="done";recStop();$("mGul").hidden=true;const read=MIN.end+1,err=[...MIN.errs].filter(i=>i<=MIN.end).length,ok=read-err;
   $("mSheet").querySelectorAll("[data-i]").forEach(b=>{const i=+b.dataset.i;b.classList.toggle("end",i===MIN.end);b.classList.toggle("after",i>MIN.end);});
   // bara övningens egna ord räknas som lästa (den stigande listan har många andra ord)
   const egen=new Set([...ALLA,...data.egna]);MIN.list.slice(0,read).forEach((w,i)=>{if(!MIN.errs.has(i)&&egen.has(w))ratt(w);});
