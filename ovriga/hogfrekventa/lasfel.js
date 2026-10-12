@@ -36,7 +36,9 @@ window.MPLasfel=(()=>{
   function bedom(lp,ord,former){const forms=[ord,...(former||[])],heard=greedy(lp).replace(/\s+/g,"");
     if(forms.includes(heard))return{exakt:true,gop:0,ok:true,heard};
     // bara en del av ordet hördes ("n" av "en"): början klipptes eller ordet var för svagt, räknas som hördes inte
-    if(!heard||forms.some(f=>f.length>heard.length&&f.includes(heard)))return{exakt:false,gop:0,ok:false,delvis:true,heard};
+    // ord med två bokstäver (en, i, på, om ...) är så korta att en del av ordet räcker: då räknas det som hört (lärarens val)
+    if(heard&&forms.some(f=>f.length>heard.length&&f.includes(heard)))return{exakt:false,gop:0,ok:ord.length<=2,delvis:true,heard};
+    if(!heard)return{exakt:false,gop:0,ok:false,delvis:true,heard};
     let best=0,tal=0;for(const r of lp){best+=Math.max(...r);const b=argmax(r);if(b!==0&&b!==4)tal++;}
     let top=-1e9;for(const f of forms)top=Math.max(top,forced(lp,f));
     const gop=(top-best)/Math.max(3,tal*3);return{exakt:false,gop,ok:gop>=GRANS,heard};}

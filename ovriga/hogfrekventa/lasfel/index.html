@@ -186,7 +186,7 @@ function stopTest(){S.on=false;cap=null;micOff();setLamp("","Mikrofonen är av")
 function table(){const thr=+$("thr").value;$("thrv").textContent=thr.toFixed(2);
   // hörde datorn inga bokstäver alls (brus, tystnad) är det "hördes inte", varken rätt eller fel
   let fel=0,hitt=0,ratt=0,falsk=0,tom=0;
-  $("tb").innerHTML=S.rows.map(r=>{const inget=!r.heard||r.delvis;if(inget){tom++;return`<tr><td style="font-family:Andika">${r.w}</td><td>${r.fel?"fel":"rätt"}</td><td style="font-family:Andika">${r.heard||"–"}</td><td></td><td>🔇 hördes inte${r.delvis?" (bara en del)":""}</td><td></td></tr>`;}
+  $("tb").innerHTML=S.rows.map(r=>{const inget=!r.heard||(r.delvis&&r.w.length>2);if(r.delvis&&r.w.length<=2)r.exakt=true; // korta ord: en del räckerif(inget){tom++;return`<tr><td style="font-family:Andika">${r.w}</td><td>${r.fel?"fel":"rätt"}</td><td style="font-family:Andika">${r.heard||"–"}</td><td></td><td>🔇 hördes inte${r.delvis?" (bara en del)":""}</td><td></td></tr>`;}
     const flagg=!r.exakt&&r.gop<thr,ok=flagg===r.fel;if(r.fel){fel++;if(flagg)hitt++;}else{ratt++;if(flagg)falsk++;}
     return`<tr><td style="font-family:Andika">${r.w}</td><td>${r.fel?"fel":"rätt"}</td><td style="font-family:Andika">${r.heard}</td><td>${r.gop.toFixed(2)}</td><td>${flagg?"⚠️ kanske fel":"✓ rätt"}</td><td class="${ok?"ok":"no"}">${ok?"stämmer":"miss"}</td></tr>`;}).join("");
   $("sum").textContent=S.rows.length?`Upptäckta fel: ${hitt} av ${fel}. Falsklarm: ${falsk} av ${ratt} rätt lästa ord.${tom?` Hördes inte: ${tom}.`:""}`:"Inga ord än.";}
