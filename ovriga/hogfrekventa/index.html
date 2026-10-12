@@ -552,7 +552,7 @@ $("mStart").onclick=()=>{$("mIntro").hidden=true;$("mClock").hidden=false;$("mMs
 // men bara nya ord i varje resultat räknas (annars kunde ett ord som upprepas i listan bli grönt två gånger).
 // Ett hört ord letas upp till åtta ord efter det senast hörda och fyra bakåt bland missade; två ord som hörts ihop delas.
 function minuteHear(_,__,delar){if(MIN.phase!=="run")return;const L=MIN.list;
-  const gron=k=>{MIN.hord.add(k);if(k>MIN.last)MIN.last=k;const b=$("mSheet").querySelector(`[data-i="${k}"]`);if(b){b.classList.add("hrd");if(k%5===0)b.scrollIntoView({block:"center",behavior:"smooth"});}};
+  const gron=k=>{MIN.hord.add(k);if(k>MIN.last)MIN.last=k;const b=$("mSheet").querySelector(`[data-i="${k}"]`);if(b)b.classList.add("hrd");}; // ingen automatisk scroll medan eleven läser: datorn hör med fördröjning och sidan hoppade tillbaka (lärarens fynd)
   const ledig=k=>k>=0&&k<L.length&&!MIN.hord.has(k);
   for(const d of delar){const fore=MIN.sett[d.id]||0;if(d.ord.length<=fore)continue;MIN.sett[d.id]=d.ord.length;
     for(const tok of d.ord.slice(fore)){const omr=[...Array(8)].map((_,n)=>MIN.last+1+n).concat([...Array(4)].map((_,n)=>MIN.last-n));
