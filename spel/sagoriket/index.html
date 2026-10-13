@@ -75,7 +75,7 @@ h2{font-size:1.25rem;margin:18px 0 8px}
   <div class="cats" id="cats"></div>
   <div class="tabs" id="tabs" hidden></div>
   <div id="varldar"></div>
-  <p class="info">Dator: ← → springer, ↑ eller mellanslag hoppar (två gånger = dubbelhopp), X förtrollar fiender med trollstaven (eller hoppa på dem). Surfplatta och mobil: knapparna på skärmen. Hoppa med huvudet i rätt svar för att öppna porten!</p>
+  <p class="info">Dator: ← → springer, ↑ hoppar (två gånger = dubbelhopp), mellanslag förtrollar fiender med trollstaven (eller hoppa på dem). Surfplatta och mobil: knapparna på skärmen. Hoppa med huvudet i rätt svar för att öppna porten!</p>
 </div>
 
 <section id="game" hidden>
@@ -322,7 +322,7 @@ function uppdatera(dt){if(!igang)return;const tnu=performance.now()/1000;
   LV.fjadrar.forEach(f=>{f.ut=Math.max(0,f.ut-dt);if(P.vy>=0&&Math.abs(P.x-(f.x*T+T/2))<T/2+P.b/2-14&&P.y>=f.y*T+T*.45&&P.y<=(f.y+1)*T+2){P.y=f.y*T+T*.45;P.vy=-1450;P.hopp=1;P.mark=false;f.ut=.35;L().hop&&L().hop();gnistor(f.x*T+T/2,f.y*T+T/2,"#fff",10);}});
   // tips första gången man möter något nytt
   const visaTips=(nyckel,villkor,text)=>{if(!(data.sett||{})[nyckel]&&villkor){data.sett=Object.assign({},data.sett,{[nyckel]:1});save();tips(text,4200);}};
-  visaTips("troll",LV.fiender.some(f=>!f.trollad&&f.x>P.x&&f.x-P.x<380),pek?"Tryck på ✨ för att förtrolla fienden med trollstaven! Du kan också hoppa på den.":"Tryck X för att förtrolla fienden med trollstaven! Du kan också hoppa på den.");
+  visaTips("troll",LV.fiender.some(f=>!f.trollad&&f.x>P.x&&f.x-P.x<380),pek?"Tryck på ✨ för att förtrolla fienden med trollstaven! Du kan också hoppa på den.":"Tryck mellanslag för att förtrolla fienden med trollstaven! Du kan också hoppa på den.");
   visaTips("fjader",LV.fjadrar.some(f=>f.x*T>P.x&&f.x*T-P.x<300),"Hoppa på fjädern, så studsar du högt!");
   visaTips("planka",LV.plankor.some(m=>m.x0>P.x&&m.x0-P.x<300),"Plankan åker fram och tillbaka. Hoppa upp när den är nära!");
   P.skada=Math.max(0,P.skada-dt);P.bob+=dt*(Math.abs(P.vx)>20&&P.mark?12:0);
@@ -444,7 +444,7 @@ function blomma(x,y){ctx.strokeStyle="#2BB673";ctx.lineWidth=5;ctx.beginPath();c
 let hudS="";function hud(){const h=`${"❤️".repeat(Math.max(0,P.hjartan))}${"🤍".repeat(Math.max(0,3-P.hjartan))} ${LV.boss?"":`<span>⭐ ${P.stj}/3</span>`} <span>${P.poang} p</span>`;if(h!==hudS){hudS=h;$("hudV").innerHTML=h;}}
 
 /* ---------- Styrning ---------- */
-const TANG={ArrowLeft:"v",KeyA:"v",ArrowRight:"h",KeyD:"h",ArrowUp:"u",KeyW:"u",Space:"u",KeyX:"m",KeyK:"m",Enter:"m"};
+const TANG={ArrowLeft:"v",KeyA:"v",ArrowRight:"h",KeyD:"h",ArrowUp:"u",KeyW:"u",Space:"m",KeyX:"m",KeyK:"m",Enter:"m"};
 addEventListener("keydown",e=>{const k=TANG[e.code];if(!k||$("game").hidden)return;e.preventDefault();IN[k]=true;});
 addEventListener("keyup",e=>{const k=TANG[e.code];if(k)IN[k]=false;});
 addEventListener("keydown",e=>{if(e.code==="Escape"&&!$("game").hidden)togglePaus();});
