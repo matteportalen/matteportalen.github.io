@@ -90,6 +90,7 @@ h2{font-size:1.25rem;margin:18px 0 8px}
   <div class="cats" id="cats"></div>
   <div class="tabs" id="tabs" hidden></div>
   <div id="vaningar"></div>
+  <p class="info"><b>Våningens stjärnor:</b> klara alla rum på våningen = ⭐, alla rum med minst ⭐⭐ = ⭐⭐, alla rum med ⭐⭐⭐ = ⭐⭐⭐.</p>
   <p class="info">Varje dörr har ett kodlås. Räkna ut talen som fattas och plocka dem i rätt ordning: först det översta. Fel tal, taggar eller slut på tid och rummet börjar om. Dator: ← → springer, ↑ hoppar (två gånger = dubbelhopp), mellanslag förtrollar med trollstaven. Surfplatta och mobil: knapparna på skärmen.</p>
 </div>
 
@@ -108,16 +109,20 @@ h2{font-size:1.25rem;margin:18px 0 8px}
 <script src="../../ljud.js"></script>
 <script src="../../djur.js"></script>
 <script src="../../huvud.js" data-titel="Sifferslottet" data-ikon="🏰" data-helskarm="game"></script>
+<script src="../plattform.js"></script>
 <script>
 /* Sifferslottet: ett rum i taget, hela rummet syns. Ekvationer med en lucka står överst; talen ligger utspridda i rummet.
    Ta talen i rätt ordning (översta ekvationen först), då låses dörren upp. Fel tal, taggar eller slut på tid = rummet börjar om
    (med samma ekvationer). Tiden startar när man rör sig. Grafik: Kenney New Platformer Pack (CC0) i bilder/slott.png.
    Rummen: 18 × 9 rutor innanför murarna. 1–4 = talen i den ordning de ska tas, x = fel tal (fälla), ^ taggar, S fjäder,
-   = planka, # mur, P start, D dörr (dörrens nedre ruta), e fiende som går, f fiende som flyger. tid = sekunder (räknat av roboten). */
+   = planka, # mur, P start, D dörr (dörrens nedre ruta), K nyckelkista (våning 3–4), e fiende som går, f fiende som flyger. tid = sekunder (räknat av roboten). */
 const $=id=>document.getElementById(id);
 const KEY="mattespel-sifferslottet-v1";
 const data=(()=>{const std={stars:{},best:{},cat:"multi",tables:[],musik:true,sett:{}};try{return Object.assign(std,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return std;}})();
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
+// betyg = 1–3 stjärnor per rum (visas i menyn); stars = de riktiga stjärnorna, 1–3 per våning (lärarens val: annars blev det för många stjärnor och mynt)
+if(!data.betyg){data.betyg=Object.assign({},data.stars);}
+function vaningsStjarnor(){const st={};VANINGAR.forEach((_,vi)=>{const b=RUM.map((r,i)=>r.v===vi?(data.betyg[String(i+1)]||0):null).filter(x=>x!==null);st["v"+(vi+1)]=Math.min(...b);});return st;}
+const save=()=>{data.stars=vaningsStjarnor();try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
 const L=()=>window.Ljud||{};
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -144,21 +149,21 @@ const RUM=[
 {v:1,namn:"Brunnen",k:["..................","1.................","===...............","......====........",".............x....","..====......===...","..................",".........===......","P.......2......D.."]},
 {v:1,namn:"Bokhyllorna",k:["..................","..................","........x.........",".2....======......","===...............","..................","..............1...",".........====.====","P...........D....."]},
 // ---------- Våning 3: Tornrummet, två–tre ekvationer, taggar och fjädrar ----------
-{v:2,namn:"Taggarna",k:["..................","..................","..................","..........2.......","........=====.....","..................","..1...............","..===.............","P....S.^^^^.....D."]},
-{v:2,namn:"Fjädern",k:["..................","..................","1.................","===.....^^^.......","......=======.....","..................","..............2...","............======","P.^^^.S....D......"]},
-{v:2,namn:"Tre lås",k:["..................","........3.........",".......===........","..................",".1..........^^.2..","===.....===.=====.","..................","..................","P...S......^^^..D."]},
-{v:2,namn:"Långa vägen",k:["..................",".3................","====..........D...",".........=======..","..................","....2.............","...====......S..1.",".............=====","P......^^^........"]},
-{v:2,namn:"Hissen",k:["..................","...............3..",".............=====","..................","..2...............","=====......^^.....","..........======..",".1................","P.....S.......^..D"]},
-{v:2,namn:"Två fjädrar",k:["..................","..1............2..","..=...........===.","..................","......^^^^^^......",".....========.....","..................","..................","P..S..D.....3.S..."]},
+{v:2,namn:"Taggarna",k:["..................","..................","..................","..........2.......","........=====.....","..................","..1...............","..===.............","P....S.^^^^K....D."]},
+{v:2,namn:"Fjädern",k:["..................","..................","1K................","===.....^^^.......","......=======.....","..................","..............2...","............======","P.^^^.S....D......"]},
+{v:2,namn:"Tre lås",k:["..................","........3.........",".......===........","..................","K1..........^^.2..","===.....===.=====.","..................","..................","P...S......^^^..D."]},
+{v:2,namn:"Långa vägen",k:["..................",".3................","====..........D...",".........=======..","..................","....2.............","...====......S..1.",".............=====","P....K.^^^........"]},
+{v:2,namn:"Hissen",k:["..................","...............3..",".............=====","..................","K.2...............","=====......^^.....","..........======..",".1................","P.....S.......^..D"]},
+{v:2,namn:"Två fjädrar",k:["..................","..1............2K.","..=...........===.","..................","......^^^^^^......",".....========.....","..................","..................","P..S..D.....3.S..."]},
 // ---------- Våning 4: Toppen, tre–fyra ekvationer, fiender ----------
-{v:3,namn:"Vakten",k:["..................","..2..........3....","=====.......=====.","..................","..................",".....=======......","......e...........","..S...........1...","P......^^^..====.D"]},
-{v:3,namn:"Biet",k:["..................","..3.......f.......","====..............","...........====...","..............4...","......^^.....====.","....======........","..1.........2.....","P.===..S.......D.."]},
-{v:3,namn:"Tornspiran",k:["........4.........",".......===........","..3...........2...","=====......=====..","..................","........^^........","......======...e..","..1...........====","P..S........D....."]},
-{v:3,namn:"Kryssningen",k:["..................","..................",".4.............3..","===...........====","......f...........",".2...^^^^^^...1...","====.======..=====","..................","P..........S.D...."]},
-{v:3,namn:"Sista trappan",k:["..................","..............4...","............=====.","..3......^^.......","=====..=======....",".............e....","....1.......====2.","...===......====..","P........S......D."]},
-{v:3,namn:"Tornets topp",k:["...4..............","..===.........3...","...........======.","..................","..2.....^^^.......","=====.=======.....","..........f.......","...1..........S...","P..===.....^^^...D"]}];
+{v:3,namn:"Vakten",k:["..................","K.2..........3....","=====.......=====.","..................","..................",".....=======......","......e...........","..S...........1...","P......^^^..====.D"]},
+{v:3,namn:"Biet",k:["..................","K.3.......f.......","====..............","...........====...","..............4...","......^^.....====.","....======........","..1.........2.....","P.===..S.......D.."]},
+{v:3,namn:"Tornspiran",k:["........4.........",".......===........","K.3...........2...","=====......=====..","..................","........^^........","......======...e..","..1...........====","P..S........D....."]},
+{v:3,namn:"Kryssningen",k:["..................","..................","K4.............3..","===...........====","......f...........",".2...^^^^^^...1...","====.======..=====","..................","P..........S.D...."]},
+{v:3,namn:"Sista trappan",k:["..................","..............4...","............=====.","K.3......^^.......","=====..=======....",".............e....","....1.......====2.","...===......====..","P........S......D."]},
+{v:3,namn:"Tornets topp",k:["...4..............","..===.........3...","...........======.","..................","K.2.....^^^.......","=====.=======.....","..........f.......","...1..........S...","P..===.....^^^...D"]}];
 // tid per rum: räknad av roboten (bästa väg × 2,2 + 4 s), minst 12 + 6 per ekvation
-const TIDER={"0":18,"1":18,"2":18,"3":18,"4":18,"5":18,"6":24,"7":24,"8":25,"9":24,"10":24,"11":24,"12":24,"13":25,"14":30,"15":30,"16":30,"17":30,"18":30,"19":36,"20":36,"21":39,"22":36,"23":36};
+const TIDER={"0":18,"1":18,"2":18,"3":18,"4":18,"5":18,"6":24,"7":24,"8":25,"9":24,"10":24,"11":24,"12":24,"13":33,"14":30,"15":31,"16":30,"17":30,"18":32,"19":36,"20":36,"21":39,"22":38,"23":36};
 const T=64,BREDD=20,HOJD=11;
 
 /* ---------- Uppgifterna: ekvationer med en lucka ---------- */
@@ -181,16 +186,15 @@ function nyaEkv(n,antalFel){let e,ok=false;for(let f=0;f<200&&!ok;f++){e=[];for(
   while(fel.length<antalFel)fel.push(rnd(1,99));return{e,fel};}
 
 /* ---------- Bilder ---------- */
-const ATL={"bricks_grey":[0,0],"bricks_brown":[128,0],"brick_grey":[256,0],"block_planks":[384,0],"spikes":[512,0],"spring":[640,0],"spring_out":[0,128],"door_closed":[128,128],"door_closed_top":[256,128],"door_open":[384,128],"door_open_top":[512,128],"torch_on_a":[640,128],"torch_on_b":[0,256],"torch_off":[128,256],"window":[256,256],"chain":[384,256],"lock_yellow":[512,256],"star":[640,256],"ladder_middle":[0,384],"fence":[128,384],"sign":[256,384],"snail_walk_a":[384,384],"snail_walk_b":[512,384],"slime_normal_walk_a":[640,384],"slime_normal_walk_b":[0,512],"bee_a":[128,512],"bee_b":[256,512],"ladybug_walk_a":[384,512],"ladybug_walk_b":[512,512]};
+const ATL={"bricks_grey":[0,0],"bricks_brown":[128,0],"brick_grey":[256,0],"block_planks":[384,0],"spikes":[512,0],"spring":[640,0],"spring_out":[0,128],"door_closed":[128,128],"door_closed_top":[256,128],"door_open":[384,128],"door_open_top":[512,128],"torch_on_a":[640,128],"torch_on_b":[0,256],"torch_off":[128,256],"window":[256,256],"chain":[384,256],"lock_yellow":[512,256],"star":[640,256],"key_yellow":[640,512],"ladder_middle":[0,384],"fence":[128,384],"sign":[256,384],"snail_walk_a":[384,384],"snail_walk_b":[512,384],"slime_normal_walk_a":[640,384],"slime_normal_walk_b":[0,512],"bee_a":[128,512],"bee_b":[256,512],"ladybug_walk_a":[384,512],"ladybug_walk_b":[512,512]};
 const atlas=new Image();atlas.src="bilder/slott.png";
 let djurBild=null;
-function laddaDjur(){const cfg=Object.assign({},window.lasDjur?lasDjur():{},{hand:"trollstav"});
-  const i=new Image();i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(owlSVG(cfg,"",true));djurBild=i;$("bDjur").innerHTML=owlSVG(cfg);}
+function laddaDjur(){const d=MPPlatt.djur();djurBild=d.bild;$("bDjur").innerHTML=d.svg;}
 
 /* ---------- Bygga ett rum ---------- */
 function bygg(nr){const R=RUM[nr],g=[];
   for(let r=0;r<HOJD;r++)g.push(Array(BREDD).fill("#"));
-  const o={nr,R,V:VANINGAR[R.v],grid:g,sten:[],spikar:[],fjadrar:[],fiender:[],start:null,dorr:null};
+  const o={nr,R,V:VANINGAR[R.v],grid:g,sten:[],spikar:[],fjadrar:[],fiender:[],start:null,dorr:null,kista:null};
   R.k.forEach((rad,r)=>{if(rad.length!==18)console.warn("fel radlängd",R.namn,r);
     [...rad].forEach((ch,c)=>{const x=c+1,y=r+1;g[y][x]=ch==="#"?"#":ch==="="?"=":".";
       if(/[1-4]/.test(ch))o.sten.push({x,y,ordning:+ch,tagen:false});
@@ -199,6 +203,7 @@ function bygg(nr){const R=RUM[nr],g=[];
       if(ch==="S")o.fjadrar.push({x,y,ut:0});
       if(ch==="P")o.start={x,y};
       if(ch==="D")o.dorr={x,y};
+      if(ch==="K")o.kista={x,y,oppen:false,nyckel:false};
       if(ch==="e")o.fiender.push({typ:["snail","slime_normal","ladybug"][rnd(0,2)],x:x*T+T/2,y:(y+1)*T,vx:-80,flyg:false,trollad:0});
       if(ch==="f")o.fiender.push({typ:"bee",bx:x*T+T/2,by:y*T+T/2,x:x*T+T/2,y:y*T+T/2,flyg:true,fas:0,trollad:0});});});
   o.antal=o.sten.filter(s=>s.ordning).length;
@@ -206,27 +211,10 @@ function bygg(nr){const R=RUM[nr],g=[];
 const fastI=(lv,c,r)=>{if(c<0||c>=BREDD||r<0||r>=HOJD)return true;const t=lv.grid[r][c];return t==="#"||t==="=";};
 
 /* ---------- Fysiken (samma värden som i Sagoriket); ren funktion så att roboten kan använda den ---------- */
-const G={grav:2600,hopp:930,hopp2:820,fart:330,acc:2400,b:40,hh:62};
-function nyKropp(lv){return{x:lv.start.x*T+T/2,y:(lv.start.y+1)*T,vx:0,vy:0,mark:false,hopp:0,coyote:0,buffert:0,uFor:false,riktning:1};}
-function flytta(lv,s,dx,dy){const b=G.b/2;
-  if(dx){const x=s.x+dx,top=s.y-G.hh+4,bot=s.y-2,kol=dx>0?Math.floor((x+b)/T):Math.floor((x-b)/T);
-    for(let r=Math.floor(top/T);r<=Math.floor(bot/T);r++)if(fastI(lv,kol,r)){s.vx=0;s.x=dx>0?kol*T-b-.01:(kol+1)*T+b+.01;return;}s.x=x;return;}
-  const y=s.y+dy,l=Math.floor((s.x-b+3)/T),rr=Math.floor((s.x+b-3)/T);
-  if(dy>0){const r=Math.floor(y/T);for(let c=l;c<=rr;c++)if(fastI(lv,c,r)){s.vy=0;s.mark=true;s.y=r*T;return;}}
-  else{const r=Math.floor((y-G.hh)/T);for(let c=l;c<=rr;c++)if(fastI(lv,c,r)){s.vy=0;s.y=(r+1)*T+G.hh;return;}}
-  s.y=y;}
-// ett tidssteg: in = {v,h,u}; returnerar händelser (hopp, fjäder)
-function steg(lv,s,inp,dt){const ev=[];const mal=(inp.h?1:0)-(inp.v?1:0);if(mal)s.riktning=mal;
-  s.vx+=Math.sign(mal*G.fart-s.vx)*Math.min(Math.abs(mal*G.fart-s.vx),G.acc*dt*(s.mark?1:.75));
-  s.coyote=s.mark?.1:Math.max(0,s.coyote-dt);s.buffert=Math.max(0,s.buffert-dt);
-  if(inp.u&&!s.uFor)s.buffert=.12;s.uFor=inp.u;
-  if(s.buffert>0){if(s.coyote>0){s.vy=-G.hopp;s.hopp=1;s.coyote=0;s.buffert=0;s.mark=false;ev.push("hopp");}
-    else if(s.hopp<2&&!s.mark){s.vy=Math.min(s.vy,-G.hopp2);s.hopp=2;s.buffert=0;ev.push("hopp2");}}
-  if(!inp.u&&s.vy<-300)s.vy+=G.grav*dt*.9;
-  s.vy=Math.min(s.vy+G.grav*dt,1400);
-  s.mark=false;flytta(lv,s,s.vx*dt,0);flytta(lv,s,0,s.vy*dt);if(s.mark)s.hopp=0;
-  lv.fjadrar.forEach(f=>{if(s.vy>=0&&Math.abs(s.x-(f.x*T+T/2))<T/2+G.b/2-14&&s.y>=f.y*T+T*.45&&s.y<=(f.y+1)*T+2){s.y=f.y*T+T*.45;s.vy=-1450;s.hopp=1;s.mark=false;f.ut=.35;ev.push("fjader");}});
-  return ev;}
+const G=MPPlatt.G;
+function nyKropp(lv){return MPPlatt.kropp(lv.start.x*T+T/2,(lv.start.y+1)*T);}
+// ett tidssteg med den gemensamma fysiken; händelser: hopp, hopp2, fjader
+function steg(lv,s,inp,dt){return MPPlatt.steg(s,inp,dt,{fast:(c,r)=>fastI(lv,c,r),fjadrar:lv.fjadrar});}
 // rör kroppen ett tal, taggar eller dörren?
 const nara=(s,cx,cy,r)=>Math.abs(s.x-cx)<r+G.b/2&&Math.abs((s.y-G.hh/2)-cy)<r+G.hh/2;
 const rorSten=(s,st)=>nara(s,st.x*T+T/2,st.y*T+T/2,18);
@@ -248,13 +236,13 @@ function start(nr){laddaDjurOm();musikCtx();LV=bygg(nr);tidMax=tidFor(nr);
   cancelAnimationFrame(raf);last=performance.now();raf=requestAnimationFrame(loop);
   if(nr===0)meddela("Räkna ut talet som fattas. Spring och hämta det, sedan till dörren!",3200);}
 let laddat=false;function laddaDjurOm(){if(!laddat){laddaDjur();laddat=true;}}
-function nollstall(){K=nyKropp(LV);LV.sten.forEach(s=>s.tagen=false);LV.fiender.forEach(f=>{f.trollad=0;});LV.nasta=1;E=[];PAR=[];tid=tidMax;lage="vanta";
+function nollstall(){K=nyKropp(LV);LV.sten.forEach(s=>s.tagen=false);if(LV.kista){LV.kista.oppen=false;LV.kista.nyckel=false;}LV.fiender.forEach(f=>{f.trollad=0;});LV.nasta=1;E=[];PAR=[];tid=tidMax;lage="vanta";
   Object.keys(IN).forEach(k=>IN[k]=false);ritaEkv();klocka();}
 function ritaEkv(){$("ekv").innerHTML=U.e.map((q,i)=>{const klar=i<LV.nasta-1,nu=i===LV.nasta-1;
   const del=q.d.map((t,j)=>j===q.lucka?`<span class="lucka">${klar?q.svar:"?"}</span>`:t);
   // division med bråkstreck: täljaren över nämnaren
   const html=q.d[1]==="/"?`<span class="br">${del[0]}<i></i>${del[2]}</span><span>${del[3]}</span><span>${del[4]}</span>`:del.map(x=>`<span>${x}</span>`).join("");
-  return`<div class="e${klar?" klar":nu?" nu":""}">${html}${klar?" ✓":""}</div>`;}).join("");}
+  return`<div class="e${klar?" klar":nu?" nu":""}">${html}${klar?" ✓":""}</div>`;}).join("")+(LV.kista?`<div class="e${LV.kista.nyckel?" klar":LV.nasta>LV.antal?" nu":""}" title="Nyckeln">🔑${LV.kista.nyckel?" ✓":""}</div>`:"");}
 function klocka(){const k=$("klocka");k.textContent=Math.max(0,tid).toFixed(1).replace(".",",");k.classList.toggle("bratt",tid<4&&lage==="spel");}
 let medT=0;function meddela(t,ms=1600,fel=false){const m=$("meddel");m.textContent=t;m.className="meddel"+(fel?" fel":"");m.hidden=false;clearTimeout(medT);medT=setTimeout(()=>m.hidden=true,ms);}
 function misslyckat(text){if(lage!=="spel"&&lage!=="vanta")return;lage="fel";L().bad&&L().bad();meddela(text,1700,true);setTimeout(()=>{if(lage==="fel")nollstall();},1700);}
@@ -271,7 +259,7 @@ function uppdatera(dt){if(lage!=="spel"&&lage!=="vanta")return;
   // talen
   for(const st of LV.sten){if(st.tagen||!rorSten(K,st))continue;st.tagen=true;
     if(st.ordning===LV.nasta){L().chime&&L().chime();gnistor(st.x*T+T/2,st.y*T+T/2,"#7CF0B1",16);LV.nasta++;ritaEkv();
-      if(LV.nasta>LV.antal){L().magic&&L().magic();meddela("Dörren är upplåst! Spring dit!",1400);}}
+      if(LV.nasta>LV.antal){L().magic&&L().magic();if(LV.kista){LV.kista.oppen=true;gnistor(LV.kista.x*T+T/2,LV.kista.y*T+T/2,"#FFE680",24);meddela("Kistan öppnades! Hämta nyckeln 🔑",1600);}else meddela("Dörren är upplåst! Spring dit!",1400);}}
     else{const q=U.e[LV.nasta-1],txt=q.d.map((t,j)=>j===q.lucka?"□":t).join(" ").replace(/ \/ /," / ");
       misslyckat(`${st.v} var fel. ${txt} behöver ${q.svar}. Rummet börjar om.`);return;}}
   // taggar
@@ -285,13 +273,16 @@ function uppdatera(dt){if(lage!=="spel"&&lage!=="vanta")return;
       if(K.vy>80&&K.y-fy<10){f.trollad=.01;K.vy=-620;gnistor(f.x,fy,"#FFD84D",18);L().magic&&L().magic();}
       else misslyckat(`${f.flyg?"Biet":"Vakten"} tog dig! Förtrolla med trollstaven (mellanslag eller ✨). Rummet börjar om.`);}});
   // trollstaven
-  cool=Math.max(0,cool-dt);if(IN.m&&!IN.mFor&&cool<=0){E.push({x:K.x+K.riktning*30,y:K.y-40,vx:K.riktning*620,t:0});cool=.35;L().magic&&L().magic();}IN.mFor=IN.m;
+  cool=Math.max(0,cool-dt);if(((IN.m&&!IN.mFor)||IN.mT)&&cool<=0){IN.mT=false;E.push({x:K.x+K.riktning*30,y:K.y-40,vx:K.riktning*620,t:0});cool=.35;L().magic&&L().magic();}IN.mFor=IN.m;
   E.forEach(s=>{s.t+=dt;s.x+=s.vx*dt;if(fastI(LV,Math.floor(s.x/T),Math.floor(s.y/T)))s.t=9;
     LV.fiender.forEach(f=>{if(!f.trollad&&Math.abs(s.x-f.x)<30&&Math.abs(s.y-(f.flyg?f.y:f.y-22))<34){f.trollad=.01;s.t=9;gnistor(f.x,f.y-20,"#FFD84D",18);}});});
   E=E.filter(s=>s.t<.75);
   PAR.forEach(p=>{p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=500*dt;});PAR=PAR.filter(p=>p.t<p.liv);
+  // nyckeln i kistan
+  const ki=LV.kista;if(ki&&ki.oppen&&!ki.nyckel&&rorSten(K,ki)){ki.nyckel=true;L().chime&&L().chime();gnistor(ki.x*T+T/2,ki.y*T,"#FFE680",20);meddela("Du har nyckeln! Spring till dörren!",1300);ritaEkv();}
   // dörren
-  if(LV.nasta>LV.antal&&vidDorr(LV,K))klar();}
+  if(dorrOppen()&&vidDorr(LV,K))klar();}
+const dorrOppen=()=>LV.nasta>LV.antal&&(!LV.kista||LV.kista.nyckel);
 function gnistor(x,y,f,n=12){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=80+Math.random()*220;PAR.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-80,t:0,liv:.6+Math.random()*.4,f});}}
 
 /* ---------- Rita ---------- */
@@ -312,7 +303,13 @@ function rita(){if(!LV)return;const W=cv.width,H=cv.height,d=cv._dpr||1,topp=Mat
   LV.spikar.forEach(p=>spr("spikes",p.x*T,p.y*T));
   LV.fjadrar.forEach(f=>spr(f.ut>0?"spring_out":"spring",f.x*T,f.y*T));
   // dörren med kodlås
-  const op=LV.nasta>LV.antal,dx=LV.dorr.x*T,dy=LV.dorr.y*T;
+  const op=dorrOppen(),dx=LV.dorr.x*T,dy=LV.dorr.y*T;
+  // nyckelkistan: låst tills alla tal stämmer, sedan öppen med nyckeln
+  if(LV.kista){const k=LV.kista,x=k.x*T,y=k.y*T+T*.3;ctx.fillStyle="#8B5A2B";ctx.fillRect(x+6,y+12,T-12,T*.7-12);
+    ctx.fillStyle="#A86B35";ctx.beginPath();if(k.oppen){ctx.moveTo(x+6,y+12);ctx.lineTo(x+14,y-14);ctx.lineTo(x+T-14,y-14);ctx.lineTo(x+T-6,y+12);}else{ctx.moveTo(x+6,y+14);ctx.quadraticCurveTo(x+T/2,y-12,x+T-6,y+14);}ctx.closePath();ctx.fill();
+    ctx.fillStyle="#F2C230";ctx.fillRect(x+6,y+14,T-12,5);ctx.fillRect(x+T/2-6,y+16,12,12);
+    if(k.oppen&&!k.nyckel){const by=y-30+Math.sin(tt*4)*5;ctx.fillStyle=`rgba(255,230,128,${.35+.2*Math.sin(tt*6)})`;ctx.beginPath();ctx.arc(x+T/2,by+16,26,0,7);ctx.fill();spr("key_yellow",x+8,by-6,T-16,T-16);}
+    else if(!k.oppen)spr("lock_yellow",x+T/2-12,y+12,24,24);}
   spr(op?"door_open_top":"door_closed_top",dx,dy-T);spr(op?"door_open":"door_closed",dx,dy);
   if(!op)spr("lock_yellow",dx+T*.18,dy-T*.55,T*.64,T*.64);else{ctx.fillStyle=`rgba(255,230,128,${.25+.15*Math.sin(tt*5)})`;ctx.fillRect(dx+6,dy-T+6,T-12,2*T-8);}
   // talen
@@ -334,12 +331,8 @@ function blomma(x,y){ctx.strokeStyle="#2BB673";ctx.lineWidth=5;ctx.beginPath();c
   ctx.fillStyle="#FFD84D";ctx.beginPath();ctx.arc(x,y-36,7,0,7);ctx.fill();}
 
 /* ---------- Styrning ---------- */
-const pek=matchMedia("(pointer:coarse)").matches||"ontouchstart" in window;$("kV").hidden=$("kH").hidden=!pek;
-const TANG={ArrowLeft:"v",KeyA:"v",ArrowRight:"h",KeyD:"h",ArrowUp:"u",KeyW:"u",Space:"m",KeyX:"m",Enter:"m"};
-addEventListener("keydown",e=>{if($("game").hidden)return;if(e.code==="Escape"){togglePaus();return;}if(e.code==="KeyR"&&lage!=="klar"){nollstall();return;}const k=TANG[e.code];if(!k)return;e.preventDefault();IN[k]=true;});
-addEventListener("keyup",e=>{const k=TANG[e.code];if(k)IN[k]=false;});
-document.querySelectorAll(".ktrl button").forEach(b=>{const k=b.dataset.k,ner=e=>{e.preventDefault();IN[k]=true;b.classList.add("pa");try{b.setPointerCapture(e.pointerId);}catch(_){}},upp=()=>{IN[k]=false;b.classList.remove("pa");};
-  b.addEventListener("pointerdown",ner);b.addEventListener("pointerup",upp);b.addEventListener("pointercancel",upp);b.addEventListener("lostpointercapture",upp);});
+const pek=MPPlatt.pek;$("kV").hidden=$("kH").hidden=!pek;
+MPPlatt.styrning(IN,{aktiv:()=>!$("game").hidden,tangent:e=>{if(e.code==="Escape"){togglePaus();return true;}if(e.code==="KeyR"&&lage!=="klar"){nollstall();return true;}return false;}});
 function togglePaus(){if(lage==="klar")return;pausad=!pausad;$("pausRuta").hidden=!pausad;Object.keys(IN).forEach(k=>IN[k]=false);}
 $("paus").onclick=togglePaus;$("fortsatt").onclick=togglePaus;
 $("avsluta").onclick=$("quit").onclick=$("kRummen").onclick=()=>{lage="av";cancelAnimationFrame(raf);show("meny");};
@@ -347,48 +340,41 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden&&!$("game")
 
 /* ---------- Klart ---------- */
 function klar(){lage="klar";const kvar=tid,andel=kvar/tidMax,stj=andel>=.45?3:andel>=.2?2:1,id=String(LV.nr+1);
-  data.stars[id]=Math.max(data.stars[id]||0,stj);data.best[id]=Math.max(data.best[id]||0,Math.round(kvar*10)/10);save();
+  data.betyg[id]=Math.max(data.betyg[id]||0,stj);data.best[id]=Math.max(data.best[id]||0,Math.round(kvar*10)/10);save();
   window.MPMynt&&MPMynt.runda(2);L().fanfare&&L().fanfare();
   $("kRub").textContent=`${LV.R.namn}: klart! 🎉`;
   $("kStj").innerHTML=[1,2,3].map(i=>i<=stj?"⭐":'<span class="av">⭐</span>').join("");
-  $("kTxt").innerHTML=`${kvar.toFixed(1).replace(".",",")} sekunder kvar av ${tidMax}.${stj<3?`<br><span class="info">Tre stjärnor: minst ${Math.ceil(tidMax*.45)} sekunder kvar.</span>`:""}`;
+  const vi=LV.R.v,vs=data.stars["v"+(vi+1)]||0;
+  $("kTxt").innerHTML=`${kvar.toFixed(1).replace(".",",")} sekunder kvar av ${tidMax}.${stj<3?`<br><span class="info">Tre stjärnor: minst ${Math.ceil(tidMax*.45)} sekunder kvar.</span>`:""}<br><span class="info">${LV.V.namn}: ${vs?`${"⭐".repeat(vs)} för våningen`:"klara alla rum på våningen för en stjärna"}.</span>`;
   $("kNasta").hidden=LV.nr+1>=RUM.length;$("klarRuta").hidden=false;}
 $("kNasta").onclick=()=>start(LV.nr+1);$("kIgen").onclick=()=>start(LV.nr);
 
 /* ---------- Musiken: egen slinga med Web Audio (inga ljudfiler), lite mystisk slottsmusik; fortare när tiden är kort ---------- */
-const MUSIK={bpm:116,bas:[45,41,43,40],mel:[69,0,72,76,74,72,71,0, 69,0,72,77,76,74,72,0, 71,0,74,79,77,76,74,72, 71,0,68,71,76,0,74,0]};
-const MU={ac:null,ut:null,steg:0,nasta:0};
-function musikCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
-  if(!MU.ac){MU.ac=new AC();MU.ut=MU.ac.createGain();MU.ut.gain.value=.5;MU.ut.connect(MU.ac.destination);}if(MU.ac.state==="suspended")MU.ac.resume();return MU.ac;}
-const mf=m=>440*Math.pow(2,(m-69)/12);
-function mton(m,t,d,typ,v){const a=MU.ac,o=a.createOscillator(),g=a.createGain();o.type=typ;o.frequency.value=mf(m);g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(MU.ut);o.start(t);o.stop(t+d+.05);}
-function trumma(t,hog){const a=MU.ac;if(hog){const o=a.createOscillator(),g=a.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);g.gain.setValueAtTime(.14,t);g.gain.exponentialRampToValueAtTime(.0001,t+.14);o.connect(g);g.connect(MU.ut);o.start(t);o.stop(t+.16);}
-  else{const n=a.createBufferSource(),b=a.createBuffer(1,a.sampleRate*.04,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);const f=a.createBiquadFilter();f.type="highpass";f.frequency.value=6000;const g=a.createGain();g.gain.value=.03;n.buffer=b;n.connect(f);f.connect(g);g.connect(MU.ut);n.start(t);}}
+const MUSIK={bpm:116,ton:"triangle",langd:1.4,vol:.07,basTon:"square",basVol:.022,bas:[45,41,43,40],mel:[69,0,72,76,74,72,71,0, 69,0,72,77,76,74,72,0, 71,0,74,79,77,76,74,72, 71,0,68,71,76,0,74,0]};
 const musikPa=()=>data.musik!==false&&(window.Ljud?Ljud.on:true);
-function musikTick(){if(!MU.ac||$("game").hidden||pausad||document.hidden||!musikPa())return;
-  const fort=lage==="spel"&&tid<5,sp=60/(MUSIK.bpm*(fort?1.35:1))/2;
-  while(MU.nasta<MU.ac.currentTime+.25){const t=Math.max(MU.nasta,MU.ac.currentTime+.03),i=MU.steg%32,j=i%8,b=MUSIK.bas[Math.floor(i/8)];
-    const m=MUSIK.mel[i];if(m)mton(m,t,sp*1.4,"triangle",.07);if(j===0||j===3||j===4||j===6)mton(j===4?b+12:b,t,sp*1.5,"square",.022);
-    if(j===0||j===4)trumma(t,true);if(j%2===1)trumma(t,false);MU.steg++;MU.nasta=t+sp;}}
-setInterval(musikTick,90);
+// spelas av den gemensamma musikmotorn (plattform.js); fortare när tiden är kort
+const MU=MPPlatt.musik(()=>!$("game").hidden&&!pausad&&data.musik!==false?{lat:MUSIK,fart:lage==="spel"&&tid<5?1.35:1}:null);
+const musikCtx=()=>MU.ctx();
 function musikKnapp(){$("musikKnapp").classList.toggle("av",!musikPa());}
 $("musikKnapp").onclick=()=>{data.musik=data.musik===false;save();if(data.musik!==false)musikCtx();musikKnapp();};
 
 /* ---------- Menyn ---------- */
-const upplast=nr=>nr===0||!!data.stars[String(nr)];
+const upplast=nr=>nr===0||!!data.betyg[String(nr)];
 function meny(){laddaDjurOm();musikKnapp();
   $("cats").innerHTML=CATS.map(c=>`<button data-c="${c.id}" aria-pressed="${c.id===data.cat}">${c.name}</button>`).join("");
   const tc=CATS.find(c=>c.id===data.cat)||CATS[3];$("tabs").hidden=!tc.tables;
   $("tabs").innerHTML=tc.tables?`<span class="info" style="width:100%">${data.cat==="div"?"Dela med":"Tabeller"} (inget valt = alla):</span>`+[2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${data.tables.includes(t)}">${t}</button>`).join(""):"";
   let nastaF=false;
-  $("vaningar").innerHTML=VANINGAR.map((V,vi)=>{const lista=RUM.map((r,i)=>[r,i]).filter(([r])=>r.v===vi),summa=lista.reduce((s,[,i])=>s+(data.stars[String(i+1)]||0),0);
+  $("vaningar").innerHTML=VANINGAR.map((V,vi)=>{const lista=RUM.map((r,i)=>[r,i]).filter(([r])=>r.v===vi),summa=lista.reduce((s,[,i])=>s+(data.betyg[String(i+1)]||0),0);
     const ek=["en ekvation","två ekvationer","två–tre ekvationer, taggar och fjädrar","tre–fyra ekvationer och vakter"][vi];
-    return`<h2>${V.ikon} Våning ${vi+1}: ${V.namn}</h2><div class="vaning"><h3><small>${ek}</small><span style="color:var(--gold)">⭐ ${summa} av ${lista.length*3}</span></h3><div class="rummen">${lista.map(([r,i])=>{const s=data.stars[String(i+1)]||0,ok=upplast(i),nasta=ok&&!s&&!nastaF;if(nasta)nastaF=true;
+    const vs=Math.min(...lista.map(([,i])=>data.betyg[String(i+1)]||0));
+    return`<h2>${V.ikon} Våning ${vi+1}: ${V.namn}</h2><div class="vaning"><h3><small>${ek}</small><span style="color:var(--gold);font-size:1.15rem" title="Våningens stjärnor">${"⭐".repeat(vs)}${"☆".repeat(3-vs)}</span></h3><div class="rummen">${lista.map(([r,i])=>{const s=data.betyg[String(i+1)]||0,ok=upplast(i),nasta=ok&&!s&&!nastaF;if(nasta)nastaF=true;
       return`<button class="rum${nasta?" nasta":""}" data-n="${i}" ${ok?"":"disabled"} title="${r.namn}">${ok?i+1:"🔒"}<small>${ok?"★".repeat(s)+"☆".repeat(3-s):""}</small></button>`;}).join("")}</div></div>`;}).join("");}
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;data.cat=b.dataset.c;data.tables=[];save();meny();};
 $("tabs").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;data.tables=data.tables.includes(t)?data.tables.filter(x=>x!==t):[...data.tables,t];save();meny();};
 $("vaningar").onclick=e=>{const b=e.target.closest("[data-n]");if(!b||b.disabled)return;start(+b.dataset.n);};
 function show(id){["meny","game"].forEach(s=>$(s).hidden=s!==id);window.MPS&&MPS.visa(id==="meny"?"home":id);if(id==="meny"){meny();window.scrollTo(0,0);}else musikKnapp();}
+save(); // räknar om stjärnorna (gamla sparningar hade stjärnor per bana/rum)
 show("meny");
 </script>
 </body>

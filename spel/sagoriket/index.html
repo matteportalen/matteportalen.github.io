@@ -75,6 +75,7 @@ h2{font-size:1.25rem;margin:18px 0 8px}
   <div class="cats" id="cats"></div>
   <div class="tabs" id="tabs" hidden></div>
   <div id="varldar"></div>
+  <p class="info"><b>Världens stjärnor:</b> klara alla banor och bossen = ⭐, alla med minst ⭐⭐ = ⭐⭐, alla med ⭐⭐⭐ = ⭐⭐⭐.</p>
   <p class="info">Dator: ← → springer, ↑ hoppar (två gånger = dubbelhopp), mellanslag förtrollar fiender med trollstaven (eller hoppa på dem). Surfplatta och mobil: knapparna på skärmen. Hoppa med huvudet i rätt svar för att öppna porten!</p>
 </div>
 
@@ -100,13 +101,17 @@ h2{font-size:1.25rem;margin:18px 0 8px}
 <script src="../../ljud.js"></script>
 <script src="../../djur.js"></script>
 <script src="../../huvud.js" data-titel="Sagoriket" data-ikon="🏰" data-helskarm="game"></script>
+<script src="../plattform.js"></script>
 <script>
 /* Sagoriket: plattformsspel med elevens djur och trollstaven. Svarsportar (3–4 per bana): hoppa med huvudet i rätt svar så öppnas dörren.
    Grafik: Kenney New Platformer Pack (CC0) i bilder/atlas.png. Banorna byggs av bitar (BITAR), 12 rader höga, rutan 64 enheter. */
 const $=id=>document.getElementById(id);
 const KEY="mattespel-sagoriket-v1";
 const data=(()=>{const std={stars:{},best:{},cat:"multi",tables:[],sett:{},musik:true};try{return Object.assign(std,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return std;}})();
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
+// betyg = 1–3 stjärnor per bana och boss (visas i menyn); stars = de riktiga stjärnorna, 1–3 per värld (lärarens val)
+if(!data.betyg){data.betyg=Object.assign({},data.stars);}
+function varldsStjarnor(){const st={};VARLDAR.forEach(V=>{const b=BANOR[V.id].map((_,i)=>data.betyg[`${V.id}-${i+1}`]||0).concat([data.betyg[`${V.id}-boss`]||0]);st[V.id]=Math.min(...b);});return st;}
+const save=()=>{data.stars=varldsStjarnor();try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
 const L=()=>window.Ljud||{};
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
@@ -183,16 +188,14 @@ const BANOR={
 const T=64,ROWS=12;
 // bossarna: en i slutet av varje värld, besegras med rätta svar (trollstavens blixt)
 const BOSSAR={skog:{namn:"Slemkungen",typ:"slime_normal",hp:5},oken:{namn:"Eldslemmet",typ:"slime_fire",hp:6},is:{namn:"Isjätten",typ:"slime_block",hp:7}};
-const pek=matchMedia("(pointer:coarse)").matches||"ontouchstart" in window;
+const pek=MPPlatt.pek;
 
 /* ---------- Bilder ---------- */
 const ATL={"terrain_grass_block_top":[0,0],"terrain_grass_block_center":[128,0],"terrain_grass_block_top_left":[256,0],"terrain_grass_block_top_right":[384,0],"terrain_grass_block_left":[512,0],"terrain_grass_block_right":[640,0],"terrain_grass_horizontal_left":[768,0],"terrain_grass_horizontal_middle":[896,0],"terrain_grass_horizontal_right":[1024,0],"terrain_sand_block_top":[1152,0],"terrain_sand_block_center":[1280,0],"terrain_sand_block_top_left":[1408,0],"terrain_sand_block_top_right":[0,128],"terrain_sand_block_left":[128,128],"terrain_sand_block_right":[256,128],"terrain_sand_horizontal_left":[384,128],"terrain_sand_horizontal_middle":[512,128],"terrain_sand_horizontal_right":[640,128],"terrain_snow_block_top":[768,128],"terrain_snow_block_center":[896,128],"terrain_snow_block_top_left":[1024,128],"terrain_snow_block_top_right":[1152,128],"terrain_snow_block_left":[1280,128],"terrain_snow_block_right":[1408,128],"terrain_snow_horizontal_left":[0,256],"terrain_snow_horizontal_middle":[128,256],"terrain_snow_horizontal_right":[256,256],"block_empty":[384,256],"block_exclamation":[512,256],"block_strong_empty":[640,256],"coin_gold":[768,256],"star":[896,256],"door_closed":[1024,256],"door_closed_top":[1152,256],"door_open":[1280,256],"door_open_top":[1408,256],"bricks_grey":[0,384],"brick_grey":[128,384],"spikes":[256,384],"bush":[384,384],"mushroom_red":[512,384],"mushroom_brown":[640,384],"cactus":[768,384],"rock":[896,384],"sign":[1024,384],"sign_exit":[1152,384],"flag_green_a":[1280,384],"flag_green_b":[1408,384],"hud_heart":[0,512],"hud_heart_empty":[128,512],"hud_coin":[256,512],"grass":[384,512],"fence":[512,512],"gem_blue":[640,512],"hill":[768,512],"hill_top":[896,512],"spring":[1024,512],"spring_out":[1152,512],"block_planks":[1280,512],"snow":[1408,512],"snail_walk_a":[0,640],"snail_walk_b":[128,640],"slime_normal_walk_a":[256,640],"slime_normal_walk_b":[384,640],"ladybug_walk_a":[512,640],"ladybug_walk_b":[640,640],"bee_a":[768,640],"bee_b":[896,640],"mouse_walk_a":[1024,640],"mouse_walk_b":[1152,640],"worm_normal_move_a":[1280,640],"worm_normal_move_b":[1408,640],"slime_fire_walk_a":[0,768],"slime_fire_walk_b":[128,768],"fly_a":[256,768],"fly_b":[384,768],"frog_idle":[512,768],"frog_jump":[640,768],"slime_block_walk_a":[768,768],"slime_block_walk_b":[896,768],"worm_ring_move_a":[1024,768],"worm_ring_move_b":[1152,768]};
 const atlas=new Image();atlas.src="bilder/atlas.png";
 const BG={};["bg_trees","bg_hills","bg_mushrooms","bg_desert","bg_snow"].forEach(n=>{const i=new Image();i.src=`bilder/${n}.jpg`;BG[n]=i;});
 let djurBild=null;
-function laddaDjur(){const cfg=Object.assign({},window.lasDjur?lasDjur():{},{hand:"trollstav"});
-  const svg=owlSVG(cfg,"",true);const i=new Image();i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);djurBild=i;
-  $("bDjur").innerHTML=owlSVG(cfg);}
+function laddaDjur(){const d=MPPlatt.djur();djurBild=d.bild;$("bDjur").innerHTML=d.svg;}
 
 /* ---------- Bygga en bana ---------- */
 let LV=null;
@@ -240,9 +243,9 @@ const fast=(c,r,lv=LV)=>{if(c<0)return true;if(c>=lv.cols||r<0)return false;if(r
 /* ---------- Spelet ---------- */
 const cv=$("cv"),ctx=cv.getContext("2d");
 let P=null,cam=0,skala=1,vy0=0,last=0,raf=0,igang=false,pausad=false;
-const IN={v:false,h:false,u:false,m:false,uFor:false,mFor:false};
-const G={grav:2600,hopp:930,hopp2:820,fart:330,acc:2400};
-function start(vid,nr){musikCtx();MU.lat=null;LV=nr==="boss"?byggBoss(vid):bygg(vid,nr);$("tips").classList.toggle("boss",!!LV.boss);P={x:2*T,y:9*T,vx:0,vy:0,b:40,hh:62,mark:false,hopp:0,riktning:1,skada:0,hjartan:3,poang:0,stj:0,check:2*T,cool:0,coyote:0,buffert:0,fel:0,felSvar:0,bob:0};BL=[];
+const IN={v:false,h:false,u:false,m:false,mFor:false};
+const G=MPPlatt.G; // gemensam fysik i plattform.js
+function start(vid,nr){musikCtx();LV=nr==="boss"?byggBoss(vid):bygg(vid,nr);$("tips").classList.toggle("boss",!!LV.boss);P={x:2*T,y:9*T,vx:0,vy:0,b:40,hh:62,mark:false,hopp:0,riktning:1,skada:0,hjartan:3,poang:0,stj:0,check:2*T,cool:0,coyote:0,buffert:0,fel:0,felSvar:0,bob:0};BL=[];
   E=[];PAR=[];FLOJ=[];cam=0;$("slutRuta").hidden=true;$("pausRuta").hidden=true;pausad=false;
   show("game");resize();igang=true;musikKnapp();last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
   tips(LV.boss?`${LV.boss.namn}! Hoppa med huvudet i rätt svar, så förtrollar trollstaven bossen.`:nr===0&&vid==="skog"?"Spring åt höger! Hoppa med huvudet i rätt svar.":nr===1&&vid==="skog"?"Muren är hög: hoppa två gånger för dubbelhopp!":`${LV.V.namn}, bana ${nr+1}`);}
@@ -253,15 +256,6 @@ function resize(){const dpr=Math.min(2,window.devicePixelRatio||1),W=innerWidth,
 addEventListener("resize",()=>{if(igang)resize();});
 
 function loop(t){raf=requestAnimationFrame(loop);let dt=Math.min(.033,(t-last)/1000);last=t;if(!pausad)uppdatera(dt);rita();}
-function kollPlayer(nx,ny,dx,dy){// rör spelaren och krockar mot rutnätet, en axel i taget
-  const b=P.b/2;
-  if(dx){const x=nx+dx,top=ny-P.hh+4,bot=ny-2,kol=dx>0?Math.floor((x+b)/T):Math.floor((x-b)/T);let stopp=false;
-    for(let r=Math.floor(top/T);r<=Math.floor(bot/T);r++)if(fast(kol,r)){stopp=true;break;}
-    if(stopp){P.vx=0;return[dx>0?kol*T-b-.01:(kol+1)*T+b+.01,ny];}return[x,ny];}
-  const y=ny+dy,l=Math.floor((nx-b+3)/T),rr=Math.floor((nx+b-3)/T);
-  if(dy>0){const r=Math.floor(y/T);for(let c=l;c<=rr;c++)if(fast(c,r)){P.vy=0;P.mark=true;return[nx,r*T];}}
-  else{const r=Math.floor((y-P.hh)/T);for(let c=l;c<=rr;c++)if(fast(c,r)){P.vy=0;huvud(c,r);return[nx,(r+1)*T+P.hh];}}
-  return[nx,y];}
 function huvud(c,r){const t=LV.grid[r]&&LV.grid[r][c];if(t!=="A")return;
   const p=LV.portar.find(p=>p.block.some(b=>b.x===c&&b.y===r));if(!p||p.open)return;const bl=p.block.find(b=>b.x===c&&b.y===r);
   if(performance.now()-(p.spar||0)<500)return;p.spar=performance.now();bl.bump=1;
@@ -301,25 +295,14 @@ function skadad(){if(P.skada>0)return;P.hjartan--;P.skada=1.6;P.vy=-520;P.vx=-P.
 function gnistor(x,y,f,n=12){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=80+Math.random()*220;PAR.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-80,t:0,liv:.6+Math.random()*.4,f});}}
 function forhaxa(f){f.trollad=1;gnistor(f.x,f.y-24,"#FFD84D",18);P.poang+=20;L().magic&&L().magic();}
 function uppdatera(dt){if(!igang)return;const tnu=performance.now()/1000;
-  // styrning
-  const mal=(IN.h?1:0)-(IN.v?1:0);if(mal)P.riktning=mal;
-  P.vx+=Math.sign(mal*G.fart-P.vx)*Math.min(Math.abs(mal*G.fart-P.vx),G.acc*dt*(P.mark?1:.75));
-  P.coyote=P.mark?.1:Math.max(0,P.coyote-dt);P.buffert=Math.max(0,P.buffert-dt);
-  if(IN.u&&!IN.uFor)P.buffert=.12;IN.uFor=IN.u;
-  if(P.buffert>0){if(P.coyote>0){P.vy=-G.hopp;P.hopp=1;P.coyote=0;P.buffert=0;P.mark=false;L().hop&&L().hop();}
-    else if(P.hopp<2&&!P.mark){P.vy=-G.hopp2;P.hopp=2;P.buffert=0;gnistor(P.x,P.y,"#fff",8);L().hop&&L().hop();}}
-  if(!IN.u&&P.vy<-300)P.vy+=G.grav*dt*.9; // kort hopp om man släpper
-  P.vy=Math.min(P.vy+G.grav*dt,1400);
   // trollstaven
-  P.cool=Math.max(0,P.cool-dt);if(IN.m&&!IN.mFor&&P.cool<=0){E.push({x:P.x+P.riktning*30,y:P.y-40,vx:P.riktning*620,t:0});P.cool=.35;L().magic&&L().magic();}IN.mFor=IN.m;
+  P.cool=Math.max(0,P.cool-dt);if(((IN.m&&!IN.mFor)||IN.mT)&&P.cool<=0){IN.mT=false;E.push({x:P.x+P.riktning*30,y:P.y-40,vx:P.riktning*620,t:0});P.cool=.35;L().magic&&L().magic();}IN.mFor=IN.m;
   // rörliga plankor (fram och tillbaka över gropen)
   LV.plankor.forEach(m=>{m.fas+=dt*.9;const nx=m.x0+(1-Math.cos(m.fas))/2*m.amp;m.dx=nx-m.x;m.x=nx;});
-  const paPlanka=LV.plankor.find(m=>P.paPl===m);if(paPlanka)P.x+=paPlanka.dx;
-  // flytta
-  const foreY=P.y;P.mark=false;P.paPl=null;let[x,y]=kollPlayer(P.x,P.y,P.vx*dt,0);[x,y]=kollPlayer(x,y,0,P.vy*dt);P.x=x;P.y=y;
-  if(P.vy>=0)LV.plankor.forEach(m=>{if(foreY<=m.y+4&&P.y>=m.y&&P.x>m.x-P.b/2+4&&P.x<m.x+m.w+P.b/2-4){P.y=m.y;P.vy=0;P.mark=true;P.paPl=m;}});
-  if(P.mark)P.hopp=0;
-  LV.fjadrar.forEach(f=>{f.ut=Math.max(0,f.ut-dt);if(P.vy>=0&&Math.abs(P.x-(f.x*T+T/2))<T/2+P.b/2-14&&P.y>=f.y*T+T*.45&&P.y<=(f.y+1)*T+2){P.y=f.y*T+T*.45;P.vy=-1450;P.hopp=1;P.mark=false;f.ut=.35;L().hop&&L().hop();gnistor(f.x*T+T/2,f.y*T+T/2,"#fff",10);}});
+  // springa, hoppa, plankor och fjädrar: gemensam fysik (plattform.js); huvud() när huvudet slår i ett svarsblock
+  const ev=MPPlatt.steg(P,IN,dt,{fast:(c,r)=>fast(c,r),huvud,fjadrar:LV.fjadrar,plankor:LV.plankor});
+  ev.forEach(e=>{L().hop&&L().hop();if(e!=="hopp")gnistor(P.x,P.y,"#fff",e==="fjader"?10:8);});
+  LV.fjadrar.forEach(f=>f.ut=Math.max(0,f.ut-dt));
   // tips första gången man möter något nytt
   const visaTips=(nyckel,villkor,text)=>{if(!(data.sett||{})[nyckel]&&villkor){data.sett=Object.assign({},data.sett,{[nyckel]:1});save();tips(text,4200);}};
   visaTips("troll",LV.fiender.some(f=>!f.trollad&&f.x>P.x&&f.x-P.x<380),pek?"Tryck på ✨ för att förtrolla fienden med trollstaven! Du kan också hoppa på den.":"Tryck mellanslag för att förtrolla fienden med trollstaven! Du kan också hoppa på den.");
@@ -444,12 +427,7 @@ function blomma(x,y){ctx.strokeStyle="#2BB673";ctx.lineWidth=5;ctx.beginPath();c
 let hudS="";function hud(){const h=`${"❤️".repeat(Math.max(0,P.hjartan))}${"🤍".repeat(Math.max(0,3-P.hjartan))} ${LV.boss?"":`<span>⭐ ${P.stj}/3</span>`} <span>${P.poang} p</span>`;if(h!==hudS){hudS=h;$("hudV").innerHTML=h;}}
 
 /* ---------- Styrning ---------- */
-const TANG={ArrowLeft:"v",KeyA:"v",ArrowRight:"h",KeyD:"h",ArrowUp:"u",KeyW:"u",Space:"m",KeyX:"m",KeyK:"m",Enter:"m"};
-addEventListener("keydown",e=>{const k=TANG[e.code];if(!k||$("game").hidden)return;e.preventDefault();IN[k]=true;});
-addEventListener("keyup",e=>{const k=TANG[e.code];if(k)IN[k]=false;});
-addEventListener("keydown",e=>{if(e.code==="Escape"&&!$("game").hidden)togglePaus();});
-document.querySelectorAll(".ktrl button").forEach(b=>{const k=b.dataset.k,ner=e=>{e.preventDefault();IN[k]=true;b.classList.add("pa");try{b.setPointerCapture(e.pointerId);}catch(_){}},
-  upp=e=>{IN[k]=false;b.classList.remove("pa");};b.addEventListener("pointerdown",ner);b.addEventListener("pointerup",upp);b.addEventListener("pointercancel",upp);b.addEventListener("lostpointercapture",upp);});
+MPPlatt.styrning(IN,{aktiv:()=>!$("game").hidden,tangent:e=>{if(e.code==="Escape"){togglePaus();return true;}return false;}});
 $("kV").hidden=$("kH").hidden=!pek;
 function togglePaus(){pausad=!pausad;$("pausRuta").hidden=!pausad;Object.keys(IN).forEach(k=>IN[k]=false);}
 $("paus").onclick=togglePaus;$("fortsatt").onclick=togglePaus;
@@ -462,44 +440,27 @@ document.addEventListener("visibilitychange",()=>{if(document.hidden&&igang&&!pa
 /* ---------- Musiken: egna korta slingor med Web Audio (inga ljudfiler), en per värld och en för bossen ----------
    32 åttondelar per varv (fyra takter), melodi i MIDI-tal (0 = paus), bas på ackordets grundton. Följer ljudknappen och 🎵. */
 const MUSIK={
-  skog:{bpm:128,ton:"square",bas:[48,43,45,41],mel:[72,0,76,79,76,0,72,74, 74,0,71,74,79,0,74,0, 72,0,69,72,76,77,76,72, 69,0,72,77,76,0,74,0]},
-  oken:{bpm:118,ton:"square",bas:[50,48,46,45],mel:[74,0,77,76,74,0,73,74, 76,0,72,76,79,0,76,0, 77,0,74,70,74,77,79,77, 76,0,73,76,81,0,76,73]},
-  is:{bpm:100,ton:"sine",bas:[52,48,55,50],mel:[76,0,79,0,83,0,79,0, 76,0,72,0,79,0,76,0, 74,0,79,0,83,0,86,0, 81,0,78,0,74,0,0,0]},
-  boss:{bpm:150,ton:"square",bas:[45,41,43,40],mel:[69,72,76,72,69,72,76,79, 69,72,77,72,69,72,77,81, 71,74,79,74,71,74,79,83, 68,71,76,71,80,0,76,0]}};
-const MU={ac:null,ut:null,steg:0,nasta:0,lat:null};
-function musikCtx(){const AC=window.AudioContext||window.webkitAudioContext;if(!AC)return null;
-  if(!MU.ac){MU.ac=new AC();MU.ut=MU.ac.createGain();MU.ut.gain.value=.55;MU.ut.connect(MU.ac.destination);}
-  if(MU.ac.state==="suspended")MU.ac.resume();return MU.ac;}
-const mf=m=>440*Math.pow(2,(m-69)/12);
-function mton(m,t,d,typ,v){const a=MU.ac,o=a.createOscillator(),g=a.createGain();o.type=typ;o.frequency.value=mf(m);
-  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(v,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(MU.ut);o.start(t);o.stop(t+d+.05);}
-function trumma(t,hog){const a=MU.ac;if(hog){const o=a.createOscillator(),g=a.createGain();o.frequency.setValueAtTime(140,t);o.frequency.exponentialRampToValueAtTime(45,t+.12);
-    g.gain.setValueAtTime(.16,t);g.gain.exponentialRampToValueAtTime(.0001,t+.14);o.connect(g);g.connect(MU.ut);o.start(t);o.stop(t+.16);}
-  else{const n=a.createBufferSource(),b=a.createBuffer(1,a.sampleRate*.04,a.sampleRate),d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=(Math.random()*2-1)*(1-i/d.length);
-    const f=a.createBiquadFilter();f.type="highpass";f.frequency.value=6000;const g=a.createGain();g.gain.value=.035;n.buffer=b;n.connect(f);f.connect(g);g.connect(MU.ut);n.start(t);}}
+  skog:{bpm:128,ton:"square",langd:.9,vol:.028,bas:[48,43,45,41],mel:[72,0,76,79,76,0,72,74, 74,0,71,74,79,0,74,0, 72,0,69,72,76,77,76,72, 69,0,72,77,76,0,74,0]},
+  oken:{bpm:118,ton:"square",langd:.9,vol:.028,bas:[50,48,46,45],mel:[74,0,77,76,74,0,73,74, 76,0,72,76,79,0,76,0, 77,0,74,70,74,77,79,77, 76,0,73,76,81,0,76,73]},
+  is:{bpm:100,ton:"sine",langd:2.6,vol:.07,trummor:"latt",bas:[52,48,55,50],mel:[76,0,79,0,83,0,79,0, 76,0,72,0,79,0,76,0, 74,0,79,0,83,0,86,0, 81,0,78,0,74,0,0,0]},
+  boss:{bpm:150,ton:"square",langd:.9,vol:.028,basDriv:true,basVol:.11,bas:[45,41,43,40],mel:[69,72,76,72,69,72,76,79, 69,72,77,72,69,72,77,81, 71,74,79,74,71,74,79,83, 68,71,76,71,80,0,76,0]}};
+// spelas av den gemensamma musikmotorn (plattform.js)
 const musikPa=()=>data.musik!==false&&(window.Ljud?Ljud.on:true);
-function musikTick(){if(!MU.ac||!igang||pausad||document.hidden||!musikPa()||!LV)return;
-  const lat=MUSIK[LV.boss?"boss":LV.vid];if(MU.lat!==lat){MU.lat=lat;MU.steg=0;MU.nasta=0;}
-  const sp=60/lat.bpm/2;
-  while(MU.nasta<MU.ac.currentTime+.25){const t=Math.max(MU.nasta,MU.ac.currentTime+.03),i=MU.steg%32,takt=Math.floor(i/8),j=i%8;
-    const m=lat.mel[i];if(m)mton(m,t,sp*(lat.ton==="sine"?2.6:.9),lat.ton,lat.ton==="sine"?.07:.028);
-    const b=lat.bas[takt];if(LV.boss)mton(j%2?b+12:b,t,sp*.9,"triangle",.11);else if(j===0||j===3||j===4||j===6)mton(j===4?b+12:b,t,sp*1.6,"triangle",.1);
-    if(lat.ton!=="sine"){if(j===0||j===4)trumma(t,true);if(j%2===1)trumma(t,false);}else if(j===0)trumma(t,false);
-    MU.steg++;MU.nasta=t+sp;}}
-setInterval(musikTick,90);
+const MU=MPPlatt.musik(()=>igang&&!pausad&&LV&&data.musik!==false?{lat:MUSIK[LV.boss?"boss":LV.vid]}:null);
+const musikCtx=()=>MU.ctx();
 function musikKnapp(){$("musikKnapp").classList.toggle("av",!musikPa());}
 $("musikKnapp").onclick=()=>{data.musik=data.musik===false;save();if(data.musik!==false)musikCtx();musikKnapp();};
 
 /* ---------- Klar ---------- */
 function klar(){cancelAnimationFrame(raf);if(LV.boss){klarBoss();return;}const id=`${LV.vid}-${LV.nr+1}`,stj=Math.max(1,P.stj),alla=P.fel===0&&LV.portar.every(p=>p.forsta);
-  const fore=data.stars[id]||0;data.stars[id]=Math.max(fore,stj);data.best[id]=Math.max(data.best[id]||0,P.poang);save();
+  const fore=data.betyg[id]||0;data.betyg[id]=Math.max(fore,stj);data.best[id]=Math.max(data.best[id]||0,P.poang);save();
   $("rRub").textContent=`${LV.V.namn}, bana ${LV.nr+1}: klar! 🎉`;
   $("rStj").innerHTML=[1,2,3].map(i=>i<=stj?"⭐":'<span class="av">⭐</span>').join("");
   $("rTxt").innerHTML=`${P.poang} poäng${P.poang>=(data.best[id]||0)&&fore?" (rekord!)":""}. ${alla?"Alla portar rätt direkt! 🧠":`${LV.portar.filter(p=>p.forsta).length} av ${LV.portar.length} portar rätt direkt.`}<br><span class="info">${P.stj===0?"Du klarade banan och fick en stjärna. Det finns tre stjärnor att hitta på banan, ofta högt upp: prova dubbelhopp!":P.stj<3?`Du hittade ${P.stj} av 3 stjärnor. Den sista gömmer sig ofta högt upp: prova dubbelhopp!`:"Du hittade alla tre stjärnorna!"} Du fick också 2 mynt.</span>`;
   const n=nastaBana();$("rNasta").hidden=!n;$("rNasta").textContent=n&&n[1]==="boss"?`Möt bossen! 👑`:"Nästa bana ▶";
   show("result");L().fanfare&&L().fanfare();}
 function klarBoss(){const B=LV.boss,id=`${LV.vid}-boss`,stj=P.felSvar===0?3:P.felSvar<=2?2:1;
-  const fore=data.stars[id]||0;data.stars[id]=Math.max(fore,stj);data.best[id]=Math.max(data.best[id]||0,P.poang);save();
+  const fore=data.betyg[id]||0;data.betyg[id]=Math.max(fore,stj);data.best[id]=Math.max(data.best[id]||0,P.poang);save();
   $("rRub").textContent=`${B.namn} är förtrollad! 🌸`;
   $("rStj").innerHTML=[1,2,3].map(i=>i<=stj?"⭐":'<span class="av">⭐</span>').join("");
   $("rTxt").innerHTML=`${P.poang} poäng. ${P.felSvar===0?"Alla svar rätt direkt! 🧠":`${P.felSvar} fel svar på vägen.`}<br><span class="info">${stj<3?"Tre stjärnor får den som svarar rätt direkt på alla frågor. ":""}Du fick också 2 mynt.</span>`;
@@ -511,22 +472,24 @@ $("rNasta").onclick=()=>{const n=nastaBana();if(n)start(...n);};$("rIgen").oncli
 
 /* ---------- Menyn ---------- */
 // nästa värld öppnas efter förra världens bana 6 (så att den som redan spelat inte låses ute när banor läggs till)
-const upplast=(vid,nr)=>{if(nr===0&&vid==="skog")return true;if(nr===0){const fv=VARLDAR[VARLDAR.findIndex(v=>v.id===vid)-1];return !!data.stars[`${fv.id}-6`]||BANOR[vid].some((_,i)=>data.stars[`${vid}-${i+1}`]);}return !!data.stars[`${vid}-${nr}`];};
+const upplast=(vid,nr)=>{if(nr===0&&vid==="skog")return true;if(nr===0){const fv=VARLDAR[VARLDAR.findIndex(v=>v.id===vid)-1];return !!data.betyg[`${fv.id}-6`]||BANOR[vid].some((_,i)=>data.betyg[`${vid}-${i+1}`]);}return !!data.betyg[`${vid}-${nr}`];};
 function meny(){laddaDjur();
   $("cats").innerHTML=CATS.map(c=>`<button data-c="${c.id}" aria-pressed="${c.id===data.cat}">${c.name}</button>`).join("");
   const tc=CATS.find(c=>c.id===data.cat);$("tabs").hidden=!tc.tables;
   $("tabs").innerHTML=tc.tables?`<span class="info" style="width:100%">${data.cat==="div"?"Dela med":"Tabeller"} (inget valt = alla):</span>`+[2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${data.tables.includes(t)}">${t}</button>`).join(""):"";
   let nastaFunnen=false;
-  $("varldar").innerHTML=VARLDAR.map(V=>{const summa=BANOR[V.id].reduce((s,_,i)=>s+(data.stars[`${V.id}-${i+1}`]||0),0);
-    return`<h2>${V.ikon} ${V.namn}</h2><div class="varld"><h3><span>${BANOR[V.id].length} banor</span><span style="color:var(--gold)">⭐ ${summa} av ${BANOR[V.id].length*3}</span></h3><div class="banor">${BANOR[V.id].map((_,i)=>{const id=`${V.id}-${i+1}`,s=data.stars[id]||0,ok=upplast(V.id,i);
+  $("varldar").innerHTML=VARLDAR.map(V=>{const summa=BANOR[V.id].reduce((s,_,i)=>s+(data.betyg[`${V.id}-${i+1}`]||0),0);
+    const vs=Math.min(...BANOR[V.id].map((_,i)=>data.betyg[`${V.id}-${i+1}`]||0),data.betyg[`${V.id}-boss`]||0);
+    return`<h2>${V.ikon} ${V.namn}</h2><div class="varld"><h3><span>${BANOR[V.id].length} banor och en boss</span><span style="color:var(--gold);font-size:1.15rem" title="Världens stjärnor">${"⭐".repeat(vs)}${"☆".repeat(3-vs)}</span></h3><div class="banor">${BANOR[V.id].map((_,i)=>{const id=`${V.id}-${i+1}`,s=data.betyg[id]||0,ok=upplast(V.id,i);
       const nasta=ok&&!s&&!nastaFunnen;if(nasta)nastaFunnen=true;
-      return`<button class="bana${nasta?" nasta":""}" data-v="${V.id}" data-n="${i}" ${ok?"":"disabled"}>${ok?i+1:"🔒"}<small>${ok?"★".repeat(s)+"☆".repeat(3-s):""}</small></button>`;}).join("")}${(()=>{const id=`${V.id}-boss`,s=data.stars[id]||0,ok=!!data.stars[`${V.id}-${BANOR[V.id].length}`];
+      return`<button class="bana${nasta?" nasta":""}" data-v="${V.id}" data-n="${i}" ${ok?"":"disabled"}>${ok?i+1:"🔒"}<small>${ok?"★".repeat(s)+"☆".repeat(3-s):""}</small></button>`;}).join("")}${(()=>{const id=`${V.id}-boss`,s=data.betyg[id]||0,ok=!!data.betyg[`${V.id}-${BANOR[V.id].length}`];
       return`<button class="bana boss" data-v="${V.id}" data-n="boss" ${ok?"":"disabled"} title="${BOSSAR[V.id].namn}">${ok?"👑":"🔒"}<small>${ok?"★".repeat(s)+"☆".repeat(3-s):"Boss"}</small></button>`;})()}</div></div>`;}).join("");}
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;data.cat=b.dataset.c;data.tables=[];save();meny();};
 $("tabs").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;data.tables=data.tables.includes(t)?data.tables.filter(x=>x!==t):[...data.tables,t];save();meny();};
 $("varldar").onclick=e=>{const b=e.target.closest("[data-n]");if(!b||b.disabled)return;start(b.dataset.v,b.dataset.n==="boss"?"boss":+b.dataset.n);};
 
 function show(id){["meny","game","result"].forEach(s=>$(s).hidden=s!==id);window.MPS&&MPS.visa(id==="meny"?"home":id);if(id==="meny"){meny();window.scrollTo(0,0);}}
+save(); // räknar om stjärnorna (gamla sparningar hade stjärnor per bana/rum)
 show("meny");
 </script>
 </body>

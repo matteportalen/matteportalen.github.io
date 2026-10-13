@@ -70,7 +70,7 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 /* Spelhörnan på dator: vita kort i rutnät som på startsidan, spelets färg i ikonrutan */
 .gamecard.bub{--g:linear-gradient(135deg,#17AFC4,#2F8FD8 55%,#1F64AE)}.gamecard.tower{--g:linear-gradient(180deg,#8FD3FF,#3D5AFE 60%,#141D3D)}
 .gamecard.jakt{--g:linear-gradient(135deg,#2BB673,#1D2B53)}.gamecard.mem{--g:linear-gradient(135deg,#FF5FA2,#FF9F43)}.gamecard.tugc{--g:linear-gradient(135deg,#FF9F43,#E5484D)}
-.gamecard.car{--g:linear-gradient(135deg,#1D2B53,#3D5AFE)}.gamecard.space{--g:linear-gradient(135deg,#141D3D,#7B61FF)}.gamecard.frog{--g:linear-gradient(135deg,#2BB673,#17AFC4)}.gamecard.kiosk{--g:linear-gradient(135deg,#FF5FA2,#7B61FF)}
+.gamecard.car{--g:linear-gradient(135deg,#1D2B53,#3D5AFE)}.gamecard.frog{--g:linear-gradient(135deg,#2BB673,#17AFC4)}.gamecard.kiosk{--g:linear-gradient(135deg,#FF5FA2,#7B61FF)}
 @media (min-width:760px){
   #menu{max-width:1140px}
   .glist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
@@ -178,23 +178,6 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 @media (prefers-reduced-motion:reduce){.carbtns .turbo:not(:disabled){animation:none}}
 @media (max-width:380px){.carbtns{gap:10px;padding:14px 8px 10px}.carbtns .lane{width:66px;height:66px}.carbtns .turbo{height:66px;font-size:1.05rem}}
 .hearts svg{width:26px;height:26px;margin:0 1px;vertical-align:middle}
-.gamecard.space{background:linear-gradient(135deg,#141D3D,#7B61FF);box-shadow:0 6px 0 #0B1026;margin-top:14px}
-.gamecard.space:active{box-shadow:0 3px 0 #0B1026}
-/* Asteroidstormens kontrollpanel: sexkantiga knappar ur Kenneys "Mobile Controls" (CC0) i spel/bilder/kontroller/ */
-.spacebtns{position:relative;display:flex;align-items:center;justify-content:center;gap:14px;max-width:620px;margin:0 auto;padding:14px 14px 12px;border-radius:0 0 20px 20px;
-  background:radial-gradient(circle at 12% 40%,rgba(255,255,255,.5) 0 1px,transparent 2px),radial-gradient(circle at 70% 70%,rgba(255,255,255,.4) 0 1px,transparent 2px),radial-gradient(circle at 88% 30%,rgba(255,255,255,.5) 0 1px,transparent 2px),linear-gradient(#1A2147,#0D1230);box-shadow:0 5px 0 #070A1C}
-.spacebtns::before{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:linear-gradient(90deg,transparent,#9B7BFF 20%,#5FE0FF 50%,#9B7BFF 80%,transparent);box-shadow:0 0 10px #7B61FF}
-.spacebtns button{position:relative;flex:none;border:0;background:center/100% 100% no-repeat;filter:drop-shadow(0 4px 0 rgba(0,0,0,.5));transition:transform .08s,filter .08s;-webkit-user-select:none;user-select:none}
-.spacebtns button:active{transform:translateY(3px) scale(.97);filter:drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 10px rgba(155,123,255,.9))}
-#aimL,#aimR{width:76px;height:76px;background-image:url(bilder/kontroller/hex.png)}
-#aimL:active,#aimR:active{background-image:url(bilder/kontroller/hex_lila.png),url(bilder/kontroller/hex.png)}
-#aimL i,#aimR i{position:absolute;inset:0;background:url(bilder/kontroller/pil.png) center/38px no-repeat}
-#aimL i{transform:scaleX(-1)}
-.spacebtns .fire{width:min(200px,44vw);height:76px;background-image:url(bilder/kontroller/hexbred_lila.png),url(bilder/kontroller/hexbred.png);color:#fff;font-weight:800;font-size:1.25rem;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:8px;
-  filter:drop-shadow(0 4px 0 rgba(0,0,0,.5)) drop-shadow(0 0 8px rgba(255,90,100,.55))}
-.spacebtns .fire i{width:32px;height:32px;background:url(bilder/kontroller/sikte.png) center/contain no-repeat;filter:drop-shadow(0 0 4px #FF5A64)}
-.spacebtns .fire:active{filter:drop-shadow(0 1px 0 rgba(0,0,0,.5)) drop-shadow(0 0 16px rgba(255,90,100,1))}
-@media (max-width:380px){.spacebtns{gap:10px;padding:12px 8px 10px}#aimL,#aimR{width:66px;height:66px}.spacebtns .fire{height:66px;font-size:1.05rem}}
 /* håll inne en knapp på mobil: ingen textmarkering, ingen kopiera-meny och ingen förstoringslupp */
 #game,#game *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 #game button{touch-action:manipulation}
@@ -203,9 +186,6 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
 .gamecard.tower{background:linear-gradient(180deg,#8FD3FF,#3D5AFE 60%,#141D3D);box-shadow:0 6px 0 #0B1026;margin-top:14px}
 .gamecard.tower:active{box-shadow:0 3px 0 #0B1026}
 #game.tower #cv{height:clamp(260px,46vh,460px)}
-/* Asteroidstormen: större spelyta (lärarens önskan) */
-#game.space #cv{height:clamp(380px,64vh,720px)}
-@media(min-width:760px){#game.space .stage{max-width:900px}}
 .towerpad{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:620px;margin:8px auto 0;padding:0 12px}
 .towerpad button{height:50px;border-radius:14px;background:var(--card);box-shadow:0 4px 0 var(--line);font-size:1.6rem;font-weight:800}
 .towerpad button:active{transform:translateY(3px);box-shadow:0 1px 0 var(--line)}
@@ -382,7 +362,6 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
     <button class="gamecard tugc" id="btnTug"><span class="pair" title="Kan spelas två och två">🤝</span><span class="pic shot"><img src="bilder/kort/tug.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Dragkampen</b><small>Räkna snabbast och dra repet! Mot en vän eller Roboten.</small></span></button>
   </div>
   <button class="gamecard car" id="btnCar"><span class="pic shot"><img src="bilder/kort/car.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Racerbanan</b><small>Tävla mot tre bilar! Kör under bågen med rätt svar, undvik hinder och plocka mynt till garaget.</small></span></button>
-  <button class="gamecard space" id="btnSpace"><span class="pic shot"><img src="bilder/kort/space.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Asteroidstormen</b><small>Sikta med kanonen och skjut stenen med rätt svar!</small></span></button>
   <button class="gamecard frog" id="btnFrog"><span class="pic shot"><img src="bilder/kort/frog.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Grodhoppet</b><small>Hoppa på näckrosbladen med rätt svar och ta dig över floden!</small></span></button>
   <a class="gamecard kiosk" href="affaren/" style="text-decoration:none"><span class="pic shot"><img src="bilder/kort/affaren.jpg" alt="" width="96" height="96" loading="lazy"></span><span><b>Affären</b><small>Stå i kassan! Räkna ihop, ge växel och bygg ut din egen affär.</small></span></a>
   </div>
@@ -411,7 +390,6 @@ h2{font-size:1.9rem;line-height:1.1;margin:10px 0 6px;font-weight:800}
   <div class="qbox"><div class="q" id="q"></div><div class="prog"><i id="progFill"></i></div></div>
   <div class="stage"><canvas id="cv" aria-label="Spelplan"></canvas><div class="overlay" id="count" hidden></div></div>
   <div class="carbtns" id="carBtns" hidden><button class="lane" id="carL" aria-label="Byt fil åt vänster"><i></i></button><button class="turbo" id="carTurbo" aria-label="Turbo"><i></i>TURBO</button><button class="lane" id="carR" aria-label="Byt fil åt höger"><i></i></button></div>
-  <div class="spacebtns" id="spaceBtns" hidden><button id="aimL" aria-label="Åk åt vänster"><i></i></button><button class="fire" id="fireBtn" aria-label="Skjut"><i></i>SKJUT!</button><button id="aimR" aria-label="Åk åt höger"><i></i></button></div>
   <div class="towerpad" id="towerPad" hidden><button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="del" aria-label="Sudda">⌫</button><button data-k="0">0</button><button data-k="ok" class="okb">OK</button><button class="dropbtn" id="dropBtn" hidden>⬇ SLÄPP!</button></div>
   <p class="hint" id="hint">Tryck högt, i mitten eller lågt för att flyga dit.</p>
 </div>
@@ -526,14 +504,13 @@ $("btnMem").onclick=()=>{game="mem";renderChoose();showOnly("choose");};
 $("btnTower").onclick=()=>{game="tower";if(cat==="klocka")cat="hundra";renderChoose();showOnly("choose");};
 $("btnFrog").onclick=()=>{game="frog";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("frogChips").onclick=e=>{const b=e.target.closest("[data-m]");if(!b)return;data.frogMode=b.dataset.m;save();renderChoose();};
-$("btnSpace").onclick=()=>{game="space";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("btnCar").onclick=()=>{game="car";if(cat==="klocka")cat="plus10";renderChoose();showOnly("choose");};
 $("laneChips").onclick=e=>{const b=e.target.closest("[data-l]");if(!b)return;data.lanes=+b.dataset.l;save();renderChoose();};
 $("backMenu").onclick=()=>showOnly("menu");
 const starHtml=n=>`<span class="stars">${[1,2,3].map(i=>i<=n?"★":'<span class="off">★</span>').join("")}</span>`;
 function renderChoose(){
-  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="space"?(data.space=data.space||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):game==="bub"?(data.bubbel=data.bubbel||{}):(data.mem=data.mem||{});
-  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="space"?"Lyft! 🚀":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="kiosk"?"Öppna kiosken! 🏪":game==="bub"?"Börja poppa! 🫧":"Börja spela! 🃏";
+  const store=game==="fly"?data.fly:game==="car"?(data.car=data.car||{}):game==="frog"?(data.frog=data.frog||{}):game==="tower"?(data.tower=data.tower||{}):game==="kiosk"?(data.kiosk=data.kiosk||{}):game==="bub"?(data.bubbel=data.bubbel||{}):(data.mem=data.mem||{});
+  $("btnStart").textContent=game==="fly"?"Flyg iväg! 🦉":game==="car"?"Starta motorn! 🏁":game==="frog"?"Hoppa! 🐸":game==="tower"?"Börja bygga! 🏗️":game==="kiosk"?"Öppna kiosken! 🏪":game==="bub"?"Börja poppa! 🫧":"Börja spela! 🃏";
   $("frogOpt").hidden=game!=="frog";
   $("memOpt").hidden=game!=="mem";
   $("memChips").querySelectorAll("button").forEach(b=>b.setAttribute("aria-pressed",b.dataset.m===(data.memMode||"solo")));
@@ -565,7 +542,7 @@ function renderChoose(){
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;if(cat!==b.dataset.c)tables.clear();cat=b.dataset.c;renderChoose();};
 $("chips").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;if(!t)tables.clear();else tables.has(t)?tables.delete(t):tables.add(t);renderChoose();};
 const owlResHtml=`<img src="${avSrc}" alt="" style="width:100%;display:block">`;
-const startCurrent=()=>{$("rOwl").innerHTML=owlResHtml;return game==="bub"?startBub():game==="car"?startCar():game==="space"?startSpace():game==="frog"?startFrog():game==="tower"?startTower():game==="kiosk"?startKiosk():startMem();};
+const startCurrent=()=>{$("rOwl").innerHTML=owlResHtml;return game==="bub"?startBub():game==="car"?startCar():game==="frog"?startFrog():game==="tower"?startTower():game==="kiosk"?startKiosk():startMem();};
 $("btnStart").onclick=()=>{data.cat=cat;data.tables=[...tables];save();startCurrent();};
 
 /* ---------- Spelet ---------- */
@@ -575,7 +552,7 @@ let W=0,H=0,G=null,raf=0;
 function resize(){const r=cv.getBoundingClientRect(),dpr=window.devicePixelRatio||1;W=r.width;H=r.height;cv.width=Math.round(W*dpr);cv.height=Math.round(H*dpr);ctx.setTransform(dpr,0,0,dpr,0,0);}
 window.addEventListener("resize",()=>{if(G)resize();});
 
-$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopSpace();stopFrog();stopTower();stopKiosk();showOnly("choose");renderChoose();};
+$("quit").onclick=()=>{window.Ljud&&Ljud.stopLoops();if(G){G.over=true;}if(C){C.over=true;}cancelAnimationFrame(raf);cancelAnimationFrame(craf);stopFrog();stopTower();stopKiosk();showOnly("choose");renderChoose();};
 $("rAgain").onclick=()=>startCurrent();
 $("rChoose").onclick=()=>{renderChoose();showOnly("choose");};
 
@@ -633,7 +610,7 @@ const gateD=k=>1+k*RGS,finishD=()=>gateD(RGATES-1)+.75;
 // grundfart: lugnt i början, lite snabbare mot slutet (u per sekund)
 const baseSpd=d=>1/(5.2-1.7*Math.min(1,d/finishD()));
 function startCar(){
-  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopSpace();stopFrog();stopTower();stopKiosk();
+  if(G){G.over=true;}cancelAnimationFrame(raf);G=null;stopFrog();stopTower();stopKiosk();
   OPTN=data.lanes||3;garageData();
   $("carBtns").hidden=false;$("carTurbo").disabled=true;$("carTurbo").classList.remove("on");$("hint").textContent="Byt fil med pilarna eller tryck på filen. Vet du svaret? Tryck på 🔥 Turbo!";
   showOnly("game");resize();
@@ -810,258 +787,14 @@ function finishCar(){
   showOnly("result");
   if(place<=2||rec){window.Ljud&&Ljud.fanfare();confetti();}
 }
-/* ---------- Asteroidstormen ---------- */
-let A=null,araf=0;
-const shield=on=>`<svg viewBox="0 0 26 26" aria-hidden="true"><path d="M13 2 L23 6 V12 C23 18 18 22 13 24 C8 22 3 18 3 12 V6 Z" fill="${on?"#3D8BFD":"#C6D6F2"}" stroke="${on?"#1D2B53":"#C6D6F2"}" stroke-width="1.5"/><path d="M9 12 l3 3 5-6" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round" opacity="${on?1:0}"/></svg>`;
-function stopSpace(){if(A)A.over=true;cancelAnimationFrame(araf);A=null;$("spaceBtns").hidden=true;$("game").classList.remove("space");window.Ljud&&Ljud.space.stop();}
-function spaceHud(){$("hearts").innerHTML=[0,1,2].map(i=>shield(i<A.shields)).join("");$("score").textContent=`${A.score} / ${GOAL}`;$("progFill").style.width=(A.score/GOAL*100)+"%";}
-const shipPos=()=>({x:A&&A.sx!=null?A.sx:W/2,y:H*.9});
-function startSpace(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
-  OPTN=4;$("carBtns").hidden=true;$("spaceBtns").hidden=false;$("game").classList.add("space");$("hint").textContent="Tryck på stenen med rätt svar, så skjuter du på den. Åk undan med pilarna om en sten kommer mot skeppet!"+(matchMedia("(pointer:fine)").matches?" På datorn: ← → åker, A och D vrider kanonen, mellanslag skjuter.":"");
-  showOnly("game");resize();
-  A={shields:3,score:0,t:0,ang:0,rocks:[],shots:[],parts:[],stars:Array.from({length:110},()=>({x:Math.random(),y:Math.random(),s:Math.random()*1.8+.4,tw:Math.random()*6})),
-     cool:0,nextAt:0,shake:0,over:false,running:false,last:performance.now(),turn:0,frags:[],fragHit:0,rings:[],debris:[],msg:null,flash:0,shieldFx:0,pending:false,qBack:0};
-  spaceInit();
-  spaceHud();$("q").innerHTML="";$("q").className="q";
-  const c=$("count"),steps=["3","2","1","Lyft!"];let i=0;c.hidden=false;
-  (function tick(){if(!A||A.over){c.hidden=true;return;}if(i<steps.length){c.textContent=steps[i++];setTimeout(tick,600);}else{c.hidden=true;A.running=true;A.last=performance.now();aSetQ();}})();
-  window.Ljud&&Ljud.space.start();
-  araf=requestAnimationFrame(spaceFrame);
-}
-function rockShape(n){n=n||14;const pts=[];for(let i=0;i<n;i++){pts.push(.8+Math.random()*.24);}return pts;}
-function rockCraters(){return Array.from({length:4},()=>{const a=Math.random()*6.28,d=Math.random()*.55;return[Math.cos(a)*d,Math.sin(a)*d,.1+Math.random()*.13];});}
-/* Ett levande asteroidfält (lärarens önskan: förut kom fyra stenar i taget och allt nollställdes, och jätten var alltid rätt svar).
-   6–9 stenar driver runt hela tiden. Rätt sten sprängs, nästa uppgift kommer direkt och en ny sten flyger in från kanten.
-   Svaret finns alltid någonstans i fältet. Jättar kan ha vilket tal som helst. Stenar som krockar med skeppet kostar en sköld. */
-const aR=()=>Math.min(W*.085,40);
-const aCount=()=>Math.min(9,6+Math.floor(A.score/5));
-const aSpeed=()=>Math.min(W,620)*(.05+A.score*.004);
-const aLive=()=>A.rocks.filter(r=>!r.dead);
-const aSeen=v=>aLive().some(r=>r.val===v&&!r.enter); // svaret syns i bilden (inte på väg in utanför kanten)
-// svaret saknas: en sten poppar fram direkt på en ledig plats (lärarens fynd: 4 · 5 fanns ingen 20-sten)
-function aNeed(v){if(aSeen(v))return;const old=aLive().find(r=>r.val===v);if(old)old.dead=true;const r=aSpawn(v,true);r.born=0;A.needs=(A.needs||0)+1;
-  // samtidigt byts en annan sten mot en ny störsten, så att det inte syns vilken av de nya som är svaret
-  const other=aLive().filter(o=>o!==r&&o.val!==v&&!o.enter&&!o.child);if(other.length){const o=pickOne(other);o.dead=true;boom(o.x,o.y,["#C6D6F2","#fff"],8);const d=aDistractor(A.task);if(d!=null){const n=aSpawn(d,true);n.born=0;}}}
-const aUnique=v=>!aLive().some(r=>r.val===v);
-function aSpawn(val,onScreen){
-  const big=Math.random()<.18,R=aR()*(big?1.35:1),sp=aSpeed()*(.7+Math.random()*.6)*(big?.75:1);let x,y,ang;
-  if(onScreen){for(let k=0;k<40;k++){x=R+Math.random()*(W-2*R);y=R+Math.random()*(H*.6-R);if(aLive().every(o=>Math.hypot(o.x-x,o.y-y)>o.r+R+10))break;}ang=Math.random()*6.28;}
-  else{const side=pickOne(["l","r","t","t"]);
-    if(side==="l"){x=-R;y=R+Math.random()*H*.45;ang=(Math.random()-.5)*1.1;}
-    else if(side==="r"){x=W+R;y=R+Math.random()*H*.45;ang=Math.PI+(Math.random()-.5)*1.1;}
-    else{x=R+Math.random()*(W-2*R);y=-R;ang=Math.PI/2+(Math.random()-.5)*1.3;}}
-  const r={born:1,spr:big?"meteorBrown_big2":pickOne(METEOR),x,y,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,r:R,val,big,rot:Math.random()*6,vr:(Math.random()-.5)*.8,pts:rockShape(big?18:14),cr:rockCraters(),hit:0,glow:0,dead:false,enter:!onScreen};
-  if(!big&&A.score>=3&&Math.random()<.22){r.maxhp=r.hp=A.score>=10&&Math.random()<.35?3:2;}
-  A.rocks.push(r);return r;}
-// störtal: de andra svarsalternativen i uppgiften, så att de ligger nära svaret
-function aDistractor(t){const c=t.opts.filter(v=>v!==t.a&&aUnique(v));return c.length?pickOne(c):null;}
-function aSetQ(){$("q").innerHTML=A.task.q+"<span>= ?</span>";$("q").className="q";}
-function aNewTask(){
-  if(A.chainQ&&A.chainQ.length){const t=A.chainQ.shift();A.task=t;aSetQ();aNeed(t.a);aFill();return;}
-  // helst en uppgift vars svar redan driver omkring; annars flyger svaret in från kanten
-  // välj en uppgift vars svar är en sten som redan syns (vilken som helst, med eller utan pansar), så att nya stenar inte avslöjar svaret
-  const vis=new Set(aLive().filter(r=>!r.enter&&r.born>=1&&!r.child).map(r=>r.val)),prev=A.task&&A.task.a;let t=null;
-  for(let k=0;k<400;k++){const x=gen();if(vis.has(x.a)&&(x.a!==prev||vis.size<2)){t=x;break;}}
-  if(!t)t=gen();A.tasks=(A.tasks||0)+1;A.task=t;aSetQ();aNeed(t.a);aFill();}
-function aFill(){let g=0;while(aLive().length<aCount()&&g++<20){const v=aDistractor(A.task)??aDistractor(gen());if(v==null)break;aSpawn(v,false);}}
-function spaceInit(){A.rocks=[];A.task=gen();aSetQ();aSpawn(A.task.a,true);let g=0;while(aLive().length<6&&g++<30){const v=aDistractor(A.task)??aDistractor(gen());if(v!=null)aSpawn(v,true);}}
-function aimAt(x,y){const s=shipPos(),oy=s.y;A.ang=Math.max(-1.35,Math.min(1.35,Math.atan2(x-s.x,oy-y)));}
-function fire(target){
-  if(!A||!A.running||A.over||A.cool>0)return;A.cool=.28;window.Ljud&&Ljud.laser();
-  const s=shipPos(),sw=Math.min(W*.3,130),L=sw*.3,oy=s.y;A.shots.push({x:s.x+Math.sin(A.ang)*L,y:oy-Math.cos(A.ang)*L,vx:Math.sin(A.ang)*900,vy:-Math.cos(A.ang)*900,target:target||null});
-  A.flash=.08;}
-// tryck på en sten: kanonen siktar och lasern svänger mot stenen även om den hinner flytta sig (rättvist för barn)
-cv.addEventListener("pointerdown",e=>{if(!A)return;const r=cv.getBoundingClientRect(),x=(e.clientX-r.left)/r.width*W,y=(e.clientY-r.top)/r.height*H;
-  let best=null,bd=1e9;[...aLive(),...A.frags.filter(f=>!f.dead)].forEach(o=>{const d=Math.hypot(o.x-x,o.y-y);if(d<o.r*1.8&&d<bd){bd=d;best=o;}});
-  aimAt(best?best.x:x,best?best.y:y);fire(best);});
-const hold=(id,dir)=>{const b=$(id);b.addEventListener("pointerdown",e=>{e.preventDefault();if(A)A.turn=dir;});["pointerup","pointerleave","pointercancel"].forEach(ev=>b.addEventListener(ev,()=>{if(A)A.turn=0;}));};
-hold("aimL",-1);hold("aimR",1);$("fireBtn").onclick=()=>fire(null);
-// långt tryck öppnar annars telefonens meny (kopiera, dela) i stället för att vrida kanonen
-document.getElementById("game").addEventListener("contextmenu",e=>e.preventDefault());
-document.addEventListener("keydown",e=>{if(!A||$("game").hidden)return;
-  if(e.key==="ArrowLeft"){e.preventDefault();A.turn=-1;}else if(e.key==="ArrowRight"){e.preventDefault();A.turn=1;}else if(e.key===" "||e.key==="ArrowUp"){e.preventDefault();fire(null);}
-  else if(e.key==="a"||e.key==="A"){A.aimTurn=-1;}else if(e.key==="d"||e.key==="D"){A.aimTurn=1;}});   // A och D vrider kanonen på dator
-document.addEventListener("keyup",e=>{if(!A)return;if(e.key==="ArrowLeft"||e.key==="ArrowRight")A.turn=0;if("aAdD".includes(e.key))A.aimTurn=0;});
-function boom(x,y,cols,n,big){for(let i=0;i<n;i++){const a=Math.random()*6.28,sp=80+Math.random()*(big?340:260);A.parts.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:.9,c:pickOne(cols),s:2+Math.random()*3});}
-  A.rings.push({x,y,r:6,life:.45,big:!!big});
-  for(let i=0;i<(big?8:5);i++){const a=Math.random()*6.28,sp=60+Math.random()*160;A.debris.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,rot:Math.random()*6,vr:(Math.random()-.5)*8,s:3+Math.random()*5,life:1.1});}}
-function aLose(){A.shields--;spaceHud();if(A.shields<=0){A.over=true;setTimeout(()=>finishSpace(false),1400);return true;}return false;}
-// uppgifter vars svar inte redan finns i fältet (till bitarna från en klyvsten)
-function aFreshTasks(n){const out=[],used=new Set(aLive().map(r=>r.val));for(let k=0;k<200&&out.length<n;k++){const t=gen();if(!used.has(t.a)){used.add(t.a);out.push(t);}}return out;}
-function aFloat(x,y,txt,col){(A.floats=A.floats||[]).push({x,y,txt,col:col||"#FFC93C",t:0});}
-function aHit(rock){
-  if(rock.val===A.task.a){
-    // pansarsten: tål flera skott, spricker lite mer för varje träff
-    if(rock.hp>1){rock.hp--;rock.hit=.35;rock.vx*=.6;rock.vy*=.6;window.Ljud&&(Ljud.clonk?Ljud.clonk():Ljud.pop&&Ljud.pop(3));boom(rock.x,rock.y,["#DDE6F7","#9AA7BF","#fff"],14);aFloat(rock.x,rock.y-rock.r,"En gång till!");return;}
-    A.score++;window.Ljud&&Ljud.ok();$("q").className="q ok";rock.dead=true;boom(rock.x,rock.y,["#FFC93C","#FF9F43","#fff","#7CF0B1"],36,rock.big);
-    // kedjan: alla tre bitarna i rad utan fel ger en sköld tillbaka
-    if(rock.child&&A.chain){A.chain.left--;if(A.chain.left<=0){if(A.chain.clean){if(A.shields<3){A.shields++;A.msg={txt:"Hela kedjan! 🛡️",t:2};A.shieldFx=1;}else A.msg={txt:"Hela kedjan! ✨",t:1.8};window.Ljud&&Ljud.fanfare&&Ljud.fanfare();}A.chain=null;}}
-    // klyvsten: spricker i tre mindre stenar med nya tal; nästa uppgifter har sina svar bland dem
-    if(rock.big){const ts=aFreshTasks(3);A.chainQ=ts.slice();A.chain={left:ts.length,clean:true};
-      ts.forEach((t,i)=>{const c=aSpawn(t.a,true),a=-Math.PI/2+(i-1)*1.2+(Math.random()-.5)*.3,sp=aSpeed()*1.6+40;
-        Object.assign(c,{x:rock.x,y:rock.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,r:rock.r*.78,big:false,child:true,enter:false,hp:0,maxhp:0,spr:pickOne(["meteorBrown_big3","meteorBrown_big4"])});});
-      A.msg={txt:"Den sprack i tre! ✨",t:1.6};}
-    spaceHud();if(A.score>=GOAL){A.over=true;setTimeout(()=>finishSpace(true),1100);return;}
-    A.nextAt=A.t+.45;A.pending=true;
-  }else{
-    window.Ljud&&Ljud.bad();A.shake=.5;A.shieldFx=.8;rock.hit=.6;boom(rock.x,rock.y,["#9AA7BF","#C6D6F2"],12);if(A.chain)A.chain.clean=false;
-    aLive().forEach(r=>{if(r.val===A.task.a)r.glow=1.8;});
-    $("q").innerHTML=A.task.q+`<span>= ${A.task.a}</span>`;$("q").className="q bad";A.qBack=A.t+1.8;
-    aLose();}}
-function aCrash(r){
-  r.dead=true;if(A.chain&&r.child)A.chain.clean=false;boom(r.x,r.y,["#9AA7BF","#FF8A8A","#fff"],24,r.big);A.shake=.6;A.shieldFx=1;window.Ljud&&Ljud.bad();A.msg={txt:"Krock! Akta skeppet 🛡️",t:1.5};
-  if(aLose())return;aNeed(A.task.a);aFill();}
-function fragsDone(){ // alla bitar borta: bonus om alla blev skjutna
-  if(A.fragHit===3){if(A.shields<3){A.shields++;A.msg={txt:"Skölden laddad! 🛡️",t:2};A.shieldFx=1;}else A.msg={txt:"Alla bitar! ✨",t:1.8};
-    window.Ljud&&Ljud.fanfare&&Ljud.fanfare();boom(W/2,H*.35,["#FFC93C","#7CF0B1","#3D8BFD","#FF6B9A","#fff"],40,true);spaceHud();}
-  A.frags=[];}
-function spaceFrame(now){
-  if(!A)return;if(A.running&&!A.over&&!document.hidden&&window.Ljud&&!Ljud.space.g)Ljud.space.start();const dt=Math.min(.05,(now-A.last)/1000);A.last=now;
-  if(A.running&&!document.hidden){
-    A.t+=dt;A.cool=Math.max(0,A.cool-dt);A.shake=Math.max(0,A.shake-dt);A.flash=Math.max(0,(A.flash||0)-dt);A.shieldFx=Math.max(0,(A.shieldFx||0)-dt);if(A.msg)A.msg.t-=dt;
-    if(A.aimTurn)A.ang=Math.max(-1.35,Math.min(1.35,A.ang+A.aimTurn*dt*1.8));
-    // pilarna låter skeppet glida åt sidorna för att väja för stenar
-    {const m=Math.min(W*.3,130)*.45;if(A.sx==null)A.sx=W/2;A.sx=Math.max(m,Math.min(W-m,A.sx+(A.turn||0)*Math.max(220,W*.55)*dt));A.tilt=(A.tilt||0)+((A.turn||0)*.18-(A.tilt||0))*Math.min(1,dt*8);}
-    if(A.pending&&A.t>=A.nextAt&&!A.over){A.pending=false;aNewTask();}
-    if(A.qBack&&A.t>=A.qBack&&!A.over&&!A.pending){A.qBack=0;aSetQ();}
-    const sp=shipPos(),sw=Math.min(W*.3,130),shipY=sp.y-sw*.06,yMax=H*.85; // stenarna vänder lite ovanför skeppet, så att krockar händer då och då
-    aLive().forEach(r=>{if(r.born<1)r.born=Math.min(1,r.born+dt*3);if(r.child){const v=Math.hypot(r.vx,r.vy),t=aSpeed()*1.1;if(v>t){r.vx*=1-dt*.8;r.vy*=1-dt*.8;}}r.rot+=r.vr*dt;r.hit=Math.max(0,r.hit-dt);r.glow=Math.max(0,r.glow-dt);r.x+=r.vx*dt;r.y+=r.vy*dt;
-      if(r.enter){if(r.x>r.r&&r.x<W-r.r&&r.y>r.r)r.enter=false;}
-      else{if(r.x<r.r){r.x=r.r;r.vx=Math.abs(r.vx);}if(r.x>W-r.r){r.x=W-r.r;r.vx=-Math.abs(r.vx);}if(r.y<r.r){r.y=r.r;r.vy=Math.abs(r.vy);}if(r.y>yMax-r.r){r.y=yMax-r.r;r.vy=-Math.abs(r.vy);}}
-      r.warn=Math.hypot(r.x-sp.x,r.y-shipY)<r.r+sw*.3+r.r*1.4;
-      if(!A.over&&Math.hypot(r.x-sp.x,r.y-shipY)<r.r+sw*.3)aCrash(r);});
-    // stenar studsar mot varandra
-    const L=aLive();for(let i=0;i<L.length;i++)for(let j=i+1;j<L.length;j++){const a=L[i],b=L[j],dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1,m=a.r+b.r+2;
-      if(d<m){const nx=dx/d,ny=dy/d,push=(m-d)/2;a.x-=nx*push;a.y-=ny*push;b.x+=nx*push;b.y+=ny*push;const va=a.vx*nx+a.vy*ny,vb=b.vx*nx+b.vy*ny;if(va-vb>0){a.vx+=(vb-va)*nx;a.vy+=(vb-va)*ny;b.vx+=(va-vb)*nx;b.vy+=(va-vb)*ny;}}}
-    A.rocks=A.rocks.filter(r=>!r.dead);
-    // bitarna från jätten: far iväg, bromsar och bleknar bort efter en stund (utan straff)
-    A.frags.forEach(f=>{if(f.dead)return;f.t+=dt;f.rot+=f.vr*dt;f.vx*=.985;f.vy=f.vy*.985+20*dt;f.x+=f.vx*dt;f.y+=f.vy*dt;
-      if(f.x<f.r||f.x>W-f.r){f.vx*=-1;f.x=Math.max(f.r,Math.min(W-f.r,f.x));}if(f.y<f.r)f.vy=Math.abs(f.vy);if(f.y>yMax)f.vy=-Math.abs(f.vy);
-      if(f.t>6){f.dead=true;f.lost=true;}});
-    A.shots.forEach(s=>{
-      if(s.target&&!s.target.dead){const dx=s.target.x-s.x,dy=s.target.y-s.y,d=Math.hypot(dx,dy)||1,v=Math.hypot(s.vx,s.vy),k=Math.min(1,dt*14);s.vx+=(dx/d*v-s.vx)*k;s.vy+=(dy/d*v-s.vy)*k;}
-      s.x+=s.vx*dt;s.y+=s.vy*dt;
-      if(!A.over)aLive().forEach(r=>{if(!s.spent&&(!s.target||s.target===r||s.target.dead)&&Math.hypot(s.x-r.x,s.y-r.y)<r.r){s.spent=true;aHit(r);}});
-      A.frags.forEach(f=>{if(!f.dead&&!s.spent&&Math.hypot(s.x-f.x,s.y-f.y)<f.r+6){s.spent=true;f.dead=true;A.fragHit++;window.Ljud&&Ljud.pop&&Ljud.pop(A.fragHit*3);boom(f.x,f.y,["#FFC93C","#FF9F43","#fff"],16);}});});
-    A.shots=A.shots.filter(s=>!s.spent&&s.y>-30&&s.y<H+30&&s.x>-30&&s.x<W+30);
-    if(A.frags.length&&A.frags.every(f=>f.dead))fragsDone();
-    if(A.floats){A.floats.forEach(f=>f.t+=dt);A.floats=A.floats.filter(f=>f.t<1.1);}
-    A.parts.forEach(p=>{p.x+=p.vx*dt;p.y+=p.vy*dt;p.vx*=.98;p.vy*=.98;p.life-=dt;});A.parts=A.parts.filter(p=>p.life>0);
-    A.rings.forEach(g=>{g.r+=(g.big?520:360)*dt;g.life-=dt;});A.rings=A.rings.filter(g=>g.life>0);
-    A.debris.forEach(d=>{d.x+=d.vx*dt;d.y+=d.vy*dt;d.vy+=60*dt;d.rot+=d.vr*dt;d.life-=dt;});A.debris=A.debris.filter(d=>d.life>0);
-  }
-  drawSpace();araf=requestAnimationFrame(spaceFrame);
-}
-/* bakgrund: nebulosor och en planet ritas en gång per storlek */
-function spaceBg(){if(A.bg&&A.bgW===W&&A.bgH===H)return A.bg;const c=document.createElement("canvas"),d=Math.min(2,window.devicePixelRatio||1);c.width=Math.round(W*d);c.height=Math.round(H*d);const x=c.getContext("2d");x.scale(d,d);
-  const g=x.createLinearGradient(0,0,0,H);g.addColorStop(0,"#050817");g.addColorStop(.55,"#0D1233");g.addColorStop(1,"#1C1240");x.fillStyle=g;x.fillRect(0,0,W,H);
-  const neb=(cx,cy,r,col)=>{const n=x.createRadialGradient(cx,cy,0,cx,cy,r);n.addColorStop(0,col);n.addColorStop(1,"rgba(0,0,0,0)");x.fillStyle=n;x.fillRect(0,0,W,H);};
-  neb(W*.2,H*.25,W*.55,"rgba(123,97,255,.28)");neb(W*.85,H*.55,W*.5,"rgba(23,175,196,.18)");neb(W*.45,H*.85,W*.6,"rgba(229,72,140,.16)");neb(W*.7,H*.1,W*.3,"rgba(61,139,253,.2)");
-  // planet med ring långt bort
-  const px=W*.84,py=H*.17,pr=Math.min(W,H)*.075;x.save();x.translate(px,py);x.rotate(-.3);x.strokeStyle="rgba(255,214,140,.35)";x.lineWidth=pr*.18;x.beginPath();x.ellipse(0,0,pr*1.9,pr*.45,0,Math.PI,2*Math.PI);x.stroke();x.restore();
-  const pg=x.createRadialGradient(px-pr*.4,py-pr*.4,pr*.1,px,py,pr);pg.addColorStop(0,"#FFD9A0");pg.addColorStop(.6,"#E08A4A");pg.addColorStop(1,"#5A2A3A");x.fillStyle=pg;x.beginPath();x.arc(px,py,pr,0,7);x.fill();
-  x.save();x.translate(px,py);x.rotate(-.3);x.strokeStyle="rgba(255,214,140,.6)";x.lineWidth=pr*.18;x.beginPath();x.ellipse(0,0,pr*1.9,pr*.45,0,0,Math.PI);x.stroke();x.restore();
-  A.bg=c;A.bgW=W;A.bgH=H;return c;}
-/* Grafik i Asteroidstormen: skepp, meteorer och motorlågor ur Kenneys "Space Shooter Remastered" (CC0) i spel/bilder/rymd/ */
-const RYMD={};const rymd=n=>{if(!RYMD[n]){const im=new Image();im.src=`bilder/rymd/${n}.png`;RYMD[n]=im;}return RYMD[n];};
-const rymdOk=im=>im.complete&&im.naturalWidth>0;
-const METEOR=["meteorBrown_big1","meteorBrown_big3","meteorBrown_big4","meteorGrey_big1","meteorGrey_big2","meteorGrey_big4"];
-["skepp","eld0","eld1","meteorBrown_big2","meteorBrown_small1","meteorBrown_small2",...METEOR].forEach(rymd);
-function rockPath(r,k){ctx.beginPath();k.forEach((v,i)=>{const a=i/k.length*6.283;ctx[i?"lineTo":"moveTo"](Math.cos(a)*r*v,Math.sin(a)*r*v);});ctx.closePath();}
-function drawRock(r,R,label){
-  const im=r.spr&&rymd(r.spr);
-  if(im&&rymdOk(im)){ctx.save();if(r.hit>0){const hg=ctx.createRadialGradient(0,0,R*.5,0,0,R*1.4);hg.addColorStop(0,`rgba(255,80,90,${r.hit})`);hg.addColorStop(1,"rgba(255,80,90,0)");ctx.fillStyle=hg;ctx.beginPath();ctx.arc(0,0,R*1.4,0,7);ctx.fill();}
-    ctx.rotate(r.rot);const k=R*2.3/Math.max(im.naturalWidth,im.naturalHeight);ctx.drawImage(im,-im.naturalWidth*k/2,-im.naturalHeight*k/2,im.naturalWidth*k,im.naturalHeight*k);ctx.restore();}
-  else{
-  ctx.save();ctx.rotate(r.rot);rockPath(R,r.pts);
-  const g=ctx.createRadialGradient(-R*.4,-R*.45,R*.1,0,0,R*1.05);g.addColorStop(0,r.hit>0?"#FF8A8A":"#A99A88");g.addColorStop(.55,r.hit>0?"#C0393E":"#6E6154");g.addColorStop(1,r.hit>0?"#6E1A1E":"#332A24");ctx.fillStyle=g;ctx.fill();
-  ctx.strokeStyle="rgba(20,14,10,.8)";ctx.lineWidth=2.5;ctx.stroke();
-  ctx.save();rockPath(R,r.pts);ctx.clip();
-  r.cr.forEach(([a,b,c])=>{const cx=a*R,cy=b*R,cr=c*R;ctx.fillStyle="rgba(0,0,0,.28)";ctx.beginPath();ctx.arc(cx,cy,cr,0,7);ctx.fill();ctx.strokeStyle="rgba(255,240,220,.18)";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(cx+cr*.15,cy+cr*.15,cr,Math.PI*1.05,Math.PI*1.75);ctx.stroke();});
-  if(r.big){ctx.strokeStyle="rgba(255,150,40,.9)";ctx.lineWidth=3;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(-R*.6,-R*.2);ctx.lineTo(-R*.15,R*.05);ctx.lineTo(.1*R,-R*.35);ctx.moveTo(-R*.15,R*.05);ctx.lineTo(R*.05,R*.55);ctx.moveTo(R*.1,-R*.35);ctx.lineTo(R*.6,-R*.1);ctx.stroke();
-    ctx.strokeStyle="rgba(255,200,90,.35)";ctx.lineWidth=8;ctx.stroke();}
-  ctx.restore();ctx.restore();}
-  if(r.maxhp){ctx.save();ctx.beginPath();ctx.arc(0,0,R*.98,0,7);ctx.clip();ctx.rotate(r.rot);
-    [-.42,.42].forEach(o=>{const g=ctx.createLinearGradient(0,o*R-R*.16,0,o*R+R*.16);g.addColorStop(0,"#DDE6F7");g.addColorStop(.5,"#8E9AB3");g.addColorStop(1,"#56668F");ctx.fillStyle=g;ctx.fillRect(-R,o*R-R*.15,R*2,R*.3);
-      ctx.fillStyle="#2A3560";for(let k=-2;k<=2;k++){ctx.beginPath();ctx.arc(k*R*.42,o*R,R*.05,0,7);ctx.fill();}});
-    if(r.hp<r.maxhp){ctx.strokeStyle="rgba(20,14,10,.85)";ctx.lineWidth=2.4;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(-R*.55,-R*.7);ctx.lineTo(-R*.15,-R*.2);ctx.lineTo(-R*.4,R*.25);ctx.moveTo(-R*.15,-R*.2);ctx.lineTo(R*.3,-R*.45);
-      if(r.maxhp-r.hp>1){ctx.moveTo(R*.2,R*.15);ctx.lineTo(R*.6,R*.55);ctx.moveTo(R*.4,R*.35);ctx.lineTo(R*.05,R*.7);}ctx.stroke();}
-    ctx.restore();
-    for(let k=0;k<r.hp;k++){ctx.fillStyle="#7CF0B1";ctx.strokeStyle="#0B1026";ctx.lineWidth=1.5;ctx.beginPath();ctx.arc((k-(r.hp-1)/2)*R*.32,R*.78,R*.1,0,7);ctx.fill();ctx.stroke();}}
-  if(label!=null){const fs=Math.round(Math.min(R,46)*.82),tw=Math.max(fs*1.2,ctx.measureText?0:0);
-    ctx.font=`800 ${fs}px "Baloo 2", system-ui, sans-serif`;const w=Math.max(fs*1.25,ctx.measureText(String(label)).width+fs*.6),h=fs*1.15;
-    ctx.fillStyle="rgba(8,12,34,.78)";ctx.strokeStyle=r.glow?"#7CF0B1":"rgba(124,220,255,.85)";ctx.lineWidth=2;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(-w/2,-h/2,w,h,h/2);else ctx.rect(-w/2,-h/2,w,h);ctx.fill();ctx.stroke();
-    ctx.textAlign="center";ctx.textBaseline="middle";ctx.fillStyle="#fff";ctx.fillText(String(label),0,fs*.06);}}
-function drawSpace(){
-  if(!W)return;ctx.save();if(A.shake>0)ctx.translate((Math.random()-.5)*14*A.shake,(Math.random()-.5)*10*A.shake);
-  ctx.drawImage(spaceBg(),-2,-2,W+4,H+4);
-  // stjärnor i tre lager som rör sig olika fort: det känns som att man flyger framåt
-  A.stars.forEach(st=>{const sp=st.s<.9?8:st.s<1.5?20:44,y=(st.y*H+A.t*sp)%H;ctx.globalAlpha=(.45+.55*Math.sin(A.t*2+st.tw))*(st.s<.9?.6:1);ctx.fillStyle="#fff";
-    if(st.s>1.7){ctx.fillRect(st.x*W,y,1.4,st.s*3);}else ctx.fillRect(st.x*W,y,st.s,st.s);});ctx.globalAlpha=1;
-  // stenar
-  A.rocks.forEach(r=>{if(r.dead)return;ctx.save();ctx.translate(r.x,r.y);if(r.born<1){const k=r.born;ctx.scale(.3+.7*k,.3+.7*k);ctx.globalAlpha=k;}
-    if(r.warn){ctx.strokeStyle=`rgba(255,90,100,${.5+.4*Math.sin(A.t*12)})`;ctx.lineWidth=3;ctx.beginPath();ctx.arc(0,0,r.r*1.25,0,7);ctx.stroke();}
-    if(r.glow){const gg=ctx.createRadialGradient(0,0,r.r*.8,0,0,r.r*1.6);gg.addColorStop(0,"rgba(124,240,177,.55)");gg.addColorStop(1,"rgba(124,240,177,0)");ctx.fillStyle=gg;ctx.beginPath();ctx.arc(0,0,r.r*1.6,0,7);ctx.fill();}
-    if(r.child){const gg=ctx.createRadialGradient(0,0,r.r*.8,0,0,r.r*1.45);gg.addColorStop(0,`rgba(255,200,80,${.35+.15*Math.sin(A.t*5)})`);gg.addColorStop(1,"rgba(255,200,80,0)");ctx.fillStyle=gg;ctx.beginPath();ctx.arc(0,0,r.r*1.45,0,7);ctx.fill();}
-    if(r.big){const gg=ctx.createRadialGradient(0,0,r.r*.9,0,0,r.r*1.5);gg.addColorStop(0,"rgba(255,140,40,.3)");gg.addColorStop(1,"rgba(255,140,40,0)");ctx.fillStyle=gg;ctx.beginPath();ctx.arc(0,0,r.r*1.5,0,7);ctx.fill();}
-    drawRock(r,r.r,r.val);ctx.restore();});
-  // bitarna från jätteasteroiden
-  A.frags.forEach(f=>{if(f.dead)return;ctx.save();ctx.translate(f.x,f.y);const gg=ctx.createRadialGradient(0,0,f.r*.6,0,0,f.r*1.8);gg.addColorStop(0,"rgba(255,170,60,.45)");gg.addColorStop(1,"rgba(255,170,60,0)");ctx.fillStyle=gg;ctx.beginPath();ctx.arc(0,0,f.r*1.8,0,7);ctx.fill();
-    drawRock({...f,big:false,hit:0},f.r,null);ctx.restore();});
-  // skott: laser med glöd
-  ctx.lineCap="round";A.shots.forEach(s=>{const tx=s.x-s.vx*.035,ty=s.y-s.vy*.035;ctx.strokeStyle="rgba(124,240,177,.3)";ctx.lineWidth=11;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(tx,ty);ctx.stroke();
-    ctx.strokeStyle="#A8FFD4";ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(s.x,s.y);ctx.lineTo(tx,ty);ctx.stroke();ctx.strokeStyle="#fff";ctx.lineWidth=1.6;ctx.stroke();});
-  // rymdskeppet (Kenney) med djuret i en glasbubbla; det lutar mot det håll kanonen siktar
-  const sp=shipPos(),sw=Math.min(W*.3,130),sk=rymd("skepp");
-  ctx.save();ctx.translate(sp.x,sp.y);
-  if(A.shieldFx>0){const k=A.shieldFx;ctx.strokeStyle=`rgba(61,180,253,${k*.9})`;ctx.lineWidth=4;ctx.beginPath();ctx.ellipse(0,-sw*.05,sw*.6,sw*.5,0,0,7);ctx.stroke();ctx.fillStyle=`rgba(61,180,253,${k*.18})`;ctx.fill();}
-  // siktlinjen
-  ctx.save();ctx.rotate(A.ang);const ag=ctx.createLinearGradient(0,-sw*.4,0,-H*.6);ag.addColorStop(0,"rgba(124,240,177,.5)");ag.addColorStop(1,"rgba(124,240,177,0)");ctx.strokeStyle=ag;ctx.setLineDash([4,9]);ctx.lineWidth=2.5;ctx.beginPath();ctx.moveTo(0,-sw*.4);ctx.lineTo(0,-H*.6);ctx.stroke();ctx.setLineDash([]);ctx.restore();
-  ctx.rotate(A.ang*.55+(A.tilt||0));
-  const shw=sw*.78,shh=rymdOk(sk)?shw*sk.naturalHeight/sk.naturalWidth:shw*.67;
-  // motorlågor
-  const fl=rymd(Math.floor(A.t*14)%2?"eld0":"eld1");if(rymdOk(fl))[-.18,.18].forEach(k=>{const fw=shw*.13,fh=fw*fl.naturalHeight/fl.naturalWidth*(1+.15*Math.sin(A.t*30+k*9));ctx.drawImage(fl,k*shw-fw/2,shh*.38,fw,fh);});
-  if(rymdOk(sk))ctx.drawImage(sk,-shw/2,-shh/2,shw,shh);
-  else{ctx.fillStyle="#A9B8D8";ctx.beginPath();ctx.moveTo(0,-shh/2);ctx.lineTo(shw/2,shh/2);ctx.lineTo(-shw/2,shh/2);ctx.closePath();ctx.fill();}
-  // djuret i glasbubblan över cockpiten
-  const bx2=0,by=-shh*.05,br=shw*.21;
-  ctx.fillStyle="rgba(170,215,255,.55)";ctx.beginPath();ctx.arc(bx2,by,br,0,7);ctx.fill();
-  if(avImg.complete){ctx.save();ctx.beginPath();ctx.arc(bx2,by,br,0,7);ctx.clip();const ow=br*2.1;ctx.drawImage(avImg,bx2-ow/2,by-ow*.5,ow,ow*1.167);ctx.restore();}
-  ctx.strokeStyle="rgba(255,255,255,.9)";ctx.lineWidth=2;ctx.beginPath();ctx.arc(bx2,by,br,0,7);ctx.stroke();
-  ctx.strokeStyle="rgba(255,255,255,.6)";ctx.lineWidth=2.5;ctx.beginPath();ctx.arc(bx2,by,br*.72,Math.PI*1.1,Math.PI*1.45);ctx.stroke();
-  if(A.flash>0){ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(0,-shh*.55,8,0,7);ctx.fill();}
-  ctx.restore();
-  // explosioner: ljusring, gnistor och stenbitar
-  A.rings.forEach(g=>{ctx.strokeStyle=`rgba(255,230,160,${g.life/.45*.8})`;ctx.lineWidth=g.big?6:4;ctx.beginPath();ctx.arc(g.x,g.y,g.r,0,7);ctx.stroke();
-    if(g.life>.32){ctx.fillStyle=`rgba(255,255,230,${(g.life-.32)*4})`;ctx.beginPath();ctx.arc(g.x,g.y,g.r*.6,0,7);ctx.fill();}});
-  A.debris.forEach(d=>{ctx.save();ctx.translate(d.x,d.y);ctx.rotate(d.rot);ctx.globalAlpha=Math.max(0,d.life/1.1);ctx.fillStyle="#6E6154";ctx.fillRect(-d.s/2,-d.s/2,d.s,d.s*.7);ctx.restore();});ctx.globalAlpha=1;
-  A.parts.forEach(p=>{const a=Math.max(0,p.life/.9);ctx.globalAlpha=a*.35;ctx.fillStyle=p.c;ctx.beginPath();ctx.arc(p.x,p.y,(p.s||3)*2.2,0,7);ctx.fill();ctx.globalAlpha=a;ctx.beginPath();ctx.arc(p.x,p.y,p.s||3,0,7);ctx.fill();});ctx.globalAlpha=1;
-  (A.floats||[]).forEach(f=>{ctx.globalAlpha=Math.max(0,1-f.t/1.1);ctx.font=`800 ${Math.round(Math.min(W*.05,22))}px "Baloo 2", system-ui, sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";ctx.lineWidth=5;ctx.strokeStyle="rgba(8,12,34,.85)";ctx.strokeText(f.txt,f.x,f.y-f.t*40);ctx.fillStyle=f.col;ctx.fillText(f.txt,f.x,f.y-f.t*40);});ctx.globalAlpha=1;
-  if(A.msg&&A.msg.t>0){ctx.globalAlpha=Math.min(1,A.msg.t*2);ctx.font=`800 ${Math.round(Math.min(W*.07,34))}px "Baloo 2", system-ui, sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
-    ctx.lineWidth=6;ctx.strokeStyle="rgba(8,12,34,.85)";ctx.strokeText(A.msg.txt,W/2,H*.5);ctx.fillStyle="#FFC93C";ctx.fillText(A.msg.txt,W/2,H*.5);ctx.globalAlpha=1;}
-  ctx.restore();
-}
-function finishSpace(won){
-  cancelAnimationFrame(araf);$("spaceBtns").hidden=true;window.Ljud&&Ljud.space.stop();
-  const s=A.score,st=won?(A.shields===3?3:2):(s>=10?1:0);
-  data.space=data.space||{};const r=data.space[cat]||{best:0,stars:0},rec=s>r.best;
-  data.space[cat]={best:Math.max(r.best,s),stars:Math.max(r.stars,st)};data.spacePlayed=(data.spacePlayed||0)+1;if(won)data.spaceWon=true;if(st===3)data.spacePerfect=true;save();
-  A=null;
-  $("rTitle").textContent=won?(st===3?"Rymden är räddad, utan en skråma!":"Rymden är räddad!"):"Skölden tog slut";
-  $("rBig").innerHTML=st?starHtml(st):`${s} rätt`;
-  $("rSub").textContent=(won?`${s} rätt stenar sprängda.`:`Du sprängde ${s} rätt stenar.`)+(rec?" Nytt rekord!":data.space[cat].best?` Ditt rekord är ${data.space[cat].best} rätt.`:"")+(!won&&s<10?" Med 10 rätt får du en stjärna.":"");
-  showOnly("result");if(won||rec){window.Ljud&&Ljud.fanfare();confetti();}
-}
-
 /* ---------- Grodhoppet ---------- */
 let F=null,fraf=0;
 function stopFrog(){if(F)F.over=true;cancelAnimationFrame(fraf);F=null;window.Ljud&&Ljud.water.stop();}
 const ROWS=5;
 function frogGeom(){const top=H*.11,bot=H*.9,gap=(bot-top)/(ROWS+1);return{top,bot,gap,rowY:i=>bot-(i+1)*gap,padR:Math.min(W*.12,gap*.42,48)};}
 function startFrog(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
-  OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("hint").textContent="Tryck på näckrosbladet med rätt svar. Fånga flugorna om du hinner!";
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopFrog();stopTower();stopKiosk();
+  OPTN=3;$("carBtns").hidden=true;$("hint").textContent="Tryck på näckrosbladet med rätt svar. Fånga flugorna om du hinner!";
   showOnly("game");resize();
   F={lives:3,score:0,river:0,r:-1,t:0,rows:[],drift:data.frogMode==="strom",frog:{x:W/2,y:0,on:null},jump:null,sink:0,parts:[],glow:null,glowT:0,
      flies:0,fly:null,tongue:null,busy:true,over:false,running:false,last:performance.now(),ripple:0};
@@ -1234,8 +967,8 @@ const bwOf=n=>Math.max(65,90-n*1.3);
 const topW=n=>-FH-n*BH; // världens y för tornets topp med n balkar
 
 async function startTower(){
-  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();
-  OPTN=3;$("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=false;$("game").classList.add("tower","bygg");
+  if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopFrog();stopTower();stopKiosk();
+  OPTN=3;$("carBtns").hidden=true;$("towerPad").hidden=false;$("game").classList.add("tower","bygg");
   $("hint").textContent="Svara rätt, så hämtar kranen en balk. Tryck Släpp! när balken är rakt ovanför tornet.";
   showOnly("game");resize();
   const me={};T=me;
@@ -1511,10 +1244,10 @@ function finishTower(won,why){
 
 /* ========== Gemensamt för spelen med sifferknappar ========== */
 function prepPlay(hint,mode){
-  $("carBtns").hidden=true;$("spaceBtns").hidden=true;$("towerPad").hidden=mode!=="pad";
+  $("carBtns").hidden=true;$("towerPad").hidden=mode!=="pad";
   $("game").classList.toggle("tower",mode==="pad");$("hint").textContent=hint;showOnly("game");resize();
 }
-function stopOthers(){if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopSpace();stopFrog();stopTower();stopKiosk();}
+function stopOthers(){if(G)G.over=true;cancelAnimationFrame(raf);G=null;if(C)C.over=true;cancelAnimationFrame(craf);C=null;stopFrog();stopTower();stopKiosk();}
 const qBox=(pre,input,post,state)=>{$("q").innerHTML=`${pre}<span class="tans${state?" "+state:""}">${input||"?"}</span>${post||""}`;$("q").className="q"+(state==="ok"?" ok":state==="bad"?" bad":"");};
 
 /* ---------- Ugglans kiosk ---------- */
