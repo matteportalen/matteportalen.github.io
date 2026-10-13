@@ -1,4 +1,4 @@
-/* Matte-Portalen: elevens djur från Garderoben.
+/* Pluggparken: elevens djur från Garderoben.
    Delas av startsidan, Spelhörnan, Geometri och Bråk. Ändras ett djur eller en klädsel räcker det att ändra här.
    WARD = allt som finns i Garderoben (need = antal stjärnor som krävs), owlSVG = ritar djuret med kläderna. */
 const WARD={

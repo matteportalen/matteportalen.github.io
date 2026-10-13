@@ -1,18 +1,18 @@
-/* Gemensamt sidhuvud och bakåtknapp för Matte-Portalen.
+/* Gemensamt sidhuvud och bakåtknapp för Pluggparken.
    Laddas efter ljud.js och djur.js, före sidans eget skript:
      <script src="../huvud.js" data-titel="Klockan" data-ikon="🕒"></script>
    data-hem       väg till startsidan (standard "../")
    data-nav       "av" för sidor med egen historik (NP3 med #-adresser) eller utan skärmar (startsidan, Tiobas)
    data-helskarm  skärmar där sidhuvudet göms helt (spel med egen ✕), t.ex. "game mem bub"
    data-liggande  "ja": göm sidhuvudet på mobil i liggande läge (Tiobas)
-   data-portal    "ovriga" på sidorna i Övriga ämnen (annan logga, färg och startsida). Standard: Matte-Portalen.
+   data-portal    "ovriga" på sidorna i Övriga ämnen (annan logga, färg och startsida). Standard: matte (startsidan).
    Loggan är en hamburgerknapp (☰): den öppnar menyn med portalerna (startsidan och Övriga ämnen).
    Tillbaka-knappen (←) längst till vänster finns på alla sidor utom startsidorna: ett steg bakåt i sidan,
    och från sidans första skärm tillbaka dit man kom ifrån (eller till startsidan).
    Bara portaler med innehåll står i listan.
    Sidan anropar MPS.visa(id) varje gång den byter skärm (i sin show-funktion).
 
-   Sidhuvudet: loggan Mattenyckeln (leder hem), sidans namn, profilens namn med elevens djur och stjärnor
+   Sidhuvudet: loggan Pluggparken (kvällsparken med gunga och måne, öppnar menyn), sidans namn, profilens namn med elevens djur och stjärnor
    (leder till garderoben) och ljudknappen. Under räkning (skärmen "game") krymper det till ✕ och sidans namn.
    Stjärnorna räknas här (MPStjarnor) med samma regler som startsidan och uppdateras direkt när något sparas.
 
@@ -23,7 +23,7 @@
   const me=document.currentScript,ds=(me&&me.dataset)||{};
   const CSS=`
 .mph{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;min-height:52px;padding:calc(6px + env(safe-area-inset-top,0px)) 12px 6px;
-  background:linear-gradient(110deg,#3D5AFE 0%,#3D8BFD 60%,#17AFC4 100%);color:#fff;font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;box-shadow:0 3px 0 rgba(29,43,83,.18);line-height:1.2;font-size:18px}
+  background:linear-gradient(110deg,#232E6B 0%,#2E3F9E 45%,#3D5AFE 100%);color:#fff;font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;box-shadow:0 3px 0 rgba(29,43,83,.18);line-height:1.2;font-size:18px}
 .mph a{color:inherit;text-decoration:none}
 .mph button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
 .mph-logo{position:relative;display:flex;align-items:center;gap:7px;font-weight:800;font-size:1.2rem!important;line-height:1;letter-spacing:-.3px;white-space:nowrap;min-height:44px;padding:3px 6px 3px 3px!important;border-radius:999px;background:rgba(255,255,255,.12)!important;flex:none;transition:background .2s}
@@ -71,15 +71,17 @@ body.mph-mini #quit{display:none}
 @media (max-width:360px){.mph-name{display:none}}
 @media (orientation:landscape) and (max-height:500px){.mph.liggande{display:none}}
 @media print{.mph{display:none}}`;
-  /* Loggan: Mattenyckeln, fyra räknesätt i färgade rutor */
+  /* Pluggparkens logga: kvällsparken med kullar, gunga och måne (sidhuvud och flikikon) */
+  const LOGO_PP='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#232E6B"/><circle cx="70" cy="30" r="21" fill="#F2B707" opacity=".25"/><circle cx="70" cy="30" r="14" fill="#FFD86B"/><circle cx="22" cy="22" r="2.6" fill="#fff"/><circle cx="38" cy="13" r="1.8" fill="#fff" opacity=".8"/><circle cx="44" cy="34" r="1.6" fill="#fff" opacity=".7"/><path d="M2 64Q30 48 58 60T98 56V74A24 24 0 0 1 74 98H26A24 24 0 0 1 2 74Z" fill="#34459F"/><path d="M2 82Q38 68 70 80Q86 86 97 81V76A22 22 0 0 1 74 98H26A24 24 0 0 1 2 74Z" fill="#2F8F6B"/><g stroke="#F5E1A4" stroke-linecap="round"><path d="M27 79L32 51M63 79L58 51" stroke-width="4"/><path d="M30 51H60" stroke-width="4.5"/><path d="M40 51V67M50 51V67" stroke-width="2"/></g><rect x="36" y="66" width="18" height="4.5" rx="2" fill="#F28C28"/></svg>';
+  /* Matte (startsidan): fyra räknesätt i färgade rutor, visas i menyn */
   const LOGO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#FF6B6B"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><g stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M29.5 21v17M21 29.5h17M62 29.5h17M23.5 64.5l12 12M35.5 64.5l-12 12M62 70.5h17"/></g><circle cx="70.5" cy="62" r="3.6" fill="#fff"/><circle cx="70.5" cy="79" r="3.6" fill="#fff"/></svg>';
   /* Loggan för Övriga ämnen: blad, vattendroppe, planet och sol i samma sorts rutor */
   const LOGO_NO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#3D8BFD"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><path d="M21 39C21 26 29 20 39 20C39 32 33 39 21 39Z" fill="#fff"/><path d="M21 39L31 29" stroke="#2BB673" stroke-width="2.5" stroke-linecap="round"/><path d="M70.5 19C70.5 19 61 30 61 35.5A9.5 9.5 0 0 0 80 35.5C80 30 70.5 19 70.5 19Z" fill="#fff"/><circle cx="29.5" cy="70.5" r="7.5" fill="#fff"/><ellipse cx="29.5" cy="70.5" rx="14" ry="4.5" fill="none" stroke="#fff" stroke-width="2.6" transform="rotate(-20 29.5 70.5)"/><circle cx="70.5" cy="70.5" r="7" fill="#fff"/><g stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M70.5 56v4M70.5 81v4M56 70.5h4M81 70.5h4M60.3 60.3l2.8 2.8M77.9 77.9l2.8 2.8M60.3 80.7l2.8-2.8M77.9 63.1l2.8-2.8"/></g></svg>';
-  const PORTALER=[{id:'matte',a:'Matte-',b:'Portalen',sub:'Matte för åk 1–3',kort:'Matte',ikon:'🔢',href:'',logo:LOGO},{id:'ovriga',a:'Övriga ',b:'ämnen',sub:'NO och mer',kort:'Övriga ämnen',ikon:'🌍',href:'ovriga/',logo:LOGO_NO}];
+  const PORTALER=[{id:'matte',namn:'Matte',sub:'Räkna, spela och utforska',kort:'Matte',ikon:'🔢',href:'',logo:LOGO},{id:'ovriga',namn:'Övriga ämnen',sub:'Svenska, NO, SO, engelska och mer',kort:'Övriga ämnen',ikon:'🌍',href:'ovriga/',logo:LOGO_NO}];
   const PORTAL=PORTALER.find(p=>p.id===ds.portal)||PORTALER[0];
-  window.MPLogo=PORTAL.logo;
+  window.MPLogo=LOGO_PP;
   // loggan som ikon i webbläsarfliken
-  if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(PORTAL.logo.replace(' class="mph-mark"','').replace(' aria-hidden="true"',''));document.head.appendChild(l);}
+  if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(LOGO_PP.replace(' class="mph-mark"','').replace(' aria-hidden="true"',''));document.head.appendChild(l);}
 
   /* ---------- Stjärnor: samma regler som startsidan ---------- */
   const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};
@@ -130,7 +132,7 @@ body.mph-mini #quit{display:none}
   const pet=window.lasDjur&&window.owlSVG?owlSVG(lasDjur()):'',namn=profilnamn();
   const hemUrl=new URL(hem+PORTAL.href,location.href),paStart=hemUrl.pathname.replace(/index\.html$/,'')===location.pathname.replace(/index\.html$/,'');
   h.innerHTML=`${paStart?'':'<button class="mph-bk" aria-label="Tillbaka">←</button>'}<button class="mph-x" aria-label="Avsluta">✕</button>
-    <button class="mph-logo" aria-label="${PORTAL.a}${PORTAL.b}, meny" aria-haspopup="true" aria-expanded="false">${PORTAL.logo}<span class="t">${PORTAL.a}<b>${PORTAL.b}</b></span><span class="mph-burger" aria-hidden="true"><i style="font-style:normal">☰</i><em>Ämnen</em></span></button>
+    <button class="mph-logo" aria-label="Pluggparken, meny" aria-haspopup="true" aria-expanded="false">${LOGO_PP}<span class="t">Plugg<b>parken</b></span><span class="mph-burger" aria-hidden="true"><i style="font-style:normal">☰</i><em>Ämnen</em></span></button>
     <span class="mph-title">${titel?`<span class="mph-sep">›</span> ${ikon?ikon+' ':''}${esc(titel)}`:''}</span>
     <span class="mph-right"><a class="mph-pet" href="${hem}#garderob" aria-label="Ditt djur och dina stjärnor">${pet}${namn?`<span class="mph-name">${esc(namn)}</span>`:''}<span>⭐&nbsp;<span class="mph-n">${MPStjarnor()}</span></span><span class="mph-mynt">🪙&nbsp;<span class="mph-m">${myntLas().m}</span></span></a><button class="mph-snd" aria-label="Ljud av eller på"></button></span>`;
   document.body.prepend(h);
@@ -149,7 +151,7 @@ body.mph-mini #quit{display:none}
   const stang=()=>{if(meny){meny.remove();meny=null;ptl.setAttribute('aria-expanded','false');}};
   ptl.onclick=e=>{e.stopPropagation();if(meny)return stang();
     meny=document.createElement('nav');meny.className='mph-menu';meny.setAttribute('aria-label','Meny');
-    meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p===PORTAL?`🏠 Startsidan<small>${p.a}${p.b}</small>`:`${p.a}${p.b}<small>${p.sub}</small>`}</span></a>`).join('');
+    meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p===PORTAL?`🏠 Startsidan<small>${p.namn}</small>`:`${p.namn}<small>${p.sub}</small>`}</span></a>`).join('');
     h.appendChild(meny);ptl.setAttribute('aria-expanded','true');meny.querySelector('a').focus({preventScroll:true});};
   document.addEventListener('click',e=>{if(meny&&!meny.contains(e.target))stang();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')stang();});

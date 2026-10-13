@@ -1,4 +1,4 @@
-/* Matte-Portalen: gemensamma ljud för alla övningar.
+/* Pluggparken: gemensamma ljud för alla övningar.
    Ljuden skapas direkt i webbläsaren, så inga ljudfiler behövs.
    Ljudet slås på och av på startsidan och gäller sedan överallt. */
 (function(){

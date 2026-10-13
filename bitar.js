@@ -1,4 +1,4 @@
-/* Tangram för Matte-Portalen (Geometri). Sju bitar ur en kvadrat 4×4: två stora trianglar, en mellanstor,
+/* Tangram för Pluggparken (Geometri). Sju bitar ur en kvadrat 4×4: två stora trianglar, en mellanstor,
    två små, en kvadrat och ett parallellogram. Bitarna vrids i steg om 45°, parallellogrammet kan vändas.
    (Filen hette från början mönsterbitar; Bygg bilden och fritt bygge togs bort, Tangram tränar samma sak bättre.)
 

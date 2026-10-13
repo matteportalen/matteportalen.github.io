@@ -1,4 +1,4 @@
-/* Klockan för Matte-Portalen: klockbilden, tid på svenska, dra i visarna, färgad tårtbit och tidsblock.
+/* Klockan för Pluggparken: klockbilden, tid på svenska, dra i visarna, färgad tårtbit och tidsblock.
    Används av Klockan (klockan/) och Verktygslådan (verktyg/klockan/). En gemensam fil, inga kopior.
    Tider räknas i minuter efter midnatt (T). Klockan visar T modulo 12 timmar. */
 (function(){

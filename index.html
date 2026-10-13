@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Matte-Portalen</title>
+<title>Pluggparken</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
@@ -19,19 +19,32 @@ a{color:inherit}
 a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 /* ---------- Rubrik ---------- */
-.hero{position:relative;overflow:hidden;background:linear-gradient(160deg,#3D5AFE 0%,#3D8BFD 55%,#17AFC4 100%);color:#fff;
+/* kvällsparken (lärarens val A): stjärnhimmel, kullar, lyktstolpe, gunga, träd och måne */
+.hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 6% 20%,rgba(255,255,255,.85) 0 1.3px,transparent 2px),radial-gradient(circle at 19% 9%,rgba(255,255,255,.6) 0 1px,transparent 1.6px),radial-gradient(circle at 33% 26%,rgba(255,255,255,.75) 0 1.2px,transparent 1.8px),radial-gradient(circle at 47% 12%,rgba(255,255,255,.6) 0 1px,transparent 1.6px),radial-gradient(circle at 57% 34%,rgba(255,255,255,.55) 0 1px,transparent 1.6px),radial-gradient(circle at 74% 10%,rgba(255,255,255,.8) 0 1.3px,transparent 2px),radial-gradient(circle at 86% 28%,rgba(255,255,255,.6) 0 1px,transparent 1.6px),radial-gradient(circle at 95% 8%,rgba(255,255,255,.7) 0 1.2px,transparent 1.8px),#232E6B;
   padding:calc(4px + env(safe-area-inset-top,0px)) 16px 18px}
 .hero::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:16px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
-.floaty{position:absolute;inset:0;pointer-events:none}
-.floaty span{position:absolute;font-weight:800;color:rgba(255,255,255,.16);animation:bob 6s ease-in-out infinite}
-@keyframes bob{0%,100%{transform:translateY(0) rotate(var(--r))}50%{transform:translateY(-10px) rotate(var(--r))}}
+.hero .hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:38px;display:block}
+@media(min-width:700px){.hero .hills{height:48px}}
+.park{position:absolute;inset:0;pointer-events:none}
+.park-in{position:relative;max-width:1040px;height:100%;margin:0 auto}
+.park svg{position:absolute;display:block;height:auto}
+.park .p-mane{width:36px;top:8px;left:66%}
+.park .p-lykta{width:22px;bottom:22px;left:36%}
+.park .p-gunga{width:78px;bottom:20px;left:44%}
+.p-gunga .sits{transform-origin:40px 4px;animation:gunga 3.2s ease-in-out infinite}
+@keyframes gunga{0%,100%{transform:rotate(5deg)}50%{transform:rotate(-5deg)}}
+.park .p-trad{width:46px;bottom:21px;left:57%}
+@media(max-width:899px){.park .p-mane,.park .p-trad{display:none}}
+@media(max-width:699px){.park .p-gunga{display:none}.park .p-lykta{left:auto;right:calc(16vw + 34px);bottom:16px;width:18px}}
+@media(max-width:369px){.park .p-lykta{display:none}}
+@media(prefers-reduced-motion:reduce){.p-gunga .sits{animation:none}}
 .hero-in{position:relative;z-index:1;max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px}
 .title{flex:1;min-width:0}
 .title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(1.7rem,7vw,2.3rem);letter-spacing:-1px;text-shadow:0 4px 0 rgba(0,0,0,.14)}
 .title h1 .p2{color:var(--sun);display:block}
 /* betalappen: sidan är under uppbyggnad (lärarens önskan) */
 .title h1{position:relative;display:inline-block;padding-right:6px}
-.betalapp{position:absolute;right:-30px;top:-8px;transform:rotate(12deg);background:#FFE14D;color:#6A4A00;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;font-weight:800;line-height:1;padding:5px 10px 4px;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.22);text-shadow:none}
+.betalapp{position:absolute;right:-44px;top:-15px;transform:rotate(12deg);background:#FFE14D;color:#6A4A00;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;font-weight:800;line-height:1;padding:5px 10px 4px;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.22);text-shadow:none}
 .betalapp::before{content:"";position:absolute;left:50%;top:-5px;width:26px;height:9px;margin-left:-13px;background:rgba(255,255,255,.55);transform:rotate(-4deg);border-radius:2px}
 @media(min-width:370px){.title h1 .p2{display:inline}}
 .title p{margin:2px 0 0;font-size:clamp(.88rem,3.3vw,1rem);font-weight:700;opacity:.95}
@@ -203,19 +216,17 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 <body>
 
 <header class="hero">
-  <div class="floaty" aria-hidden="true">
-    <span style="left:4%;top:12%;font-size:3rem;--r:-12deg">+</span>
-    <span style="left:30%;top:62%;font-size:2.4rem;--r:8deg;animation-delay:-2s">×</span>
-    <span style="left:52%;top:8%;font-size:2rem;--r:14deg;animation-delay:-4s">7</span>
-    <span style="left:68%;top:66%;font-size:2.6rem;--r:-6deg;animation-delay:-1s">÷</span>
-    <span style="left:88%;top:14%;font-size:2.2rem;--r:10deg;animation-delay:-3s">=</span>
-    <span style="left:14%;top:70%;font-size:2rem;--r:-10deg;animation-delay:-5s">3</span>
-    <span style="left:44%;top:40%;font-size:1.8rem;--r:4deg;animation-delay:-2.5s">−</span>
-  </div>
+  <svg class="hills" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 24Q200 0 450 20T900 16T1200 10V60H0Z" fill="#34459F"/><path d="M0 40Q260 20 540 38T1020 32T1200 28V60H0Z" fill="#2A3A88"/></svg>
+  <div class="park" aria-hidden="true"><div class="park-in">
+    <svg class="p-mane" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#F2B707" opacity=".2"/><circle cx="20" cy="20" r="12" fill="#FFD86B"/><circle cx="16" cy="16" r="3" fill="#F2B707" opacity=".45"/><circle cx="24" cy="24" r="2" fill="#F2B707" opacity=".35"/></svg>
+    <svg class="p-lykta" viewBox="0 0 22 64"><circle cx="11" cy="10" r="10" fill="#FFE08A" opacity=".22"/><rect x="9.8" y="13" width="2.6" height="51" fill="#101533"/><path d="M6.5 6h9l-1.5-3h-6z" fill="#101533"/><circle cx="11" cy="10" r="4.4" fill="#FFE08A"/></svg>
+    <svg class="p-gunga" viewBox="0 0 80 54"><g stroke="#F5E1A4" stroke-linecap="round"><path d="M6 53L14 4M74 53L66 4" stroke-width="3.6"/><path d="M10 4H70" stroke-width="4.2"/></g><g class="sits"><path d="M31 4V36M49 4V36" stroke="#F5E1A4" stroke-width="1.6"/><rect x="25" y="35" width="30" height="4.6" rx="2.3" fill="#F28C28"/></g></svg>
+    <svg class="p-trad" viewBox="0 0 46 52"><rect x="19" y="30" width="5" height="22" fill="#14193F"/><circle cx="21" cy="22" r="16" fill="#2F8F6B"/><circle cx="33" cy="30" r="10" fill="#3AAE82"/></svg>
+  </div></div>
   <div class="hero-in">
     <div class="title">
-      <h1>Matte<span class="p2">Portalen</span><span class="betalapp" title="Sidan är under uppbyggnad">Beta</span></h1>
-      <p>Välj en övning och börja träna!</p>
+      <h1>Plugg<span class="p2">parken</span><span class="betalapp" title="Sidan är under uppbyggnad">Beta</span></h1>
+      <p>Lekparken för hjärnan</p>
     </div>
     <div class="owlwrap">
       <div class="bubble" id="bubble">Hej!</div>
@@ -302,7 +313,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 <div class="modal" id="mNewProf" hidden><div class="sheet" role="dialog" aria-label="Ny profil" style="max-width:420px">
   <div class="top"><h2>Ny profil</h2><button class="close" data-close aria-label="Stäng">✕</button></div>
-  <label class="plabel" for="npName">Ditt namn i Matte-Portalen</label>
+  <label class="plabel" for="npName">Ditt namn i Pluggparken</label>
   <div style="display:flex;gap:8px"><input id="npName" class="pinput" maxlength="16" autocomplete="off" placeholder="Till exempel Glada Ugglan"><button class="dice" id="npDice" aria-label="Hitta på ett namn">🎲</button></div>
   <p class="pnote" style="text-align:left">Tips: använd gärna ett påhittat namn. Tryck på 🎲 för ett förslag.</p>
   <p class="pinmsg" id="npMsg"></p>
@@ -324,7 +335,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 <div class="modal" id="mCard" hidden><div class="sheet" role="dialog" aria-label="Mitt inloggningskort" style="max-width:420px;text-align:center">
   <div class="top noprint"><h2>Mitt inloggningskort</h2><button class="close" data-close aria-label="Stäng">✕</button></div>
   <div class="logincard" id="loginCard">
-    <div class="lc-head"><span class="lc-owl" id="lcOwl"></span><span><b>Matte-Portalen</b><small>Mitt inloggningskort</small></span></div>
+    <div class="lc-head"><span class="lc-owl" id="lcOwl"></span><span><b>Pluggparken</b><small>Mitt inloggningskort</small></span></div>
     <div class="lc-qr" id="lcQr"></div>
     <div class="lc-name" id="lcName"></div>
     <p class="lc-how">Logga in: tryck på <b>Logga in med QR-kod</b> och håll upp kortet framför kameran.</p>
@@ -343,7 +354,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 <div class="modal" id="mMove" hidden><div class="sheet" role="dialog" aria-label="Flytta framsteg" style="max-width:440px;text-align:center">
   <div class="top"><h2>Flytta framsteg</h2><button class="close" data-close aria-label="Stäng">✕</button></div>
-  <p style="margin:0 0 8px">Skanna koden med kameran på den andra enheten. Då öppnas Matte-Portalen och dina framsteg läggs in.</p>
+  <p style="margin:0 0 8px">Skanna koden med kameran på den andra enheten. Då öppnas Pluggparken och dina framsteg läggs in.</p>
   <div id="qrBox" class="qrbox"></div>
   <p class="pnote" id="qrNote"></p>
   <p style="margin:12px 0 4px;font-weight:800">Eller använd flyttkoden:</p>
@@ -778,11 +789,11 @@ $("pMove").onclick=async()=>{
   const url=location.origin+location.pathname+"#flytta="+code;
   $("moveCode").value=code;$("qrBox").innerHTML="";$("qrNote").textContent="";openM("mMove");
   if(url.length>2300){$("qrNote").textContent="Du har samlat så mycket att koden blev för lång för en QR-kod. Använd flyttkoden eller filen i stället.";return;}
-  const draw=()=>{try{new QRCode($("qrBox"),{text:url,width:220,height:220,correctLevel:QRCode.CorrectLevel.L});$("qrNote").textContent="Koden innehåller bara ditt namn i Matte-Portalen och dina framsteg. Du loggar in med samma kod som vanligt.";}catch(e){$("qrNote").textContent="QR-koden kunde inte visas. Använd flyttkoden i stället.";}};
+  const draw=()=>{try{new QRCode($("qrBox"),{text:url,width:220,height:220,correctLevel:QRCode.CorrectLevel.L});$("qrNote").textContent="Koden innehåller bara ditt namn i Pluggparken och dina framsteg. Du loggar in med samma kod som vanligt.";}catch(e){$("qrNote").textContent="QR-koden kunde inte visas. Använd flyttkoden i stället.";}};
   if(window.QRCode)draw();else{const s=document.createElement("script");s.src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js";s.onload=draw;s.onerror=()=>{$("qrNote").textContent="QR-koden kräver internet. Använd flyttkoden i stället.";};document.head.appendChild(s);}
 };
 $("moveCopy").onclick=async()=>{try{await navigator.clipboard.writeText($("moveCode").value);$("moveCopy").textContent="Kopierad! ✓";}catch(e){$("moveCode").select();document.execCommand("copy");$("moveCopy").textContent="Kopierad! ✓";}};
-$("moveFile").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([$("moveCode").value],{type:"text/plain"}));a.download=`matteportalen-${me.name.replace(/[^\wåäöÅÄÖ-]+/g,"_")}.txt`;document.body.appendChild(a);a.click();a.remove();};
+$("moveFile").onclick=()=>{const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([$("moveCode").value],{type:"text/plain"}));a.download=`pluggparken-${me.name.replace(/[^\wåäöÅÄÖ-]+/g,"_")}.txt`;document.body.appendChild(a);a.click();a.remove();};
 $("pImport").onclick=()=>{$("impCode").value="";$("impMsg").textContent="";openM("mImp");};
 $("impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("impCode").value=String(r.result).trim();};r.readAsText(f);};
 $("impGo").onclick=async()=>{let o;try{o=await unpack($("impCode").value);}catch(e){$("impMsg").textContent="Koden fungerade inte. Kontrollera att hela koden är med.";return;}importBundle(o);};
@@ -860,7 +871,7 @@ $("scanBtn").onclick=async()=>{
       busy=false;
       if(text){const m=text.match(/#(kort|flytta)=(.+)$/);
         if(m){stopScan();try{const o=await unpack(m[2]);loginWithCard(o);}catch(e){$("scanMsg").textContent="Kortet gick inte att läsa. Försök igen.";}return;}
-        $("scanMsg").textContent="Det där är inte ett inloggningskort från Matte-Portalen.";}}
+        $("scanMsg").textContent="Det där är inte ett inloggningskort från Pluggparken.";}}
     scanRaf=requestAnimationFrame(tick);};
   tick();
 };
