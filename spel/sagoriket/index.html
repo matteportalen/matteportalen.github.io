@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sagoriket – Matte-Portalen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EAF3FF;--ink:#1D2B53;--muted:#56668F;--card:#fff;--line:#C6D6F2;--good:#1E9E5E;--good-dark:#157548;--accent:#3D5AFE;--gold:#F2B707;--font:"Baloo 2","Trebuchet MS",system-ui,sans-serif}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.4;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:900px;margin:0 auto;padding:10px 16px 48px}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none;touch-action:manipulation}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+[hidden]{display:none !important}
+.knapp{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-height:52px;padding:10px 24px;border-radius:16px;background:var(--good);color:#fff;font-weight:800;font-size:1.15rem;box-shadow:0 4px 0 var(--good-dark)}
+.knapp:active{transform:translateY(3px);box-shadow:0 1px 0 var(--good-dark)}
+.knapp.vit{background:#fff;color:var(--ink);box-shadow:0 4px 0 var(--line)}
+.rad{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.info{color:var(--muted);font-size:.9rem;font-weight:700}
+/* meny */
+.banner{position:relative;border-radius:24px;overflow:hidden;min-height:170px;background:#CFEAF6 url(bilder/bg_trees.jpg) center bottom/auto 100% repeat-x;box-shadow:0 5px 0 #9BCB8F;display:flex;align-items:flex-end;gap:12px;padding:14px 18px}
+.banner h1{margin:0;font-size:clamp(2.2rem,8vw,3.2rem);line-height:1;color:#fff;text-shadow:0 3px 0 #3E8A3B,0 0 18px rgba(0,0,0,.25)}
+.banner p{margin:4px 0 0;color:#fff;font-weight:800;text-shadow:0 2px 0 #3E8A3B}
+.banner .djur{width:110px;flex:none;margin-bottom:-6px}
+.banner .djur svg{width:100%;height:auto;display:block}
+h2{font-size:1.25rem;margin:18px 0 8px}
+.cats{display:flex;gap:8px;flex-wrap:wrap}
+.cats button{background:#fff;border-radius:999px;padding:8px 14px;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.cats button[aria-pressed="true"]{background:var(--ink);color:#fff;box-shadow:0 3px 0 #0E1735}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.tabs button{width:44px;height:44px;border-radius:12px;background:#fff;font-weight:800;box-shadow:0 3px 0 var(--line)}
+.tabs button[aria-pressed="true"]{background:#7B61FF;color:#fff;box-shadow:0 3px 0 #5B43D6}
+.varld{background:#fff;border-radius:22px;box-shadow:0 4px 0 var(--line);padding:12px 14px;margin-bottom:12px}
+.varld h3{margin:0 0 8px;font-size:1.2rem;display:flex;justify-content:space-between;align-items:center}
+.banor{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+@media(max-width:480px){.banor{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.bana{border-radius:16px;padding:8px 2px;text-align:center;font-weight:800;font-size:1.3rem;line-height:1.1;background:#F1F5FB;box-shadow:0 3px 0 var(--line);min-height:68px}
+.bana small{display:block;font-size:.8rem;letter-spacing:1px;color:var(--gold)}
+.bana.nasta{background:#E3F6E9;box-shadow:0 0 0 3px var(--good),0 3px 0 var(--good-dark)}
+.bana:disabled{opacity:.45;cursor:default}
+/* spelet */
+#game{position:fixed;inset:0;background:#BFE3F5;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;z-index:20}
+#cv{display:block;width:100%;height:100%}
+.hud{position:absolute;top:max(8px,env(safe-area-inset-top));left:10px;right:10px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+.hud .v{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.85);border-radius:999px;padding:4px 14px;font-weight:800;font-size:1.15rem;box-shadow:0 2px 0 rgba(29,43,83,.15)}
+.hud .h{display:flex;gap:6px;pointer-events:auto}
+.hud .h button{width:46px;height:46px;border-radius:50%;background:rgba(255,255,255,.9);font-size:1.2rem;font-weight:800;box-shadow:0 2px 0 rgba(29,43,83,.2)}
+.ktrl{position:absolute;bottom:max(14px,env(safe-area-inset-bottom));display:flex;gap:14px}
+.ktrl.v{left:14px}.ktrl.h{right:14px}
+.ktrl button{width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,.55);border:3px solid rgba(255,255,255,.9);font-size:2rem;font-weight:800;color:#1D2B53;box-shadow:0 4px 0 rgba(29,43,83,.25);touch-action:none}
+.ktrl button.pa{background:rgba(255,230,128,.9)}
+.ktrl button.magi{background:rgba(190,170,255,.7)}
+.overlay{position:absolute;inset:0;background:rgba(29,43,83,.45);display:grid;place-items:center;padding:16px}
+.overlay>div{background:#fff;border-radius:24px;padding:20px;max-width:420px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+.overlay h2{margin:0 0 8px}
+.tipsrad{position:absolute;left:50%;transform:translateX(-50%);top:64px;background:rgba(255,255,255,.92);border-radius:16px;padding:6px 14px;font-weight:800;pointer-events:none;text-align:center;max-width:90%;box-shadow:0 2px 0 rgba(29,43,83,.15);transition:opacity .4s}
+/* resultat */
+.res{background:#fff;border-radius:24px;box-shadow:0 5px 0 var(--line);padding:18px;text-align:center}
+.stj{font-size:3rem;letter-spacing:6px}
+.stj .av{opacity:.25}
+@media (prefers-reduced-motion:reduce){*{transition:none !important}}
+</style>
+</head>
+<body>
+<div class="wrap" id="meny">
+  <div class="banner"><div class="djur" id="bDjur"></div><div><h1>Sagoriket</h1><p>Spring, hoppa och svara med huvudet!</p></div></div>
+  <h2>Vad vill du räkna?</h2>
+  <div class="cats" id="cats"></div>
+  <div class="tabs" id="tabs" hidden></div>
+  <div id="varldar"></div>
+  <p class="info">Dator: ← → springer, ↑ eller mellanslag hoppar (två gånger = dubbelhopp), X skjuter stjärnor med trollstaven. Surfplatta och mobil: knapparna på skärmen. Hoppa med huvudet i rätt svar för att öppna porten!</p>
+</div>
+
+<section id="game" hidden>
+  <canvas id="cv"></canvas>
+  <div class="hud"><div class="v" id="hudV"></div><div class="h"><button id="paus" aria-label="Paus">⏸</button><button id="quit" aria-label="Avsluta">✕</button></div></div>
+  <div class="tipsrad" id="tips" hidden></div>
+  <div class="ktrl v" id="kV" hidden><button data-k="v" aria-label="Vänster">◀</button><button data-k="h" aria-label="Höger">▶</button></div>
+  <div class="ktrl h" id="kH" hidden><button data-k="m" class="magi" aria-label="Trollstaven">✨</button><button data-k="u" aria-label="Hoppa">⤒</button></div>
+  <div class="overlay" id="pausRuta" hidden><div><h2>Paus</h2><div class="rad" style="justify-content:center"><button class="knapp" id="fortsatt">▶ Fortsätt</button><button class="knapp vit" id="avsluta">Avsluta</button></div></div></div>
+  <div class="overlay" id="slutRuta" hidden><div><h2>Aj då!</h2><p style="font-weight:700">Hjärtana tog slut. Du får tre nya och fortsätter från senaste porten.</p><div class="rad" style="justify-content:center"><button class="knapp" id="fortsattPort">▶ Fortsätt</button><button class="knapp vit" id="igen">↻ Börja om banan</button><button class="knapp vit" id="tillMeny">Till banorna</button></div></div></div>
+</section>
+
+<section id="result" class="wrap" hidden>
+  <div class="res">
+    <h2 id="rRub" style="margin:0">Banan klar! 🎉</h2>
+    <div class="stj" id="rStj"></div>
+    <p id="rTxt" style="font-weight:700;margin:4px 0 14px"></p>
+    <div class="rad" style="justify-content:center"><button class="knapp" id="rNasta">Nästa bana ▶</button><button class="knapp vit" id="rIgen">↻ Igen</button><button class="knapp vit" id="rBanor">Banorna</button></div>
+  </div>
+</section>
+
+<script src="../../ljud.js"></script>
+<script src="../../djur.js"></script>
+<script src="../../huvud.js" data-titel="Sagoriket" data-ikon="🏰" data-helskarm="game"></script>
+<script>
+/* Sagoriket: plattformsspel med elevens djur och trollstaven. Svarsportar (3–4 per bana): hoppa med huvudet i rätt svar så öppnas dörren.
+   Grafik: Kenney New Platformer Pack (CC0) i bilder/atlas.png. Banorna byggs av bitar (BITAR), 12 rader höga, rutan 64 enheter. */
+const $=id=>document.getElementById(id);
+const KEY="mattespel-sagoriket-v1";
+const data=(()=>{const std={stars:{},best:{},cat:"multi",tables:[]};try{return Object.assign(std,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return std;}})();
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
+const L=()=>window.Ljud||{};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+
+/* ---------- Uppgifterna (som i Spelhörnan) ---------- */
+const CATS=[{id:"plus10",name:"Addition till 10"},{id:"minus10",name:"Subtraktion till 10"},{id:"tiotal",name:"Addition och subtraktion till 20"},
+  {id:"hundra",name:"Till 100"},{id:"multi",name:"Multiplikation",tables:true},{id:"div",name:"Division",tables:true}];
+function mk(q,a,cands){const o=[...new Set(cands.filter(x=>Number.isInteger(x)&&x>=0&&x!==a))];shuffle(o);
+  while(o.length<2){const x=a+rnd(1,4)*(Math.random()<.5?-1:1);if(x>=0&&x!==a&&!o.includes(x))o.push(x);}
+  return Object.assign(q,{a,opts:shuffle([a,o[0],o[1]])});}
+const tabList=()=>data.tables.length?data.tables:[2,3,4,5,6,7,8,9,10];
+function gen(){const c=data.cat;
+  if(c==="plus10"){const a=rnd(1,9),b=rnd(1,10-a),s=a+b;return mk({t:`${a} + ${b}`},s,[s-1,s+1,s+2,s-2]);}
+  if(c==="minus10"){const a=rnd(2,10),b=rnd(1,a-1),r=a-b;return mk({t:`${a} − ${b}`},r,[r-1,r+1,r+2,a+b]);}
+  if(c==="tiotal"){if(Math.random()<.5){const a=rnd(2,9),b=rnd(11-a,9),s=a+b;return mk({t:`${a} + ${b}`},s,[s-1,s+1,s-10,s+2]);}
+    const a=rnd(11,18),b=rnd(a-9,9),r=a-b;return mk({t:`${a} − ${b}`},r,[r-1,r+1,r+10,r+2]);}
+  if(c==="hundra"){if(Math.random()<.5){const a=rnd(11,88),b=rnd(2,Math.min(89,100-a)),s=a+b;return mk({t:`${a} + ${b}`},s,[s-10,s+10,s-1,s+1].filter(x=>x<=100));}
+    const a=rnd(21,100),b=Math.random()<.4?rnd(2,9):rnd(11,a-5),r=a-b;return mk({t:`${a} − ${b}`},r,[r+10,r-10,r+1,r-1]);}
+  if(c==="multi"){const T=tabList()[rnd(0,tabList().length-1)],b=rnd(1,10),p=T*b,[x,y]=Math.random()<.5?[b,T]:[T,b];return mk({t:`${x} · ${y}`},p,[p+T,p-T,p+1,p-1,(T+1)*b]);}
+  const d=tabList()[rnd(0,tabList().length-1)],q=rnd(1,10);return mk({fr:[d*q,d]},q,[q+1,q-1,q+2,q-2]);}
+const qText=q=>q.fr?`${q.fr[0]} / ${q.fr[1]}`:q.t;
+
+/* ---------- Världar och banor ---------- */
+const VARLDAR=[
+  {id:"skog",namn:"Sagoskogen",mark:"grass",bg:["bg_trees","bg_hills","bg_mushrooms"],himmel:"#9FD5F2",gaende:["snail","slime_normal","ladybug"],flyg:"bee",dekor:["bush","mushroom_red","grass","mushroom_brown"],fart:1},
+  {id:"oken",namn:"Ökenriket",mark:"sand",bg:["bg_desert"],himmel:"#F2D49A",gaende:["mouse","worm_normal","slime_fire"],flyg:"fly",dekor:["cactus","rock","grass"],fart:1.3}];
+/* Bitar: marken som höjd per kolumn (0 = grop), sedan saker: o mynt, * plats för stjärna, e fiende som går, f fiende som flyger,
+   ^ spikar, p plattform (kol,rad,längd), k kloss, d dekor. Raderna räknas uppifrån (0–11), marken med höjd 3 har ytan på rad 9. */
+const BITAR={
+  start:["33333333",["d1","d5"]],
+  mynt:["3333333333",["o3,7","o4,6","o5,6","o6,7","*5,3"]],
+  grop:["33300333",["o3,6","o4,6","d6"]],
+  bro:["333000000333",["p4,7,3","o4,6","o5,6","o6,6","*5,3"]],
+  kulle:["333444554333",["o6,5","o7,5","*7,2","d1"]],
+  trappa:["33345666633",["o4,6","o5,5","*7,2","o8,4","d0"]],
+  fiende:["333333333333",["e6","o2,7","o9,7","d11"]],
+  fiender:["33333333333333",["p5,6,4","e6,5","e11","o6,5","o7,5","*7,2"]],
+  bi:["333333333333",["f6,6","o3,7","o9,7","*6,3"]],
+  spikar:["3333333333",["^4","^5","o4,6","o5,6","d8"]],
+  hog:["3333333333",["p2,6,2","p5,4,2","*6,1","o2,5","o5,3"]],
+  gropar:["33300330033333",["o3,7","o4,7","o7,7","o8,7","e12"]],
+  vagg:["3333663333",["o4,4","o5,4","d1","d8"]],
+  port:["333333333333",["Q"]],
+  mal:["33333333",["X5","d1","d7"]]};
+const BANOR={
+  skog:[["start","mynt","grop","port","fiende","kulle","port","mynt","port","mal"],
+        ["start","mynt","vagg","port","bro","fiende","port","kulle","bi","port","mal"],
+        ["start","fiende","grop","trappa","port","bi","bro","port","spikar","fiende","port","mal"],
+        ["start","mynt","fiender","port","hog","bro","port","bi","spikar","port","vagg","fiende","port","mal"],
+        ["start","bro","fiende","port","trappa","bi","port","gropar","fiender","port","hog","spikar","port","mal"],
+        ["start","fiender","spikar","port","bro","bi","port","vagg","gropar","port","trappa","fiende","hog","port","mal"]],
+  oken:[["start","fiende","grop","port","kulle","bi","port","mynt","fiende","port","mal"],
+        ["start","bi","vagg","port","fiender","bro","port","spikar","bi","port","mal"],
+        ["start","gropar","port","trappa","fiende","bi","port","bro","spikar","port","fiender","port","mal"],
+        ["start","fiender","hog","port","gropar","bi","port","vagg","fiende","port","bro","spikar","port","mal"],
+        ["start","bi","fiender","port","trappa","gropar","port","hog","bi","port","spikar","fiender","port","mal"],
+        ["start","fiender","bi","port","vagg","gropar","port","bro","fiende","spikar","port","hog","fiender","bi","port","mal"]]};
+const T=64,ROWS=12;
+
+/* ---------- Bilder ---------- */
+const ATL={"terrain_grass_block_top":[0,0],"terrain_grass_block_center":[128,0],"terrain_grass_block_top_left":[256,0],"terrain_grass_block_top_right":[384,0],"terrain_grass_block_left":[512,0],"terrain_grass_block_right":[640,0],"terrain_grass_horizontal_left":[768,0],"terrain_grass_horizontal_middle":[896,0],"terrain_grass_horizontal_right":[1024,0],"terrain_sand_block_top":[1152,0],"terrain_sand_block_center":[1280,0],"terrain_sand_block_top_left":[1408,0],"terrain_sand_block_top_right":[0,128],"terrain_sand_block_left":[128,128],"terrain_sand_block_right":[256,128],"terrain_sand_horizontal_left":[384,128],"terrain_sand_horizontal_middle":[512,128],"terrain_sand_horizontal_right":[640,128],"block_empty":[384,256],"block_exclamation":[512,256],"block_strong_empty":[640,256],"coin_gold":[768,256],"star":[896,256],"door_closed":[1024,256],"door_closed_top":[1152,256],"door_open":[1280,256],"door_open_top":[1408,256],"bricks_grey":[0,384],"brick_grey":[128,384],"spikes":[256,384],"bush":[384,384],"mushroom_red":[512,384],"mushroom_brown":[640,384],"cactus":[768,384],"rock":[896,384],"sign":[1024,384],"sign_exit":[1152,384],"flag_green_a":[1280,384],"flag_green_b":[1408,384],"hud_heart":[0,512],"hud_heart_empty":[128,512],"hud_coin":[256,512],"grass":[384,512],"fence":[512,512],"snail_walk_a":[1024,512],"snail_walk_b":[1152,512],"slime_normal_walk_a":[1280,512],"slime_normal_walk_b":[1408,512],"ladybug_walk_a":[0,640],"ladybug_walk_b":[128,640],"bee_a":[256,640],"bee_b":[384,640],"mouse_walk_a":[512,640],"mouse_walk_b":[640,640],"worm_normal_move_a":[768,640],"worm_normal_move_b":[896,640],"slime_fire_walk_a":[1024,640],"slime_fire_walk_b":[1152,640],"fly_a":[1280,640],"fly_b":[1408,640]};
+const atlas=new Image();atlas.src="bilder/atlas.png";
+const BG={};["bg_trees","bg_hills","bg_mushrooms","bg_desert"].forEach(n=>{const i=new Image();i.src=`bilder/${n}.jpg`;BG[n]=i;});
+let djurBild=null;
+function laddaDjur(){const cfg=Object.assign({},window.lasDjur?lasDjur():{},{hand:"trollstav"});
+  const svg=owlSVG(cfg,"",true);const i=new Image();i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);djurBild=i;
+  $("bDjur").innerHTML=owlSVG(cfg);}
+
+/* ---------- Bygga en bana ---------- */
+let LV=null;
+function bygg(vid,nr){const V=VARLDAR.find(v=>v.id===vid),lista=BANOR[vid][nr];
+  let grid=[],obj={mynt:[],stjPlats:[],fiender:[],dekor:[],spikar:[],portar:[],mal:null},x0=0;
+  const cols=lista.reduce((s,b)=>s+BITAR[b][0].length,0);
+  for(let r=0;r<ROWS;r++)grid.push(Array(cols).fill("."));
+  let seed=nr*97+(vid==="oken"?500:0);const slump=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+  lista.forEach(b=>{const[h,items]=BITAR[b],w=h.length;
+    const yta=c=>{const hh=+h[c];return hh?ROWS-hh:ROWS+5;};
+    for(let c=0;c<w;c++){const hh=+h[c];for(let r=ROWS-hh;r<ROWS;r++)grid[r][x0+c]="#";}
+    items.forEach(s=>{const t=s[0],n=s.slice(1).split(",").map(Number),c=n[0];
+      if(t==="o")obj.mynt.push({x:x0+c,y:n[1]});
+      if(t==="*")obj.stjPlats.push({x:x0+c,y:n[1]});
+      if(t==="e")obj.fiender.push({typ:V.gaende[Math.floor(slump()*V.gaende.length)],x:(x0+c)*T+T/2,y:(n.length>1?n[1]+1:yta(c))*T,vx:-70*V.fart,flyg:false});
+      if(t==="f")obj.fiender.push({typ:V.flyg,bx:(x0+c)*T+T/2,by:n[1]*T+T/2,x:(x0+c)*T,y:n[1]*T,flyg:true,fas:slump()*6});
+      if(t==="^")obj.spikar.push({x:x0+c,y:yta(c)-1});
+      if(t==="p")for(let k=0;k<n[2];k++)grid[n[1]][x0+c+k]="=";
+      if(t==="k")grid[n[1]][x0+c]="k";
+      if(t==="d")obj.dekor.push({x:x0+c,y:yta(c)-1,typ:V.dekor[Math.floor(slump()*V.dekor.length)]});
+      if(t==="X")obj.mal={x:x0+c,y:yta(c)-2};
+      if(t==="Q"){// svarsporten: tre block på rad 6, skylten ovanför, muren med dörren i kolumn 10
+        const p={x:x0+10,block:[2,4,6].map(k=>({x:x0+k,y:6,bump:0,fel:0})),skylt:x0+4,open:false,q:gen(),visa:0,fel:0,forsta:true};
+        p.block.forEach((bl,j)=>{grid[6][bl.x]="A";bl.v=p.q.opts[j];});
+        for(let r=0;r<=8;r++)grid[r][p.x]=r>=7?"D":"W";obj.portar.push(p);}});
+    x0+=w;});
+  // tre stjärnor, utspridda bland platserna; övriga platser blir mynt
+  const sp=obj.stjPlats,val=sp.length<=3?sp:[sp[0],sp[Math.floor(sp.length/2)],sp[sp.length-1]];
+  obj.stjarnor=val.map(s=>({x:s.x,y:s.y,tagen:false}));sp.filter(s=>!val.includes(s)).forEach(s=>obj.mynt.push(s));
+  obj.mynt.forEach(m=>m.tagen=false);obj.fiender.forEach(f=>{f.trollad=0;f.dx=f.x;});
+  return Object.assign({V,vid,nr,grid,cols,w:cols*T,h:ROWS*T},obj);}
+const fast=(c,r,lv=LV)=>{if(c<0)return true;if(c>=lv.cols||r<0)return false;if(r>=ROWS)return false;const t=lv.grid[r][c];
+  if(t==="D"){const p=lv.portar.find(p=>p.x===c);return !(p&&p.open);}
+  return t==="#"||t==="="||t==="k"||t==="W"||t==="A";};
+
+/* ---------- Spelet ---------- */
+const cv=$("cv"),ctx=cv.getContext("2d");
+let P=null,cam=0,skala=1,vy0=0,last=0,raf=0,igang=false,pausad=false;
+const IN={v:false,h:false,u:false,m:false,uFor:false,mFor:false};
+const G={grav:2600,hopp:930,hopp2:820,fart:330,acc:2400};
+function start(vid,nr){LV=bygg(vid,nr);P={x:2*T,y:9*T,vx:0,vy:0,b:40,hh:62,mark:false,hopp:0,riktning:1,skada:0,hjartan:3,poang:0,stj:0,check:2*T,cool:0,coyote:0,buffert:0,fel:0,bob:0};
+  E=[];PAR=[];FLOJ=[];cam=0;$("slutRuta").hidden=true;$("pausRuta").hidden=true;pausad=false;
+  show("game");resize();igang=true;last=performance.now();cancelAnimationFrame(raf);raf=requestAnimationFrame(loop);
+  tips(nr===0&&vid==="skog"?"Spring åt höger! Hoppa med huvudet i rätt svar.":nr===1&&vid==="skog"?"Muren är hög: hoppa två gånger för dubbelhopp!":`${LV.V.namn}, bana ${nr+1}`);}
+let tipsT=0;function tips(t,ms=3200){const e=$("tips");e.textContent=t;e.hidden=false;e.style.opacity=1;clearTimeout(tipsT);tipsT=setTimeout(()=>{e.style.opacity=0;setTimeout(()=>e.hidden=true,400);},ms);}
+let E=[],PAR=[],FLOJ=[];
+function resize(){const dpr=Math.min(2,window.devicePixelRatio||1),W=innerWidth,H=innerHeight;cv.width=W*dpr;cv.height=H*dpr;
+  skala=Math.min(H/(11*T),W/(8*T))*dpr;cv._dpr=dpr;}
+addEventListener("resize",()=>{if(igang)resize();});
+
+function loop(t){raf=requestAnimationFrame(loop);let dt=Math.min(.033,(t-last)/1000);last=t;if(!pausad)uppdatera(dt);rita();}
+function kollPlayer(nx,ny,dx,dy){// rör spelaren och krockar mot rutnätet, en axel i taget
+  const b=P.b/2;
+  if(dx){const x=nx+dx,top=ny-P.hh+4,bot=ny-2,kol=dx>0?Math.floor((x+b)/T):Math.floor((x-b)/T);let stopp=false;
+    for(let r=Math.floor(top/T);r<=Math.floor(bot/T);r++)if(fast(kol,r)){stopp=true;break;}
+    if(stopp){P.vx=0;return[dx>0?kol*T-b-.01:(kol+1)*T+b+.01,ny];}return[x,ny];}
+  const y=ny+dy,l=Math.floor((nx-b+3)/T),rr=Math.floor((nx+b-3)/T);
+  if(dy>0){const r=Math.floor(y/T);for(let c=l;c<=rr;c++)if(fast(c,r)){P.vy=0;P.mark=true;return[nx,r*T];}}
+  else{const r=Math.floor((y-P.hh)/T);for(let c=l;c<=rr;c++)if(fast(c,r)){P.vy=0;huvud(c,r);return[nx,(r+1)*T+P.hh];}}
+  return[nx,y];}
+function huvud(c,r){const t=LV.grid[r]&&LV.grid[r][c];if(t!=="A")return;
+  const p=LV.portar.find(p=>p.block.some(b=>b.x===c&&b.y===r));if(!p||p.open)return;const bl=p.block.find(b=>b.x===c&&b.y===r);
+  if(performance.now()-(p.spar||0)<500)return;p.spar=performance.now();bl.bump=1;
+  if(bl.v===p.q.a){p.open=true;bl.ratt=1;p.visa=1.6;P.poang+=p.forsta?50:20;P.check=(p.x+1)*T+T/2;
+    FLOJ.push({x:bl.x*T+T/2,y:bl.y*T,tx:p.skylt*T+T*1.5,ty:3*T,t:0,v:bl.v});gnistor(bl.x*T+T/2,bl.y*T,"#7CF0B1",16);L().chime&&L().chime();
+    if(!p.forsta)P.fel++;tips(p.forsta?"Rätt! Porten öppnas.":"Rätt! Nu öppnas porten.",1600);}
+  else{bl.fel=1;p.forsta=false;p.visaFel=2.2;p.felQ=p.q;L().bad&&L().bad();tips(`Inte riktigt: ${qText(p.q)} = ${p.q.a}. Här kommer en ny!`,2200);
+    setTimeout(()=>{if(p.open)return;p.q=gen();p.block.forEach((b,j)=>{b.v=p.q.opts[j];b.fel=0;});},2200);}}
+function skadad(){if(P.skada>0)return;P.hjartan--;P.skada=1.6;P.vy=-520;P.vx=-P.riktning*250;L().bad&&L().bad();
+  if(P.hjartan<=0){igang=false;setTimeout(()=>{$("slutRuta").hidden=false;},500);}}
+function gnistor(x,y,f,n=12){for(let i=0;i<n;i++){const a=Math.random()*Math.PI*2,v=80+Math.random()*220;PAR.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-80,t:0,liv:.6+Math.random()*.4,f});}}
+function forhaxa(f){f.trollad=1;gnistor(f.x,f.y-24,"#FFD84D",18);P.poang+=20;L().magic&&L().magic();}
+function uppdatera(dt){if(!igang)return;const tnu=performance.now()/1000;
+  // styrning
+  const mal=(IN.h?1:0)-(IN.v?1:0);if(mal)P.riktning=mal;
+  P.vx+=Math.sign(mal*G.fart-P.vx)*Math.min(Math.abs(mal*G.fart-P.vx),G.acc*dt*(P.mark?1:.75));
+  P.coyote=P.mark?.1:Math.max(0,P.coyote-dt);P.buffert=Math.max(0,P.buffert-dt);
+  if(IN.u&&!IN.uFor)P.buffert=.12;IN.uFor=IN.u;
+  if(P.buffert>0){if(P.coyote>0){P.vy=-G.hopp;P.hopp=1;P.coyote=0;P.buffert=0;P.mark=false;L().hop&&L().hop();}
+    else if(P.hopp<2&&!P.mark){P.vy=-G.hopp2;P.hopp=2;P.buffert=0;gnistor(P.x,P.y,"#fff",8);L().hop&&L().hop();}}
+  if(!IN.u&&P.vy<-300)P.vy+=G.grav*dt*.9; // kort hopp om man släpper
+  P.vy=Math.min(P.vy+G.grav*dt,1400);
+  // trollstaven
+  P.cool=Math.max(0,P.cool-dt);if(IN.m&&!IN.mFor&&P.cool<=0){E.push({x:P.x+P.riktning*30,y:P.y-40,vx:P.riktning*620,t:0});P.cool=.35;L().magic&&L().magic();}IN.mFor=IN.m;
+  // flytta
+  P.mark=false;let[x,y]=kollPlayer(P.x,P.y,P.vx*dt,0);[x,y]=kollPlayer(x,y,0,P.vy*dt);P.x=x;P.y=y;if(P.mark)P.hopp=0;
+  P.skada=Math.max(0,P.skada-dt);P.bob+=dt*(Math.abs(P.vx)>20&&P.mark?12:0);
+  if(P.y>LV.h+120){P.hjartan--;L().bad&&L().bad();if(P.hjartan<=0){igang=false;$("slutRuta").hidden=false;return;}P.x=P.check;P.y=8*T;P.vx=P.vy=0;P.skada=1.4;tips("Hoppsan! Du ramlade ner.",1600);}
+  // spikar
+  LV.spikar.forEach(s=>{if(Math.abs(P.x-(s.x*T+T/2))<T/2+P.b/2-8&&P.y>s.y*T+T*.55&&P.y-P.hh<(s.y+1)*T)skadad();});
+  // mynt och stjärnor
+  const nara=(cx,cy,r)=>Math.abs(P.x-cx)<r+P.b/2&&Math.abs((P.y-P.hh/2)-cy)<r+P.hh/2;
+  LV.mynt.forEach(m=>{if(!m.tagen&&nara(m.x*T+T/2,m.y*T+T/2,18)){m.tagen=true;P.poang+=10;L().pop&&L().pop();gnistor(m.x*T+T/2,m.y*T+T/2,"#FFD84D",6);}});
+  LV.stjarnor.forEach(s=>{if(!s.tagen&&nara(s.x*T+T/2,s.y*T+T/2,22)){s.tagen=true;P.stj++;P.poang+=100;L().chime&&L().chime();gnistor(s.x*T+T/2,s.y*T+T/2,"#FFE680",20);tips(`Stjärna ${P.stj} av 3! ⭐`,1400);}});
+  // fiender
+  LV.fiender.forEach(f=>{if(f.trollad){f.trollad+=dt;return;}
+    if(f.flyg){f.fas+=dt;f.x=f.bx+Math.sin(f.fas*1.2)*110;f.y=f.by+Math.sin(f.fas*2.4)*14;}
+    else{const nx=f.x+f.vx*dt,fram=f.vx>0?nx+22:nx-22,c=Math.floor(fram/T),rad=Math.floor((f.y-10)/T),under=Math.floor((f.y+4)/T);
+      if(fast(c,rad)||!fast(c,under))f.vx=-f.vx;else f.x=nx;}
+    const fy=f.flyg?f.y:f.y-22,dx=Math.abs(P.x-f.x),dy=(P.y-P.hh/2)-fy;
+    if(dx<P.b/2+22&&Math.abs(dy)<P.hh/2+20){
+      if(P.vy>80&&P.y-fy<10){forhaxa(f);P.vy=-620;P.hopp=1;}else skadad();}});
+  // stjärnskotten
+  E.forEach(s=>{s.t+=dt;s.x+=s.vx*dt;if(fast(Math.floor(s.x/T),Math.floor(s.y/T)))s.t=9;
+    LV.fiender.forEach(f=>{if(!f.trollad&&Math.abs(s.x-f.x)<30&&Math.abs(s.y-(f.flyg?f.y:f.y-22))<34){forhaxa(f);s.t=9;}});
+    if(Math.random()<.5)PAR.push({x:s.x,y:s.y,vx:0,vy:0,t:0,liv:.3,f:"#FFE680"});});
+  E=E.filter(s=>s.t<.75);
+  PAR.forEach(p=>{p.t+=dt;p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=500*dt;});PAR=PAR.filter(p=>p.t<p.liv);
+  FLOJ.forEach(f=>f.t+=dt*1.4);FLOJ=FLOJ.filter(f=>f.t<1);
+  LV.portar.forEach(p=>{p.visa=Math.max(0,p.visa-dt);p.visaFel=Math.max(0,(p.visaFel||0)-dt);p.block.forEach(b=>b.bump=Math.max(0,b.bump-dt*5));});
+  // mål
+  if(LV.mal&&Math.abs(P.x-(LV.mal.x*T+T/2))<T*.6&&P.y>LV.mal.y*T){igang=false;klar();}
+  hud();}
+
+/* ---------- Rita ---------- */
+function spr(n,x,y,w=T,h=T,flip=false){const a=ATL[n];if(!a||!atlas.complete)return;
+  if(flip){ctx.save();ctx.translate(x+w,y);ctx.scale(-1,1);ctx.drawImage(atlas,a[0],a[1],128,128,0,0,w,h);ctx.restore();}
+  else ctx.drawImage(atlas,a[0],a[1],128,128,x,y,w,h);}
+function markRuta(c,r){const g=LV.grid,m=LV.V.mark,ar=(cc,rr)=>rr>=0&&rr<ROWS&&cc>=0&&cc<LV.cols&&g[rr][cc]==="#";
+  if(!ar(c,r-1)){const v=ar(c-1,r),h=ar(c+1,r);return`terrain_${m}_block_${!v&&h?"top_left":v&&!h?"top_right":"top"}`;}
+  const v=ar(c-1,r),h=ar(c+1,r);return`terrain_${m}_block_${!v&&h?"left":v&&!h?"right":"center"}`;}
+function rita(){if(!LV)return;const W=cv.width,H=cv.height,s=skala,vw=W/s,vh=H/s;
+  // kameran följer djuret, marken ligger mot nederkanten
+  const malCam=Math.max(0,Math.min(LV.w-vw,P.x-vw*.4));cam+=(malCam-cam)*.15;if(LV.w<vw)cam=0;
+  const oy=vh-LV.h;
+  ctx.setTransform(1,0,0,1,0,0);
+  // himlen tonar till vitt där bakgrundsbilden börjar (bilderna är vita upptill)
+  const bh=Math.min(vh*.62,LV.h*.62)*s,bot=(oy+9.6*T)*s,bgTopp=Math.max(1,bot-bh);
+  const gr=ctx.createLinearGradient(0,0,0,bgTopp);gr.addColorStop(0,LV.V.himmel);gr.addColorStop(1,"#FFFFFF");ctx.fillStyle=gr;ctx.fillRect(0,0,W,bgTopp+1);ctx.fillStyle="#fff";ctx.fillRect(0,bgTopp,W,H-bgTopp);
+  // bakgrund med parallax: kullarna står bakom marken
+  const bg=BG[LV.V.bg[LV.nr%LV.V.bg.length]];if(bg&&bg.complete&&bg.naturalWidth){const bw=bh,off=(-cam*s*.3)%bw;
+    ctx.globalAlpha=.9;for(let x=off-bw;x<W+bw;x+=bw)ctx.drawImage(bg,0,bg.naturalHeight*.16,bg.naturalWidth,bg.naturalHeight*.84,x,bot-bh,bw+1,bh);ctx.globalAlpha=1;}
+  ctx.setTransform(s,0,0,s,-cam*s,oy*s);
+  const c0=Math.max(0,Math.floor(cam/T)-1),c1=Math.min(LV.cols-1,Math.ceil((cam+vw)/T)+1);
+  // dekor
+  LV.dekor.forEach(d=>{if(d.x>=c0&&d.x<=c1)spr(d.typ,d.x*T,d.y*T);});
+  // rutor
+  for(let c=c0;c<=c1;c++)for(let r=0;r<ROWS;r++){const t=LV.grid[r][c];if(t===".")continue;
+    if(t==="#")spr(markRuta(c,r),c*T-.5,r*T-.5,T+1.5,T+1.5);
+    else if(t==="="){const v=LV.grid[r][c-1]==="=",h=LV.grid[r][c+1]==="=";spr(`terrain_${LV.V.mark}_horizontal_${!v&&h?"left":v&&!h?"right":"middle"}`,c*T,r*T);}
+    else if(t==="k")spr("block_strong_empty",c*T,r*T);
+    else if(t==="W")spr("bricks_grey",c*T,r*T,T+.5,T+.5);
+    else if(t==="D"){const p=LV.portar.find(p=>p.x===c);spr(p&&p.open?(r===7?"door_open_top":"door_open"):(r===7?"door_closed_top":"door_closed"),c*T,r*T);}}
+  // svarsportarna: block med tal och skylten
+  LV.portar.forEach(p=>{if(p.skylt+6<c0||p.skylt-4>c1)return;
+    p.block.forEach(b=>{const yy=b.y*T-Math.sin(b.bump*Math.PI)*14,sx=b.fel&&!p.open?Math.sin(performance.now()/40)*3:0;
+      spr(b.ratt?"block_strong_empty":"block_empty",b.x*T+sx,yy);
+      if(p.open&&!b.ratt){ctx.globalAlpha=.35;}
+      ctx.fillStyle=b.ratt?"#7CF0B1":b.fel?"#FFB3BA":"#fff";ctx.font=`800 ${String(b.v).length>2?26:34}px "Baloo 2",sans-serif`;ctx.textAlign="center";ctx.textBaseline="middle";
+      ctx.lineWidth=6;ctx.strokeStyle="#5C3A1B";ctx.strokeText(b.v,b.x*T+T/2+sx,yy+T/2+2);ctx.fillText(b.v,b.x*T+T/2+sx,yy+T/2+2);ctx.globalAlpha=1;});
+    // skylt
+    const sx=p.skylt*T-T*1.4,sy=1.6*T,sw=T*3.8+T,sh=T*1.6;
+    ctx.fillStyle="#5C3A1B";ctx.fillRect(sx+sw/2-6,sy+sh,12,T*.9);
+    ctx.fillStyle=p.open?"#E3F6E9":"#FFF4DC";ctx.strokeStyle=p.open?"#1E9E5E":"#A86B35";ctx.lineWidth=6;
+    ctx.beginPath();ctx.roundRect?ctx.roundRect(sx,sy,sw,sh,16):ctx.rect(sx,sy,sw,sh);ctx.fill();ctx.stroke();
+    const q=p.visaFel>0?p.felQ:p.q,svar=p.open?` = ${q.a}`:p.visaFel>0?` = ${q.a}`:" = ?";
+    ctx.fillStyle=p.visaFel>0?"#B23237":"#1D2B53";ctx.textAlign="center";ctx.textBaseline="middle";
+    if(q.fr){const cx=sx+sw/2-38,cy=sy+sh/2;ctx.font='800 34px "Baloo 2",sans-serif';ctx.fillText(q.fr[0],cx,cy-20);ctx.fillRect(cx-30,cy-2,60,5);ctx.fillText(q.fr[1],cx,cy+24);ctx.textAlign="left";ctx.font='800 44px "Baloo 2",sans-serif';ctx.fillText(svar,cx+34,cy+2);}
+    else{ctx.font='800 46px "Baloo 2",sans-serif';ctx.fillText(qText(q)+svar,sx+sw/2,sy+sh/2+4);}});
+  // mål
+  if(LV.mal){spr("door_open_top",LV.mal.x*T,LV.mal.y*T);spr("door_open",LV.mal.x*T,(LV.mal.y+1)*T);spr(Math.floor(performance.now()/300)%2?"flag_green_a":"flag_green_b",(LV.mal.x+1)*T,(LV.mal.y+1)*T);}
+  // spikar, mynt, stjärnor
+  LV.spikar.forEach(s=>spr("spikes",s.x*T,s.y*T));
+  const tt=performance.now()/1000;
+  LV.mynt.forEach(m=>{if(!m.tagen&&m.x>=c0&&m.x<=c1){const sq=Math.abs(Math.cos(tt*3+m.x));spr("coin_gold",m.x*T+T/2-T/2*sq+4,m.y*T+4,(T-8)*sq,T-8);}});
+  LV.stjarnor.forEach(st=>{if(!st.tagen)spr("star",st.x*T,st.y*T+Math.sin(tt*2+st.x)*5);});
+  // fiender (förtrollade blir blommor)
+  LV.fiender.forEach(f=>{if(f.trollad){if(f.trollad<4){ctx.globalAlpha=Math.min(1,4-f.trollad);blomma(f.x,(f.flyg?f.y+20:f.y));ctx.globalAlpha=1;}return;}
+    const ram=Math.floor(tt*6)%2?"b":"a",n=f.flyg?`${f.typ}_${ram}`:`${f.typ}_${f.typ.startsWith("worm")?"move":"walk"}_${ram}`;
+    const vand=f.flyg?Math.cos(f.fas*1.2)>0:f.vx>0;spr(n,f.x-T/2,(f.flyg?f.y-T/2:f.y-T),T,T,vand);});
+  // skott och partiklar
+  E.forEach(s=>{ctx.fillStyle="#FFE680";stjarna(s.x,s.y,12,s.t*12);});
+  PAR.forEach(p=>{ctx.globalAlpha=1-p.t/p.liv;ctx.fillStyle=p.f;ctx.beginPath();ctx.arc(p.x,p.y,4,0,7);ctx.fill();});ctx.globalAlpha=1;
+  FLOJ.forEach(f=>{const e=1-Math.pow(1-f.t,3),x=f.x+(f.tx-f.x)*e,y=f.y+(f.ty-f.y)*e-Math.sin(f.t*Math.PI)*60;ctx.font='800 44px "Baloo 2",sans-serif';ctx.fillStyle="#1E9E5E";ctx.textAlign="center";ctx.fillText(f.v,x,y);});
+  // djuret
+  if(djurBild&&djurBild.complete&&!(P.skada>0&&Math.floor(tt*12)%2)){const w=78,h=w*140/120,sq=P.mark?1+Math.sin(P.bob)*.03:1;
+    ctx.save();ctx.translate(P.x,P.y+4);ctx.scale(P.riktning<0?-sq:sq,1/sq);ctx.drawImage(djurBild,-w/2,-h*0.98,w,h);ctx.restore();}
+  ctx.setTransform(1,0,0,1,0,0);}
+function stjarna(x,y,r,rot){ctx.beginPath();for(let i=0;i<10;i++){const a=rot+i*Math.PI/5,rr=i%2?r*.45:r;ctx.lineTo(x+Math.cos(a)*rr,y+Math.sin(a)*rr);}ctx.closePath();ctx.fill();}
+function blomma(x,y){ctx.strokeStyle="#2BB673";ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x,y-28);ctx.stroke();
+  ["#FF7EB6","#FF7EB6","#FF7EB6","#FF7EB6","#FF7EB6"].forEach((f,i)=>{const a=i*Math.PI*2/5;ctx.fillStyle=f;ctx.beginPath();ctx.arc(x+Math.cos(a)*10,y-36+Math.sin(a)*10,8,0,7);ctx.fill();});
+  ctx.fillStyle="#FFD84D";ctx.beginPath();ctx.arc(x,y-36,7,0,7);ctx.fill();}
+let hudS="";function hud(){const h=`${"❤️".repeat(Math.max(0,P.hjartan))}${"🤍".repeat(Math.max(0,3-P.hjartan))} <span>⭐ ${P.stj}/3</span> <span>${P.poang} p</span>`;if(h!==hudS){hudS=h;$("hudV").innerHTML=h;}}
+
+/* ---------- Styrning ---------- */
+const TANG={ArrowLeft:"v",KeyA:"v",ArrowRight:"h",KeyD:"h",ArrowUp:"u",KeyW:"u",Space:"u",KeyX:"m",KeyK:"m",Enter:"m"};
+addEventListener("keydown",e=>{const k=TANG[e.code];if(!k||$("game").hidden)return;e.preventDefault();IN[k]=true;});
+addEventListener("keyup",e=>{const k=TANG[e.code];if(k)IN[k]=false;});
+addEventListener("keydown",e=>{if(e.code==="Escape"&&!$("game").hidden)togglePaus();});
+document.querySelectorAll(".ktrl button").forEach(b=>{const k=b.dataset.k,ner=e=>{e.preventDefault();IN[k]=true;b.classList.add("pa");try{b.setPointerCapture(e.pointerId);}catch(_){}},
+  upp=e=>{IN[k]=false;b.classList.remove("pa");};b.addEventListener("pointerdown",ner);b.addEventListener("pointerup",upp);b.addEventListener("pointercancel",upp);b.addEventListener("lostpointercapture",upp);});
+const pek=matchMedia("(pointer:coarse)").matches||"ontouchstart" in window;$("kV").hidden=$("kH").hidden=!pek;
+function togglePaus(){pausad=!pausad;$("pausRuta").hidden=!pausad;Object.keys(IN).forEach(k=>IN[k]=false);}
+$("paus").onclick=togglePaus;$("fortsatt").onclick=togglePaus;
+$("avsluta").onclick=$("quit").onclick=$("tillMeny").onclick=()=>{igang=false;cancelAnimationFrame(raf);show("meny");};
+$("igen").onclick=()=>start(LV.vid,LV.nr);
+// fortsätt från senaste porten med tre nya hjärtan (stjärnor, mynt och öppna portar finns kvar)
+$("fortsattPort").onclick=()=>{P.hjartan=3;P.x=P.check;P.y=8*T;P.vx=P.vy=0;P.skada=1.4;P.forsok=(P.forsok||0)+1;$("slutRuta").hidden=true;igang=true;last=performance.now();};
+document.addEventListener("visibilitychange",()=>{if(document.hidden&&igang&&!pausad)togglePaus();});
+
+/* ---------- Klar ---------- */
+function klar(){cancelAnimationFrame(raf);const id=`${LV.vid}-${LV.nr+1}`,stj=Math.max(1,P.stj),alla=P.fel===0&&LV.portar.every(p=>p.forsta);
+  const fore=data.stars[id]||0;data.stars[id]=Math.max(fore,stj);data.best[id]=Math.max(data.best[id]||0,P.poang);save();
+  $("rRub").textContent=`${LV.V.namn}, bana ${LV.nr+1}: klar! 🎉`;
+  $("rStj").innerHTML=[1,2,3].map(i=>i<=stj?"⭐":'<span class="av">⭐</span>').join("");
+  $("rTxt").innerHTML=`${P.poang} poäng${P.poang>=(data.best[id]||0)&&fore?" (rekord!)":""}. ${alla?"Alla portar rätt direkt! 🧠":`${LV.portar.filter(p=>p.forsta).length} av ${LV.portar.length} portar rätt direkt.`}<br><span class="info">Du hittade ${P.stj} av 3 stjärnor${P.stj<3?". De sista gömmer sig ofta högt upp: prova dubbelhopp!":"."} Du fick också 2 mynt.</span>`;
+  const n=nastaBana();$("rNasta").hidden=!n;
+  show("result");L().fanfare&&L().fanfare();}
+function nastaBana(){const v=VARLDAR.findIndex(x=>x.id===LV.vid);if(LV.nr+1<BANOR[LV.vid].length)return[LV.vid,LV.nr+1];if(v+1<VARLDAR.length)return[VARLDAR[v+1].id,0];return null;}
+$("rNasta").onclick=()=>{const n=nastaBana();if(n)start(...n);};$("rIgen").onclick=()=>start(LV.vid,LV.nr);$("rBanor").onclick=()=>show("meny");
+
+/* ---------- Menyn ---------- */
+const upplast=(vid,nr)=>{if(nr===0&&vid==="skog")return true;if(nr===0){const fv=VARLDAR[VARLDAR.findIndex(v=>v.id===vid)-1];return !!data.stars[`${fv.id}-${BANOR[fv.id].length}`];}return !!data.stars[`${vid}-${nr}`];};
+function meny(){laddaDjur();
+  $("cats").innerHTML=CATS.map(c=>`<button data-c="${c.id}" aria-pressed="${c.id===data.cat}">${c.name}</button>`).join("");
+  const tc=CATS.find(c=>c.id===data.cat);$("tabs").hidden=!tc.tables;
+  $("tabs").innerHTML=tc.tables?`<span class="info" style="width:100%">${data.cat==="div"?"Dela med":"Tabeller"} (inget valt = alla):</span>`+[2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${data.tables.includes(t)}">${t}</button>`).join(""):"";
+  let nastaFunnen=false;
+  $("varldar").innerHTML=VARLDAR.map(V=>{const summa=BANOR[V.id].reduce((s,_,i)=>s+(data.stars[`${V.id}-${i+1}`]||0),0);
+    return`<h2>${V.id==="skog"?"🌳":"🏜️"} ${V.namn}</h2><div class="varld"><h3><span>${BANOR[V.id].length} banor</span><span style="color:var(--gold)">⭐ ${summa} av ${BANOR[V.id].length*3}</span></h3><div class="banor">${BANOR[V.id].map((_,i)=>{const id=`${V.id}-${i+1}`,s=data.stars[id]||0,ok=upplast(V.id,i);
+      const nasta=ok&&!s&&!nastaFunnen;if(nasta)nastaFunnen=true;
+      return`<button class="bana${nasta?" nasta":""}" data-v="${V.id}" data-n="${i}" ${ok?"":"disabled"}>${ok?i+1:"🔒"}<small>${ok?"★".repeat(s)+"☆".repeat(3-s):""}</small></button>`;}).join("")}</div></div>`;}).join("");}
+$("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;data.cat=b.dataset.c;data.tables=[];save();meny();};
+$("tabs").onclick=e=>{const b=e.target.closest("[data-t]");if(!b)return;const t=+b.dataset.t;data.tables=data.tables.includes(t)?data.tables.filter(x=>x!==t):[...data.tables,t];save();meny();};
+$("varldar").onclick=e=>{const b=e.target.closest("[data-n]");if(!b||b.disabled)return;start(b.dataset.v,+b.dataset.n);};
+
+function show(id){["meny","game","result"].forEach(s=>$(s).hidden=s!==id);window.MPS&&MPS.visa(id==="meny"?"home":id);if(id==="meny"){meny();window.scrollTo(0,0);}}
+show("meny");
+</script>
+</body>
+</html>

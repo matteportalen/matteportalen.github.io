@@ -1,0 +1,4 @@
+Sagorikets grafik: Kenney "New Platformer Pack" 1.1 (www.kenney.nl), Creative Commons Zero (CC0).
+http://creativecommons.org/publicdomain/zero/1.0/
+atlas.png är ett bildark med de bilder spelet använder (mark, block, mynt, stjärna, dörrar, dekor och fiender, 128 px),
+bg_*.jpg är paketets bakgrunder. Elevens djur ritas av djur.js.
