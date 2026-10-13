@@ -36,8 +36,8 @@ h2{font-size:1.25rem;margin:18px 0 8px}
 .tabs button[aria-pressed="true"]{background:#7B61FF;color:#fff;box-shadow:0 3px 0 #5B43D6}
 .varld{background:#fff;border-radius:22px;box-shadow:0 4px 0 var(--line);padding:12px 14px;margin-bottom:12px}
 .varld h3{margin:0 0 8px;font-size:1.2rem;display:flex;justify-content:space-between;align-items:center}
-.banor{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
-@media(max-width:480px){.banor{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.banor{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+@media(max-width:640px){.banor{grid-template-columns:repeat(4,minmax(0,1fr))}}
 .bana{border-radius:16px;padding:8px 2px;text-align:center;font-weight:800;font-size:1.3rem;line-height:1.1;background:#F1F5FB;box-shadow:0 3px 0 var(--line);min-height:68px}
 .bana small{display:block;font-size:.8rem;letter-spacing:1px;color:var(--gold)}
 .bana.nasta{background:#E3F6E9;box-shadow:0 0 0 3px var(--good),0 3px 0 var(--good-dark)}
@@ -72,7 +72,7 @@ h2{font-size:1.25rem;margin:18px 0 8px}
   <div class="cats" id="cats"></div>
   <div class="tabs" id="tabs" hidden></div>
   <div id="varldar"></div>
-  <p class="info">Dator: ← → springer, ↑ eller mellanslag hoppar (två gånger = dubbelhopp), X skjuter stjärnor med trollstaven. Surfplatta och mobil: knapparna på skärmen. Hoppa med huvudet i rätt svar för att öppna porten!</p>
+  <p class="info">Dator: ← → springer, ↑ eller mellanslag hoppar (två gånger = dubbelhopp), X förtrollar fiender med trollstaven (eller hoppa på dem). Surfplatta och mobil: knapparna på skärmen. Hoppa med huvudet i rätt svar för att öppna porten!</p>
 </div>
 
 <section id="game" hidden>
@@ -102,7 +102,7 @@ h2{font-size:1.25rem;margin:18px 0 8px}
    Grafik: Kenney New Platformer Pack (CC0) i bilder/atlas.png. Banorna byggs av bitar (BITAR), 12 rader höga, rutan 64 enheter. */
 const $=id=>document.getElementById(id);
 const KEY="mattespel-sagoriket-v1";
-const data=(()=>{const std={stars:{},best:{},cat:"multi",tables:[]};try{return Object.assign(std,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return std;}})();
+const data=(()=>{const std={stars:{},best:{},cat:"multi",tables:[],sett:{}};try{return Object.assign(std,JSON.parse(localStorage.getItem(KEY)||"{}"));}catch(e){return std;}})();
 const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}};
 const L=()=>window.Ljud||{};
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
@@ -128,8 +128,9 @@ const qText=q=>q.fr?`${q.fr[0]} / ${q.fr[1]}`:q.t;
 
 /* ---------- Världar och banor ---------- */
 const VARLDAR=[
-  {id:"skog",namn:"Sagoskogen",mark:"grass",bg:["bg_trees","bg_hills","bg_mushrooms"],himmel:"#9FD5F2",gaende:["snail","slime_normal","ladybug"],flyg:"bee",dekor:["bush","mushroom_red","grass","mushroom_brown"],fart:1},
-  {id:"oken",namn:"Ökenriket",mark:"sand",bg:["bg_desert"],himmel:"#F2D49A",gaende:["mouse","worm_normal","slime_fire"],flyg:"fly",dekor:["cactus","rock","grass"],fart:1.3}];
+  {id:"skog",namn:"Sagoskogen",ikon:"🌳",mark:"grass",bg:["bg_trees","bg_hills","bg_mushrooms"],himmel:"#9FD5F2",gaende:["snail","slime_normal","ladybug"],flyg:"bee",dekor:["bush","mushroom_red","grass","mushroom_brown"],fart:1},
+  {id:"oken",namn:"Ökenriket",ikon:"🏜️",mark:"sand",bg:["bg_desert"],himmel:"#F2D49A",gaende:["mouse","worm_normal","slime_fire"],flyg:"fly",dekor:["cactus","rock","grass"],fart:1.3},
+  {id:"is",namn:"Isriket",ikon:"❄️",mark:"snow",bg:["bg_snow"],himmel:"#8EC5EE",gaende:["slime_block","worm_ring","mouse"],flyg:"bee",dekor:["rock","snow","fence"],fart:1.4}];
 /* Bitar: marken som höjd per kolumn (0 = grop), sedan saker: o mynt, * plats för stjärna, e fiende som går, f fiende som flyger,
    ^ spikar, p plattform (kol,rad,längd), k kloss, d dekor. Raderna räknas uppifrån (0–11), marken med höjd 3 har ytan på rad 9. */
 const BITAR={
@@ -146,6 +147,9 @@ const BITAR={
   hog:["3333333333",["p2,6,2","p5,4,2","*6,1","o2,5","o5,3"]],
   gropar:["33300330033333",["o3,7","o4,7","o7,7","o8,7","e12"]],
   vagg:["3333663333",["o4,4","o5,4","d1","d8"]],
+  fjader:["3333333333",["S3","p5,3,3","o5,2","*6,2","o7,2","d9"]],
+  flytt:["333000000333",["M3,8,2,4","o5,6","o6,6","d0"]],
+  isgrop:["3330003333",["o3,6","o4,5","o5,6","e8"]],
   port:["333333333333",["Q"]],
   mal:["33333333",["X5","d1","d7"]]};
 const BANOR={
@@ -154,19 +158,32 @@ const BANOR={
         ["start","fiende","grop","trappa","port","bi","bro","port","spikar","fiende","port","mal"],
         ["start","mynt","fiender","port","hog","bro","port","bi","spikar","port","vagg","fiende","port","mal"],
         ["start","bro","fiende","port","trappa","bi","port","gropar","fiender","port","hog","spikar","port","mal"],
-        ["start","fiender","spikar","port","bro","bi","port","vagg","gropar","port","trappa","fiende","hog","port","mal"]],
+        ["start","fiender","spikar","port","bro","bi","port","vagg","gropar","port","trappa","fiende","hog","port","mal"],
+        ["start","mynt","fjader","port","flytt","fiende","port","bi","kulle","port","gropar","fiender","port","mal"],
+        ["start","fiender","flytt","port","fjader","spikar","port","vagg","bi","port","bro","hog","fiende","port","mal"]],
   oken:[["start","fiende","grop","port","kulle","bi","port","mynt","fiende","port","mal"],
         ["start","bi","vagg","port","fiender","bro","port","spikar","bi","port","mal"],
         ["start","gropar","port","trappa","fiende","bi","port","bro","spikar","port","fiender","port","mal"],
         ["start","fiender","hog","port","gropar","bi","port","vagg","fiende","port","bro","spikar","port","mal"],
         ["start","bi","fiender","port","trappa","gropar","port","hog","bi","port","spikar","fiender","port","mal"],
-        ["start","fiender","bi","port","vagg","gropar","port","bro","fiende","spikar","port","hog","fiender","bi","port","mal"]]};
+        ["start","fiender","bi","port","vagg","gropar","port","bro","fiende","spikar","port","hog","fiender","bi","port","mal"],
+        ["start","bi","flytt","port","fjader","fiender","port","isgrop","spikar","port","trappa","bi","port","mal"],
+        ["start","fiender","isgrop","port","flytt","bi","port","fjader","hog","port","vagg","fiender","spikar","port","mal"]],
+  is:  [["start","mynt","isgrop","port","fiende","fjader","port","bi","kulle","port","mal"],
+        ["start","flytt","fiende","port","isgrop","bi","port","fjader","spikar","port","mal"],
+        ["start","fiender","isgrop","port","flytt","bi","port","vagg","hog","port","fiende","port","mal"],
+        ["start","bi","fjader","port","gropar","fiender","port","flytt","spikar","port","trappa","bi","port","mal"],
+        ["start","fiender","flytt","port","isgrop","bi","port","fjader","fiende","port","bro","spikar","port","mal"],
+        ["start","bi","vagg","port","flytt","fiender","port","isgrop","bi","port","fjader","hog","port","mal"],
+        ["start","fiender","bi","port","flytt","isgrop","port","fjader","spikar","port","gropar","fiender","bi","port","mal"],
+        ["start","flytt","fiender","port","fjader","bi","isgrop","port","vagg","spikar","fiender","port","flytt","hog","bi","port","mal"]]};
 const T=64,ROWS=12;
+const pek=matchMedia("(pointer:coarse)").matches||"ontouchstart" in window;
 
 /* ---------- Bilder ---------- */
-const ATL={"terrain_grass_block_top":[0,0],"terrain_grass_block_center":[128,0],"terrain_grass_block_top_left":[256,0],"terrain_grass_block_top_right":[384,0],"terrain_grass_block_left":[512,0],"terrain_grass_block_right":[640,0],"terrain_grass_horizontal_left":[768,0],"terrain_grass_horizontal_middle":[896,0],"terrain_grass_horizontal_right":[1024,0],"terrain_sand_block_top":[1152,0],"terrain_sand_block_center":[1280,0],"terrain_sand_block_top_left":[1408,0],"terrain_sand_block_top_right":[0,128],"terrain_sand_block_left":[128,128],"terrain_sand_block_right":[256,128],"terrain_sand_horizontal_left":[384,128],"terrain_sand_horizontal_middle":[512,128],"terrain_sand_horizontal_right":[640,128],"block_empty":[384,256],"block_exclamation":[512,256],"block_strong_empty":[640,256],"coin_gold":[768,256],"star":[896,256],"door_closed":[1024,256],"door_closed_top":[1152,256],"door_open":[1280,256],"door_open_top":[1408,256],"bricks_grey":[0,384],"brick_grey":[128,384],"spikes":[256,384],"bush":[384,384],"mushroom_red":[512,384],"mushroom_brown":[640,384],"cactus":[768,384],"rock":[896,384],"sign":[1024,384],"sign_exit":[1152,384],"flag_green_a":[1280,384],"flag_green_b":[1408,384],"hud_heart":[0,512],"hud_heart_empty":[128,512],"hud_coin":[256,512],"grass":[384,512],"fence":[512,512],"snail_walk_a":[1024,512],"snail_walk_b":[1152,512],"slime_normal_walk_a":[1280,512],"slime_normal_walk_b":[1408,512],"ladybug_walk_a":[0,640],"ladybug_walk_b":[128,640],"bee_a":[256,640],"bee_b":[384,640],"mouse_walk_a":[512,640],"mouse_walk_b":[640,640],"worm_normal_move_a":[768,640],"worm_normal_move_b":[896,640],"slime_fire_walk_a":[1024,640],"slime_fire_walk_b":[1152,640],"fly_a":[1280,640],"fly_b":[1408,640]};
+const ATL={"terrain_grass_block_top":[0,0],"terrain_grass_block_center":[128,0],"terrain_grass_block_top_left":[256,0],"terrain_grass_block_top_right":[384,0],"terrain_grass_block_left":[512,0],"terrain_grass_block_right":[640,0],"terrain_grass_horizontal_left":[768,0],"terrain_grass_horizontal_middle":[896,0],"terrain_grass_horizontal_right":[1024,0],"terrain_sand_block_top":[1152,0],"terrain_sand_block_center":[1280,0],"terrain_sand_block_top_left":[1408,0],"terrain_sand_block_top_right":[0,128],"terrain_sand_block_left":[128,128],"terrain_sand_block_right":[256,128],"terrain_sand_horizontal_left":[384,128],"terrain_sand_horizontal_middle":[512,128],"terrain_sand_horizontal_right":[640,128],"terrain_snow_block_top":[768,128],"terrain_snow_block_center":[896,128],"terrain_snow_block_top_left":[1024,128],"terrain_snow_block_top_right":[1152,128],"terrain_snow_block_left":[1280,128],"terrain_snow_block_right":[1408,128],"terrain_snow_horizontal_left":[0,256],"terrain_snow_horizontal_middle":[128,256],"terrain_snow_horizontal_right":[256,256],"block_empty":[384,256],"block_exclamation":[512,256],"block_strong_empty":[640,256],"coin_gold":[768,256],"star":[896,256],"door_closed":[1024,256],"door_closed_top":[1152,256],"door_open":[1280,256],"door_open_top":[1408,256],"bricks_grey":[0,384],"brick_grey":[128,384],"spikes":[256,384],"bush":[384,384],"mushroom_red":[512,384],"mushroom_brown":[640,384],"cactus":[768,384],"rock":[896,384],"sign":[1024,384],"sign_exit":[1152,384],"flag_green_a":[1280,384],"flag_green_b":[1408,384],"hud_heart":[0,512],"hud_heart_empty":[128,512],"hud_coin":[256,512],"grass":[384,512],"fence":[512,512],"gem_blue":[640,512],"hill":[768,512],"hill_top":[896,512],"spring":[1024,512],"spring_out":[1152,512],"block_planks":[1280,512],"snow":[1408,512],"snail_walk_a":[0,640],"snail_walk_b":[128,640],"slime_normal_walk_a":[256,640],"slime_normal_walk_b":[384,640],"ladybug_walk_a":[512,640],"ladybug_walk_b":[640,640],"bee_a":[768,640],"bee_b":[896,640],"mouse_walk_a":[1024,640],"mouse_walk_b":[1152,640],"worm_normal_move_a":[1280,640],"worm_normal_move_b":[1408,640],"slime_fire_walk_a":[0,768],"slime_fire_walk_b":[128,768],"fly_a":[256,768],"fly_b":[384,768],"frog_idle":[512,768],"frog_jump":[640,768],"slime_block_walk_a":[768,768],"slime_block_walk_b":[896,768],"worm_ring_move_a":[1024,768],"worm_ring_move_b":[1152,768]};
 const atlas=new Image();atlas.src="bilder/atlas.png";
-const BG={};["bg_trees","bg_hills","bg_mushrooms","bg_desert"].forEach(n=>{const i=new Image();i.src=`bilder/${n}.jpg`;BG[n]=i;});
+const BG={};["bg_trees","bg_hills","bg_mushrooms","bg_desert","bg_snow"].forEach(n=>{const i=new Image();i.src=`bilder/${n}.jpg`;BG[n]=i;});
 let djurBild=null;
 function laddaDjur(){const cfg=Object.assign({},window.lasDjur?lasDjur():{},{hand:"trollstav"});
   const svg=owlSVG(cfg,"",true);const i=new Image();i.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(svg);djurBild=i;
@@ -175,10 +192,10 @@ function laddaDjur(){const cfg=Object.assign({},window.lasDjur?lasDjur():{},{han
 /* ---------- Bygga en bana ---------- */
 let LV=null;
 function bygg(vid,nr){const V=VARLDAR.find(v=>v.id===vid),lista=BANOR[vid][nr];
-  let grid=[],obj={mynt:[],stjPlats:[],fiender:[],dekor:[],spikar:[],portar:[],mal:null},x0=0;
+  let grid=[],obj={mynt:[],stjPlats:[],fiender:[],dekor:[],spikar:[],portar:[],mal:null,fjadrar:[],plankor:[]},x0=0;
   const cols=lista.reduce((s,b)=>s+BITAR[b][0].length,0);
   for(let r=0;r<ROWS;r++)grid.push(Array(cols).fill("."));
-  let seed=nr*97+(vid==="oken"?500:0);const slump=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
+  let seed=nr*97+(vid==="oken"?500:vid==="is"?900:0);const slump=()=>{seed=(seed*9301+49297)%233280;return seed/233280;};
   lista.forEach(b=>{const[h,items]=BITAR[b],w=h.length;
     const yta=c=>{const hh=+h[c];return hh?ROWS-hh:ROWS+5;};
     for(let c=0;c<w;c++){const hh=+h[c];for(let r=ROWS-hh;r<ROWS;r++)grid[r][x0+c]="#";}
@@ -190,6 +207,8 @@ function bygg(vid,nr){const V=VARLDAR.find(v=>v.id===vid),lista=BANOR[vid][nr];
       if(t==="^")obj.spikar.push({x:x0+c,y:yta(c)-1});
       if(t==="p")for(let k=0;k<n[2];k++)grid[n[1]][x0+c+k]="=";
       if(t==="k")grid[n[1]][x0+c]="k";
+      if(t==="S")obj.fjadrar.push({x:x0+c,y:yta(c)-1,ut:0});
+      if(t==="M")obj.plankor.push({x0:(x0+c)*T,x:(x0+c)*T,y:n[1]*T,w:n[2]*T,amp:n[3]*T,fas:0,dx:0});
       if(t==="d")obj.dekor.push({x:x0+c,y:yta(c)-1,typ:V.dekor[Math.floor(slump()*V.dekor.length)]});
       if(t==="X")obj.mal={x:x0+c,y:yta(c)-2};
       if(t==="Q"){// svarsporten: tre block på rad 6, skylten ovanför, muren med dörren i kolumn 10
@@ -255,8 +274,19 @@ function uppdatera(dt){if(!igang)return;const tnu=performance.now()/1000;
   P.vy=Math.min(P.vy+G.grav*dt,1400);
   // trollstaven
   P.cool=Math.max(0,P.cool-dt);if(IN.m&&!IN.mFor&&P.cool<=0){E.push({x:P.x+P.riktning*30,y:P.y-40,vx:P.riktning*620,t:0});P.cool=.35;L().magic&&L().magic();}IN.mFor=IN.m;
+  // rörliga plankor (fram och tillbaka över gropen)
+  LV.plankor.forEach(m=>{m.fas+=dt*.9;const nx=m.x0+(1-Math.cos(m.fas))/2*m.amp;m.dx=nx-m.x;m.x=nx;});
+  const paPlanka=LV.plankor.find(m=>P.paPl===m);if(paPlanka)P.x+=paPlanka.dx;
   // flytta
-  P.mark=false;let[x,y]=kollPlayer(P.x,P.y,P.vx*dt,0);[x,y]=kollPlayer(x,y,0,P.vy*dt);P.x=x;P.y=y;if(P.mark)P.hopp=0;
+  const foreY=P.y;P.mark=false;P.paPl=null;let[x,y]=kollPlayer(P.x,P.y,P.vx*dt,0);[x,y]=kollPlayer(x,y,0,P.vy*dt);P.x=x;P.y=y;
+  if(P.vy>=0)LV.plankor.forEach(m=>{if(foreY<=m.y+4&&P.y>=m.y&&P.x>m.x-P.b/2+4&&P.x<m.x+m.w+P.b/2-4){P.y=m.y;P.vy=0;P.mark=true;P.paPl=m;}});
+  if(P.mark)P.hopp=0;
+  LV.fjadrar.forEach(f=>{f.ut=Math.max(0,f.ut-dt);if(P.vy>=0&&Math.abs(P.x-(f.x*T+T/2))<T/2+P.b/2-14&&P.y>=f.y*T+T*.45&&P.y<=(f.y+1)*T+2){P.y=f.y*T+T*.45;P.vy=-1450;P.hopp=1;P.mark=false;f.ut=.35;L().hop&&L().hop();gnistor(f.x*T+T/2,f.y*T+T/2,"#fff",10);}});
+  // tips första gången man möter något nytt
+  const visaTips=(nyckel,villkor,text)=>{if(!(data.sett||{})[nyckel]&&villkor){data.sett=Object.assign({},data.sett,{[nyckel]:1});save();tips(text,4200);}};
+  visaTips("troll",LV.fiender.some(f=>!f.trollad&&f.x>P.x&&f.x-P.x<380),pek?"Tryck på ✨ för att förtrolla fienden med trollstaven! Du kan också hoppa på den.":"Tryck X för att förtrolla fienden med trollstaven! Du kan också hoppa på den.");
+  visaTips("fjader",LV.fjadrar.some(f=>f.x*T>P.x&&f.x*T-P.x<300),"Hoppa på fjädern, så studsar du högt!");
+  visaTips("planka",LV.plankor.some(m=>m.x0>P.x&&m.x0-P.x<300),"Plankan åker fram och tillbaka. Hoppa upp när den är nära!");
   P.skada=Math.max(0,P.skada-dt);P.bob+=dt*(Math.abs(P.vx)>20&&P.mark?12:0);
   if(P.y>LV.h+120){P.hjartan--;L().bad&&L().bad();if(P.hjartan<=0){igang=false;$("slutRuta").hidden=false;return;}P.x=P.check;P.y=8*T;P.vx=P.vy=0;P.skada=1.4;tips("Hoppsan! Du ramlade ner.",1600);}
   // spikar
@@ -302,7 +332,9 @@ function rita(){if(!LV)return;const W=cv.width,H=cv.height,s=skala,vw=W/s,vh=H/s
   const gr=ctx.createLinearGradient(0,0,0,bgTopp);gr.addColorStop(0,LV.V.himmel);gr.addColorStop(1,"#FFFFFF");ctx.fillStyle=gr;ctx.fillRect(0,0,W,bgTopp+1);ctx.fillStyle="#fff";ctx.fillRect(0,bgTopp,W,H-bgTopp);
   // bakgrund med parallax: kullarna står bakom marken
   const bg=BG[LV.V.bg[LV.nr%LV.V.bg.length]];if(bg&&bg.complete&&bg.naturalWidth){const bw=bh,off=(-cam*s*.3)%bw;
-    ctx.globalAlpha=.9;for(let x=off-bw;x<W+bw;x+=bw)ctx.drawImage(bg,0,bg.naturalHeight*.16,bg.naturalWidth,bg.naturalHeight*.84,x,bot-bh,bw+1,bh);ctx.globalAlpha=1;}
+    ctx.globalAlpha=.9;for(let x=off-bw;x<W+bw;x+=bw){ctx.drawImage(bg,2,bg.naturalHeight*.16,bg.naturalWidth-4,bg.naturalHeight*.84,x-1,bot-bh,bw+2,bh);
+      // bildens nedersta rad dras ut till skärmens nederkant, så att groparna inte blir vita
+      if(H>bot)ctx.drawImage(bg,2,bg.naturalHeight-3,bg.naturalWidth-4,2,x-1,bot-1,bw+2,H-bot+1);}ctx.globalAlpha=1;}
   ctx.setTransform(s,0,0,s,-cam*s,oy*s);
   const c0=Math.max(0,Math.floor(cam/T)-1),c1=Math.min(LV.cols-1,Math.ceil((cam+vw)/T)+1);
   // dekor
@@ -332,6 +364,8 @@ function rita(){if(!LV)return;const W=cv.width,H=cv.height,s=skala,vw=W/s,vh=H/s
     else{ctx.font='800 46px "Baloo 2",sans-serif';ctx.fillText(qText(q)+svar,sx+sw/2,sy+sh/2+4);}});
   // mål
   if(LV.mal){spr("door_open_top",LV.mal.x*T,LV.mal.y*T);spr("door_open",LV.mal.x*T,(LV.mal.y+1)*T);spr(Math.floor(performance.now()/300)%2?"flag_green_a":"flag_green_b",(LV.mal.x+1)*T,(LV.mal.y+1)*T);}
+  LV.plankor.forEach(m=>{for(let i=0;i<m.w/T;i++)spr("block_planks",m.x+i*T,m.y,T,T*.55);});
+  LV.fjadrar.forEach(f=>spr(f.ut>0?"spring_out":"spring",f.x*T,f.y*T));
   // spikar, mynt, stjärnor
   LV.spikar.forEach(s=>spr("spikes",s.x*T,s.y*T));
   const tt=performance.now()/1000;
@@ -362,7 +396,7 @@ addEventListener("keyup",e=>{const k=TANG[e.code];if(k)IN[k]=false;});
 addEventListener("keydown",e=>{if(e.code==="Escape"&&!$("game").hidden)togglePaus();});
 document.querySelectorAll(".ktrl button").forEach(b=>{const k=b.dataset.k,ner=e=>{e.preventDefault();IN[k]=true;b.classList.add("pa");try{b.setPointerCapture(e.pointerId);}catch(_){}},
   upp=e=>{IN[k]=false;b.classList.remove("pa");};b.addEventListener("pointerdown",ner);b.addEventListener("pointerup",upp);b.addEventListener("pointercancel",upp);b.addEventListener("lostpointercapture",upp);});
-const pek=matchMedia("(pointer:coarse)").matches||"ontouchstart" in window;$("kV").hidden=$("kH").hidden=!pek;
+$("kV").hidden=$("kH").hidden=!pek;
 function togglePaus(){pausad=!pausad;$("pausRuta").hidden=!pausad;Object.keys(IN).forEach(k=>IN[k]=false);}
 $("paus").onclick=togglePaus;$("fortsatt").onclick=togglePaus;
 $("avsluta").onclick=$("quit").onclick=$("tillMeny").onclick=()=>{igang=false;cancelAnimationFrame(raf);show("meny");};
@@ -376,21 +410,22 @@ function klar(){cancelAnimationFrame(raf);const id=`${LV.vid}-${LV.nr+1}`,stj=Ma
   const fore=data.stars[id]||0;data.stars[id]=Math.max(fore,stj);data.best[id]=Math.max(data.best[id]||0,P.poang);save();
   $("rRub").textContent=`${LV.V.namn}, bana ${LV.nr+1}: klar! 🎉`;
   $("rStj").innerHTML=[1,2,3].map(i=>i<=stj?"⭐":'<span class="av">⭐</span>').join("");
-  $("rTxt").innerHTML=`${P.poang} poäng${P.poang>=(data.best[id]||0)&&fore?" (rekord!)":""}. ${alla?"Alla portar rätt direkt! 🧠":`${LV.portar.filter(p=>p.forsta).length} av ${LV.portar.length} portar rätt direkt.`}<br><span class="info">Du hittade ${P.stj} av 3 stjärnor${P.stj<3?". De sista gömmer sig ofta högt upp: prova dubbelhopp!":"."} Du fick också 2 mynt.</span>`;
+  $("rTxt").innerHTML=`${P.poang} poäng${P.poang>=(data.best[id]||0)&&fore?" (rekord!)":""}. ${alla?"Alla portar rätt direkt! 🧠":`${LV.portar.filter(p=>p.forsta).length} av ${LV.portar.length} portar rätt direkt.`}<br><span class="info">${P.stj===0?"Du klarade banan och fick en stjärna. Det finns tre stjärnor att hitta på banan, ofta högt upp: prova dubbelhopp!":P.stj<3?`Du hittade ${P.stj} av 3 stjärnor. Den sista gömmer sig ofta högt upp: prova dubbelhopp!`:"Du hittade alla tre stjärnorna!"} Du fick också 2 mynt.</span>`;
   const n=nastaBana();$("rNasta").hidden=!n;
   show("result");L().fanfare&&L().fanfare();}
 function nastaBana(){const v=VARLDAR.findIndex(x=>x.id===LV.vid);if(LV.nr+1<BANOR[LV.vid].length)return[LV.vid,LV.nr+1];if(v+1<VARLDAR.length)return[VARLDAR[v+1].id,0];return null;}
 $("rNasta").onclick=()=>{const n=nastaBana();if(n)start(...n);};$("rIgen").onclick=()=>start(LV.vid,LV.nr);$("rBanor").onclick=()=>show("meny");
 
 /* ---------- Menyn ---------- */
-const upplast=(vid,nr)=>{if(nr===0&&vid==="skog")return true;if(nr===0){const fv=VARLDAR[VARLDAR.findIndex(v=>v.id===vid)-1];return !!data.stars[`${fv.id}-${BANOR[fv.id].length}`];}return !!data.stars[`${vid}-${nr}`];};
+// nästa värld öppnas efter förra världens bana 6 (så att den som redan spelat inte låses ute när banor läggs till)
+const upplast=(vid,nr)=>{if(nr===0&&vid==="skog")return true;if(nr===0){const fv=VARLDAR[VARLDAR.findIndex(v=>v.id===vid)-1];return !!data.stars[`${fv.id}-6`]||BANOR[vid].some((_,i)=>data.stars[`${vid}-${i+1}`]);}return !!data.stars[`${vid}-${nr}`];};
 function meny(){laddaDjur();
   $("cats").innerHTML=CATS.map(c=>`<button data-c="${c.id}" aria-pressed="${c.id===data.cat}">${c.name}</button>`).join("");
   const tc=CATS.find(c=>c.id===data.cat);$("tabs").hidden=!tc.tables;
   $("tabs").innerHTML=tc.tables?`<span class="info" style="width:100%">${data.cat==="div"?"Dela med":"Tabeller"} (inget valt = alla):</span>`+[2,3,4,5,6,7,8,9,10].map(t=>`<button data-t="${t}" aria-pressed="${data.tables.includes(t)}">${t}</button>`).join(""):"";
   let nastaFunnen=false;
   $("varldar").innerHTML=VARLDAR.map(V=>{const summa=BANOR[V.id].reduce((s,_,i)=>s+(data.stars[`${V.id}-${i+1}`]||0),0);
-    return`<h2>${V.id==="skog"?"🌳":"🏜️"} ${V.namn}</h2><div class="varld"><h3><span>${BANOR[V.id].length} banor</span><span style="color:var(--gold)">⭐ ${summa} av ${BANOR[V.id].length*3}</span></h3><div class="banor">${BANOR[V.id].map((_,i)=>{const id=`${V.id}-${i+1}`,s=data.stars[id]||0,ok=upplast(V.id,i);
+    return`<h2>${V.ikon} ${V.namn}</h2><div class="varld"><h3><span>${BANOR[V.id].length} banor</span><span style="color:var(--gold)">⭐ ${summa} av ${BANOR[V.id].length*3}</span></h3><div class="banor">${BANOR[V.id].map((_,i)=>{const id=`${V.id}-${i+1}`,s=data.stars[id]||0,ok=upplast(V.id,i);
       const nasta=ok&&!s&&!nastaFunnen;if(nasta)nastaFunnen=true;
       return`<button class="bana${nasta?" nasta":""}" data-v="${V.id}" data-n="${i}" ${ok?"":"disabled"}>${ok?i+1:"🔒"}<small>${ok?"★".repeat(s)+"☆".repeat(3-s):""}</small></button>`;}).join("")}</div></div>`;}).join("");}
 $("cats").onclick=e=>{const b=e.target.closest("[data-c]");if(!b)return;data.cat=b.dataset.c;data.tables=[];save();meny();};
