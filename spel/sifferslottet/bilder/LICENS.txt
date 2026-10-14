@@ -1,3 +1,0 @@
-Sifferslottets grafik: Kenney "New Platformer Pack" 1.1 (www.kenney.nl), Creative Commons Zero (CC0).
-http://creativecommons.org/publicdomain/zero/1.0/
-slott.png är ett bildark med de bilder spelet använder (128 px). Elevens djur ritas av djur.js.
