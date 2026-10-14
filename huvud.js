@@ -153,7 +153,7 @@ body.mph-mini #quit{display:none}
   const stang=()=>{if(meny){meny.remove();meny=null;ptl.setAttribute('aria-expanded','false');}};
   ptl.onclick=e=>{e.stopPropagation();if(meny)return stang();
     meny=document.createElement('nav');meny.className='mph-menu';meny.setAttribute('aria-label','Meny');
-    meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p===PORTAL?`🏠 Startsidan<small>${p.namn}</small>`:`${p.namn}<small>${p.sub}</small>`}</span></a>`).join('');
+    meny.innerHTML=PORTALER.map(p=>`<a href="${hem}${p.href}"${p===PORTAL?' aria-current="true"':''}>${p.logo}<span>${p.namn}<small>${p.sub}</small></span></a>`).join('');
     h.appendChild(meny);ptl.setAttribute('aria-expanded','true');meny.querySelector('a').focus({preventScroll:true});};
   document.addEventListener('click',e=>{if(meny&&!meny.contains(e.target))stang();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape')stang();});
