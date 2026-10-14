@@ -5,14 +5,14 @@
    data-nav       "av" för sidor med egen historik (NP3 med #-adresser) eller utan skärmar (startsidan, Tiobas)
    data-helskarm  skärmar där sidhuvudet göms helt (spel med egen ✕), t.ex. "game mem bub"
    data-liggande  "ja": göm sidhuvudet på mobil i liggande läge (Tiobas)
-   data-portal    "ovriga" på sidorna i Övriga ämnen (annan logga, färg och startsida). Standard: matte (startsidan).
-   Loggan är en hamburgerknapp (☰): den öppnar menyn med portalerna (startsidan och Övriga ämnen).
+   data-portal    "ovriga" på sidorna i Fler ämnen (annan logga, färg och startsida). Standard: matte (startsidan).
+   Loggan är en hamburgerknapp (☰): den öppnar menyn med portalerna (startsidan och Fler ämnen).
    Tillbaka-knappen (←) längst till vänster finns på alla sidor utom startsidorna: ett steg bakåt i sidan,
    och från sidans första skärm tillbaka dit man kom ifrån (eller till startsidan).
    Bara portaler med innehåll står i listan.
    Sidan anropar MPS.visa(id) varje gång den byter skärm (i sin show-funktion).
 
-   Sidhuvudet: loggan Pluggparken (kvällsparken med gunga och måne, öppnar menyn), sidans namn, profilens namn med elevens djur och stjärnor
+   Sidhuvudet: loggan Pluggparken (griffeltavla med kritat + A planet stjärna, öppnar menyn), sidans namn, profilens namn med elevens djur och stjärnor
    (leder till garderoben) och ljudknappen. Under räkning (skärmen "game") krymper det till ✕ och sidans namn.
    Stjärnorna räknas här (MPStjarnor) med samma regler som startsidan och uppdateras direkt när något sparas.
 
@@ -23,11 +23,11 @@
   const me=document.currentScript,ds=(me&&me.dataset)||{};
   const CSS=`
 .mph{position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:8px;min-height:52px;padding:calc(6px + env(safe-area-inset-top,0px)) 12px 6px;
-  background:linear-gradient(110deg,#232E6B 0%,#2E3F9E 45%,#3D5AFE 100%);color:#fff;font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;box-shadow:0 3px 0 rgba(29,43,83,.18);line-height:1.2;font-size:18px}
+  background:linear-gradient(110deg,#1A302C 0%,#1F3A35 50%,#2B4F47 100%);color:#fff;font-family:"Baloo 2","Trebuchet MS",system-ui,sans-serif;box-shadow:0 3px 0 #7E5129;line-height:1.2;font-size:18px}
 .mph a{color:inherit;text-decoration:none}
 .mph button{font:inherit;color:inherit;border:0;background:none;cursor:pointer;touch-action:manipulation;padding:0}
 .mph-logo{position:relative;display:flex;align-items:center;gap:7px;font-weight:800;font-size:1.2rem!important;line-height:1;letter-spacing:-.3px;white-space:nowrap;min-height:44px;padding:3px 6px 3px 3px!important;border-radius:999px;background:rgba(255,255,255,.12)!important;flex:none;transition:background .2s}
-.mph-logo b{color:#FFC93C}
+.mph-logo b{color:#F4D35E}
 .mph-burger em{display:none;font-style:normal;font-size:.9rem;font-weight:800;letter-spacing:0}
 @media (min-width:700px){.mph-burger{padding:0 11px 0 9px}.mph-burger em{display:inline}}
 .mph-logo .mph-mark{transition:transform .25s,filter .25s}
@@ -55,7 +55,7 @@
 @media(max-width:400px){.mph.has-title .mph-mynt{display:none}}
 .mph-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:9em}
 .mph-snd{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.18)!important;font-size:1.15rem;flex:none}
-.mph.ovriga{background:linear-gradient(110deg,#157548 0%,#1E9E5E 55%,#17AFC4 100%)}
+.mph.ovriga{background:linear-gradient(110deg,#157548 0%,#1E9E5E 55%,#17AFC4 100%);box-shadow:0 3px 0 rgba(29,43,83,.18)}
 .mph-menu{position:absolute;top:calc(100% + 6px);left:10px;animation:mph-ner .18s ease-out;background:#fff;color:#1D2B53;border-radius:18px;padding:6px;box-shadow:0 10px 30px rgba(29,43,83,.25),0 3px 0 #C6D6F2;min-width:240px;z-index:30}
 .mph-menu a{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:12px;font-weight:800;font-size:1.1rem}
 .mph-menu a:hover,.mph-menu a:focus-visible{background:#EAF3FF;outline:0}
@@ -71,17 +71,19 @@ body.mph-mini #quit{display:none}
 @media (max-width:360px){.mph-name{display:none}}
 @media (orientation:landscape) and (max-height:500px){.mph.liggande{display:none}}
 @media print{.mph{display:none}}`;
-  /* Pluggparkens logga: kvällsparken med kullar, gunga och måne (sidhuvud och flikikon) */
-  const LOGO_PP='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#232E6B"/><circle cx="70" cy="30" r="21" fill="#F2B707" opacity=".25"/><circle cx="70" cy="30" r="14" fill="#FFD86B"/><circle cx="22" cy="22" r="2.6" fill="#fff"/><circle cx="38" cy="13" r="1.8" fill="#fff" opacity=".8"/><circle cx="44" cy="34" r="1.6" fill="#fff" opacity=".7"/><path d="M2 64Q30 48 58 60T98 56V74A24 24 0 0 1 74 98H26A24 24 0 0 1 2 74Z" fill="#34459F"/><path d="M2 82Q38 68 70 80Q86 86 97 81V76A22 22 0 0 1 74 98H26A24 24 0 0 1 2 74Z" fill="#2F8F6B"/><g stroke="#F5E1A4" stroke-linecap="round"><path d="M27 79L32 51M63 79L58 51" stroke-width="4"/><path d="M30 51H60" stroke-width="4.5"/><path d="M40 51V67M50 51V67" stroke-width="2"/></g><rect x="36" y="66" width="18" height="4.5" rx="2" fill="#F28C28"/></svg>';
+  /* Pluggparkens logga: en griffeltavla i träram med kritat +, A, planet och stjärna (lärarens val 4).
+     Flikikonen har tjockare krita och smalare ram, så att den syns i 16 px. */
+  const LOGO_PP='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#6E4522"/><rect x="9" y="9" width="82" height="76" rx="9" fill="#1F3A35"/><rect x="9" y="85" width="82" height="6" fill="#7E5129"/><path d="M29.5 22v15M22 29.5h15" stroke="#F3F0E4" stroke-width="5" stroke-linecap="round"/><path d="M63 38L70.5 21L78 38M66 32.5H75" fill="none" stroke="#F4D35E" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="29.5" cy="64" r="6" fill="none" stroke="#9FD3EC" stroke-width="3"/><ellipse cx="29.5" cy="64" rx="12" ry="3.8" fill="none" stroke="#9FD3EC" stroke-width="2.4" transform="rotate(-20 29.5 64)"/><path d="M70.5 53l2.8 6 6.5.7-4.9 4.4 1.4 6.4-5.8-3.3-5.8 3.3 1.4-6.4-4.9-4.4 6.5-.7z" fill="none" stroke="#F2A7BB" stroke-width="2.6" stroke-linejoin="round"/></svg>';
+  const LOGO_FAV='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect x="0" y="0" width="100" height="100" rx="20" fill="#6E4522"/><rect x="6" y="6" width="88" height="82" rx="10" fill="#1F3A35"/><path d="M28 18v22M17 29h22" stroke="#F3F0E4" stroke-width="8" stroke-linecap="round"/><path d="M60 42L71 17L82 42M64.5 34H77.5" fill="none" stroke="#F4D35E" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/><circle cx="28" cy="66" r="8" fill="none" stroke="#9FD3EC" stroke-width="5"/><path d="M71 52l3.3 7.2 7.7.8-5.8 5.2 1.6 7.6-6.8-3.9-6.8 3.9 1.6-7.6-5.8-5.2 7.7-.8z" fill="#F2A7BB"/></svg>';
   /* Matte (startsidan): fyra räknesätt i färgade rutor, visas i menyn */
   const LOGO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#FF6B6B"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><g stroke="#fff" stroke-width="6" stroke-linecap="round"><path d="M29.5 21v17M21 29.5h17M62 29.5h17M23.5 64.5l12 12M35.5 64.5l-12 12M62 70.5h17"/></g><circle cx="70.5" cy="62" r="3.6" fill="#fff"/><circle cx="70.5" cy="79" r="3.6" fill="#fff"/></svg>';
-  /* Loggan för Övriga ämnen: blad, vattendroppe, planet och sol i samma sorts rutor */
+  /* Loggan för Fler ämnen: blad, vattendroppe, planet och sol i samma sorts rutor */
   const LOGO_NO='<svg class="mph-mark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true"><rect x="2" y="2" width="96" height="96" rx="24" fill="#fff"/><rect x="12" y="12" width="35" height="35" rx="9" fill="#2BB673"/><rect x="53" y="12" width="35" height="35" rx="9" fill="#3D8BFD"/><rect x="12" y="53" width="35" height="35" rx="9" fill="#7B61FF"/><rect x="53" y="53" width="35" height="35" rx="9" fill="#FF9F43"/><path d="M21 39C21 26 29 20 39 20C39 32 33 39 21 39Z" fill="#fff"/><path d="M21 39L31 29" stroke="#2BB673" stroke-width="2.5" stroke-linecap="round"/><path d="M70.5 19C70.5 19 61 30 61 35.5A9.5 9.5 0 0 0 80 35.5C80 30 70.5 19 70.5 19Z" fill="#fff"/><circle cx="29.5" cy="70.5" r="7.5" fill="#fff"/><ellipse cx="29.5" cy="70.5" rx="14" ry="4.5" fill="none" stroke="#fff" stroke-width="2.6" transform="rotate(-20 29.5 70.5)"/><circle cx="70.5" cy="70.5" r="7" fill="#fff"/><g stroke="#fff" stroke-width="3.2" stroke-linecap="round"><path d="M70.5 56v4M70.5 81v4M56 70.5h4M81 70.5h4M60.3 60.3l2.8 2.8M77.9 77.9l2.8 2.8M60.3 80.7l2.8-2.8M77.9 63.1l2.8-2.8"/></g></svg>';
-  const PORTALER=[{id:'matte',namn:'Matte',sub:'Räkna, spela och utforska',kort:'Matte',ikon:'🔢',href:'',logo:LOGO},{id:'ovriga',namn:'Övriga ämnen',sub:'Svenska, NO, SO, engelska och mer',kort:'Övriga ämnen',ikon:'🌍',href:'ovriga/',logo:LOGO_NO}];
+  const PORTALER=[{id:'matte',namn:'Matte',sub:'Räkna, spela och utforska',kort:'Matte',ikon:'🔢',href:'',logo:LOGO},{id:'ovriga',namn:'Fler ämnen',sub:'Svenska, NO, SO, engelska och mer',kort:'Fler ämnen',ikon:'🌍',href:'ovriga/',logo:LOGO_NO}];
   const PORTAL=PORTALER.find(p=>p.id===ds.portal)||PORTALER[0];
   window.MPLogo=LOGO_PP;
   // loggan som ikon i webbläsarfliken
-  if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(LOGO_PP.replace(' class="mph-mark"','').replace(' aria-hidden="true"',''));document.head.appendChild(l);}
+  if(!document.querySelector('link[rel="icon"]')){const l=document.createElement('link');l.rel='icon';l.type='image/svg+xml';l.href='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(LOGO_FAV);document.head.appendChild(l);}
 
   /* ---------- Stjärnor: samma regler som startsidan ---------- */
   const get=k=>{try{return JSON.parse(localStorage.getItem(k)||'null')}catch(e){return null}};

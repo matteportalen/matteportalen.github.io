@@ -19,35 +19,37 @@ a{color:inherit}
 a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 
 /* ---------- Rubrik ---------- */
-/* kvällsparken (lärarens val A): stjärnhimmel, kullar, lyktstolpe, gunga, träd och måne */
-.hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(circle at 6% 20%,rgba(255,255,255,.85) 0 1.3px,transparent 2px),radial-gradient(circle at 19% 9%,rgba(255,255,255,.6) 0 1px,transparent 1.6px),radial-gradient(circle at 33% 26%,rgba(255,255,255,.75) 0 1.2px,transparent 1.8px),radial-gradient(circle at 47% 12%,rgba(255,255,255,.6) 0 1px,transparent 1.6px),radial-gradient(circle at 57% 34%,rgba(255,255,255,.55) 0 1px,transparent 1.6px),radial-gradient(circle at 74% 10%,rgba(255,255,255,.8) 0 1.3px,transparent 2px),radial-gradient(circle at 86% 28%,rgba(255,255,255,.6) 0 1px,transparent 1.6px),radial-gradient(circle at 95% 8%,rgba(255,255,255,.7) 0 1.2px,transparent 1.8px),#232E6B;
+/* griffeltavlan (lärarens val okt 2026): tavelgrön med suddmärken, kritad rubrik, kritteckningar och en kritränna med kritor och tavelsudd */
+.hero{position:relative;overflow:hidden;color:#fff;background:radial-gradient(ellipse 40% 70% at 20% 40%,rgba(255,255,255,.05),transparent 70%),radial-gradient(ellipse 45% 50% at 72% 90%,rgba(255,255,255,.035),transparent 70%),#1F3A35;
   padding:calc(4px + env(safe-area-inset-top,0px)) 16px 18px}
-.hero::after{content:"";position:absolute;left:-5%;right:-5%;bottom:-1px;height:16px;background:var(--bg);border-radius:50% 50% 0 0/100% 100% 0 0}
-.hero .hills{position:absolute;left:0;right:0;bottom:0;width:100%;height:38px;display:block}
-@media(min-width:700px){.hero .hills{height:48px}}
+.hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:10px;background:#7E5129;border-top:3px solid #5E3B1C}
 .park{position:absolute;inset:0;pointer-events:none}
 .park-in{position:relative;max-width:1040px;height:100%;margin:0 auto}
 .park svg{position:absolute;display:block;height:auto}
-.park .p-mane{width:36px;top:8px;left:66%}
-.park .p-lykta{width:22px;bottom:22px;left:36%}
-.park .p-gunga{width:78px;bottom:20px;left:44%}
-.p-gunga .sits{transform-origin:40px 4px;animation:gunga 3.2s ease-in-out infinite}
-@keyframes gunga{0%,100%{transform:rotate(5deg)}50%{transform:rotate(-5deg)}}
-.park .p-trad{width:46px;bottom:21px;left:57%}
-@media(max-width:899px){.park .p-mane,.park .p-trad{display:none}}
-@media(max-width:699px){.park .p-gunga{display:none}.park .p-lykta{left:auto;right:calc(16vw + 34px);bottom:16px;width:18px}}
-@media(max-width:369px){.park .p-lykta{display:none}}
-@media(prefers-reduced-motion:reduce){.p-gunga .sits{animation:none}}
+.park .d-lampa{width:58px;top:6px;left:40%}
+.park .d-planet{width:62px;top:16px;left:52%}
+.park .d-abc{width:58px;bottom:20px;left:47%}
+.park .d-st1{width:16px;top:10px;left:47%}
+.park .d-st2{width:12px;top:8px;left:62%}
+.park .d-kritor{width:84px;bottom:12px;left:24%}
+.park .d-sudd{width:54px;bottom:12px;left:38%}
+@media(max-width:899px){.park .d-abc,.park .d-st1,.park .d-st2,.park .d-sudd{display:none}}
+@media(max-width:699px){.park .d-planet{display:none}.park .d-lampa{left:auto;right:calc(16vw + 30px);top:10px;width:34px}.park .d-kritor{left:auto;right:calc(16vw + 76px);width:58px}}
+@media(max-width:369px){.park .d-lampa,.park .d-kritor{display:none}}
 .hero-in{position:relative;z-index:1;max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:14px}
 .title{flex:1;min-width:0}
-.title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(1.7rem,7vw,2.3rem);letter-spacing:-1px;text-shadow:0 4px 0 rgba(0,0,0,.14)}
-.title h1 .p2{color:var(--sun);display:block}
+.title h1{margin:0;font-weight:800;line-height:.95;font-size:clamp(1.7rem,7vw,2.3rem);letter-spacing:-1px}
+.title h1 .k1,.title h1 .p2{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7'%3E%3Ccircle cx='1.5' cy='2' r='.8' fill='%231F3A35' fill-opacity='.55'/%3E%3Ccircle cx='5' cy='5.5' r='.6' fill='%231F3A35' fill-opacity='.45'/%3E%3Ccircle cx='4.5' cy='1' r='.4' fill='%231F3A35' fill-opacity='.4'/%3E%3C/svg%3E");-webkit-background-clip:text;background-clip:text;color:transparent}
+.title h1 .k1{background-color:#F3F0E4}
+.title h1 .p2{background-color:#F4D35E;display:block;position:relative}
+.title h1 .p2::after{content:"";position:absolute;left:4%;right:2%;bottom:.04em;height:.18em;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 170 10' preserveAspectRatio='none'%3E%3Cpath d='M2 6C42 1 82 7 122 3S162 5 168 4' fill='none' stroke='%23F4D35E' stroke-width='3.2' stroke-linecap='round'/%3E%3Cpath d='M6 9C46 5 86 10 128 7' fill='none' stroke='%23F4D35E' stroke-width='1.4' stroke-linecap='round' stroke-opacity='.45'/%3E%3C/svg%3E") no-repeat center/100% 100%}
 /* betalappen: sidan är under uppbyggnad (lärarens önskan) */
 .title h1{position:relative;display:inline-block;padding-right:6px}
 .betalapp{position:absolute;right:-44px;top:-15px;transform:rotate(12deg);background:#FFE14D;color:#6A4A00;font-size:.8rem;letter-spacing:1px;text-transform:uppercase;font-weight:800;line-height:1;padding:5px 10px 4px;border-radius:4px;box-shadow:0 3px 6px rgba(0,0,0,.22);text-shadow:none}
 .betalapp::before{content:"";position:absolute;left:50%;top:-5px;width:26px;height:9px;margin-left:-13px;background:rgba(255,255,255,.55);transform:rotate(-4deg);border-radius:2px}
 @media(min-width:370px){.title h1 .p2{display:inline}}
-.title p{margin:2px 0 0;font-size:clamp(.88rem,3.3vw,1rem);font-weight:700;opacity:.95}
+@media(max-width:369px){.betalapp{top:2px;right:-52px}}
+.title p{margin:7px 0 0;font-size:clamp(.88rem,3.3vw,1rem);font-weight:700;color:#C9DCD5}
 .owlwrap{flex:none;display:flex;flex-direction:row;align-items:center;gap:12px}
 .owlwrap .owlbtn{width:clamp(62px,16vw,82px);flex:none}
 .bubble{position:relative;background:#fff;color:var(--ink);border-radius:14px;padding:4px 8px;font-weight:700;font-size:.72rem;line-height:1.25;text-align:center;box-shadow:0 4px 0 rgba(0,0,0,.12)}
@@ -216,16 +218,18 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
 <body>
 
 <header class="hero">
-  <svg class="hills" viewBox="0 0 1200 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 24Q200 0 450 20T900 16T1200 10V60H0Z" fill="#34459F"/><path d="M0 40Q260 20 540 38T1020 32T1200 28V60H0Z" fill="#2A3A88"/></svg>
   <div class="park" aria-hidden="true"><div class="park-in">
-    <svg class="p-mane" viewBox="0 0 40 40"><circle cx="20" cy="20" r="19" fill="#F2B707" opacity=".2"/><circle cx="20" cy="20" r="12" fill="#FFD86B"/><circle cx="16" cy="16" r="3" fill="#F2B707" opacity=".45"/><circle cx="24" cy="24" r="2" fill="#F2B707" opacity=".35"/></svg>
-    <svg class="p-lykta" viewBox="0 0 22 64"><circle cx="11" cy="10" r="10" fill="#FFE08A" opacity=".22"/><rect x="9.8" y="13" width="2.6" height="51" fill="#101533"/><path d="M6.5 6h9l-1.5-3h-6z" fill="#101533"/><circle cx="11" cy="10" r="4.4" fill="#FFE08A"/></svg>
-    <svg class="p-gunga" viewBox="0 0 80 54"><g stroke="#F5E1A4" stroke-linecap="round"><path d="M6 53L14 4M74 53L66 4" stroke-width="3.6"/><path d="M10 4H70" stroke-width="4.2"/></g><g class="sits"><path d="M31 4V36M49 4V36" stroke="#F5E1A4" stroke-width="1.6"/><rect x="25" y="35" width="30" height="4.6" rx="2.3" fill="#F28C28"/></g></svg>
-    <svg class="p-trad" viewBox="0 0 46 52"><rect x="19" y="30" width="5" height="22" fill="#14193F"/><circle cx="21" cy="22" r="16" fill="#2F8F6B"/><circle cx="33" cy="30" r="10" fill="#3AAE82"/></svg>
+    <svg class="d-lampa" viewBox="0 0 70 72" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="35" cy="36" r="16" stroke="#F3F0E4" stroke-width="2.6"/><path d="M28 55h14M30 61h10" stroke="#F3F0E4" stroke-width="2.6"/><path d="M29 40q6-10 12 0" stroke="#F4D35E" stroke-width="2"/><path d="M35 10v-6M15 18l-4-4M55 18l4-4M9 36h-6M61 36h6" stroke="#F4D35E" stroke-width="2.4"/></svg>
+    <svg class="d-planet" viewBox="0 0 64 40" fill="none"><circle cx="32" cy="20" r="12" stroke="#9FD3EC" stroke-width="2.6"/><ellipse cx="32" cy="20" rx="27" ry="8" stroke="#9FD3EC" stroke-width="2.2" transform="rotate(-18 32 20)"/></svg>
+    <svg class="d-st1" viewBox="0 0 20 20"><path d="M10 2l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6-5-2.9-5 2.9 1.2-5.6-4.2-3.8 5.6-.6z" fill="none" stroke="#F2A7BB" stroke-width="1.6" stroke-linejoin="round"/></svg>
+    <svg class="d-st2" viewBox="0 0 20 20"><path d="M10 2l2.4 5.2 5.6.6-4.2 3.8 1.2 5.6-5-2.9-5 2.9 1.2-5.6-4.2-3.8 5.6-.6z" fill="none" stroke="#F4D35E" stroke-width="1.8" stroke-linejoin="round"/></svg>
+    <svg class="d-abc" viewBox="0 0 60 26"><text x="1" y="21" font-family="'Baloo 2','Trebuchet MS',sans-serif" font-size="24" font-weight="700" fill="#F3F0E4" opacity=".9">a b c</text></svg>
+    <svg class="d-kritor" viewBox="0 0 86 8"><rect x="0" y="1" width="34" height="7" rx="3.5" fill="#F3F0E4"/><rect x="40" y="2" width="22" height="6" rx="3" fill="#F4D35E"/><rect x="68" y="2.5" width="16" height="5.5" rx="2.7" fill="#F2A7BB"/></svg>
+    <svg class="d-sudd" viewBox="0 0 56 15"><rect x="0" y="0" width="56" height="10" rx="3" fill="#36507A"/><rect x="0" y="9" width="56" height="6" rx="1.5" fill="#D8D2C2"/></svg>
   </div></div>
   <div class="hero-in">
     <div class="title">
-      <h1>Plugg<span class="p2">parken</span><span class="betalapp" title="Sidan är under uppbyggnad">Beta</span></h1>
+      <h1><span class="k1">Plugg</span><span class="p2">parken</span><span class="betalapp" title="Sidan är under uppbyggnad">Beta</span></h1>
       <p>Lekparken för hjärnan</p>
     </div>
     <div class="owlwrap">
@@ -288,7 +292,7 @@ a:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
     <a class="card" href="np3/"><span class="tile" style="--c:#FFE3E3"><svg viewBox="0 0 60 60" width="58" height="58" aria-hidden="true"><rect x="12" y="6" width="36" height="48" rx="4" fill="#fff" stroke="#C6D6F2" stroke-width="1.6"/><text x="30" y="17" font-size="9" text-anchor="middle" font-family="Baloo 2, Trebuchet MS, sans-serif" font-weight="800" fill="#E5484D">NP</text><rect x="17" y="25" width="17" height="3" rx="1.5" fill="#C6D6F2"/><path d="M37 26 l2.6 2.8 l5 -5.6" fill="none" stroke="#2BB673" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="34" width="17" height="3" rx="1.5" fill="#C6D6F2"/><path d="M37 35 l2.6 2.8 l5 -5.6" fill="none" stroke="#2BB673" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><rect x="17" y="43" width="17" height="3" rx="1.5" fill="#C6D6F2"/><path d="M37 44 l2.6 2.8 l5 -5.6" fill="none" stroke="#2BB673" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span><span class="txt"><b>Nationella prov</b><small>Träna inför proven i åk 3. Nya uppgifter varje gång.</small><span class="badge" id="bNp" hidden></span></span><span class="chev">›</span></a>
   </nav>
 
-  <a class="more" href="ovriga/"><span class="mi" aria-hidden="true">🌍</span><span>Letar du efter andra ämnen än matematik?<b>Gå till Övriga ämnen ›</b></span></a>
+  <a class="more" href="ovriga/"><span class="mi" aria-hidden="true">🌍</span><span>Letar du efter andra ämnen än matematik?<b>Gå till Fler ämnen ›</b></span></a>
   <p class="foot">Dina stjärnor och rekord sparas i den här webbläsaren.<br><button class="soundbtn" id="soundBtn"></button></p>
 </main>
 
@@ -445,16 +449,16 @@ S.lpBlitz=lp?Math.max(0,...Object.values(lp.blitz||{})):0;S.lpRace=lp?Object.val
 if(S.lpBlitz)show("bLilla",`⚡ Rekord: ${S.lpBlitz} rätt på 60 s`);else if(S.lpRace.length)show("bLilla",`🏁 Rekord: ${fmt(Math.min(...S.lpRace))}`);
 const np=get("np3-resultat");S.np=Object.values(np||{});
 /* Skattjakten (i Spelhörnan): en till tre stjärnor per nivå */
-{const sk=get("mattespel-sverigekartan-v1");S.stars+=sum((sk&&sk.stars)||{});} // Sverigekartan (Övriga ämnen)
-{const og=get("mattespel-ordgomma-v1");S.stars+=sum((og&&og.stars)||{});} // Ordgömman (Övriga ämnen)
-{const hf=get("mattespel-hogfrekventa-v1");S.stars+=sum((hf&&hf.stars)||{});} // Högfrekventa ord (Övriga ämnen)
-S.rita=(get("mattespel-rita-v1")||{}).stars||{};S.stars+=sum(S.rita); // Draw it! (Övriga ämnen)
-S.oga=get("mattespel-ordgatan-v1")||{};S.stars+=sum(S.oga.stars||{}); // Ordgåtan (Övriga ämnen)
-S.peng=get("mattespel-pengar-v1")||{};S.stars+=sum(S.peng.stars||{}); // Pengar och sparande (Övriga ämnen)
-S.lflyt=get("mattespel-lasflyt-v1")||{};S.stars+=sum(S.lflyt.stars||{}); // Läsflyt (Övriga ämnen)
-S.tb=get("mattespel-tangentbord-v1")||{};S.stars+=sum(S.tb.stars||{}); // Tangentbordet (Övriga ämnen)
-{const eu=get("mattespel-europa-v1");S.stars+=sum((eu&&eu.stars)||{});} // Europakartan (Övriga ämnen)
-{const vw=get("mattespel-varlden-v1");S.stars+=sum((vw&&vw.stars)||{});} // Världskartan (Övriga ämnen)
+{const sk=get("mattespel-sverigekartan-v1");S.stars+=sum((sk&&sk.stars)||{});} // Sverigekartan (Fler ämnen)
+{const og=get("mattespel-ordgomma-v1");S.stars+=sum((og&&og.stars)||{});} // Ordgömman (Fler ämnen)
+{const hf=get("mattespel-hogfrekventa-v1");S.stars+=sum((hf&&hf.stars)||{});} // Högfrekventa ord (Fler ämnen)
+S.rita=(get("mattespel-rita-v1")||{}).stars||{};S.stars+=sum(S.rita); // Draw it! (Fler ämnen)
+S.oga=get("mattespel-ordgatan-v1")||{};S.stars+=sum(S.oga.stars||{}); // Ordgåtan (Fler ämnen)
+S.peng=get("mattespel-pengar-v1")||{};S.stars+=sum(S.peng.stars||{}); // Pengar och sparande (Fler ämnen)
+S.lflyt=get("mattespel-lasflyt-v1")||{};S.stars+=sum(S.lflyt.stars||{}); // Läsflyt (Fler ämnen)
+S.tb=get("mattespel-tangentbord-v1")||{};S.stars+=sum(S.tb.stars||{}); // Tangentbordet (Fler ämnen)
+{const eu=get("mattespel-europa-v1");S.stars+=sum((eu&&eu.stars)||{});} // Europakartan (Fler ämnen)
+{const vw=get("mattespel-varlden-v1");S.stars+=sum((vw&&vw.stars)||{});} // Världskartan (Fler ämnen)
 {const af=get("mattespel-affaren-v1");S.aff=af||{};S.stars+=sum(S.aff.stars);} // Affären (i Spelhörnan)
 {const kb=get("mattespel-kulbanan-v1");S.kul=(kb&&kb.stars)||{};S.stars+=sum(S.kul);} // Kulbanan (i Spelhörnan)
 {const sr=get("mattespel-sagoriket-v1");S.stars+=sum((sr&&sr.stars)||{});} // Sagoriket (i Spelhörnan)
